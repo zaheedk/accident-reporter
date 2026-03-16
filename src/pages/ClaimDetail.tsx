@@ -11,13 +11,7 @@ export default function ClaimDetail() {
   const vehicles = getVehicles();
 
   if (!claim) {
-    return (
-      <AppLayout>
-        <div className="text-center py-20">
-          <p className="text-sm text-muted-foreground">Report not found.</p>
-        </div>
-      </AppLayout>
-    );
+    return <AppLayout><div className="text-center py-20"><p className="text-sm text-muted-foreground">Report not found.</p></div></AppLayout>;
   }
 
   const vehicle = vehicles.find(v => v.id === claim.vehicleId);
@@ -26,37 +20,37 @@ export default function ClaimDetail() {
 
   return (
     <AppLayout>
-      <div className="space-y-5">
+      <div className="space-y-4">
         <div className="flex items-center gap-3">
-          <button onClick={() => navigate(-1)} className="p-2 -ml-2 rounded-xl hover:bg-muted transition-colors">
+          <button onClick={() => navigate(-1)} className="p-2 -ml-2 rounded-md hover:bg-muted transition-colors">
             <ArrowLeft className="w-5 h-5 text-foreground" strokeWidth={1.5} />
           </button>
           <div className="flex-1">
-            <h1 className="text-lg font-bold tracking-tight text-foreground">Incident Report</h1>
+            <h1 className="text-lg font-bold text-foreground">Incident report</h1>
             <p className="text-xs text-muted-foreground tabular-nums">{claim.incidentDate} at {claim.incidentTime}</p>
           </div>
-          <span className="text-[10px] font-semibold uppercase tracking-widest text-primary bg-primary/10 px-2.5 py-1 rounded-lg">{claim.status}</span>
+          <span className="text-[11px] font-medium text-primary bg-primary/8 px-2 py-0.5 rounded">{claim.status === 'draft' ? 'Draft' : 'Submitted'}</span>
         </div>
 
-        <Section title="Incident Details">
+        <Section title="Incident details">
           <Row label="Location" value={claim.incidentLocation} />
-          <Row label="Vehicle Usage" value={claim.vehicleUsage} />
+          <Row label="Vehicle usage" value={claim.vehicleUsage} />
           <Row label="Journey" value={claim.journeyDetails} />
           <Row label="Description" value={claim.description} />
         </Section>
 
-        <Section title="Your Vehicle">
+        <Section title="Your vehicle">
           <Row label="Vehicle" value={vehicle ? `${vehicle.year} ${vehicle.make} ${vehicle.model}` : '—'} />
           <Row label="Rego" value={vehicle?.regoNumber || '—'} />
-          <Row label="Speed Before Braking" value={claim.speedBeforeBraking ? `${claim.speedBeforeBraking} km/h` : '—'} />
+          <Row label="Speed before braking" value={claim.speedBeforeBraking ? `${claim.speedBeforeBraking} km/h` : '—'} />
           <Row label="Damage" value={claim.damageDescription} />
           <Row label="Towed" value={claim.vehicleTowed ? `Yes – ${claim.towingCompany}` : 'No'} />
         </Section>
 
         {claim.thirdParties.length > 0 && (
-          <Section title="Third Parties">
+          <Section title="Third parties">
             {claim.thirdParties.map((tp, i) => (
-              <div key={i} className="p-3 rounded-xl bg-muted space-y-1">
+              <div key={i} className="p-3 rounded-md bg-muted space-y-1">
                 <Row label="Owner" value={tp.ownerName} />
                 <Row label="Vehicle" value={`${tp.make} ${tp.model} – ${tp.regoNumber}`} />
                 <Row label="Phone" value={tp.phone} />
@@ -75,17 +69,17 @@ export default function ClaimDetail() {
           </Section>
         )}
 
-        <Section title="Police & Injuries">
-          <Row label="Police Attended" value={claim.policeAttended ? `Yes – ${claim.policeOfficerDetails}` : 'No'} />
+        <Section title="Police & injuries">
+          <Row label="Police attended" value={claim.policeAttended ? `Yes – ${claim.policeOfficerDetails}` : 'No'} />
           <Row label="Injuries" value={claim.anyoneHurt ? claim.injuryDetails : 'No'} />
         </Section>
 
         <Section title="Conditions">
           <Row label="Weather" value={weather} />
           <Row label="Road" value={road} />
-          <Row label="Substance Use" value={claim.driverConsumedSubstance ? claim.substanceDetails : 'No'} />
-          <Row label="Fault Assessment" value={claim.blameDescription} />
-          <Row label="Liability Admitted" value={claim.liabilityAdmitted ? claim.liabilityDetails : 'No'} />
+          <Row label="Substance use" value={claim.driverConsumedSubstance ? claim.substanceDetails : 'No'} />
+          <Row label="Fault assessment" value={claim.blameDescription} />
+          <Row label="Liability admitted" value={claim.liabilityAdmitted ? claim.liabilityDetails : 'No'} />
         </Section>
 
         <Section title="Repairer">
@@ -101,7 +95,7 @@ export default function ClaimDetail() {
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="card-surface space-y-2">
-      <h3 className="text-[11px] font-semibold uppercase tracking-widest text-primary">{title}</h3>
+      <h3 className="text-xs font-semibold text-muted-foreground">{title}</h3>
       {children}
     </div>
   );
@@ -110,7 +104,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 function Row({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex justify-between gap-4 py-1.5 border-b border-border last:border-0">
-      <span className="text-xs font-medium text-muted-foreground flex-shrink-0">{label}</span>
+      <span className="text-xs text-muted-foreground flex-shrink-0">{label}</span>
       <span className="text-sm text-foreground text-right">{value || '—'}</span>
     </div>
   );
