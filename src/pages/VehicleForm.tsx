@@ -70,6 +70,16 @@ export default function VehicleForm() {
             <label className="form-label">Colour</label>
             <input className="form-input" placeholder="Silver" value={form.color} onChange={e => update('color', e.target.value)} />
           </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="form-label">WOF Expiry</label>
+              <input type="date" className="form-input tabular-nums" value={form.wofExpiry} onChange={e => update('wofExpiry', e.target.value)} />
+            </div>
+            <div>
+              <label className="form-label">Rego Expiry</label>
+              <input type="date" className="form-input tabular-nums" value={form.regoExpiry} onChange={e => update('regoExpiry', e.target.value)} />
+            </div>
+          </div>
 
           <div className="flex items-center gap-3 pt-2">
             <button type="button" onClick={() => update('financeArrangement', !form.financeArrangement)}
