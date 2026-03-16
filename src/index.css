@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,26 +6,26 @@
 
 @layer base {
   :root {
-    --background: 0 0% 7%;
-    --foreground: 0 0% 95%;
+    --background: 240 20% 97%;
+    --foreground: 230 25% 18%;
 
-    --card: 0 0% 11%;
-    --card-foreground: 0 0% 95%;
+    --card: 0 0% 100%;
+    --card-foreground: 230 25% 18%;
 
-    --popover: 0 0% 11%;
-    --popover-foreground: 0 0% 95%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 230 25% 18%;
 
-    --primary: 0 0% 100%;
-    --primary-foreground: 0 0% 7%;
+    --primary: 245 58% 60%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 0 0% 16%;
-    --secondary-foreground: 0 0% 70%;
+    --secondary: 240 20% 95%;
+    --secondary-foreground: 230 15% 40%;
 
-    --muted: 0 0% 16%;
-    --muted-foreground: 0 0% 50%;
+    --muted: 240 15% 93%;
+    --muted-foreground: 230 10% 52%;
 
-    --accent: 0 0% 14%;
-    --accent-foreground: 0 0% 90%;
+    --accent: 240 20% 95%;
+    --accent-foreground: 230 25% 18%;
 
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
@@ -36,24 +36,24 @@
     --warning: 38 92% 50%;
     --warning-foreground: 0 0% 7%;
 
-    --border: 0 0% 18%;
-    --input: 0 0% 18%;
-    --ring: 0 0% 40%;
+    --border: 240 15% 89%;
+    --input: 240 15% 89%;
+    --ring: 245 58% 60%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
 
-    --shadow-sm: 0 1px 2px rgba(0,0,0,0.3);
-    --shadow-md: 0 0 0 1px rgba(255,255,255,0.06), 0 4px 12px rgba(0,0,0,0.4);
-    --shadow-lg: 0 0 0 1px rgba(255,255,255,0.04), 0 12px 24px rgba(0,0,0,0.5);
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-lg: 0 4px 12px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04);
 
-    --sidebar-background: 0 0% 9%;
-    --sidebar-foreground: 0 0% 70%;
-    --sidebar-primary: 0 0% 100%;
-    --sidebar-primary-foreground: 0 0% 7%;
-    --sidebar-accent: 0 0% 14%;
-    --sidebar-accent-foreground: 0 0% 90%;
-    --sidebar-border: 0 0% 18%;
-    --sidebar-ring: 0 0% 40%;
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 230 10% 40%;
+    --sidebar-primary: 245 58% 60%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 20% 95%;
+    --sidebar-accent-foreground: 230 25% 18%;
+    --sidebar-border: 240 15% 89%;
+    --sidebar-ring: 245 58% 60%;
   }
 }
 
@@ -65,8 +65,6 @@
   body {
     @apply bg-background text-foreground antialiased;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
   }
 
   .tabular-nums {
@@ -76,16 +74,17 @@
 
 @layer components {
   .form-label {
-    @apply text-[11px] font-medium uppercase tracking-widest text-muted-foreground mb-1.5 block;
+    @apply text-[11px] font-semibold uppercase tracking-widest text-primary mb-1.5 block;
     letter-spacing: 0.1em;
   }
 
   .form-input {
-    @apply w-full rounded-md border border-border bg-accent px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring focus:border-ring transition-all;
+    @apply w-full border-0 border-b border-border bg-transparent px-0 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors;
   }
 
   .card-surface {
-    @apply bg-card rounded-lg p-5 border border-border;
+    @apply bg-card rounded-2xl p-6;
+    box-shadow: var(--shadow-lg);
   }
 
   .section-title {
@@ -98,11 +97,11 @@
   }
 
   .step-badge-active {
-    @apply bg-foreground text-background;
+    @apply bg-primary text-primary-foreground;
   }
 
   .step-badge-complete {
-    @apply bg-accent text-foreground;
+    @apply bg-primary/15 text-primary;
   }
 
   .step-badge-pending {
@@ -111,13 +110,5 @@
 
   .bottom-action-bar {
     @apply fixed bottom-0 left-0 right-0 bg-card/90 backdrop-blur-xl border-t border-border px-4 py-3 flex gap-3;
-  }
-
-  /* Subtle hover glow for interactive cards */
-  .card-interactive {
-    @apply card-surface transition-all duration-200;
-  }
-  .card-interactive:hover {
-    border-color: hsl(0 0% 28%);
   }
 }
