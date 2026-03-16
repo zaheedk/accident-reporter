@@ -12,42 +12,35 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Top header */}
       <header className="bg-card border-b border-border px-4 py-3 flex items-center justify-between">
-        <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center">
-            <FileText className="w-4 h-4 text-primary" />
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 rounded-md bg-primary flex items-center justify-center">
+            <FileText className="w-4 h-4 text-primary-foreground" />
           </div>
-          <span className="text-sm font-bold tracking-tight text-foreground">ClaimWise</span>
+          <span className="text-sm font-bold text-foreground">ClaimWise</span>
         </div>
-        <Link
-          to="/claims/new"
-          className="inline-flex items-center gap-1.5 h-9 px-4 bg-primary text-primary-foreground rounded-xl text-xs font-semibold transition-all hover:opacity-90 active:scale-[0.98]"
-          style={{ boxShadow: '0 2px 8px hsl(245 58% 60% / 0.3)' }}
-        >
+        <Link to="/claims/new" className="btn-primary h-8 px-3 text-xs">
           <Plus className="w-3.5 h-3.5" />
-          New Report
+          New report
         </Link>
       </header>
 
-      {/* Content */}
-      <main className="max-w-2xl mx-auto px-4 py-6 pb-24">
+      <main className="max-w-2xl mx-auto px-4 py-5 pb-24">
         {children}
       </main>
 
-      {/* Bottom nav (mobile) */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-xl border-t border-border flex justify-around py-2.5 px-4 md:hidden">
+      <nav className="fixed bottom-0 left-0 right-0 bg-card border-t border-border flex justify-around py-2 px-4 md:hidden">
         {navItems.map(({ to, icon: Icon, label }) => {
           const active = location.pathname === to || (to !== '/' && location.pathname.startsWith(to));
           return (
             <Link
               key={to}
               to={to}
-              className={`flex flex-col items-center gap-1 px-3 py-1 rounded-xl text-[10px] font-semibold tracking-wide uppercase transition-colors ${
+              className={`flex flex-col items-center gap-0.5 px-3 py-1 text-[11px] font-medium transition-colors ${
                 active ? 'text-primary' : 'text-muted-foreground'
               }`}
             >
-              <Icon className="w-5 h-5" strokeWidth={active ? 2.2 : 1.5} />
+              <Icon className="w-5 h-5" strokeWidth={active ? 2 : 1.5} />
               {label}
             </Link>
           );
