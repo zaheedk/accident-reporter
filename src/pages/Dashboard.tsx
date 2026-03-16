@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Car, FileText, Plus, AlertTriangle, ChevronRight, Clock } from 'lucide-react';
+import { Car, FileText, Plus, AlertTriangle, ChevronRight, Clock, ArrowUpRight } from 'lucide-react';
 import { getVehicles, getClaims } from '@/lib/storage';
 import AppLayout from '@/components/AppLayout';
 
@@ -13,97 +13,93 @@ export default function Dashboard() {
     <AppLayout>
       <div className="space-y-5">
         <div>
-          <h1 className="text-lg font-bold text-foreground">Dashboard</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">Manage your vehicles and accident reports.</p>
+          <p className="text-sm text-muted-foreground">Overview</p>
+          <h1 className="text-[22px] font-extrabold text-foreground tracking-tight -mt-0.5">Dashboard</h1>
         </div>
 
         {/* Stats */}
         <div className="grid grid-cols-2 gap-3">
-          <div className="card-surface flex items-center gap-3">
-            <div className="w-10 h-10 rounded-md bg-primary/8 flex items-center justify-center">
-              <Car className="w-5 h-5 text-primary" strokeWidth={1.5} />
+          <div className="card-surface">
+            <div className="flex items-center justify-between mb-3">
+              <Car className="w-5 h-5 text-muted-foreground" strokeWidth={1.5} />
+              <ArrowUpRight className="w-4 h-4 text-muted-foreground/40" />
             </div>
-            <div>
-              <div className="text-2xl font-bold tabular-nums text-foreground">{vehicles.length}</div>
-              <div className="text-xs text-muted-foreground">Vehicles</div>
-            </div>
+            <div className="text-3xl font-extrabold tabular-nums text-foreground">{vehicles.length}</div>
+            <div className="text-[13px] text-muted-foreground mt-0.5">Vehicles</div>
           </div>
-          <div className="card-surface flex items-center gap-3">
-            <div className="w-10 h-10 rounded-md bg-primary/8 flex items-center justify-center">
-              <FileText className="w-5 h-5 text-primary" strokeWidth={1.5} />
+          <div className="card-surface">
+            <div className="flex items-center justify-between mb-3">
+              <FileText className="w-5 h-5 text-muted-foreground" strokeWidth={1.5} />
+              <ArrowUpRight className="w-4 h-4 text-muted-foreground/40" />
             </div>
-            <div>
-              <div className="text-2xl font-bold tabular-nums text-foreground">{claims.length}</div>
-              <div className="text-xs text-muted-foreground">Reports</div>
-            </div>
+            <div className="text-3xl font-extrabold tabular-nums text-foreground">{claims.length}</div>
+            <div className="text-[13px] text-muted-foreground mt-0.5">Reports</div>
           </div>
         </div>
 
         {/* Quick Actions */}
         <div className="grid grid-cols-2 gap-3">
-          <Link to="/claims/new" className="card-surface flex items-center gap-3 hover:border-primary/30 transition-colors">
-            <div className="w-9 h-9 rounded-md bg-primary flex items-center justify-center">
-              <AlertTriangle className="w-4 h-4 text-primary-foreground" />
+          <Link to="/claims/new" className="card-surface group hover:shadow-md transition-shadow">
+            <div className="w-9 h-9 rounded-xl bg-foreground flex items-center justify-center mb-3">
+              <AlertTriangle className="w-4 h-4 text-card" />
             </div>
-            <div>
-              <div className="text-sm font-semibold text-foreground">Report incident</div>
-              <div className="text-xs text-muted-foreground">New claim</div>
-            </div>
+            <div className="text-sm font-bold text-foreground">Report incident</div>
+            <div className="text-xs text-muted-foreground mt-0.5">File a new claim</div>
           </Link>
-          <Link to="/vehicles/new" className="card-surface flex items-center gap-3 hover:border-primary/30 transition-colors">
-            <div className="w-9 h-9 rounded-md bg-muted flex items-center justify-center">
+          <Link to="/vehicles/new" className="card-surface group hover:shadow-md transition-shadow">
+            <div className="w-9 h-9 rounded-xl bg-muted flex items-center justify-center mb-3">
               <Plus className="w-4 h-4 text-muted-foreground" />
             </div>
-            <div>
-              <div className="text-sm font-semibold text-foreground">Add vehicle</div>
-              <div className="text-xs text-muted-foreground">To garage</div>
-            </div>
+            <div className="text-sm font-bold text-foreground">Add vehicle</div>
+            <div className="text-xs text-muted-foreground mt-0.5">Register to garage</div>
           </Link>
         </div>
 
         {/* Drafts */}
         {drafts.length > 0 && (
-          <div className="space-y-2">
-            <h2 className="text-xs font-semibold text-muted-foreground px-0.5">Drafts</h2>
-            {drafts.map(claim => (
-              <Link key={claim.id} to={`/claims/${claim.id}/edit`}
-                className="card-surface flex items-center justify-between hover:border-primary/30 transition-colors">
-                <div className="flex items-center gap-3">
-                  <Clock className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
-                  <div>
-                    <div className="text-sm font-medium text-foreground">{claim.incidentLocation || 'Untitled report'}</div>
-                    <div className="text-xs text-muted-foreground tabular-nums">{claim.incidentDate || 'No date set'}</div>
+          <div>
+            <h2 className="text-[13px] font-semibold text-muted-foreground mb-2">Drafts</h2>
+            <div className="space-y-2">
+              {drafts.map(claim => (
+                <Link key={claim.id} to={`/claims/${claim.id}/edit`}
+                  className="card-surface flex items-center justify-between hover:shadow-md transition-shadow">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center">
+                      <Clock className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
+                    </div>
+                    <div>
+                      <div className="text-sm font-semibold text-foreground">{claim.incidentLocation || 'Untitled report'}</div>
+                      <div className="text-xs text-muted-foreground tabular-nums">{claim.incidentDate || 'No date set'}</div>
+                    </div>
                   </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-[11px] font-medium text-muted-foreground bg-muted px-2 py-0.5 rounded">Draft</span>
-                  <ChevronRight className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
-                </div>
-              </Link>
-            ))}
+                  <ChevronRight className="w-4 h-4 text-muted-foreground/40" strokeWidth={1.5} />
+                </Link>
+              ))}
+            </div>
           </div>
         )}
 
         {/* Submitted */}
         {submitted.length > 0 && (
-          <div className="space-y-2">
-            <h2 className="text-xs font-semibold text-muted-foreground px-0.5">Submitted reports</h2>
-            {submitted.slice(0, 5).map(claim => (
-              <Link key={claim.id} to={`/claims/${claim.id}`}
-                className="card-surface flex items-center justify-between hover:border-primary/30 transition-colors">
-                <div className="flex items-center gap-3">
-                  <FileText className="w-4 h-4 text-primary" strokeWidth={1.5} />
-                  <div>
-                    <div className="text-sm font-medium text-foreground">{claim.incidentLocation || 'Report'}</div>
-                    <div className="text-xs text-muted-foreground tabular-nums">{claim.incidentDate}</div>
+          <div>
+            <h2 className="text-[13px] font-semibold text-muted-foreground mb-2">Submitted reports</h2>
+            <div className="space-y-2">
+              {submitted.slice(0, 5).map(claim => (
+                <Link key={claim.id} to={`/claims/${claim.id}`}
+                  className="card-surface flex items-center justify-between hover:shadow-md transition-shadow">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-primary/8 flex items-center justify-center">
+                      <FileText className="w-4 h-4 text-primary" strokeWidth={1.5} />
+                    </div>
+                    <div>
+                      <div className="text-sm font-semibold text-foreground">{claim.incidentLocation || 'Report'}</div>
+                      <div className="text-xs text-muted-foreground tabular-nums">{claim.incidentDate}</div>
+                    </div>
                   </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-[11px] font-medium text-primary bg-primary/8 px-2 py-0.5 rounded">Submitted</span>
-                  <ChevronRight className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
-                </div>
-              </Link>
-            ))}
+                  <ChevronRight className="w-4 h-4 text-muted-foreground/40" strokeWidth={1.5} />
+                </Link>
+              ))}
+            </div>
           </div>
         )}
       </div>
