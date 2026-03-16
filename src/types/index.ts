@@ -5,6 +5,8 @@ export interface Vehicle {
   model: string;
   regoNumber: string;
   color: string;
+  wofExpiry: string;
+  regoExpiry: string;
   financeArrangement: boolean;
   financeDetails?: string;
   modified: boolean;
