@@ -6,22 +6,14 @@ import { Vehicle } from '@/types';
 import AppLayout from '@/components/AppLayout';
 
 const emptyVehicle: Omit<Vehicle, 'id' | 'createdAt'> = {
-  year: '',
-  make: '',
-  model: '',
-  regoNumber: '',
-  color: '',
-  financeArrangement: false,
-  financeDetails: '',
-  modified: false,
-  modificationDetails: '',
+  year: '', make: '', model: '', regoNumber: '', color: '',
+  financeArrangement: false, financeDetails: '', modified: false, modificationDetails: '',
 };
 
 export default function VehicleForm() {
   const { id } = useParams();
   const navigate = useNavigate();
   const isEdit = Boolean(id);
-
   const [form, setForm] = useState(emptyVehicle);
 
   useEffect(() => {
@@ -39,11 +31,7 @@ export default function VehicleForm() {
   };
 
   const handleSave = () => {
-    const vehicle: Vehicle = {
-      ...form,
-      id: id || generateId(),
-      createdAt: new Date().toISOString(),
-    };
+    const vehicle: Vehicle = { ...form, id: id || generateId(), createdAt: new Date().toISOString() };
     saveVehicle(vehicle);
     navigate('/vehicles');
   };
@@ -52,10 +40,10 @@ export default function VehicleForm() {
     <AppLayout>
       <div className="space-y-6">
         <div className="flex items-center gap-3">
-          <button onClick={() => navigate(-1)} className="p-2 rounded-lg hover:bg-accent transition-colors">
-            <ArrowLeft className="w-5 h-5 text-foreground" />
+          <button onClick={() => navigate(-1)} className="p-2 rounded-md hover:bg-accent transition-colors">
+            <ArrowLeft className="w-5 h-5 text-foreground" strokeWidth={1.5} />
           </button>
-          <h1 className="section-title">{isEdit ? 'Edit Vehicle' : 'Add Vehicle'}</h1>
+          <h1 className="text-lg font-semibold tracking-tight text-foreground">{isEdit ? 'Edit Vehicle' : 'Add Vehicle'}</h1>
         </div>
 
         <div className="card-surface space-y-4">
@@ -66,36 +54,29 @@ export default function VehicleForm() {
             </div>
             <div>
               <label className="form-label">Rego Number</label>
-              <input className="form-input tabular-nums" placeholder="ABC123" value={form.regoNumber} onChange={e => update('regoNumber', e.target.value.toUpperCase())} />
+              <input className="form-input tabular-nums font-mono" placeholder="ABC123" value={form.regoNumber} onChange={e => update('regoNumber', e.target.value.toUpperCase())} />
             </div>
           </div>
-
           <div>
             <label className="form-label">Make</label>
             <input className="form-input" placeholder="Toyota" value={form.make} onChange={e => update('make', e.target.value)} />
           </div>
-
           <div>
             <label className="form-label">Model</label>
             <input className="form-input" placeholder="Corolla" value={form.model} onChange={e => update('model', e.target.value)} />
           </div>
-
           <div>
             <label className="form-label">Colour</label>
             <input className="form-input" placeholder="Silver" value={form.color} onChange={e => update('color', e.target.value)} />
           </div>
 
           <div className="flex items-center gap-3 pt-2">
-            <button
-              type="button"
-              onClick={() => update('financeArrangement', !form.financeArrangement)}
-              className={`w-10 h-6 rounded-full transition-colors relative ${form.financeArrangement ? 'bg-primary' : 'bg-muted'}`}
-            >
-              <span className={`absolute top-0.5 w-5 h-5 rounded-full bg-card transition-transform ${form.financeArrangement ? 'left-[18px]' : 'left-0.5'}`} style={{ boxShadow: 'var(--shadow-sm)' }} />
+            <button type="button" onClick={() => update('financeArrangement', !form.financeArrangement)}
+              className={`w-10 h-6 rounded-full transition-colors relative ${form.financeArrangement ? 'bg-foreground' : 'bg-muted'}`}>
+              <span className={`absolute top-0.5 w-5 h-5 rounded-full transition-transform ${form.financeArrangement ? 'left-[18px] bg-background' : 'left-0.5 bg-muted-foreground'}`} />
             </button>
             <span className="text-sm text-foreground">Subject to finance arrangement</span>
           </div>
-
           {form.financeArrangement && (
             <div>
               <label className="form-label">Finance Details</label>
@@ -104,16 +85,12 @@ export default function VehicleForm() {
           )}
 
           <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={() => update('modified', !form.modified)}
-              className={`w-10 h-6 rounded-full transition-colors relative ${form.modified ? 'bg-primary' : 'bg-muted'}`}
-            >
-              <span className={`absolute top-0.5 w-5 h-5 rounded-full bg-card transition-transform ${form.modified ? 'left-[18px]' : 'left-0.5'}`} style={{ boxShadow: 'var(--shadow-sm)' }} />
+            <button type="button" onClick={() => update('modified', !form.modified)}
+              className={`w-10 h-6 rounded-full transition-colors relative ${form.modified ? 'bg-foreground' : 'bg-muted'}`}>
+              <span className={`absolute top-0.5 w-5 h-5 rounded-full transition-transform ${form.modified ? 'left-[18px] bg-background' : 'left-0.5 bg-muted-foreground'}`} />
             </button>
             <span className="text-sm text-foreground">Modified from standard specs</span>
           </div>
-
           {form.modified && (
             <div>
               <label className="form-label">Modification Details</label>
@@ -125,10 +102,9 @@ export default function VehicleForm() {
         <button
           onClick={handleSave}
           disabled={!form.make || !form.model || !form.regoNumber}
-          className="w-full h-12 bg-primary text-primary-foreground rounded-lg font-medium text-sm transition-all hover:opacity-90 active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none flex items-center justify-center gap-2"
-          style={{ boxShadow: 'var(--shadow-md)' }}
+          className="w-full h-11 bg-foreground text-background rounded-md font-medium text-sm transition-all hover:bg-foreground/90 active:scale-[0.98] disabled:opacity-40 disabled:pointer-events-none flex items-center justify-center gap-2"
         >
-          <Check className="w-4 h-4" />
+          <Check className="w-4 h-4" strokeWidth={2} />
           {isEdit ? 'Update Vehicle' : 'Save Vehicle'}
         </button>
       </div>
