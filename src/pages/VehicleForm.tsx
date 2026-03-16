@@ -7,6 +7,7 @@ import AppLayout from '@/components/AppLayout';
 
 const emptyVehicle: Omit<Vehicle, 'id' | 'createdAt'> = {
   year: '', make: '', model: '', regoNumber: '', color: '',
+  wofExpiry: '', regoExpiry: '',
   financeArrangement: false, financeDetails: '', modified: false, modificationDetails: '',
 };
 
