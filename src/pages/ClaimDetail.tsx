@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Download } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { getClaims, getVehicles } from '@/lib/storage';
 import AppLayout from '@/components/AppLayout';
 import { WEATHER_OPTIONS, ROAD_OPTIONS } from '@/types';
@@ -26,16 +26,16 @@ export default function ClaimDetail() {
 
   return (
     <AppLayout>
-      <div className="space-y-6">
+      <div className="space-y-5">
         <div className="flex items-center gap-3">
-          <button onClick={() => navigate(-1)} className="p-2 rounded-lg hover:bg-accent transition-colors">
-            <ArrowLeft className="w-5 h-5 text-foreground" />
+          <button onClick={() => navigate(-1)} className="p-2 rounded-md hover:bg-accent transition-colors">
+            <ArrowLeft className="w-5 h-5 text-foreground" strokeWidth={1.5} />
           </button>
           <div className="flex-1">
-            <h1 className="section-title">Incident Report</h1>
+            <h1 className="text-lg font-semibold tracking-tight text-foreground">Incident Report</h1>
             <p className="text-xs text-muted-foreground tabular-nums">{claim.incidentDate} at {claim.incidentTime}</p>
           </div>
-          <span className="text-xs font-medium uppercase tracking-wider text-primary bg-primary/10 px-2 py-0.5 rounded">{claim.status}</span>
+          <span className="text-[10px] font-medium uppercase tracking-widest text-foreground bg-accent px-2 py-0.5 rounded">{claim.status}</span>
         </div>
 
         <Section title="Incident Details">
@@ -56,7 +56,7 @@ export default function ClaimDetail() {
         {claim.thirdParties.length > 0 && (
           <Section title="Third Parties">
             {claim.thirdParties.map((tp, i) => (
-              <div key={i} className="p-3 rounded-lg bg-accent space-y-1">
+              <div key={i} className="p-3 rounded-md bg-accent space-y-1">
                 <Row label="Owner" value={tp.ownerName} />
                 <Row label="Vehicle" value={`${tp.make} ${tp.model} – ${tp.regoNumber}`} />
                 <Row label="Phone" value={tp.phone} />
@@ -101,7 +101,7 @@ export default function ClaimDetail() {
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="card-surface space-y-2">
-      <h3 className="text-sm font-medium uppercase tracking-wider text-muted-foreground">{title}</h3>
+      <h3 className="text-[11px] font-medium uppercase tracking-widest text-muted-foreground">{title}</h3>
       {children}
     </div>
   );
