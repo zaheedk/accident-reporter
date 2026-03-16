@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,50 +6,44 @@
 
 @layer base {
   :root {
-    --background: 220 14% 96%;
-    --foreground: 220 20% 14%;
+    --background: 220 16% 96%;
+    --foreground: 220 30% 10%;
 
     --card: 0 0% 100%;
-    --card-foreground: 220 20% 14%;
+    --card-foreground: 220 30% 10%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 220 20% 14%;
+    --popover-foreground: 220 30% 10%;
 
-    --primary: 220 65% 48%;
+    --primary: 220 90% 50%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 220 14% 92%;
+    --secondary: 220 14% 94%;
     --secondary-foreground: 220 12% 40%;
 
-    --muted: 220 14% 92%;
-    --muted-foreground: 220 8% 50%;
+    --muted: 220 14% 94%;
+    --muted-foreground: 220 6% 55%;
 
     --accent: 220 14% 94%;
-    --accent-foreground: 220 20% 14%;
+    --accent-foreground: 220 30% 10%;
 
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
 
-    --success: 160 60% 40%;
-    --success-foreground: 0 0% 100%;
+    --border: 220 10% 92%;
+    --input: 220 10% 92%;
+    --ring: 220 90% 50%;
 
-    --warning: 38 92% 50%;
-    --warning-foreground: 0 0% 7%;
-
-    --border: 220 13% 90%;
-    --input: 220 13% 90%;
-    --ring: 220 65% 48%;
-
-    --radius: 0.5rem;
+    --radius: 0.75rem;
 
     --sidebar-background: 0 0% 100%;
-    --sidebar-foreground: 220 8% 50%;
-    --sidebar-primary: 220 65% 48%;
+    --sidebar-foreground: 220 6% 55%;
+    --sidebar-primary: 220 90% 50%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 220 14% 94%;
-    --sidebar-accent-foreground: 220 20% 14%;
-    --sidebar-border: 220 13% 90%;
-    --sidebar-ring: 220 65% 48%;
+    --sidebar-accent-foreground: 220 30% 10%;
+    --sidebar-border: 220 10% 92%;
+    --sidebar-ring: 220 90% 50%;
   }
 }
 
@@ -70,15 +64,16 @@
 
 @layer components {
   .form-label {
-    @apply text-xs font-medium text-muted-foreground mb-1.5 block;
+    @apply text-[13px] font-medium text-muted-foreground mb-1.5 block;
   }
 
   .form-input {
-    @apply w-full rounded-md border border-border bg-card px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all;
+    @apply w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-primary/15 focus:border-primary/40 transition-all;
   }
 
   .card-surface {
-    @apply bg-card rounded-lg border border-border p-5;
+    @apply bg-card rounded-2xl p-5;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.02);
   }
 
   .section-title {
@@ -86,11 +81,11 @@
   }
 
   .step-badge {
-    @apply inline-flex items-center justify-center w-7 h-7 rounded-full text-xs font-semibold;
+    @apply inline-flex items-center justify-center w-7 h-7 rounded-full text-xs font-bold;
   }
 
   .step-badge-active {
-    @apply bg-primary text-primary-foreground;
+    @apply bg-foreground text-card;
   }
 
   .step-badge-complete {
@@ -102,10 +97,10 @@
   }
 
   .btn-primary {
-    @apply h-10 px-4 bg-primary text-primary-foreground rounded-md text-sm font-medium transition-all hover:bg-primary/90 active:scale-[0.98] disabled:opacity-40 disabled:pointer-events-none inline-flex items-center justify-center gap-2;
+    @apply h-10 px-5 bg-foreground text-card rounded-xl text-sm font-semibold transition-all hover:bg-foreground/90 active:scale-[0.98] disabled:opacity-40 disabled:pointer-events-none inline-flex items-center justify-center gap-2;
   }
 
   .btn-secondary {
-    @apply h-10 px-4 bg-card border border-border text-foreground rounded-md text-sm font-medium transition-all hover:bg-muted active:scale-[0.98] inline-flex items-center justify-center gap-2;
+    @apply h-10 px-5 bg-card border border-border text-foreground rounded-xl text-sm font-semibold transition-all hover:bg-muted active:scale-[0.98] inline-flex items-center justify-center gap-2;
   }
 }
