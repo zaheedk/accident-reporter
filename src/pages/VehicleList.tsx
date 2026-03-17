@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Plus, Car, Trash2, ChevronRight } from 'lucide-react';
 import { getVehicles, deleteVehicle } from '@/lib/storage';
@@ -6,8 +6,14 @@ import AppLayout from '@/components/AppLayout';
 import { Vehicle } from '@/types';
 
 export default function VehicleList() {
-  const [vehicles, setVehicles] = useState<Vehicle[]>(getVehicles());
-  const handleDelete = (id: string) => { deleteVehicle(id); setVehicles(getVehicles()); };
+  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+
+  useEffect(() => { getVehicles().then(setVehicles); }, []);
+
+  const handleDelete = async (id: string) => {
+    await deleteVehicle(id);
+    setVehicles(await getVehicles());
+  };
 
   return (
     <AppLayout>

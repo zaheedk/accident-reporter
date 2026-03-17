@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Plus, FileText, Trash2, ChevronRight } from 'lucide-react';
 import { getClaims, deleteClaim } from '@/lib/storage';
@@ -6,8 +6,14 @@ import { ClaimReport } from '@/types';
 import AppLayout from '@/components/AppLayout';
 
 export default function ClaimList() {
-  const [claims, setClaims] = useState<ClaimReport[]>(getClaims());
-  const handleDelete = (id: string) => { deleteClaim(id); setClaims(getClaims()); };
+  const [claims, setClaims] = useState<ClaimReport[]>([]);
+
+  useEffect(() => { getClaims().then(setClaims); }, []);
+
+  const handleDelete = async (id: string) => {
+    await deleteClaim(id);
+    setClaims(await getClaims());
+  };
 
   return (
     <AppLayout>

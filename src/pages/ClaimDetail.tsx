@@ -1,15 +1,26 @@
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { getClaims, getVehicles } from '@/lib/storage';
 import AppLayout from '@/components/AppLayout';
-import { WEATHER_OPTIONS, ROAD_OPTIONS } from '@/types';
+import { WEATHER_OPTIONS, ROAD_OPTIONS, ClaimReport, Vehicle } from '@/types';
 
 export default function ClaimDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const claim = getClaims().find(c => c.id === id);
-  const vehicles = getVehicles();
+  const [claim, setClaim] = useState<ClaimReport | null>(null);
+  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+  const [loading, setLoading] = useState(true);
 
+  useEffect(() => {
+    Promise.all([getClaims(), getVehicles()]).then(([claims, vehs]) => {
+      setClaim(claims.find(c => c.id === id) || null);
+      setVehicles(vehs);
+      setLoading(false);
+    });
+  }, [id]);
+
+  if (loading) return <AppLayout><div className="text-center py-20"><p className="text-sm text-muted-foreground">Loading...</p></div></AppLayout>;
   if (!claim) return <AppLayout><div className="text-center py-20"><p className="text-sm text-muted-foreground">Report not found.</p></div></AppLayout>;
 
   const vehicle = vehicles.find(v => v.id === claim.vehicleId);
