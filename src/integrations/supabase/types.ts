@@ -14,7 +14,198 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      claims: {
+        Row: {
+          anyone_hurt: boolean
+          blame_description: string
+          created_at: string
+          damage_description: string
+          description: string
+          driver_consumed_substance: boolean
+          id: string
+          incident_date: string
+          incident_location: string
+          incident_time: string
+          injury_details: string
+          journey_details: string
+          liability_admitted: boolean
+          liability_details: string
+          other_property_damage: string
+          other_property_owner: string
+          police_attended: boolean
+          police_officer_details: string
+          repairer_address: string
+          repairer_name: string
+          repairer_phone: string
+          road_condition: string
+          speed_before_braking: string
+          status: string
+          substance_details: string
+          third_parties: Json
+          towing_company: string
+          updated_at: string
+          user_id: string
+          vehicle_id: string
+          vehicle_towed: boolean
+          vehicle_usage: string
+          weather_condition: string
+          witnesses: Json
+        }
+        Insert: {
+          anyone_hurt?: boolean
+          blame_description?: string
+          created_at?: string
+          damage_description?: string
+          description?: string
+          driver_consumed_substance?: boolean
+          id?: string
+          incident_date?: string
+          incident_location?: string
+          incident_time?: string
+          injury_details?: string
+          journey_details?: string
+          liability_admitted?: boolean
+          liability_details?: string
+          other_property_damage?: string
+          other_property_owner?: string
+          police_attended?: boolean
+          police_officer_details?: string
+          repairer_address?: string
+          repairer_name?: string
+          repairer_phone?: string
+          road_condition?: string
+          speed_before_braking?: string
+          status?: string
+          substance_details?: string
+          third_parties?: Json
+          towing_company?: string
+          updated_at?: string
+          user_id: string
+          vehicle_id?: string
+          vehicle_towed?: boolean
+          vehicle_usage?: string
+          weather_condition?: string
+          witnesses?: Json
+        }
+        Update: {
+          anyone_hurt?: boolean
+          blame_description?: string
+          created_at?: string
+          damage_description?: string
+          description?: string
+          driver_consumed_substance?: boolean
+          id?: string
+          incident_date?: string
+          incident_location?: string
+          incident_time?: string
+          injury_details?: string
+          journey_details?: string
+          liability_admitted?: boolean
+          liability_details?: string
+          other_property_damage?: string
+          other_property_owner?: string
+          police_attended?: boolean
+          police_officer_details?: string
+          repairer_address?: string
+          repairer_name?: string
+          repairer_phone?: string
+          road_condition?: string
+          speed_before_braking?: string
+          status?: string
+          substance_details?: string
+          third_parties?: Json
+          towing_company?: string
+          updated_at?: string
+          user_id?: string
+          vehicle_id?: string
+          vehicle_towed?: boolean
+          vehicle_usage?: string
+          weather_condition?: string
+          witnesses?: Json
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          display_name: string | null
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      vehicles: {
+        Row: {
+          color: string
+          created_at: string
+          finance_arrangement: boolean
+          finance_details: string | null
+          id: string
+          make: string
+          model: string
+          modification_details: string | null
+          modified: boolean
+          rego_expiry: string
+          rego_number: string
+          updated_at: string
+          user_id: string
+          wof_expiry: string
+          year: string
+        }
+        Insert: {
+          color?: string
+          created_at?: string
+          finance_arrangement?: boolean
+          finance_details?: string | null
+          id?: string
+          make?: string
+          model?: string
+          modification_details?: string | null
+          modified?: boolean
+          rego_expiry?: string
+          rego_number?: string
+          updated_at?: string
+          user_id: string
+          wof_expiry?: string
+          year?: string
+        }
+        Update: {
+          color?: string
+          created_at?: string
+          finance_arrangement?: boolean
+          finance_details?: string | null
+          id?: string
+          make?: string
+          model?: string
+          modification_details?: string | null
+          modified?: boolean
+          rego_expiry?: string
+          rego_number?: string
+          updated_at?: string
+          user_id?: string
+          wof_expiry?: string
+          year?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
