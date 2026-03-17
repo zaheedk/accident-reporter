@@ -11,6 +11,7 @@ export default function ClaimDetail() {
   const [claim, setClaim] = useState<ClaimReport | null>(null);
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [loading, setLoading] = useState(true);
+  const printRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     Promise.all([getClaims(), getVehicles()]).then(([claims, vehs]) => {
@@ -23,7 +24,7 @@ export default function ClaimDetail() {
   if (loading) return <AppLayout><div className="text-center py-20"><p className="text-sm text-muted-foreground">Loading...</p></div></AppLayout>;
   if (!claim) return <AppLayout><div className="text-center py-20"><p className="text-sm text-muted-foreground">Report not found.</p></div></AppLayout>;
 
-  const printRef = useRef<HTMLDivElement>(null);
+  const vehicle = vehicles.find(v => v.id === claim.vehicleId);
   const vehicle = vehicles.find(v => v.id === claim.vehicleId);
   const weather = WEATHER_OPTIONS.find(w => w.value === claim.weatherCondition)?.label || '—';
   const road = ROAD_OPTIONS.find(r => r.value === claim.roadCondition)?.label || '—';
