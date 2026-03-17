@@ -23,14 +23,34 @@ export default function ClaimDetail() {
   if (loading) return <AppLayout><div className="text-center py-20"><p className="text-sm text-muted-foreground">Loading...</p></div></AppLayout>;
   if (!claim) return <AppLayout><div className="text-center py-20"><p className="text-sm text-muted-foreground">Report not found.</p></div></AppLayout>;
 
+  const printRef = useRef<HTMLDivElement>(null);
   const vehicle = vehicles.find(v => v.id === claim.vehicleId);
   const weather = WEATHER_OPTIONS.find(w => w.value === claim.weatherCondition)?.label || '—';
   const road = ROAD_OPTIONS.find(r => r.value === claim.roadCondition)?.label || '—';
 
+  const handlePrint = () => {
+    window.print();
+  };
+
+  const handleEmail = () => {
+    const subject = encodeURIComponent(`Incident Report – ${claim.incidentDate}`);
+    const body = encodeURIComponent(
+      `Please find the incident report attached.\n\n` +
+      `Date: ${claim.incidentDate} at ${claim.incidentTime}\n` +
+      `Location: ${claim.incidentLocation}\n` +
+      `Vehicle: ${vehicle ? `${vehicle.year} ${vehicle.make} ${vehicle.model}` : 'N/A'}\n` +
+      `Status: ${claim.status === 'draft' ? 'Draft' : 'Submitted'}\n\n` +
+      `Description:\n${claim.description}\n\n` +
+      `Damage:\n${claim.damageDescription}\n\n` +
+      `To generate a PDF, open the report in your browser and use Print → Save as PDF.`
+    );
+    window.open(`mailto:?subject=${subject}&body=${body}`);
+  };
+
   return (
     <AppLayout>
-      <div className="space-y-4">
-        <div className="flex items-center gap-3">
+      <div className="space-y-4" id="claim-report" ref={printRef}>
+        <div className="flex items-center gap-3 print:hidden">
           <button onClick={() => navigate(-1)} className="p-2 -ml-2 rounded-xl hover:bg-muted transition-colors">
             <ArrowLeft className="w-5 h-5 text-foreground" strokeWidth={1.5} />
           </button>
@@ -38,7 +58,19 @@ export default function ClaimDetail() {
             <p className="text-sm text-muted-foreground">Report</p>
             <h1 className="text-lg font-bold text-foreground -mt-0.5">Incident report</h1>
           </div>
+          <button onClick={handleEmail} className="p-2 rounded-xl hover:bg-muted transition-colors" title="Email report">
+            <Mail className="w-5 h-5 text-muted-foreground" strokeWidth={1.5} />
+          </button>
+          <button onClick={handlePrint} className="p-2 rounded-xl hover:bg-muted transition-colors" title="Print / Save as PDF">
+            <Printer className="w-5 h-5 text-muted-foreground" strokeWidth={1.5} />
+          </button>
           <span className="text-[11px] font-medium text-primary bg-primary/8 px-2 py-1 rounded-lg">{claim.status === 'draft' ? 'Draft' : 'Submitted'}</span>
+        </div>
+
+        {/* Print-only header */}
+        <div className="hidden print:block mb-6">
+          <h1 className="text-xl font-bold text-foreground">Incident Report</h1>
+          <p className="text-sm text-muted-foreground">Date: {claim.incidentDate} · Status: {claim.status === 'draft' ? 'Draft' : 'Submitted'}</p>
         </div>
 
         <Section title="Incident details">
