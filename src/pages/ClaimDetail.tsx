@@ -25,7 +25,6 @@ export default function ClaimDetail() {
   if (!claim) return <AppLayout><div className="text-center py-20"><p className="text-sm text-muted-foreground">Report not found.</p></div></AppLayout>;
 
   const vehicle = vehicles.find(v => v.id === claim.vehicleId);
-  const vehicle = vehicles.find(v => v.id === claim.vehicleId);
   const weather = WEATHER_OPTIONS.find(w => w.value === claim.weatherCondition)?.label || '—';
   const road = ROAD_OPTIONS.find(r => r.value === claim.roadCondition)?.label || '—';
 
