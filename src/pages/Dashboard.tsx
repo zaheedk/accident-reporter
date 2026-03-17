@@ -1,20 +1,35 @@
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Car, FileText, Plus, AlertTriangle, ChevronRight, Clock, ArrowUpRight } from 'lucide-react';
+import { Car, FileText, Plus, AlertTriangle, ChevronRight, Clock, ArrowUpRight, LogOut } from 'lucide-react';
 import { getVehicles, getClaims } from '@/lib/storage';
+import { useAuth } from '@/contexts/AuthContext';
 import AppLayout from '@/components/AppLayout';
+import { Vehicle, ClaimReport } from '@/types';
 
 export default function Dashboard() {
-  const vehicles = getVehicles();
-  const claims = getClaims();
+  const { signOut } = useAuth();
+  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+  const [claims, setClaims] = useState<ClaimReport[]>([]);
+
+  useEffect(() => {
+    getVehicles().then(setVehicles);
+    getClaims().then(setClaims);
+  }, []);
+
   const drafts = claims.filter(c => c.status === 'draft');
   const submitted = claims.filter(c => c.status === 'submitted');
 
   return (
     <AppLayout>
       <div className="space-y-5">
-        <div>
-          <p className="text-sm text-muted-foreground">Overview</p>
-          <h1 className="text-[22px] font-extrabold text-foreground tracking-tight -mt-0.5">Dashboard</h1>
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-sm text-muted-foreground">Overview</p>
+            <h1 className="text-[22px] font-extrabold text-foreground tracking-tight -mt-0.5">Dashboard</h1>
+          </div>
+          <button onClick={signOut} className="p-2 rounded-xl hover:bg-muted transition-colors" title="Sign out">
+            <LogOut className="w-5 h-5 text-muted-foreground" strokeWidth={1.5} />
+          </button>
         </div>
 
         {/* Stats */}

@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, Check, Save } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ClaimReport, ThirdPartyVehicle, Witness, WEATHER_OPTIONS, ROAD_OPTIONS } from '@/types';
-import { getVehicles, getClaims, saveClaim, generateId } from '@/lib/storage';
+import { ClaimReport, ThirdPartyVehicle, Witness, WEATHER_OPTIONS, ROAD_OPTIONS, Vehicle } from '@/types';
+import { getVehicles, getClaims, saveClaim } from '@/lib/storage';
 import AppLayout from '@/components/AppLayout';
 
 const STEPS = ['Incident details', 'Your vehicle', 'Third parties', 'Witnesses & police', 'Conditions & damage', 'Review'];
@@ -14,7 +14,7 @@ const emptyW: Witness = { name: '', phone: '', address: '', isPassenger: false }
 
 function emptyClaim(): ClaimReport {
   return {
-    id: generateId(), status: 'draft', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
+    id: '', status: 'draft', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
     incidentDate: '', incidentTime: '', incidentLocation: '', vehicleUsage: '', journeyDetails: '', description: '',
     vehicleId: '', speedBeforeBraking: '', thirdParties: [], otherPropertyDamage: '', otherPropertyOwner: '',
     witnesses: [], policeAttended: false, policeOfficerDetails: '', anyoneHurt: false, injuryDetails: '',
@@ -30,15 +30,31 @@ export default function ClaimWizard() {
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [claim, setClaim] = useState<ClaimReport>(emptyClaim);
-  const vehicles = getVehicles();
+  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
 
-  useEffect(() => { if (id) { const e = getClaims().find(c => c.id === id); if (e) setClaim(e); } }, [id]);
+  useEffect(() => {
+    getVehicles().then(setVehicles);
+    if (id) {
+      getClaims().then(claims => {
+        const e = claims.find(c => c.id === id);
+        if (e) setClaim(e);
+      });
+    }
+  }, [id]);
 
   const update = (field: keyof ClaimReport, value: any) => setClaim(prev => ({ ...prev, [field]: value, updatedAt: new Date().toISOString() }));
-  const autoSave = () => saveClaim({ ...claim, updatedAt: new Date().toISOString() });
-  const next = () => { autoSave(); setStep(s => Math.min(s + 1, STEPS.length - 1)); };
-  const prev = () => { autoSave(); setStep(s => Math.max(s - 1, 0)); };
-  const submit = () => { saveClaim({ ...claim, status: 'submitted' as const, updatedAt: new Date().toISOString() }); navigate('/claims'); };
+
+  const autoSave = async () => {
+    const savedId = await saveClaim({ ...claim, updatedAt: new Date().toISOString() });
+    if (!claim.id && savedId) setClaim(prev => ({ ...prev, id: savedId }));
+  };
+
+  const next = async () => { await autoSave(); setStep(s => Math.min(s + 1, STEPS.length - 1)); };
+  const prev = async () => { await autoSave(); setStep(s => Math.max(s - 1, 0)); };
+  const submit = async () => {
+    await saveClaim({ ...claim, status: 'submitted' as const, updatedAt: new Date().toISOString() });
+    navigate('/claims');
+  };
 
   const addTP = () => update('thirdParties', [...claim.thirdParties, { ...emptyTP }]);
   const updTP = (i: number, f: string, v: string) => { const u = [...claim.thirdParties]; (u[i] as any)[f] = v; update('thirdParties', u); };
@@ -62,7 +78,7 @@ export default function ClaimWizard() {
     <AppLayout>
       <div className="space-y-4">
         <div className="flex items-center gap-3">
-          <button onClick={() => { autoSave(); navigate(-1); }} className="p-2 -ml-2 rounded-xl hover:bg-muted transition-colors">
+          <button onClick={async () => { await autoSave(); navigate(-1); }} className="p-2 -ml-2 rounded-xl hover:bg-muted transition-colors">
             <ArrowLeft className="w-5 h-5 text-foreground" strokeWidth={1.5} />
           </button>
           <div>
@@ -101,7 +117,7 @@ export default function ClaimWizard() {
                   {vehicles.length === 0 ? (
                     <div className="p-5 rounded-xl bg-background text-center">
                       <p className="text-sm text-muted-foreground">No vehicles in your garage.</p>
-                      <button onClick={() => { autoSave(); navigate('/vehicles/new'); }} className="text-sm text-primary font-medium mt-2 hover:underline">Add a vehicle first</button>
+                      <button onClick={async () => { await autoSave(); navigate('/vehicles/new'); }} className="text-sm text-primary font-medium mt-2 hover:underline">Add a vehicle first</button>
                     </div>
                   ) : (
                     <div className="space-y-2">

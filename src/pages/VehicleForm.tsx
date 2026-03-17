@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Check } from 'lucide-react';
-import { getVehicles, saveVehicle, generateId } from '@/lib/storage';
+import { getVehicles, saveVehicle } from '@/lib/storage';
 import { Vehicle } from '@/types';
 import AppLayout from '@/components/AppLayout';
 
@@ -19,15 +19,17 @@ export default function VehicleForm() {
 
   useEffect(() => {
     if (id) {
-      const existing = getVehicles().find(v => v.id === id);
-      if (existing) { const { id: _, createdAt: __, ...rest } = existing; setForm(rest); }
+      getVehicles().then(vehicles => {
+        const existing = vehicles.find(v => v.id === id);
+        if (existing) { const { id: _, createdAt: __, ...rest } = existing; setForm(rest); }
+      });
     }
   }, [id]);
 
   const update = (field: string, value: string | boolean) => setForm(prev => ({ ...prev, [field]: value }));
 
-  const handleSave = () => {
-    saveVehicle({ ...form, id: id || generateId(), createdAt: new Date().toISOString() });
+  const handleSave = async () => {
+    await saveVehicle({ ...form, id: id || undefined });
     navigate('/vehicles');
   };
 
