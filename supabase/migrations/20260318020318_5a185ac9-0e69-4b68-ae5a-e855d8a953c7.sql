@@ -1,0 +1,22 @@
+
+INSERT INTO public.panel_shops (name, address, city, region, phone, email, google_rating, website) VALUES
+('Professional Panel + Paint', '34 Mackelvie St, Grey Lynn', 'Auckland', 'Auckland', '09-376 1069', 'Info@professionalpanel.co.nz', 4.8, 'https://www.professionalpanel.co.nz'),
+('Evoke Bodyworks Ltd', '13a Saleyards Rd, Otahuhu', 'Auckland', 'Auckland', '09 354 4864', 'info@evokebodyworks.co.nz', 4.7, 'https://evokebodyworks.co.nz'),
+('Fast Panel & Paint Limited', '7B Ryan Place, Manukau City', 'Auckland', 'Auckland', '+64 210 807 5103', 'fastpanelpaint@gmail.com', 4.8, 'https://fastpanelpaint.co.nz'),
+('Glenfield Panelbeaters & Painters', '1 Ashfield Road, Wairau Valley', 'Auckland', 'Auckland', '09-444 9197', '', 4.6, 'http://www.glenfieldpanelbeaters.co.nz'),
+('Owen Shaw Panel Paint', '71 Portage Road, Otahuhu', 'Auckland', 'Auckland', '09 276 3917', '', 4.7, 'http://owenshawpanelandpaint.co.nz'),
+('Bodyworks Panelbeating & Painting', '18 Pollen Street, Grey Lynn', 'Auckland', 'Auckland', '09-376 6449', '', 4.6, 'http://www.bodyworkspanelbeaters.co.nz'),
+('Allan Wakeling Panelbeaters', '14 Mihini Road, Ranui', 'Auckland', 'Auckland', '09-836 4868', '', 4.5, 'http://www.wakeling.co.nz'),
+('Alfa Panelbeaters Ltd', '4133 Great North Road, Kelston', 'Auckland', 'Auckland', '09 818 4261', 'info@alfapb.co.nz', 4.7, 'http://www.alfapb.co.nz'),
+('Kumeu Huapai Panelbeaters', '280 Main Road, Kumeu 0810', 'Auckland', 'Auckland', '09 412 8054', 'admin@khp.co.nz', 4.8, 'http://www.khp.co.nz'),
+('A TO Z Panel Beaters', '9c Lorien Place, East Tamaki', 'Auckland', 'Auckland', '09 265 1366', '', 4.6, 'http://www.atozpanelbeaters.co.nz'),
+('Mt Roskill Collision Centre', '42 Carr Road, Mount Roskill', 'Auckland', 'Auckland', '0800 227 762', 'info@mtroskillcollision.co.nz', 4.5, 'https://mtroskillcollision.co.nz'),
+('Chartwell Panel and Paint', '10 Empire Street, Frankton', 'Hamilton', 'Waikato', '07 847 0731', '', 4.7, 'https://chartwellpanel.co.nz'),
+('Mills Collision Repair Centre', '404 Anglesea Street', 'Hamilton', 'Waikato', '07 838 0599', '', 4.6, 'https://www.millscollisionrepaircentre.co.nz'),
+('Prestige Collision Repairs', '2 Northway Street, Te Rapa', 'Hamilton', 'Waikato', '07 849 5511', '', 4.7, 'https://www.prestigecr.co.nz'),
+('Thames Panelbeaters Ltd', '911 Queen Street', 'Thames', 'Waikato', '07 868 6985', 'thames.panel@xtra.co.nz', 4.5, 'http://www.thamespanelbeaters.co.nz'),
+('Advanced Panel & Paint', '47 Hazeldean Road, Addington', 'Christchurch', 'Canterbury', '03 338 8099', '', 4.6, 'https://www.panelbeaterchristchurch.co.nz'),
+('Specialised Panel & Paint', '13 Watts Road, Sockburn', 'Christchurch', 'Canterbury', '03 348 5053', '', 4.7, 'https://www.specialised.co.nz'),
+('Harewood Panel & Paint', '16 Logistics Drive, Harewood', 'Christchurch', 'Canterbury', '03 359 4191', '', 4.6, 'https://harewoodpanelpaint.co.nz'),
+('Sheffield Crescent Panel & Paint', '7 Sheffield Crescent, Burnside', 'Christchurch', 'Canterbury', '03 358 5478', '', 4.5, 'https://www.sheffcrespanel-paint.co.nz'),
+('Paul Hussey Panelbeaters', '123 Waterloo Road, Hornby', 'Christchurch', 'Canterbury', '03 344 5020', '', 4.6, 'https://www.paulhussey.co.nz');
