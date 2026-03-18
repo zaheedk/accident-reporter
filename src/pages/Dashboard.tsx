@@ -9,7 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { supabase } from '@/integrations/supabase/client';
 
 export default function Dashboard() {
-  const { user, signOut } = useAuth();
+  const { user, signOut, isAdmin } = useAuth();
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [claims, setClaims] = useState<ClaimReport[]>([]);
   const [avatarUrl, setAvatarUrl] = useState('');
