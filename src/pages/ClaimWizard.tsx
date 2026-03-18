@@ -86,6 +86,88 @@ export default function ClaimWizard() {
     navigate('/claims');
   };
 
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || !user || !claim.id) {
+      if (!claim.id) {
+        // Auto-save first to get an ID
+        const savedId = await saveClaim({ ...claim, updatedAt: new Date().toISOString() });
+        if (savedId) setClaim(prev => ({ ...prev, id: savedId }));
+        else { toast.error('Save the claim first'); return; }
+      }
+      if (!files || !user) return;
+    }
+    const claimId = claim.id || (await saveClaim({ ...claim, updatedAt: new Date().toISOString() }));
+    if (!claimId) return;
+    if (!claim.id) setClaim(prev => ({ ...prev, id: claimId }));
+
+    setUploading(true);
+    for (const file of Array.from(files)) {
+      if (file.size > 10 * 1024 * 1024) { toast.error(`${file.name} is too large (max 10MB)`); continue; }
+      const ext = file.name.split('.').pop();
+      const path = `${user.id}/${claimId}/${Date.now()}.${ext}`;
+      const { error: uploadError } = await supabase.storage.from('claim-photos').upload(path, file);
+      if (uploadError) { toast.error(`Failed to upload ${file.name}`); continue; }
+      const { data } = await supabase.from('claim_photos')
+        .insert({ claim_id: claimId, user_id: user.id, file_path: path, file_name: file.name })
+        .select('id, file_path, file_name').single();
+      if (data) setPhotos(prev => [...prev, data as ClaimPhoto]);
+    }
+    setUploading(false);
+    toast.success('Photos uploaded');
+    if (photoInputRef.current) photoInputRef.current.value = '';
+  };
+
+  const removePhoto = async (photo: ClaimPhoto) => {
+    await supabase.storage.from('claim-photos').remove([photo.file_path]);
+    await supabase.from('claim_photos').delete().eq('id', photo.id);
+    setPhotos(prev => prev.filter(p => p.id !== photo.id));
+  };
+
+  const getPhotoUrl = (filePath: string) => {
+    const { data } = supabase.storage.from('claim-photos').getPublicUrl(filePath);
+    return data.publicUrl;
+  };
+
+  const selectedShop = panelShops.find(s => s.id === claim.selectedPanelShopId);
+  const filteredShops = panelShops.filter(s =>
+    s.name.toLowerCase().includes(shopSearch.toLowerCase()) ||
+    s.city.toLowerCase().includes(shopSearch.toLowerCase())
+  );
+
+  const sendToRepairer = async () => {
+    if (!selectedShop || !claim.id || !user) return;
+    setSending(true);
+    // Record the repair request
+    await supabase.from('repair_requests').insert({
+      claim_id: claim.id,
+      panel_shop_id: selectedShop.id,
+      user_id: user.id,
+      insurance_company: claim.insuranceCompany,
+    });
+    // Compose mailto with details
+    if (selectedShop.email) {
+      const vehicle = vehicles.find(v => v.id === claim.vehicleId);
+      const photoUrls = photos.map(p => getPhotoUrl(p.file_path)).join('\n');
+      const subject = encodeURIComponent(`Repair Request – Claim ${claim.id.slice(0, 8).toUpperCase()}`);
+      const body = encodeURIComponent(
+        `Hello ${selectedShop.name},\n\n` +
+        `I'd like to request a repair quote for the following:\n\n` +
+        `Claim Reference: ${claim.id.slice(0, 8).toUpperCase()}\n` +
+        `Insurance Company: ${claim.insuranceCompany || 'Not specified'}\n` +
+        `Vehicle: ${vehicle ? `${vehicle.year} ${vehicle.make} ${vehicle.model} (${vehicle.regoNumber})` : 'N/A'}\n` +
+        `Damage Description: ${claim.damageDescription}\n\n` +
+        (photos.length > 0 ? `Damage Photos:\n${photoUrls}\n\n` : '') +
+        `Incident Date: ${claim.incidentDate}\n` +
+        `Incident Location: ${claim.incidentLocation}\n\n` +
+        `Thank you.`
+      );
+      window.open(`mailto:${selectedShop.email}?subject=${subject}&body=${body}`);
+    }
+    setSending(false);
+    toast.success('Repair request sent to ' + selectedShop.name);
+  };
+
   const addTP = () => update('thirdParties', [...claim.thirdParties, { ...emptyTP }]);
   const updTP = (i: number, f: string, v: string) => { const u = [...claim.thirdParties]; (u[i] as any)[f] = v; update('thirdParties', u); };
   const rmTP = (i: number) => update('thirdParties', claim.thirdParties.filter((_, idx) => idx !== i));
