@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Printer, Mail, X } from 'lucide-react';
+import { ArrowLeft, Printer, Mail, X, Download, Share2 } from 'lucide-react';
 import { getClaims, getVehicles } from '@/lib/storage';
 import { supabase } from '@/integrations/supabase/client';
 import AppLayout from '@/components/AppLayout';
@@ -156,9 +156,35 @@ export default function ClaimDetail() {
 
       {lightboxUrl && (
         <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 print:hidden" onClick={() => setLightboxUrl(null)}>
-          <button onClick={() => setLightboxUrl(null)} className="absolute top-4 right-4 p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors">
-            <X className="w-6 h-6 text-white" />
-          </button>
+          <div className="absolute top-4 right-4 flex items-center gap-2">
+            <button
+              onClick={async (e) => {
+                e.stopPropagation();
+                if (navigator.share) {
+                  try { await navigator.share({ title: 'Damage photo', url: lightboxUrl }); } catch {}
+                } else {
+                  await navigator.clipboard.writeText(lightboxUrl);
+                  alert('Link copied to clipboard');
+                }
+              }}
+              className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+              title="Share photo"
+            >
+              <Share2 className="w-5 h-5 text-white" />
+            </button>
+            <a
+              href={lightboxUrl}
+              download
+              onClick={e => e.stopPropagation()}
+              className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+              title="Download photo"
+            >
+              <Download className="w-5 h-5 text-white" />
+            </a>
+            <button onClick={() => setLightboxUrl(null)} className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors">
+              <X className="w-6 h-6 text-white" />
+            </button>
+          </div>
           <img src={lightboxUrl} alt="Damage photo" className="max-w-full max-h-full rounded-xl object-contain" onClick={e => e.stopPropagation()} />
         </div>
       )}
