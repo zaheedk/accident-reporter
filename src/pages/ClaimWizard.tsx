@@ -1,12 +1,16 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, Check, Save } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, Save, Camera, X, Search, Star, Send, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ClaimReport, ThirdPartyVehicle, Witness, WEATHER_OPTIONS, ROAD_OPTIONS, Vehicle } from '@/types';
 import { getVehicles, getClaims, saveClaim } from '@/lib/storage';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 import AppLayout from '@/components/AppLayout';
+import { Badge } from '@/components/ui/badge';
+import { toast } from 'sonner';
 
-const STEPS = ['Incident details', 'Your vehicle', 'Third parties', 'Witnesses & police', 'Conditions & damage', 'Review'];
+const STEPS = ['Incident details', 'Your vehicle', 'Third parties', 'Witnesses & police', 'Conditions & damage', 'Insurance & repairer', 'Review'];
 const stepVariants = { initial: { opacity: 0, x: 10 }, animate: { opacity: 1, x: 0 }, exit: { opacity: 0, x: -10 } };
 
 const emptyTP: ThirdPartyVehicle = { ownerName: '', phone: '', address: '', insurer: '', make: '', model: '', regoNumber: '', damageDescription: '' };
@@ -22,23 +26,49 @@ function emptyClaim(): ClaimReport {
     blameDescription: '', liabilityAdmitted: false, liabilityDetails: '',
     damageDescription: '', vehicleTowed: false, towingCompany: '',
     repairerName: '', repairerPhone: '', repairerAddress: '',
+    insuranceCompany: '', selectedPanelShopId: '',
   };
 }
 
+type PanelShop = {
+  id: string; name: string; address: string; city: string; region: string;
+  phone: string; email: string; google_rating: number; website: string;
+};
+
+type ClaimPhoto = {
+  id: string; file_path: string; file_name: string;
+};
+
 export default function ClaimWizard() {
   const { id } = useParams();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [claim, setClaim] = useState<ClaimReport>(emptyClaim);
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+  const [panelShops, setPanelShops] = useState<PanelShop[]>([]);
+  const [shopSearch, setShopSearch] = useState('');
+  const [photos, setPhotos] = useState<ClaimPhoto[]>([]);
+  const [uploading, setUploading] = useState(false);
+  const [sending, setSending] = useState(false);
+  const photoInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     getVehicles().then(setVehicles);
+    supabase.from('panel_shops').select('*').gte('google_rating', 4.5)
+      .order('google_rating', { ascending: false }).then(({ data }) => {
+        if (data) setPanelShops(data as PanelShop[]);
+      });
     if (id) {
       getClaims().then(claims => {
         const e = claims.find(c => c.id === id);
         if (e) setClaim(e);
       });
+      // Load existing photos
+      supabase.from('claim_photos').select('id, file_path, file_name')
+        .eq('claim_id', id).then(({ data }) => {
+          if (data) setPhotos(data as ClaimPhoto[]);
+        });
     }
   }, [id]);
 
@@ -54,6 +84,88 @@ export default function ClaimWizard() {
   const submit = async () => {
     await saveClaim({ ...claim, status: 'submitted' as const, updatedAt: new Date().toISOString() });
     navigate('/claims');
+  };
+
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || !user || !claim.id) {
+      if (!claim.id) {
+        // Auto-save first to get an ID
+        const savedId = await saveClaim({ ...claim, updatedAt: new Date().toISOString() });
+        if (savedId) setClaim(prev => ({ ...prev, id: savedId }));
+        else { toast.error('Save the claim first'); return; }
+      }
+      if (!files || !user) return;
+    }
+    const claimId = claim.id || (await saveClaim({ ...claim, updatedAt: new Date().toISOString() }));
+    if (!claimId) return;
+    if (!claim.id) setClaim(prev => ({ ...prev, id: claimId }));
+
+    setUploading(true);
+    for (const file of Array.from(files)) {
+      if (file.size > 10 * 1024 * 1024) { toast.error(`${file.name} is too large (max 10MB)`); continue; }
+      const ext = file.name.split('.').pop();
+      const path = `${user.id}/${claimId}/${Date.now()}.${ext}`;
+      const { error: uploadError } = await supabase.storage.from('claim-photos').upload(path, file);
+      if (uploadError) { toast.error(`Failed to upload ${file.name}`); continue; }
+      const { data } = await supabase.from('claim_photos')
+        .insert({ claim_id: claimId, user_id: user.id, file_path: path, file_name: file.name })
+        .select('id, file_path, file_name').single();
+      if (data) setPhotos(prev => [...prev, data as ClaimPhoto]);
+    }
+    setUploading(false);
+    toast.success('Photos uploaded');
+    if (photoInputRef.current) photoInputRef.current.value = '';
+  };
+
+  const removePhoto = async (photo: ClaimPhoto) => {
+    await supabase.storage.from('claim-photos').remove([photo.file_path]);
+    await supabase.from('claim_photos').delete().eq('id', photo.id);
+    setPhotos(prev => prev.filter(p => p.id !== photo.id));
+  };
+
+  const getPhotoUrl = (filePath: string) => {
+    const { data } = supabase.storage.from('claim-photos').getPublicUrl(filePath);
+    return data.publicUrl;
+  };
+
+  const selectedShop = panelShops.find(s => s.id === claim.selectedPanelShopId);
+  const filteredShops = panelShops.filter(s =>
+    s.name.toLowerCase().includes(shopSearch.toLowerCase()) ||
+    s.city.toLowerCase().includes(shopSearch.toLowerCase())
+  );
+
+  const sendToRepairer = async () => {
+    if (!selectedShop || !claim.id || !user) return;
+    setSending(true);
+    // Record the repair request
+    await supabase.from('repair_requests').insert({
+      claim_id: claim.id,
+      panel_shop_id: selectedShop.id,
+      user_id: user.id,
+      insurance_company: claim.insuranceCompany,
+    });
+    // Compose mailto with details
+    if (selectedShop.email) {
+      const vehicle = vehicles.find(v => v.id === claim.vehicleId);
+      const photoUrls = photos.map(p => getPhotoUrl(p.file_path)).join('\n');
+      const subject = encodeURIComponent(`Repair Request – Claim ${claim.id.slice(0, 8).toUpperCase()}`);
+      const body = encodeURIComponent(
+        `Hello ${selectedShop.name},\n\n` +
+        `I'd like to request a repair quote for the following:\n\n` +
+        `Claim Reference: ${claim.id.slice(0, 8).toUpperCase()}\n` +
+        `Insurance Company: ${claim.insuranceCompany || 'Not specified'}\n` +
+        `Vehicle: ${vehicle ? `${vehicle.year} ${vehicle.make} ${vehicle.model} (${vehicle.regoNumber})` : 'N/A'}\n` +
+        `Damage Description: ${claim.damageDescription}\n\n` +
+        (photos.length > 0 ? `Damage Photos:\n${photoUrls}\n\n` : '') +
+        `Incident Date: ${claim.incidentDate}\n` +
+        `Incident Location: ${claim.incidentLocation}\n\n` +
+        `Thank you.`
+      );
+      window.open(`mailto:${selectedShop.email}?subject=${subject}&body=${body}`);
+    }
+    setSending(false);
+    toast.success('Repair request sent to ' + selectedShop.name);
   };
 
   const addTP = () => update('thirdParties', [...claim.thirdParties, { ...emptyTP }]);
@@ -242,18 +354,89 @@ export default function ClaimWizard() {
                   <Toggle active={claim.liabilityAdmitted} onToggle={() => update('liabilityAdmitted', !claim.liabilityAdmitted)} label="Anyone admitted liability" />
                   {claim.liabilityAdmitted && <div><label className="form-label">Who admitted liability?</label><input className="form-input" value={claim.liabilityDetails} onChange={e => update('liabilityDetails', e.target.value)} /></div>}
                 </div>
-                <div className="card-surface space-y-3">
-                  <label className="form-label">Repairer details</label>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div><label className="form-label">Name</label><input className="form-input" value={claim.repairerName} onChange={e => update('repairerName', e.target.value)} /></div>
-                    <div><label className="form-label">Phone</label><input className="form-input" value={claim.repairerPhone} onChange={e => update('repairerPhone', e.target.value)} /></div>
-                  </div>
-                  <div><label className="form-label">Address</label><input className="form-input" value={claim.repairerAddress} onChange={e => update('repairerAddress', e.target.value)} /></div>
-                </div>
               </div>
             )}
 
             {step === 5 && (
+              <div className="space-y-4">
+                <div className="card-surface space-y-3">
+                  <label className="form-label">Insurance company</label>
+                  <input className="form-input" placeholder="e.g. AA Insurance, State, Tower" value={claim.insuranceCompany} onChange={e => update('insuranceCompany', e.target.value)} />
+                </div>
+
+                <div className="card-surface space-y-3">
+                  <label className="form-label">Damage photos</label>
+                  <p className="text-xs text-muted-foreground -mt-1">Upload photos of the damage to send to your chosen repairer</p>
+                  {photos.length > 0 && (
+                    <div className="grid grid-cols-3 gap-2">
+                      {photos.map(photo => (
+                        <div key={photo.id} className="relative aspect-square rounded-xl overflow-hidden bg-muted">
+                          <img src={getPhotoUrl(photo.file_path)} alt={photo.file_name} className="w-full h-full object-cover" />
+                          <button onClick={() => removePhoto(photo)}
+                            className="absolute top-1 right-1 w-6 h-6 rounded-full bg-foreground/80 text-card flex items-center justify-center">
+                            <X className="w-3 h-3" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  <button type="button" onClick={() => photoInputRef.current?.click()} disabled={uploading}
+                    className="btn-secondary w-full h-10 gap-2 text-sm">
+                    {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Camera className="w-4 h-4" />}
+                    {uploading ? 'Uploading...' : 'Add photos'}
+                  </button>
+                  <input ref={photoInputRef} type="file" accept="image/*" multiple className="hidden" onChange={handlePhotoUpload} />
+                </div>
+
+                <div className="card-surface space-y-3">
+                  <label className="form-label">Choose a panel shop</label>
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <input className="form-input pl-9" placeholder="Search shops..." value={shopSearch} onChange={e => setShopSearch(e.target.value)} />
+                  </div>
+                  {selectedShop && (
+                    <div className="p-3 rounded-xl border-2 border-foreground bg-foreground/[0.03] space-y-1">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-semibold text-foreground">{selectedShop.name}</span>
+                        <Badge variant="secondary" className="text-[10px] gap-0.5">
+                          <Star className="w-2.5 h-2.5 fill-current" />{Number(selectedShop.google_rating).toFixed(1)}
+                        </Badge>
+                      </div>
+                      <p className="text-xs text-muted-foreground">{selectedShop.address}, {selectedShop.city}</p>
+                      {selectedShop.phone && <p className="text-xs text-muted-foreground">{selectedShop.phone}</p>}
+                      <button onClick={() => update('selectedPanelShopId', '')} className="text-xs text-destructive hover:underline mt-1">Change shop</button>
+                    </div>
+                  )}
+                  {!selectedShop && (
+                    <div className="space-y-2 max-h-[300px] overflow-y-auto">
+                      {filteredShops.slice(0, 20).map(shop => (
+                        <button key={shop.id} onClick={() => { update('selectedPanelShopId', shop.id); update('repairerName', shop.name); update('repairerPhone', shop.phone); update('repairerAddress', `${shop.address}, ${shop.city}`); }}
+                          className="w-full text-left p-3 rounded-xl border border-border hover:border-foreground/30 transition-all">
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm font-semibold text-foreground">{shop.name}</span>
+                            <Badge variant="secondary" className="text-[10px] gap-0.5 shrink-0">
+                              <Star className="w-2.5 h-2.5 fill-current" />{Number(shop.google_rating).toFixed(1)}
+                            </Badge>
+                          </div>
+                          <p className="text-xs text-muted-foreground mt-0.5">{shop.address}, {shop.city}</p>
+                        </button>
+                      ))}
+                      {filteredShops.length === 0 && <p className="text-sm text-muted-foreground text-center py-4">No shops found</p>}
+                    </div>
+                  )}
+                </div>
+
+                {selectedShop && (
+                  <button type="button" onClick={sendToRepairer} disabled={sending}
+                    className="btn-primary w-full h-11 gap-2">
+                    {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+                    Send to {selectedShop.name}
+                  </button>
+                )}
+              </div>
+            )}
+
+            {step === 6 && (
               <div className="space-y-3">
                 <RSection title="Incident">
                   <RRow label="Date" value={claim.incidentDate} /><RRow label="Time" value={claim.incidentTime} />
@@ -275,6 +458,11 @@ export default function ClaimWizard() {
                 <RSection title="Conditions">
                   <RRow label="Weather" value={claim.weatherCondition || '—'} /><RRow label="Road" value={claim.roadCondition || '—'} />
                   <RRow label="At fault" value={claim.blameDescription || '—'} />
+                </RSection>
+                <RSection title="Insurance & Repairer">
+                  <RRow label="Insurance" value={claim.insuranceCompany || '—'} />
+                  <RRow label="Repairer" value={selectedShop?.name || claim.repairerName || '—'} />
+                  <RRow label="Photos" value={`${photos.length} uploaded`} />
                 </RSection>
               </div>
             )}

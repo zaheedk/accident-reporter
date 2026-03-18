@@ -14,6 +14,41 @@ export type Database = {
   }
   public: {
     Tables: {
+      claim_photos: {
+        Row: {
+          claim_id: string
+          created_at: string
+          file_name: string
+          file_path: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          claim_id: string
+          created_at?: string
+          file_name?: string
+          file_path: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          claim_id?: string
+          created_at?: string
+          file_name?: string
+          file_path?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "claim_photos_claim_id_fkey"
+            columns: ["claim_id"]
+            isOneToOne: false
+            referencedRelation: "claims"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       claims: {
         Row: {
           anyone_hurt: boolean
@@ -27,6 +62,7 @@ export type Database = {
           incident_location: string
           incident_time: string
           injury_details: string
+          insurance_company: string
           journey_details: string
           liability_admitted: boolean
           liability_details: string
@@ -38,6 +74,7 @@ export type Database = {
           repairer_name: string
           repairer_phone: string
           road_condition: string
+          selected_panel_shop_id: string | null
           speed_before_braking: string
           status: string
           substance_details: string
@@ -63,6 +100,7 @@ export type Database = {
           incident_location?: string
           incident_time?: string
           injury_details?: string
+          insurance_company?: string
           journey_details?: string
           liability_admitted?: boolean
           liability_details?: string
@@ -74,6 +112,7 @@ export type Database = {
           repairer_name?: string
           repairer_phone?: string
           road_condition?: string
+          selected_panel_shop_id?: string | null
           speed_before_braking?: string
           status?: string
           substance_details?: string
@@ -99,6 +138,7 @@ export type Database = {
           incident_location?: string
           incident_time?: string
           injury_details?: string
+          insurance_company?: string
           journey_details?: string
           liability_admitted?: boolean
           liability_details?: string
@@ -110,6 +150,7 @@ export type Database = {
           repairer_name?: string
           repairer_phone?: string
           road_condition?: string
+          selected_panel_shop_id?: string | null
           speed_before_braking?: string
           status?: string
           substance_details?: string
@@ -123,7 +164,15 @@ export type Database = {
           weather_condition?: string
           witnesses?: Json
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "claims_selected_panel_shop_id_fkey"
+            columns: ["selected_panel_shop_id"]
+            isOneToOne: false
+            referencedRelation: "panel_shops"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       panel_shops: {
         Row: {
@@ -202,6 +251,51 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      repair_requests: {
+        Row: {
+          claim_id: string
+          created_at: string
+          id: string
+          insurance_company: string
+          panel_shop_id: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          claim_id: string
+          created_at?: string
+          id?: string
+          insurance_company?: string
+          panel_shop_id: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          claim_id?: string
+          created_at?: string
+          id?: string
+          insurance_company?: string
+          panel_shop_id?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "repair_requests_claim_id_fkey"
+            columns: ["claim_id"]
+            isOneToOne: false
+            referencedRelation: "claims"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "repair_requests_panel_shop_id_fkey"
+            columns: ["panel_shop_id"]
+            isOneToOne: false
+            referencedRelation: "panel_shops"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
