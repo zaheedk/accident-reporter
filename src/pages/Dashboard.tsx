@@ -9,14 +9,24 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { supabase } from '@/integrations/supabase/client';
 
 export default function Dashboard() {
-  const { signOut } = useAuth();
+  const { user, signOut } = useAuth();
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [claims, setClaims] = useState<ClaimReport[]>([]);
+  const [avatarUrl, setAvatarUrl] = useState('');
+  const [displayName, setDisplayName] = useState('');
 
   useEffect(() => {
     getVehicles().then(setVehicles);
     getClaims().then(setClaims);
-  }, []);
+    if (user) {
+      supabase.from('profiles').select('avatar_url, display_name').eq('user_id', user.id).single().then(({ data }) => {
+        if (data) {
+          setAvatarUrl(data.avatar_url || '');
+          setDisplayName(data.display_name || '');
+        }
+      });
+    }
+  }, [user]);
 
   const drafts = claims.filter(c => c.status === 'draft');
   const submitted = claims.filter(c => c.status === 'submitted');
