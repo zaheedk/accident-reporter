@@ -39,9 +39,19 @@ export default function Dashboard() {
             <p className="text-sm text-muted-foreground">Overview</p>
             <h1 className="text-[22px] font-extrabold text-foreground tracking-tight -mt-0.5">Dashboard</h1>
           </div>
-          <button onClick={signOut} className="p-2 rounded-xl hover:bg-muted transition-colors" title="Sign out">
-            <LogOut className="w-5 h-5 text-muted-foreground" strokeWidth={1.5} />
-          </button>
+          <div className="flex items-center gap-2">
+            <Link to="/profile">
+              <Avatar className="w-9 h-9">
+                <AvatarImage src={avatarUrl} alt={displayName} />
+                <AvatarFallback className="bg-muted text-muted-foreground text-xs font-bold">
+                  {displayName ? displayName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : <User className="w-4 h-4" />}
+                </AvatarFallback>
+              </Avatar>
+            </Link>
+            <button onClick={signOut} className="p-2 rounded-xl hover:bg-muted transition-colors" title="Sign out">
+              <LogOut className="w-5 h-5 text-muted-foreground" strokeWidth={1.5} />
+            </button>
+          </div>
         </div>
 
         {/* Stats */}
