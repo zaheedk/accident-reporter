@@ -41,6 +41,7 @@ const App = () => (
             <Route path="/claims/new" element={<ProtectedRoute><ClaimWizard /></ProtectedRoute>} />
             <Route path="/claims/:id/edit" element={<ProtectedRoute><ClaimWizard /></ProtectedRoute>} />
             <Route path="/claims/:id" element={<ProtectedRoute><ClaimDetail /></ProtectedRoute>} />
+            <Route path="/panel-shops" element={<ProtectedRoute><PanelShops /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
