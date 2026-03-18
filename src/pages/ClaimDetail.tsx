@@ -140,7 +140,28 @@ export default function ClaimDetail() {
           <Row label="Insurance" value={claim.insuranceCompany} />
           <Row label="Name" value={claim.repairerName} /><Row label="Phone" value={claim.repairerPhone} /><Row label="Address" value={claim.repairerAddress} />
         </Section>
+
+        {photos.length > 0 && (
+          <Section title="Damage photos">
+            <div className="grid grid-cols-3 gap-2">
+              {photos.map(p => (
+                <button key={p.id} onClick={() => setLightboxUrl(p.url)} className="rounded-xl overflow-hidden aspect-square bg-muted">
+                  <img src={p.url} alt={p.fileName} className="w-full h-full object-cover" loading="lazy" />
+                </button>
+              ))}
+            </div>
+          </Section>
+        )}
       </div>
+
+      {lightboxUrl && (
+        <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 print:hidden" onClick={() => setLightboxUrl(null)}>
+          <button onClick={() => setLightboxUrl(null)} className="absolute top-4 right-4 p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors">
+            <X className="w-6 h-6 text-white" />
+          </button>
+          <img src={lightboxUrl} alt="Damage photo" className="max-w-full max-h-full rounded-xl object-contain" onClick={e => e.stopPropagation()} />
+        </div>
+      )}
     </AppLayout>
   );
 }
