@@ -101,6 +101,8 @@ export async function saveClaim(claim: ClaimReport): Promise<string> {
     repairer_name: claim.repairerName,
     repairer_phone: claim.repairerPhone,
     repairer_address: claim.repairerAddress,
+    insurance_company: claim.insuranceCompany,
+    selected_panel_shop_id: claim.selectedPanelShopId || null,
   };
 
   if (claim.id) {
