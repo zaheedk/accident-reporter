@@ -153,5 +153,7 @@ function dbClaimToClaim(row: any): ClaimReport {
     repairerName: row.repairer_name,
     repairerPhone: row.repairer_phone,
     repairerAddress: row.repairer_address,
+    insuranceCompany: row.insurance_company || '',
+    selectedPanelShopId: row.selected_panel_shop_id || '',
   };
 }

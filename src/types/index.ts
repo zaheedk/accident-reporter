@@ -74,13 +74,15 @@ export interface ClaimReport {
   liabilityAdmitted: boolean;
   liabilityDetails: string;
 
-  // Step 6: Damage
+  // Step 6: Damage & Repairer
   damageDescription: string;
   vehicleTowed: boolean;
   towingCompany: string;
   repairerName: string;
   repairerPhone: string;
   repairerAddress: string;
+  insuranceCompany: string;
+  selectedPanelShopId: string;
 }
 
 export const WEATHER_OPTIONS: { value: WeatherCondition; label: string }[] = [
