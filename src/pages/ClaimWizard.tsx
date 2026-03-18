@@ -1,12 +1,16 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, Check, Save } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, Save, Camera, X, Search, Star, Send, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ClaimReport, ThirdPartyVehicle, Witness, WEATHER_OPTIONS, ROAD_OPTIONS, Vehicle } from '@/types';
 import { getVehicles, getClaims, saveClaim } from '@/lib/storage';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 import AppLayout from '@/components/AppLayout';
+import { Badge } from '@/components/ui/badge';
+import { toast } from 'sonner';
 
-const STEPS = ['Incident details', 'Your vehicle', 'Third parties', 'Witnesses & police', 'Conditions & damage', 'Review'];
+const STEPS = ['Incident details', 'Your vehicle', 'Third parties', 'Witnesses & police', 'Conditions & damage', 'Insurance & repairer', 'Review'];
 const stepVariants = { initial: { opacity: 0, x: 10 }, animate: { opacity: 1, x: 0 }, exit: { opacity: 0, x: -10 } };
 
 const emptyTP: ThirdPartyVehicle = { ownerName: '', phone: '', address: '', insurer: '', make: '', model: '', regoNumber: '', damageDescription: '' };
