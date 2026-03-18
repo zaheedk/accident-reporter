@@ -1,20 +1,32 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Car, FileText, Plus, AlertTriangle, ChevronRight, Clock, ArrowUpRight, LogOut } from 'lucide-react';
+import { Car, FileText, Plus, AlertTriangle, ChevronRight, Clock, ArrowUpRight, LogOut, User } from 'lucide-react';
 import { getVehicles, getClaims } from '@/lib/storage';
 import { useAuth } from '@/contexts/AuthContext';
 import AppLayout from '@/components/AppLayout';
 import { Vehicle, ClaimReport } from '@/types';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { supabase } from '@/integrations/supabase/client';
 
 export default function Dashboard() {
-  const { signOut } = useAuth();
+  const { user, signOut } = useAuth();
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [claims, setClaims] = useState<ClaimReport[]>([]);
+  const [avatarUrl, setAvatarUrl] = useState('');
+  const [displayName, setDisplayName] = useState('');
 
   useEffect(() => {
     getVehicles().then(setVehicles);
     getClaims().then(setClaims);
-  }, []);
+    if (user) {
+      supabase.from('profiles').select('avatar_url, display_name').eq('user_id', user.id).single().then(({ data }) => {
+        if (data) {
+          setAvatarUrl(data.avatar_url || '');
+          setDisplayName(data.display_name || '');
+        }
+      });
+    }
+  }, [user]);
 
   const drafts = claims.filter(c => c.status === 'draft');
   const submitted = claims.filter(c => c.status === 'submitted');
@@ -27,9 +39,19 @@ export default function Dashboard() {
             <p className="text-sm text-muted-foreground">Overview</p>
             <h1 className="text-[22px] font-extrabold text-foreground tracking-tight -mt-0.5">Dashboard</h1>
           </div>
-          <button onClick={signOut} className="p-2 rounded-xl hover:bg-muted transition-colors" title="Sign out">
-            <LogOut className="w-5 h-5 text-muted-foreground" strokeWidth={1.5} />
-          </button>
+          <div className="flex items-center gap-2">
+            <Link to="/profile">
+              <Avatar className="w-9 h-9">
+                <AvatarImage src={avatarUrl} alt={displayName} />
+                <AvatarFallback className="bg-muted text-muted-foreground text-xs font-bold">
+                  {displayName ? displayName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : <User className="w-4 h-4" />}
+                </AvatarFallback>
+              </Avatar>
+            </Link>
+            <button onClick={signOut} className="p-2 rounded-xl hover:bg-muted transition-colors" title="Sign out">
+              <LogOut className="w-5 h-5 text-muted-foreground" strokeWidth={1.5} />
+            </button>
+          </div>
         </div>
 
         {/* Stats */}
