@@ -7,6 +7,7 @@ interface AuthContextType {
   user: User | null;
   loading: boolean;
   isAdmin: boolean;
+  isDeactivated: boolean;
   signOut: () => Promise<void>;
 }
 
