@@ -354,18 +354,89 @@ export default function ClaimWizard() {
                   <Toggle active={claim.liabilityAdmitted} onToggle={() => update('liabilityAdmitted', !claim.liabilityAdmitted)} label="Anyone admitted liability" />
                   {claim.liabilityAdmitted && <div><label className="form-label">Who admitted liability?</label><input className="form-input" value={claim.liabilityDetails} onChange={e => update('liabilityDetails', e.target.value)} /></div>}
                 </div>
-                <div className="card-surface space-y-3">
-                  <label className="form-label">Repairer details</label>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div><label className="form-label">Name</label><input className="form-input" value={claim.repairerName} onChange={e => update('repairerName', e.target.value)} /></div>
-                    <div><label className="form-label">Phone</label><input className="form-input" value={claim.repairerPhone} onChange={e => update('repairerPhone', e.target.value)} /></div>
-                  </div>
-                  <div><label className="form-label">Address</label><input className="form-input" value={claim.repairerAddress} onChange={e => update('repairerAddress', e.target.value)} /></div>
-                </div>
               </div>
             )}
 
             {step === 5 && (
+              <div className="space-y-4">
+                <div className="card-surface space-y-3">
+                  <label className="form-label">Insurance company</label>
+                  <input className="form-input" placeholder="e.g. AA Insurance, State, Tower" value={claim.insuranceCompany} onChange={e => update('insuranceCompany', e.target.value)} />
+                </div>
+
+                <div className="card-surface space-y-3">
+                  <label className="form-label">Damage photos</label>
+                  <p className="text-xs text-muted-foreground -mt-1">Upload photos of the damage to send to your chosen repairer</p>
+                  {photos.length > 0 && (
+                    <div className="grid grid-cols-3 gap-2">
+                      {photos.map(photo => (
+                        <div key={photo.id} className="relative aspect-square rounded-xl overflow-hidden bg-muted">
+                          <img src={getPhotoUrl(photo.file_path)} alt={photo.file_name} className="w-full h-full object-cover" />
+                          <button onClick={() => removePhoto(photo)}
+                            className="absolute top-1 right-1 w-6 h-6 rounded-full bg-foreground/80 text-card flex items-center justify-center">
+                            <X className="w-3 h-3" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  <button type="button" onClick={() => photoInputRef.current?.click()} disabled={uploading}
+                    className="btn-secondary w-full h-10 gap-2 text-sm">
+                    {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Camera className="w-4 h-4" />}
+                    {uploading ? 'Uploading...' : 'Add photos'}
+                  </button>
+                  <input ref={photoInputRef} type="file" accept="image/*" multiple className="hidden" onChange={handlePhotoUpload} />
+                </div>
+
+                <div className="card-surface space-y-3">
+                  <label className="form-label">Choose a panel shop</label>
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <input className="form-input pl-9" placeholder="Search shops..." value={shopSearch} onChange={e => setShopSearch(e.target.value)} />
+                  </div>
+                  {selectedShop && (
+                    <div className="p-3 rounded-xl border-2 border-foreground bg-foreground/[0.03] space-y-1">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-semibold text-foreground">{selectedShop.name}</span>
+                        <Badge variant="secondary" className="text-[10px] gap-0.5">
+                          <Star className="w-2.5 h-2.5 fill-current" />{Number(selectedShop.google_rating).toFixed(1)}
+                        </Badge>
+                      </div>
+                      <p className="text-xs text-muted-foreground">{selectedShop.address}, {selectedShop.city}</p>
+                      {selectedShop.phone && <p className="text-xs text-muted-foreground">{selectedShop.phone}</p>}
+                      <button onClick={() => update('selectedPanelShopId', '')} className="text-xs text-destructive hover:underline mt-1">Change shop</button>
+                    </div>
+                  )}
+                  {!selectedShop && (
+                    <div className="space-y-2 max-h-[300px] overflow-y-auto">
+                      {filteredShops.slice(0, 20).map(shop => (
+                        <button key={shop.id} onClick={() => { update('selectedPanelShopId', shop.id); update('repairerName', shop.name); update('repairerPhone', shop.phone); update('repairerAddress', `${shop.address}, ${shop.city}`); }}
+                          className="w-full text-left p-3 rounded-xl border border-border hover:border-foreground/30 transition-all">
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm font-semibold text-foreground">{shop.name}</span>
+                            <Badge variant="secondary" className="text-[10px] gap-0.5 shrink-0">
+                              <Star className="w-2.5 h-2.5 fill-current" />{Number(shop.google_rating).toFixed(1)}
+                            </Badge>
+                          </div>
+                          <p className="text-xs text-muted-foreground mt-0.5">{shop.address}, {shop.city}</p>
+                        </button>
+                      ))}
+                      {filteredShops.length === 0 && <p className="text-sm text-muted-foreground text-center py-4">No shops found</p>}
+                    </div>
+                  )}
+                </div>
+
+                {selectedShop && (
+                  <button type="button" onClick={sendToRepairer} disabled={sending}
+                    className="btn-primary w-full h-11 gap-2">
+                    {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+                    Send to {selectedShop.name}
+                  </button>
+                )}
+              </div>
+            )}
+
+            {step === 6 && (
               <div className="space-y-3">
                 <RSection title="Incident">
                   <RRow label="Date" value={claim.incidentDate} /><RRow label="Time" value={claim.incidentTime} />
@@ -387,6 +458,11 @@ export default function ClaimWizard() {
                 <RSection title="Conditions">
                   <RRow label="Weather" value={claim.weatherCondition || '—'} /><RRow label="Road" value={claim.roadCondition || '—'} />
                   <RRow label="At fault" value={claim.blameDescription || '—'} />
+                </RSection>
+                <RSection title="Insurance & Repairer">
+                  <RRow label="Insurance" value={claim.insuranceCompany || '—'} />
+                  <RRow label="Repairer" value={selectedShop?.name || claim.repairerName || '—'} />
+                  <RRow label="Photos" value={`${photos.length} uploaded`} />
                 </RSection>
               </div>
             )}
