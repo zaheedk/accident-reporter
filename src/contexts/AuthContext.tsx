@@ -40,17 +40,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!session?.user) {
       setIsAdmin(false);
+      setIsDeactivated(false);
       return;
     }
+    // Check admin role
     supabase
       .from('user_roles')
       .select('role')
       .eq('user_id', session.user.id)
       .eq('role', 'admin')
       .maybeSingle()
-      .then(({ data }) => {
-        setIsAdmin(!!data);
-      });
+      .then(({ data }) => setIsAdmin(!!data));
+    // Check active status
+    supabase
+      .from('profiles')
+      .select('is_active')
+      .eq('user_id', session.user.id)
+      .maybeSingle()
+      .then(({ data }) => setIsDeactivated(data?.is_active === false));
   }, [session?.user?.id]);
 
   const signOut = async () => {
