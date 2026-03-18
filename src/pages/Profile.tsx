@@ -1,10 +1,15 @@
 import { useEffect, useState, useRef } from 'react';
-import { ArrowLeft, Camera, Loader2, User, Phone, MapPin, Mail } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { ArrowLeft, Camera, Loader2, User, Phone, MapPin, Mail, ShieldOff, Trash2 } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import AppLayout from '@/components/AppLayout';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 
 interface ProfileData {
