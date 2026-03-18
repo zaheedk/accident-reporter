@@ -125,6 +125,48 @@ export type Database = {
         }
         Relationships: []
       }
+      panel_shops: {
+        Row: {
+          address: string
+          city: string
+          created_at: string
+          email: string
+          google_rating: number
+          id: string
+          name: string
+          phone: string
+          region: string
+          updated_at: string
+          website: string
+        }
+        Insert: {
+          address: string
+          city?: string
+          created_at?: string
+          email?: string
+          google_rating?: number
+          id?: string
+          name: string
+          phone?: string
+          region?: string
+          updated_at?: string
+          website?: string
+        }
+        Update: {
+          address?: string
+          city?: string
+          created_at?: string
+          email?: string
+          google_rating?: number
+          id?: string
+          name?: string
+          phone?: string
+          region?: string
+          updated_at?: string
+          website?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null

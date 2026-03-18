@@ -10,6 +10,7 @@ import VehicleForm from "./pages/VehicleForm";
 import ClaimList from "./pages/ClaimList";
 import ClaimWizard from "./pages/ClaimWizard";
 import ClaimDetail from "./pages/ClaimDetail";
+import PanelShops from "./pages/PanelShops";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import { Loader2 } from "lucide-react";
@@ -40,6 +41,7 @@ const App = () => (
             <Route path="/claims/new" element={<ProtectedRoute><ClaimWizard /></ProtectedRoute>} />
             <Route path="/claims/:id/edit" element={<ProtectedRoute><ClaimWizard /></ProtectedRoute>} />
             <Route path="/claims/:id" element={<ProtectedRoute><ClaimDetail /></ProtectedRoute>} />
+            <Route path="/panel-shops" element={<ProtectedRoute><PanelShops /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

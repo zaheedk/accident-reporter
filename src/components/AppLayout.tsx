@@ -1,10 +1,11 @@
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Car, FileText, Plus } from 'lucide-react';
+import { LayoutDashboard, Car, FileText, Plus, Wrench } from 'lucide-react';
 
 const navItems = [
   { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
   { to: '/vehicles', icon: Car, label: 'Vehicles' },
   { to: '/claims', icon: FileText, label: 'Claims' },
+  { to: '/panel-shops', icon: Wrench, label: 'Shops' },
 ];
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
