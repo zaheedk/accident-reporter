@@ -41,18 +41,34 @@ type ClaimPhoto = {
 
 export default function ClaimWizard() {
   const { id } = useParams();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [claim, setClaim] = useState<ClaimReport>(emptyClaim);
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+  const [panelShops, setPanelShops] = useState<PanelShop[]>([]);
+  const [shopSearch, setShopSearch] = useState('');
+  const [photos, setPhotos] = useState<ClaimPhoto[]>([]);
+  const [uploading, setUploading] = useState(false);
+  const [sending, setSending] = useState(false);
+  const photoInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     getVehicles().then(setVehicles);
+    supabase.from('panel_shops').select('*').gte('google_rating', 4.5)
+      .order('google_rating', { ascending: false }).then(({ data }) => {
+        if (data) setPanelShops(data as PanelShop[]);
+      });
     if (id) {
       getClaims().then(claims => {
         const e = claims.find(c => c.id === id);
         if (e) setClaim(e);
       });
+      // Load existing photos
+      supabase.from('claim_photos').select('id, file_path, file_name')
+        .eq('claim_id', id).then(({ data }) => {
+          if (data) setPhotos(data as ClaimPhoto[]);
+        });
     }
   }, [id]);
 
