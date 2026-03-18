@@ -7,11 +7,12 @@ interface AuthContextType {
   user: User | null;
   loading: boolean;
   isAdmin: boolean;
+  isDeactivated: boolean;
   signOut: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType>({
-  session: null, user: null, loading: true, isAdmin: false, signOut: async () => {},
+  session: null, user: null, loading: true, isAdmin: false, isDeactivated: false, signOut: async () => {},
 });
 
 export const useAuth = () => useContext(AuthContext);
@@ -20,6 +21,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isDeactivated, setIsDeactivated] = useState(false);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -38,17 +40,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!session?.user) {
       setIsAdmin(false);
+      setIsDeactivated(false);
       return;
     }
+    // Check admin role
     supabase
       .from('user_roles')
       .select('role')
       .eq('user_id', session.user.id)
       .eq('role', 'admin')
       .maybeSingle()
-      .then(({ data }) => {
-        setIsAdmin(!!data);
-      });
+      .then(({ data }) => setIsAdmin(!!data));
+    // Check active status
+    supabase
+      .from('profiles')
+      .select('is_active')
+      .eq('user_id', session.user.id)
+      .maybeSingle()
+      .then(({ data }) => setIsDeactivated(data?.is_active === false));
   }, [session?.user?.id]);
 
   const signOut = async () => {
@@ -56,7 +65,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ session, user: session?.user ?? null, loading, isAdmin, signOut }}>
+    <AuthContext.Provider value={{ session, user: session?.user ?? null, loading, isAdmin, isDeactivated, signOut }}>
       {children}
     </AuthContext.Provider>
   );

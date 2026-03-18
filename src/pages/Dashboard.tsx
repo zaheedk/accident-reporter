@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Car, FileText, Plus, AlertTriangle, ChevronRight, Clock, ArrowUpRight, LogOut, User } from 'lucide-react';
+import { Car, FileText, Plus, AlertTriangle, ChevronRight, Clock, ArrowUpRight, LogOut, User, Users } from 'lucide-react';
 import { getVehicles, getClaims } from '@/lib/storage';
 import { useAuth } from '@/contexts/AuthContext';
 import AppLayout from '@/components/AppLayout';
@@ -9,7 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { supabase } from '@/integrations/supabase/client';
 
 export default function Dashboard() {
-  const { user, signOut } = useAuth();
+  const { user, signOut, isAdmin } = useAuth();
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [claims, setClaims] = useState<ClaimReport[]>([]);
   const [avatarUrl, setAvatarUrl] = useState('');
@@ -91,6 +91,22 @@ export default function Dashboard() {
             <div className="text-xs text-muted-foreground mt-0.5">Register to garage</div>
           </Link>
         </div>
+
+        {/* Admin Actions */}
+        {isAdmin && (
+          <Link to="/users" className="card-surface flex items-center justify-between hover:shadow-md transition-shadow">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center">
+                <Users className="w-4 h-4 text-primary" />
+              </div>
+              <div>
+                <div className="text-sm font-bold text-foreground">Manage Users</div>
+                <div className="text-xs text-muted-foreground mt-0.5">Activate / deactivate users</div>
+              </div>
+            </div>
+            <ChevronRight className="w-4 h-4 text-muted-foreground/40" strokeWidth={1.5} />
+          </Link>
+        )}
 
         {/* Drafts */}
         {drafts.length > 0 && (
