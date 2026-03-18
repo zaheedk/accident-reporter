@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Car, FileText, Plus, AlertTriangle, ChevronRight, Clock, ArrowUpRight, LogOut, User } from 'lucide-react';
+import { Car, FileText, Plus, AlertTriangle, ChevronRight, Clock, ArrowUpRight, LogOut, User, Users } from 'lucide-react';
 import { getVehicles, getClaims } from '@/lib/storage';
 import { useAuth } from '@/contexts/AuthContext';
 import AppLayout from '@/components/AppLayout';
