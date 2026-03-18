@@ -12,7 +12,7 @@ interface AuthContextType {
 }
 
 const AuthContext = createContext<AuthContextType>({
-  session: null, user: null, loading: true, isAdmin: false, signOut: async () => {},
+  session: null, user: null, loading: true, isAdmin: false, isDeactivated: false, signOut: async () => {},
 });
 
 export const useAuth = () => useContext(AuthContext);
