@@ -11,6 +11,7 @@ import ClaimList from "./pages/ClaimList";
 import ClaimWizard from "./pages/ClaimWizard";
 import ClaimDetail from "./pages/ClaimDetail";
 import PanelShops from "./pages/PanelShops";
+import Profile from "./pages/Profile";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import { Loader2 } from "lucide-react";
