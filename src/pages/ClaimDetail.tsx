@@ -11,6 +11,8 @@ export default function ClaimDetail() {
   const navigate = useNavigate();
   const [claim, setClaim] = useState<ClaimReport | null>(null);
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+  const [photos, setPhotos] = useState<{ id: string; url: string; fileName: string }[]>([]);
+  const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const printRef = useRef<HTMLDivElement>(null);
 
