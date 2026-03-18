@@ -26,6 +26,10 @@ export default function Profile() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [showDeactivate, setShowDeactivate] = useState(false);
+  const [showDelete, setShowDelete] = useState(false);
+  const [deleteConfirmText, setDeleteConfirmText] = useState('');
+  const [actionLoading, setActionLoading] = useState(false);
   const [profile, setProfile] = useState<ProfileData>({
     display_name: '',
     phone_number: '',
