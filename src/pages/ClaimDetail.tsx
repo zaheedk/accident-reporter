@@ -118,7 +118,8 @@ export default function ClaimDetail() {
           <Row label="Liability admitted" value={claim.liabilityAdmitted ? claim.liabilityDetails : 'No'} />
         </Section>
 
-        <Section title="Repairer">
+        <Section title="Insurance & Repairer">
+          <Row label="Insurance" value={claim.insuranceCompany} />
           <Row label="Name" value={claim.repairerName} /><Row label="Phone" value={claim.repairerPhone} /><Row label="Address" value={claim.repairerAddress} />
         </Section>
       </div>
