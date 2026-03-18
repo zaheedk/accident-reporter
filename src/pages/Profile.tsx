@@ -231,8 +231,121 @@ export default function Profile() {
           <button type="submit" disabled={saving} className="btn-primary w-full h-11">
             {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Save changes'}
           </button>
-        </form>
+
+        {/* Danger Zone */}
+        <div className="pt-4 space-y-3">
+          <h2 className="text-[13px] font-semibold text-destructive">Danger Zone</h2>
+          <button
+            onClick={() => setShowDeactivate(true)}
+            className="w-full card-surface flex items-center gap-3 text-left hover:shadow-md transition-shadow"
+          >
+            <div className="w-9 h-9 rounded-xl bg-muted flex items-center justify-center shrink-0">
+              <ShieldOff className="w-4 h-4 text-muted-foreground" />
+            </div>
+            <div>
+              <div className="text-sm font-semibold text-foreground">Deactivate Account</div>
+              <div className="text-xs text-muted-foreground">Temporarily disable your account</div>
+            </div>
+          </button>
+          <button
+            onClick={() => setShowDelete(true)}
+            className="w-full card-surface flex items-center gap-3 text-left hover:shadow-md transition-shadow border border-destructive/20"
+          >
+            <div className="w-9 h-9 rounded-xl bg-destructive/10 flex items-center justify-center shrink-0">
+              <Trash2 className="w-4 h-4 text-destructive" />
+            </div>
+            <div>
+              <div className="text-sm font-semibold text-destructive">Delete Account</div>
+              <div className="text-xs text-muted-foreground">Permanently remove all your data</div>
+            </div>
+          </button>
+        </div>
       </div>
+
+      {/* Deactivate Confirmation */}
+      <AlertDialog open={showDeactivate} onOpenChange={setShowDeactivate}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Deactivate your account?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Your account will be deactivated and you won't be able to access the app until an administrator reactivates it.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={actionLoading}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              disabled={actionLoading}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={async (e) => {
+                e.preventDefault();
+                setActionLoading(true);
+                const { error } = await supabase.functions.invoke('account-actions', {
+                  body: { action: 'deactivate' },
+                });
+                setActionLoading(false);
+                if (error) {
+                  toast.error('Failed to deactivate account');
+                  return;
+                }
+                toast.success('Account deactivated');
+                setShowDeactivate(false);
+                await signOut();
+              }}
+            >
+              {actionLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Deactivate'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Delete Confirmation */}
+      <AlertDialog open={showDelete} onOpenChange={(open) => { setShowDelete(open); if (!open) setDeleteConfirmText(''); }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete your account permanently?</AlertDialogTitle>
+            <AlertDialogDescription className="space-y-3">
+              <span className="block">
+                This will permanently delete your account and all associated data including vehicles, claims, and profile information. This action cannot be undone.
+              </span>
+              <span className="block text-sm font-medium text-foreground">
+                Type <strong>DELETE</strong> to confirm:
+              </span>
+              <Input
+                value={deleteConfirmText}
+                onChange={e => setDeleteConfirmText(e.target.value)}
+                placeholder="Type DELETE"
+                className="mt-1"
+              />
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={actionLoading}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              disabled={actionLoading || deleteConfirmText !== 'DELETE'}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={async (e) => {
+                e.preventDefault();
+                if (deleteConfirmText !== 'DELETE') return;
+                setActionLoading(true);
+                const { error } = await supabase.functions.invoke('account-actions', {
+                  body: { action: 'delete' },
+                });
+                setActionLoading(false);
+                if (error) {
+                  toast.error('Failed to delete account');
+                  return;
+                }
+                toast.success('Account deleted');
+                setShowDelete(false);
+                await signOut();
+                navigate('/auth');
+              }}
+            >
+              {actionLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Delete Forever'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </AppLayout>
   );
 }
