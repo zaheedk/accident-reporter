@@ -1,11 +1,19 @@
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 import AppLayout from '@/components/AppLayout';
+import PanelShopForm from '@/components/PanelShopForm';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
-import { Search, MapPin, Phone, Mail, Star, ExternalLink } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Search, MapPin, Phone, Mail, Star, ExternalLink, Plus, Pencil, Trash2 } from 'lucide-react';
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { toast } from 'sonner';
 
 type PanelShop = {
   id: string;
@@ -20,8 +28,13 @@ type PanelShop = {
 };
 
 export default function PanelShops() {
+  const { isAdmin } = useAuth();
+  const queryClient = useQueryClient();
   const [search, setSearch] = useState('');
   const [selectedRegion, setSelectedRegion] = useState('All');
+  const [formOpen, setFormOpen] = useState(false);
+  const [editShop, setEditShop] = useState<PanelShop | null>(null);
+  const [deleteShop, setDeleteShop] = useState<PanelShop | null>(null);
 
   const { data: shops = [], isLoading } = useQuery({
     queryKey: ['panel-shops'],
@@ -36,7 +49,7 @@ export default function PanelShops() {
     },
   });
 
-  const regions = ['All', ...Array.from(new Set(shops.map(s => s.region)))];
+  const regions = ['All', ...Array.from(new Set(shops.map(s => s.region))).sort()];
 
   const filtered = shops.filter(shop => {
     const matchesSearch = shop.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -46,14 +59,46 @@ export default function PanelShops() {
     return matchesSearch && matchesRegion;
   });
 
+  const handleAdd = async (data: Omit<PanelShop, 'id'>) => {
+    const { error } = await supabase.from('panel_shops').insert(data);
+    if (error) { toast.error('Failed to add shop'); throw error; }
+    toast.success('Shop added');
+    queryClient.invalidateQueries({ queryKey: ['panel-shops'] });
+  };
+
+  const handleEdit = async (data: Omit<PanelShop, 'id'>) => {
+    if (!editShop) return;
+    const { error } = await supabase.from('panel_shops').update(data).eq('id', editShop.id);
+    if (error) { toast.error('Failed to update shop'); throw error; }
+    toast.success('Shop updated');
+    setEditShop(null);
+    queryClient.invalidateQueries({ queryKey: ['panel-shops'] });
+  };
+
+  const handleDelete = async () => {
+    if (!deleteShop) return;
+    const { error } = await supabase.from('panel_shops').delete().eq('id', deleteShop.id);
+    if (error) { toast.error('Failed to delete shop'); return; }
+    toast.success('Shop deleted');
+    setDeleteShop(null);
+    queryClient.invalidateQueries({ queryKey: ['panel-shops'] });
+  };
+
   return (
     <AppLayout>
       <div className="space-y-5">
-        <div>
-          <h1 className="text-xl font-bold text-foreground">Panel Shops</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">
-            Top-rated panel beaters across NZ (4.5+ Google rating)
-          </p>
+        <div className="flex items-start justify-between gap-2">
+          <div>
+            <h1 className="text-xl font-bold text-foreground">Panel Shops</h1>
+            <p className="text-sm text-muted-foreground mt-0.5">
+              Top-rated panel beaters across NZ (4.5+ Google rating)
+            </p>
+          </div>
+          {isAdmin && (
+            <Button size="sm" onClick={() => { setEditShop(null); setFormOpen(true); }} className="shrink-0 gap-1">
+              <Plus className="w-4 h-4" /> Add
+            </Button>
+          )}
         </div>
 
         <div className="relative">
@@ -92,10 +137,24 @@ export default function PanelShops() {
               <Card key={shop.id} className="p-4 space-y-2.5">
                 <div className="flex items-start justify-between gap-2">
                   <h3 className="text-sm font-semibold text-foreground leading-tight">{shop.name}</h3>
-                  <Badge variant="secondary" className="shrink-0 gap-1 text-xs">
-                    <Star className="w-3 h-3 fill-current" />
-                    {Number(shop.google_rating).toFixed(1)}
-                  </Badge>
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <Badge variant="secondary" className="gap-1 text-xs">
+                      <Star className="w-3 h-3 fill-current" />
+                      {Number(shop.google_rating).toFixed(1)}
+                    </Badge>
+                    {isAdmin && (
+                      <>
+                        <button onClick={() => { setEditShop(shop); setFormOpen(true); }}
+                          className="p-1 rounded hover:bg-muted transition-colors">
+                          <Pencil className="w-3.5 h-3.5 text-muted-foreground" />
+                        </button>
+                        <button onClick={() => setDeleteShop(shop)}
+                          className="p-1 rounded hover:bg-destructive/10 transition-colors">
+                          <Trash2 className="w-3.5 h-3.5 text-destructive" />
+                        </button>
+                      </>
+                    )}
+                  </div>
                 </div>
 
                 <div className="space-y-1.5 text-xs text-muted-foreground">
@@ -138,6 +197,32 @@ export default function PanelShops() {
           {filtered.length} shop{filtered.length !== 1 ? 's' : ''} found
         </p>
       </div>
+
+      {/* Add/Edit Form */}
+      <PanelShopForm
+        open={formOpen}
+        onOpenChange={(open) => { setFormOpen(open); if (!open) setEditShop(null); }}
+        shop={editShop}
+        onSave={editShop ? handleEdit : handleAdd}
+      />
+
+      {/* Delete Confirmation */}
+      <AlertDialog open={!!deleteShop} onOpenChange={(open) => !open && setDeleteShop(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete panel shop?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to remove <strong>{deleteShop?.name}</strong>? This cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </AppLayout>
   );
 }
