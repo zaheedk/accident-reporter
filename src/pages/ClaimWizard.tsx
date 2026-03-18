@@ -26,8 +26,18 @@ function emptyClaim(): ClaimReport {
     blameDescription: '', liabilityAdmitted: false, liabilityDetails: '',
     damageDescription: '', vehicleTowed: false, towingCompany: '',
     repairerName: '', repairerPhone: '', repairerAddress: '',
+    insuranceCompany: '', selectedPanelShopId: '',
   };
 }
+
+type PanelShop = {
+  id: string; name: string; address: string; city: string; region: string;
+  phone: string; email: string; google_rating: number; website: string;
+};
+
+type ClaimPhoto = {
+  id: string; file_path: string; file_name: string;
+};
 
 export default function ClaimWizard() {
   const { id } = useParams();
