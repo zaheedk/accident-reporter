@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Printer, Mail } from 'lucide-react';
+import { ArrowLeft, Printer, Mail, X } from 'lucide-react';
 import { getClaims, getVehicles } from '@/lib/storage';
+import { supabase } from '@/integrations/supabase/client';
 import AppLayout from '@/components/AppLayout';
 import { WEATHER_OPTIONS, ROAD_OPTIONS, ClaimReport, Vehicle } from '@/types';
 
@@ -10,13 +11,30 @@ export default function ClaimDetail() {
   const navigate = useNavigate();
   const [claim, setClaim] = useState<ClaimReport | null>(null);
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+  const [photos, setPhotos] = useState<{ id: string; url: string; fileName: string }[]>([]);
+  const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const printRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    Promise.all([getClaims(), getVehicles()]).then(([claims, vehs]) => {
-      setClaim(claims.find(c => c.id === id) || null);
+    Promise.all([getClaims(), getVehicles()]).then(async ([claims, vehs]) => {
+      const foundClaim = claims.find(c => c.id === id) || null;
+      setClaim(foundClaim);
       setVehicles(vehs);
+
+      if (foundClaim) {
+        const { data: photoRows } = await supabase
+          .from('claim_photos')
+          .select('*')
+          .eq('claim_id', foundClaim.id);
+        if (photoRows) {
+          const mapped = photoRows.map(p => {
+            const { data } = supabase.storage.from('claim-photos').getPublicUrl(p.file_path);
+            return { id: p.id, url: data.publicUrl, fileName: p.file_name };
+          });
+          setPhotos(mapped);
+        }
+      }
       setLoading(false);
     });
   }, [id]);
@@ -122,7 +140,28 @@ export default function ClaimDetail() {
           <Row label="Insurance" value={claim.insuranceCompany} />
           <Row label="Name" value={claim.repairerName} /><Row label="Phone" value={claim.repairerPhone} /><Row label="Address" value={claim.repairerAddress} />
         </Section>
+
+        {photos.length > 0 && (
+          <Section title="Damage photos">
+            <div className="grid grid-cols-3 gap-2">
+              {photos.map(p => (
+                <button key={p.id} onClick={() => setLightboxUrl(p.url)} className="rounded-xl overflow-hidden aspect-square bg-muted">
+                  <img src={p.url} alt={p.fileName} className="w-full h-full object-cover" loading="lazy" />
+                </button>
+              ))}
+            </div>
+          </Section>
+        )}
       </div>
+
+      {lightboxUrl && (
+        <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 print:hidden" onClick={() => setLightboxUrl(null)}>
+          <button onClick={() => setLightboxUrl(null)} className="absolute top-4 right-4 p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors">
+            <X className="w-6 h-6 text-white" />
+          </button>
+          <img src={lightboxUrl} alt="Damage photo" className="max-w-full max-h-full rounded-xl object-contain" onClick={e => e.stopPropagation()} />
+        </div>
+      )}
     </AppLayout>
   );
 }
