@@ -92,6 +92,22 @@ export default function Dashboard() {
           </Link>
         </div>
 
+        {/* Admin Actions */}
+        {isAdmin && (
+          <Link to="/users" className="card-surface flex items-center justify-between hover:shadow-md transition-shadow">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center">
+                <Users className="w-4 h-4 text-primary" />
+              </div>
+              <div>
+                <div className="text-sm font-bold text-foreground">Manage Users</div>
+                <div className="text-xs text-muted-foreground mt-0.5">Activate / deactivate users</div>
+              </div>
+            </div>
+            <ChevronRight className="w-4 h-4 text-muted-foreground/40" strokeWidth={1.5} />
+          </Link>
+        )}
+
         {/* Drafts */}
         {drafts.length > 0 && (
           <div>
