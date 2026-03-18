@@ -231,6 +231,7 @@ export default function Profile() {
           <button type="submit" disabled={saving} className="btn-primary w-full h-11">
             {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Save changes'}
           </button>
+        </form>
 
         {/* Danger Zone */}
         <div className="pt-4 space-y-3">
