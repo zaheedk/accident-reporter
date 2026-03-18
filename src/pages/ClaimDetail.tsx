@@ -17,9 +17,24 @@ export default function ClaimDetail() {
   const printRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    Promise.all([getClaims(), getVehicles()]).then(([claims, vehs]) => {
-      setClaim(claims.find(c => c.id === id) || null);
+    Promise.all([getClaims(), getVehicles()]).then(async ([claims, vehs]) => {
+      const foundClaim = claims.find(c => c.id === id) || null;
+      setClaim(foundClaim);
       setVehicles(vehs);
+
+      if (foundClaim) {
+        const { data: photoRows } = await supabase
+          .from('claim_photos')
+          .select('*')
+          .eq('claim_id', foundClaim.id);
+        if (photoRows) {
+          const mapped = photoRows.map(p => {
+            const { data } = supabase.storage.from('claim-photos').getPublicUrl(p.file_path);
+            return { id: p.id, url: data.publicUrl, fileName: p.file_name };
+          });
+          setPhotos(mapped);
+        }
+      }
       setLoading(false);
     });
   }, [id]);
