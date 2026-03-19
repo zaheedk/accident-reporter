@@ -9,6 +9,7 @@ const emptyVehicle: Omit<Vehicle, 'id' | 'createdAt'> = {
   year: '', make: '', model: '', regoNumber: '', color: '',
   wofExpiry: '', regoExpiry: '',
   financeArrangement: false, financeDetails: '', modified: false, modificationDetails: '',
+  insuranceCompany: '', insurancePolicyNumber: '', insuranceExpiry: '',
 };
 
 export default function VehicleForm() {
