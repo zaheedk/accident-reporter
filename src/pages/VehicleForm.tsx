@@ -9,6 +9,7 @@ const emptyVehicle: Omit<Vehicle, 'id' | 'createdAt'> = {
   year: '', make: '', model: '', regoNumber: '', color: '',
   wofExpiry: '', regoExpiry: '',
   financeArrangement: false, financeDetails: '', modified: false, modificationDetails: '',
+  insuranceCompany: '', insurancePolicyNumber: '', insuranceExpiry: '',
 };
 
 export default function VehicleForm() {
@@ -65,6 +66,13 @@ export default function VehicleForm() {
             <div><label className="form-label">WOF expiry</label><input type="date" className="form-input tabular-nums" value={form.wofExpiry} onChange={e => update('wofExpiry', e.target.value)} /></div>
             <div><label className="form-label">Rego expiry</label><input type="date" className="form-input tabular-nums" value={form.regoExpiry} onChange={e => update('regoExpiry', e.target.value)} /></div>
           </div>
+        </div>
+
+        <div className="card-surface space-y-4">
+          <h2 className="text-sm font-semibold text-foreground">Insurance details</h2>
+          <div><label className="form-label">Insurance company</label><input className="form-input" placeholder="e.g. AA Insurance" value={form.insuranceCompany} onChange={e => update('insuranceCompany', e.target.value)} /></div>
+          <div><label className="form-label">Policy number</label><input className="form-input tabular-nums" placeholder="POL-123456" value={form.insurancePolicyNumber} onChange={e => update('insurancePolicyNumber', e.target.value)} /></div>
+          <div><label className="form-label">Policy expiry</label><input type="date" className="form-input tabular-nums" value={form.insuranceExpiry} onChange={e => update('insuranceExpiry', e.target.value)} /></div>
         </div>
 
         <div className="card-surface space-y-3">

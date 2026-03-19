@@ -26,6 +26,9 @@ export async function saveVehicle(vehicle: Omit<Vehicle, 'id' | 'createdAt'> & {
     finance_details: vehicle.financeDetails || '',
     modified: vehicle.modified,
     modification_details: vehicle.modificationDetails || '',
+    insurance_company: vehicle.insuranceCompany || '',
+    insurance_policy_number: vehicle.insurancePolicyNumber || '',
+    insurance_expiry: vehicle.insuranceExpiry || '',
   };
 
   if (vehicle.id) {
@@ -53,6 +56,9 @@ function dbVehicleToVehicle(row: any): Vehicle {
     financeDetails: row.finance_details,
     modified: row.modified,
     modificationDetails: row.modification_details,
+    insuranceCompany: row.insurance_company || '',
+    insurancePolicyNumber: row.insurance_policy_number || '',
+    insuranceExpiry: row.insurance_expiry || '',
     createdAt: row.created_at,
   };
 }
