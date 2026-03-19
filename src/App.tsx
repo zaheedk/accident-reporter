@@ -14,6 +14,10 @@ import PanelShops from "./pages/PanelShops";
 import Profile from "./pages/Profile";
 import UserManagement from "./pages/UserManagement";
 import Auth from "./pages/Auth";
+import About from "./pages/About";
+import HowItWorks from "./pages/HowItWorks";
+import FAQ from "./pages/FAQ";
+import Legal from "./pages/Legal";
 import NotFound from "./pages/NotFound";
 import { Loader2 } from "lucide-react";
 
