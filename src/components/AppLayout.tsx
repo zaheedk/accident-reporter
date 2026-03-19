@@ -1,11 +1,20 @@
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Car, FileText, Plus, Wrench } from 'lucide-react';
+import { LayoutDashboard, Car, FileText, Plus, Wrench, Info, HelpCircle, BookOpen, Shield, Menu, X, User } from 'lucide-react';
+import { useState } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
 
 const navItems = [
   { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
   { to: '/vehicles', icon: Car, label: 'Vehicles' },
   { to: '/claims', icon: FileText, label: 'Claims' },
   { to: '/panel-shops', icon: Wrench, label: 'Shops' },
+];
+
+const contentLinks = [
+  { to: '/about', icon: Info, label: 'About & Contact' },
+  { to: '/how-it-works', icon: BookOpen, label: 'How It Works' },
+  { to: '/faq', icon: HelpCircle, label: 'FAQ & Help' },
+  { to: '/legal', icon: Shield, label: 'Terms & Privacy' },
 ];
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
