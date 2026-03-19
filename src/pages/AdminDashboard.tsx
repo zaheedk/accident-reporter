@@ -88,6 +88,20 @@ export default function AdminDashboard() {
           </div>
         </div>
 
+        {/* Admin links */}
+        <Link to="/admin/insurance-companies" className="card-surface flex items-center justify-between hover:shadow-md transition-shadow">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-muted flex items-center justify-center">
+              <Building2 className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
+            </div>
+            <div>
+              <div className="text-sm font-bold text-foreground">Insurance Companies</div>
+              <div className="text-xs text-muted-foreground mt-0.5">Manage dropdown options</div>
+            </div>
+          </div>
+          <ChevronRight className="w-4 h-4 text-muted-foreground/40" strokeWidth={1.5} />
+        </Link>
+
         <Tabs defaultValue="vehicles" className="w-full">
           <TabsList className="w-full">
             <TabsTrigger value="vehicles" className="flex-1">Vehicles</TabsTrigger>
