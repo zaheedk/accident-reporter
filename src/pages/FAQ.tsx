@@ -4,8 +4,8 @@ import { HelpCircle, MessageSquare } from 'lucide-react';
 
 const faqs = [
   {
-    q: 'What is ClaimSorted?',
-    a: 'ClaimSorted is a digital tool that helps you document and manage vehicle insurance claims. It guides you through the entire process — from recording incident details to selecting a trusted panel shop for repairs.',
+    q: 'What is Fixd?',
+    a: 'Fixd is a digital tool that helps you document and manage vehicle insurance claims. It guides you through the entire process — from recording incident details to selecting a trusted panel shop for repairs.',
   },
   {
     q: 'Is ClaimSorted free to use?',
