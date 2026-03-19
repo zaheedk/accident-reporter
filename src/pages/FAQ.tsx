@@ -4,12 +4,12 @@ import { HelpCircle, MessageSquare } from 'lucide-react';
 
 const faqs = [
   {
-    q: 'What is Fixd?',
-    a: 'Fixd is a digital tool that helps you document and manage vehicle insurance claims. It guides you through the entire process — from recording incident details to selecting a trusted panel shop for repairs.',
+    q: 'What is Rift?',
+    a: 'Rift is a digital tool that helps you document and manage vehicle insurance claims. It guides you through the entire process — from recording incident details to selecting a trusted panel shop for repairs.',
   },
   {
-    q: 'Is Fixd free to use?',
-    a: 'Yes! Fixd is completely free for vehicle owners. We make it easy to document claims and connect with panel shops at no cost to you.',
+    q: 'Is Rift free to use?',
+    a: 'Yes! Rift is completely free for vehicle owners. We make it easy to document claims and connect with panel shops at no cost to you.',
   },
   {
     q: 'How do I file a claim?',
