@@ -120,6 +120,16 @@ export default function Auth() {
             {mode === 'login' ? 'Sign up' : 'Sign in'}
           </button>
         </p>
+
+        <div className="flex items-center justify-center gap-3 mt-6 text-xs text-muted-foreground">
+          <a href="/about" className="hover:text-foreground transition-colors">About</a>
+          <span>·</span>
+          <a href="/how-it-works" className="hover:text-foreground transition-colors">How It Works</a>
+          <span>·</span>
+          <a href="/faq" className="hover:text-foreground transition-colors">FAQ</a>
+          <span>·</span>
+          <a href="/legal" className="hover:text-foreground transition-colors">Terms & Privacy</a>
+        </div>
       </div>
     </div>
   );
