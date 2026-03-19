@@ -13,6 +13,7 @@ import ClaimDetail from "./pages/ClaimDetail";
 import PanelShops from "./pages/PanelShops";
 import Profile from "./pages/Profile";
 import UserManagement from "./pages/UserManagement";
+import AdminDashboard from "./pages/AdminDashboard";
 import Auth from "./pages/Auth";
 import About from "./pages/About";
 import HowItWorks from "./pages/HowItWorks";
