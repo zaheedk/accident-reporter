@@ -4,12 +4,12 @@ import { HelpCircle, MessageSquare } from 'lucide-react';
 
 const faqs = [
   {
-    q: 'What is ClaimSorted?',
-    a: 'ClaimSorted is a digital tool that helps you document and manage vehicle insurance claims. It guides you through the entire process — from recording incident details to selecting a trusted panel shop for repairs.',
+    q: 'What is Fixd?',
+    a: 'Fixd is a digital tool that helps you document and manage vehicle insurance claims. It guides you through the entire process — from recording incident details to selecting a trusted panel shop for repairs.',
   },
   {
-    q: 'Is ClaimSorted free to use?',
-    a: 'Yes! ClaimSorted is completely free for vehicle owners. We make it easy to document claims and connect with panel shops at no cost to you.',
+    q: 'Is Fixd free to use?',
+    a: 'Yes! Fixd is completely free for vehicle owners. We make it easy to document claims and connect with panel shops at no cost to you.',
   },
   {
     q: 'How do I file a claim?',
@@ -25,7 +25,7 @@ const faqs = [
   },
   {
     q: 'What are panel shops?',
-    a: 'Panel shops are vehicle repair specialists. ClaimSorted maintains a curated list of trusted panel shops with ratings, contact details, and locations to help you choose the right repairer.',
+    a: 'Panel shops are vehicle repair specialists. Fixd maintains a curated list of trusted panel shops with ratings, contact details, and locations to help you choose the right repairer.',
   },
   {
     q: 'Is my data secure?',
@@ -37,7 +37,7 @@ const faqs = [
   },
   {
     q: 'How do I contact support?',
-    a: 'Visit our About & Contact page, or email us directly at support@claimsorted.co.nz. We aim to respond within 24 hours.',
+    a: 'Visit our About & Contact page, or email us directly at support@fixd.co.nz. We aim to respond within 24 hours.',
   },
 ];
 
