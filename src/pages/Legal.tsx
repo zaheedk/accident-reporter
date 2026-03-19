@@ -30,7 +30,7 @@ export default function Legal() {
               All content, trademarks, and materials on Fixd are owned by us or our licensors. You may not copy, modify, or distribute any part of the Service without written permission.
             </Section>
             <Section title="6. Limitation of Liability">
-              ClaimSorted is not an insurance provider or legal advisor. We do not guarantee claim outcomes. To the fullest extent permitted by law, we are not liable for any indirect, incidental, or consequential damages arising from your use of the Service.
+              Fixd is not an insurance provider or legal advisor. We do not guarantee claim outcomes. To the fullest extent permitted by law, we are not liable for any indirect, incidental, or consequential damages arising from your use of the Service.
             </Section>
             <Section title="7. Modifications">
               We reserve the right to modify these terms at any time. Continued use of the Service constitutes acceptance of updated terms.
