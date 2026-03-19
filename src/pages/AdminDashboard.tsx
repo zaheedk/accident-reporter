@@ -4,7 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import AppLayout from '@/components/AppLayout';
 import { Navigate, Link } from 'react-router-dom';
-import { Car, FileText, Users, ChevronRight, Search, Eye } from 'lucide-react';
+import { Car, FileText, Users, ChevronRight, Search, Building2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -87,6 +87,20 @@ export default function AdminDashboard() {
             <div className="text-[11px] text-muted-foreground mt-0.5">Reports</div>
           </div>
         </div>
+
+        {/* Admin links */}
+        <Link to="/admin/insurance-companies" className="card-surface flex items-center justify-between hover:shadow-md transition-shadow">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-muted flex items-center justify-center">
+              <Building2 className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
+            </div>
+            <div>
+              <div className="text-sm font-bold text-foreground">Insurance Companies</div>
+              <div className="text-xs text-muted-foreground mt-0.5">Manage dropdown options</div>
+            </div>
+          </div>
+          <ChevronRight className="w-4 h-4 text-muted-foreground/40" strokeWidth={1.5} />
+        </Link>
 
         <Tabs defaultValue="vehicles" className="w-full">
           <TabsList className="w-full">

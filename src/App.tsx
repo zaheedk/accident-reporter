@@ -14,6 +14,7 @@ import PanelShops from "./pages/PanelShops";
 import Profile from "./pages/Profile";
 import UserManagement from "./pages/UserManagement";
 import AdminDashboard from "./pages/AdminDashboard";
+import InsuranceCompanies from "./pages/InsuranceCompanies";
 import Auth from "./pages/Auth";
 import About from "./pages/About";
 import HowItWorks from "./pages/HowItWorks";
@@ -60,6 +61,7 @@ const App = () => (
             <Route path="/panel-shops" element={<ProtectedRoute><PanelShops /></ProtectedRoute>} />
             <Route path="/users" element={<ProtectedRoute><UserManagement /></ProtectedRoute>} />
             <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
+            <Route path="/admin/insurance-companies" element={<ProtectedRoute><InsuranceCompanies /></ProtectedRoute>} />
             <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
             <Route path="/about" element={<About />} />
             <Route path="/how-it-works" element={<HowItWorks />} />
