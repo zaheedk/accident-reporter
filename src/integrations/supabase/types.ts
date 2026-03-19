@@ -325,6 +325,9 @@ export type Database = {
           finance_arrangement: boolean
           finance_details: string | null
           id: string
+          insurance_company: string
+          insurance_expiry: string
+          insurance_policy_number: string
           make: string
           model: string
           modification_details: string | null
@@ -342,6 +345,9 @@ export type Database = {
           finance_arrangement?: boolean
           finance_details?: string | null
           id?: string
+          insurance_company?: string
+          insurance_expiry?: string
+          insurance_policy_number?: string
           make?: string
           model?: string
           modification_details?: string | null
@@ -359,6 +365,9 @@ export type Database = {
           finance_arrangement?: boolean
           finance_details?: string | null
           id?: string
+          insurance_company?: string
+          insurance_expiry?: string
+          insurance_policy_number?: string
           make?: string
           model?: string
           modification_details?: string | null
