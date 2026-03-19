@@ -27,7 +27,7 @@ export default function Legal() {
               You agree not to misuse the Service, submit false or misleading claim information, attempt to gain unauthorised access, or use the platform for any unlawful purpose.
             </Section>
             <Section title="5. Intellectual Property">
-              All content, trademarks, and materials on ClaimSorted are owned by us or our licensors. You may not copy, modify, or distribute any part of the Service without written permission.
+              All content, trademarks, and materials on Fixd are owned by us or our licensors. You may not copy, modify, or distribute any part of the Service without written permission.
             </Section>
             <Section title="6. Limitation of Liability">
               ClaimSorted is not an insurance provider or legal advisor. We do not guarantee claim outcomes. To the fullest extent permitted by law, we are not liable for any indirect, incidental, or consequential damages arising from your use of the Service.
