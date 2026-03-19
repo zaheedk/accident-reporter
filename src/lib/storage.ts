@@ -56,6 +56,9 @@ function dbVehicleToVehicle(row: any): Vehicle {
     financeDetails: row.finance_details,
     modified: row.modified,
     modificationDetails: row.modification_details,
+    insuranceCompany: row.insurance_company || '',
+    insurancePolicyNumber: row.insurance_policy_number || '',
+    insuranceExpiry: row.insurance_expiry || '',
     createdAt: row.created_at,
   };
 }

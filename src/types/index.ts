@@ -11,6 +11,9 @@ export interface Vehicle {
   financeDetails?: string;
   modified: boolean;
   modificationDetails?: string;
+  insuranceCompany: string;
+  insurancePolicyNumber: string;
+  insuranceExpiry: string;
   createdAt: string;
 }
 
