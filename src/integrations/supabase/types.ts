@@ -318,6 +318,30 @@ export type Database = {
           },
         ]
       }
+      tow_companies: {
+        Row: {
+          address: string
+          created_at: string
+          id: string
+          name: string
+          phone: string
+        }
+        Insert: {
+          address?: string
+          created_at?: string
+          id?: string
+          name: string
+          phone?: string
+        }
+        Update: {
+          address?: string
+          created_at?: string
+          id?: string
+          name?: string
+          phone?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
