@@ -15,10 +15,10 @@ export default function Legal() {
 
           <TabsContent value="terms" className="card-surface space-y-5">
             <Section title="1. Acceptance of Terms">
-              By accessing or using Fixd ("the Service"), you agree to be bound by these Terms of Service. If you do not agree, do not use the Service.
+              By accessing or using Rift ("the Service"), you agree to be bound by these Terms of Service. If you do not agree, do not use the Service.
             </Section>
             <Section title="2. Description of Service">
-              Fixd provides a digital platform for documenting vehicle insurance claims, managing vehicle records, and connecting with panel repair shops. The Service is provided "as is" for informational and organisational purposes only.
+              Rift provides a digital platform for documenting vehicle insurance claims, managing vehicle records, and connecting with panel repair shops. The Service is provided "as is" for informational and organisational purposes only.
             </Section>
             <Section title="3. User Accounts">
               You must create an account to use the Service. You are responsible for maintaining the confidentiality of your credentials and for all activity under your account. You must provide accurate and complete information.
@@ -27,10 +27,10 @@ export default function Legal() {
               You agree not to misuse the Service, submit false or misleading claim information, attempt to gain unauthorised access, or use the platform for any unlawful purpose.
             </Section>
             <Section title="5. Intellectual Property">
-              All content, trademarks, and materials on Fixd are owned by us or our licensors. You may not copy, modify, or distribute any part of the Service without written permission.
+              All content, trademarks, and materials on Rift are owned by us or our licensors. You may not copy, modify, or distribute any part of the Service without written permission.
             </Section>
             <Section title="6. Limitation of Liability">
-              Fixd is not an insurance provider or legal advisor. We do not guarantee claim outcomes. To the fullest extent permitted by law, we are not liable for any indirect, incidental, or consequential damages arising from your use of the Service.
+              Rift is not an insurance provider or legal advisor. We do not guarantee claim outcomes. To the fullest extent permitted by law, we are not liable for any indirect, incidental, or consequential damages arising from your use of the Service.
             </Section>
             <Section title="7. Modifications">
               We reserve the right to modify these terms at any time. Continued use of the Service constitutes acceptance of updated terms.
@@ -54,7 +54,7 @@ export default function Legal() {
               We do not sell your personal data. Information may be shared with panel shops you select, service providers who assist in operating the platform, and legal authorities when required by law.
             </Section>
             <Section title="5. Your Rights">
-              You have the right to access, correct, or delete your personal data at any time. Contact us at support@fixd.co.nz to exercise these rights.
+              You have the right to access, correct, or delete your personal data at any time. Contact us at support@rift.co.nz to exercise these rights.
             </Section>
             <Section title="6. Cookies">
               We use essential cookies to maintain your session and preferences. No third-party tracking cookies are used without your consent.
@@ -63,7 +63,7 @@ export default function Legal() {
               We may update this Privacy Policy periodically. We will notify you of significant changes via email or in-app notification.
             </Section>
             <Section title="8. Contact">
-              For privacy-related enquiries, email support@fixd.co.nz or visit our Contact page.
+              For privacy-related enquiries, email support@rift.co.nz or visit our Contact page.
             </Section>
           </TabsContent>
         </Tabs>
