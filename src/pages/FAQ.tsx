@@ -25,7 +25,7 @@ const faqs = [
   },
   {
     q: 'What are panel shops?',
-    a: 'Panel shops are vehicle repair specialists. Fixd maintains a curated list of trusted panel shops with ratings, contact details, and locations to help you choose the right repairer.',
+    a: 'Panel shops are vehicle repair specialists. Rift maintains a curated list of trusted panel shops with ratings, contact details, and locations to help you choose the right repairer.',
   },
   {
     q: 'Is my data secure?',
