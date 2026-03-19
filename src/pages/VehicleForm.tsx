@@ -68,6 +68,13 @@ export default function VehicleForm() {
           </div>
         </div>
 
+        <div className="card-surface space-y-4">
+          <h2 className="text-sm font-semibold text-foreground">Insurance details</h2>
+          <div><label className="form-label">Insurance company</label><input className="form-input" placeholder="e.g. AA Insurance" value={form.insuranceCompany} onChange={e => update('insuranceCompany', e.target.value)} /></div>
+          <div><label className="form-label">Policy number</label><input className="form-input tabular-nums" placeholder="POL-123456" value={form.insurancePolicyNumber} onChange={e => update('insurancePolicyNumber', e.target.value)} /></div>
+          <div><label className="form-label">Policy expiry</label><input type="date" className="form-input tabular-nums" value={form.insuranceExpiry} onChange={e => update('insuranceExpiry', e.target.value)} /></div>
+        </div>
+
         <div className="card-surface space-y-3">
           <Toggle active={form.financeArrangement} onToggle={() => update('financeArrangement', !form.financeArrangement)} label="Subject to finance arrangement" />
           {form.financeArrangement && (
