@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { Plus, Car, Trash2, ChevronRight } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Plus, Car, Trash2, ChevronRight, ArrowLeft } from 'lucide-react';
 import { getVehicles, deleteVehicle } from '@/lib/storage';
 import AppLayout from '@/components/AppLayout';
 import { Vehicle } from '@/types';
