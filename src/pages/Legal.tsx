@@ -54,7 +54,7 @@ export default function Legal() {
               We do not sell your personal data. Information may be shared with panel shops you select, service providers who assist in operating the platform, and legal authorities when required by law.
             </Section>
             <Section title="5. Your Rights">
-              You have the right to access, correct, or delete your personal data at any time. Contact us at support@fixd.co.nz to exercise these rights.
+              You have the right to access, correct, or delete your personal data at any time. Contact us at support@rift.co.nz to exercise these rights.
             </Section>
             <Section title="6. Cookies">
               We use essential cookies to maintain your session and preferences. No third-party tracking cookies are used without your consent.
