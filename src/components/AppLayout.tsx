@@ -29,7 +29,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           <div className="w-8 h-8 rounded-xl bg-foreground flex items-center justify-center">
             <FileText className="w-4 h-4 text-card" />
           </div>
-          <span className="text-[15px] font-bold text-foreground tracking-tight">Fixd</span>
+          <span className="text-[15px] font-bold text-foreground tracking-tight">Rift</span>
         </div>
         <div className="flex items-center gap-2">
           <Link to="/claims/new" className="btn-primary h-8 px-3.5 text-xs rounded-lg">
