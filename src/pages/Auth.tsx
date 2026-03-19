@@ -56,7 +56,7 @@ export default function Auth() {
             <FileText className="w-7 h-7 text-card" />
           </div>
           <div className="text-center">
-            <h1 className="text-2xl font-bold text-foreground tracking-tight">ClaimSorted</h1>
+            <h1 className="text-2xl font-bold text-foreground tracking-tight">Fixd</h1>
             <p className="text-sm text-muted-foreground mt-1">{mode === 'login' ? 'Welcome back' : 'Create your account'}</p>
           </div>
         </div>

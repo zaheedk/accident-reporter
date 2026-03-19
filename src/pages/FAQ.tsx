@@ -37,7 +37,7 @@ const faqs = [
   },
   {
     q: 'How do I contact support?',
-    a: 'Visit our About & Contact page, or email us directly at support@claimsorted.co.nz. We aim to respond within 24 hours.',
+    a: 'Visit our About & Contact page, or email us directly at support@fixd.co.nz. We aim to respond within 24 hours.',
   },
 ];
 
