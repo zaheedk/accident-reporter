@@ -56,22 +56,22 @@ export default function Dashboard() {
 
         {/* Stats */}
         <div className="grid grid-cols-2 gap-3">
-          <div className="card-surface">
+          <Link to="/vehicles" className="card-surface hover:shadow-md transition-shadow">
             <div className="flex items-center justify-between mb-3">
               <Car className="w-5 h-5 text-muted-foreground" strokeWidth={1.5} />
               <ArrowUpRight className="w-4 h-4 text-muted-foreground/40" />
             </div>
             <div className="text-3xl font-extrabold tabular-nums text-foreground">{vehicles.length}</div>
             <div className="text-[13px] text-muted-foreground mt-0.5">Vehicles</div>
-          </div>
-          <div className="card-surface">
+          </Link>
+          <Link to="/claims" className="card-surface hover:shadow-md transition-shadow">
             <div className="flex items-center justify-between mb-3">
               <FileText className="w-5 h-5 text-muted-foreground" strokeWidth={1.5} />
               <ArrowUpRight className="w-4 h-4 text-muted-foreground/40" />
             </div>
             <div className="text-3xl font-extrabold tabular-nums text-foreground">{claims.length}</div>
             <div className="text-[13px] text-muted-foreground mt-0.5">Reports</div>
-          </div>
+          </Link>
         </div>
 
         {/* Quick Actions */}
