@@ -19,6 +19,13 @@ export default function VehicleForm() {
   const navigate = useNavigate();
   const isEdit = Boolean(id);
   const [form, setForm] = useState(emptyVehicle);
+  const [insuranceCompanies, setInsuranceCompanies] = useState<{ id: string; name: string }[]>([]);
+
+  useEffect(() => {
+    supabase.from('insurance_companies').select('id, name').order('name').then(({ data }) => {
+      if (data) setInsuranceCompanies(data);
+    });
+  }, []);
 
   useEffect(() => {
     if (id) {
