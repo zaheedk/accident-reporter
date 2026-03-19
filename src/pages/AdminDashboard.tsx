@@ -4,7 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import AppLayout from '@/components/AppLayout';
 import { Navigate, Link } from 'react-router-dom';
-import { Car, FileText, Users, ChevronRight, Search, Eye } from 'lucide-react';
+import { Car, FileText, Users, ChevronRight, Search, Building2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
