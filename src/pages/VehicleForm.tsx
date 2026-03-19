@@ -79,7 +79,19 @@ export default function VehicleForm() {
 
         <div className="card-surface space-y-4">
           <h2 className="text-sm font-semibold text-foreground">Insurance details</h2>
-          <div><label className="form-label">Insurance company</label><input className="form-input" placeholder="e.g. AA Insurance" value={form.insuranceCompany} onChange={e => update('insuranceCompany', e.target.value)} /></div>
+          <div>
+            <label className="form-label">Insurance company</label>
+            <Select value={form.insuranceCompany} onValueChange={val => update('insuranceCompany', val)}>
+              <SelectTrigger className="form-input">
+                <SelectValue placeholder="Select insurance company" />
+              </SelectTrigger>
+              <SelectContent>
+                {insuranceCompanies.map(c => (
+                  <SelectItem key={c.id} value={c.name}>{c.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
           <div><label className="form-label">Policy number</label><input className="form-input tabular-nums" placeholder="POL-123456" value={form.insurancePolicyNumber} onChange={e => update('insurancePolicyNumber', e.target.value)} /></div>
           <div><label className="form-label">Policy expiry</label><input type="date" className="form-input tabular-nums" value={form.insuranceExpiry} onChange={e => update('insuranceExpiry', e.target.value)} /></div>
         </div>
