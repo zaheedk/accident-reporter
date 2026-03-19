@@ -14,6 +14,7 @@ import PanelShops from "./pages/PanelShops";
 import Profile from "./pages/Profile";
 import UserManagement from "./pages/UserManagement";
 import AdminDashboard from "./pages/AdminDashboard";
+import InsuranceCompanies from "./pages/InsuranceCompanies";
 import Auth from "./pages/Auth";
 import About from "./pages/About";
 import HowItWorks from "./pages/HowItWorks";
