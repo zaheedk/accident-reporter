@@ -18,7 +18,7 @@ export default function Legal() {
               By accessing or using Rift ("the Service"), you agree to be bound by these Terms of Service. If you do not agree, do not use the Service.
             </Section>
             <Section title="2. Description of Service">
-              Fixd provides a digital platform for documenting vehicle insurance claims, managing vehicle records, and connecting with panel repair shops. The Service is provided "as is" for informational and organisational purposes only.
+              Rift provides a digital platform for documenting vehicle insurance claims, managing vehicle records, and connecting with panel repair shops. The Service is provided "as is" for informational and organisational purposes only.
             </Section>
             <Section title="3. User Accounts">
               You must create an account to use the Service. You are responsible for maintaining the confidentiality of your credentials and for all activity under your account. You must provide accurate and complete information.
