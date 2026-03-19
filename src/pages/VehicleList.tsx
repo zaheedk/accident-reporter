@@ -6,6 +6,7 @@ import AppLayout from '@/components/AppLayout';
 import { Vehicle } from '@/types';
 
 export default function VehicleList() {
+  const navigate = useNavigate();
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
 
   useEffect(() => { getVehicles().then(setVehicles); }, []);
