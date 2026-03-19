@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { Plus, Car, Trash2, ChevronRight } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Plus, Car, Trash2, ChevronRight, ArrowLeft } from 'lucide-react';
 import { getVehicles, deleteVehicle } from '@/lib/storage';
 import AppLayout from '@/components/AppLayout';
 import { Vehicle } from '@/types';
 
 export default function VehicleList() {
+  const navigate = useNavigate();
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
 
   useEffect(() => { getVehicles().then(setVehicles); }, []);
@@ -19,9 +20,14 @@ export default function VehicleList() {
     <AppLayout>
       <div className="space-y-5">
         <div className="flex items-center justify-between">
-          <div>
-            <p className="text-sm text-muted-foreground">Garage</p>
-            <h1 className="text-[22px] font-extrabold text-foreground tracking-tight -mt-0.5">My vehicles</h1>
+          <div className="flex items-center gap-3">
+            <button onClick={() => navigate('/')} className="p-2 -ml-2 rounded-xl hover:bg-muted transition-colors">
+              <ArrowLeft className="w-5 h-5 text-foreground" strokeWidth={1.5} />
+            </button>
+            <div>
+              <p className="text-sm text-muted-foreground">Garage</p>
+              <h1 className="text-[22px] font-extrabold text-foreground tracking-tight -mt-0.5">My vehicles</h1>
+            </div>
           </div>
           <Link to="/vehicles/new" className="btn-primary h-8 px-3.5 text-xs rounded-lg">
             <Plus className="w-3.5 h-3.5" /> Add
