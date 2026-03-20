@@ -35,6 +35,15 @@ export default function ClaimDetail() {
           });
           setPhotos(mapped);
         }
+        // Fetch insurer phone
+        if (foundClaim.insuranceCompany) {
+          const { data: insurer } = await supabase
+            .from('insurance_companies')
+            .select('phone')
+            .eq('name', foundClaim.insuranceCompany)
+            .single();
+          if (insurer?.phone) setInsurerPhone(insurer.phone);
+        }
       }
       setLoading(false);
     });
