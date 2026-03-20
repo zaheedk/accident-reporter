@@ -83,8 +83,8 @@ export default function Dashboard() {
           </Link>
           <Link to="/claims" className="card-surface-elevated group hover:border-primary/20 transition-all">
             <div className="flex items-center justify-between mb-3">
-              <div className="w-9 h-9 rounded-xl bg-accent/10 flex items-center justify-center" style={{ backgroundColor: 'hsla(250, 80%, 60%, 0.1)' }}>
-                <FileText className="w-4.5 h-4.5" strokeWidth={1.8} style={{ color: 'hsl(250, 80%, 60%)' }} />
+              <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center">
+                <FileText className="w-4.5 h-4.5 text-primary" strokeWidth={1.8} />
               </div>
               <ArrowUpRight className="w-4 h-4 text-muted-foreground/30 group-hover:text-primary transition-colors" />
             </div>

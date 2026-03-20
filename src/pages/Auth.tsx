@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Navigate } from 'react-router-dom';
-import { FileText, Mail, Lock, User, Loader2, Shield } from 'lucide-react';
+import { Mail, Lock, User, Loader2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { lovable } from '@/integrations/lovable/index';
 import { useAuth } from '@/contexts/AuthContext';
@@ -51,29 +51,60 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-5 relative overflow-hidden">
-      <div className="absolute inset-0 -z-10">
-        <div className="absolute inset-0 bg-background" />
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] rounded-full opacity-[0.15]"
-          style={{ background: 'radial-gradient(circle, hsl(225, 84%, 55%) 0%, transparent 70%)' }} />
-        <div className="absolute bottom-0 right-0 w-[400px] h-[400px] rounded-full opacity-[0.08]"
-          style={{ background: 'radial-gradient(circle, hsl(250, 80%, 60%) 0%, transparent 70%)' }} />
-      </div>
-
-      <div className="w-full max-w-sm">
-        <div className="flex flex-col items-center gap-3 mb-8">
-          <div className="w-16 h-16 rounded-2xl flex items-center justify-center shadow-lg relative overflow-hidden"
-            style={{ background: 'linear-gradient(135deg, hsl(225, 84%, 55%), hsl(250, 80%, 60%))', boxShadow: '0 8px 24px hsla(225, 84%, 55%, 0.3)' }}>
-            <Shield className="w-8 h-8 text-white" />
+    <div className="min-h-screen flex flex-col bg-background">
+      {/* Hero section */}
+      <div className="px-6 pt-12 pb-8">
+        {/* Logo */}
+        <div className="flex items-center gap-2.5 mb-8">
+          <div className="w-11 h-11 rounded-2xl bg-primary/10 flex items-center justify-center">
+            <svg className="w-6 h-6 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+            </svg>
           </div>
-          <div className="text-center">
-            <h1 className="text-2xl font-extrabold text-foreground tracking-tight">Savo</h1>
-            <p className="text-sm text-muted-foreground mt-1">{mode === 'login' ? t('auth.welcomeBack') : t('auth.createAccount')}</p>
-          </div>
+          <span className="text-lg font-bold text-foreground tracking-tight">Savo</span>
         </div>
 
-        <div className="card-surface-elevated space-y-5">
-          <div className="space-y-2.5">
+        {/* Headline */}
+        <h1 className="text-[32px] leading-[1.1] tracking-tight text-foreground mb-4" style={{ textWrap: 'balance' as any }}>
+          <span className="font-semibold" style={{ fontFamily: "'Playfair Display', serif" }}>Capture the scene.</span>
+          <br />
+          <span className="font-bold italic text-primary" style={{ fontFamily: "'Playfair Display', serif" }}>Protect your claim.</span>
+        </h1>
+
+        {/* Subtitle */}
+        <p className="text-[15px] leading-relaxed text-muted-foreground max-w-xs">
+          Savo helps you record accident data instantly — photos, GPS, witness info, and reports — so your claim is airtight from minute one.
+        </p>
+
+        {/* Stats row */}
+        <div className="flex items-start gap-8 mt-8">
+          <div>
+            <div className="text-2xl font-extrabold text-foreground tabular-nums">4×</div>
+            <div className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mt-0.5">Faster Claims</div>
+          </div>
+          <div>
+            <div className="text-2xl font-extrabold text-primary tabular-nums">98%</div>
+            <div className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mt-0.5">Success Rate</div>
+          </div>
+          <div>
+            <div className="text-2xl font-extrabold text-foreground tabular-nums">120k+</div>
+            <div className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mt-0.5">Incidents Logged</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Login card */}
+      <div className="flex-1 bg-card rounded-t-3xl px-6 pt-7 pb-8 border-t border-border/40" style={{ boxShadow: '0 -4px 24px rgba(0,0,0,0.04)' }}>
+        <div className="max-w-sm mx-auto">
+          <h2 className="text-lg font-bold text-foreground mb-1">
+            {mode === 'login' ? t('auth.welcomeBack') : t('auth.createAccount')}
+          </h2>
+          <p className="text-sm text-muted-foreground mb-5">
+            {mode === 'login' ? 'Sign in to continue to Savo' : 'Create your free account'}
+          </p>
+
+          {/* OAuth buttons */}
+          <div className="space-y-2.5 mb-5">
             <button onClick={() => handleOAuth('google')}
               className="w-full h-11 px-4 bg-card border border-border rounded-xl text-sm font-medium text-foreground transition-all hover:bg-muted hover:border-border active:scale-[0.98] inline-flex items-center justify-center gap-3 shadow-sm">
               <svg className="w-[18px] h-[18px] flex-shrink-0" viewBox="0 0 24 24">
@@ -86,7 +117,7 @@ export default function Auth() {
             </button>
             <button onClick={() => handleOAuth('apple')}
               className="w-full h-11 px-4 rounded-xl text-sm font-medium transition-all active:scale-[0.98] inline-flex items-center justify-center gap-3"
-              style={{ background: 'hsl(220, 30%, 15%)', color: 'white', boxShadow: '0 2px 8px hsla(220, 30%, 15%, 0.3)' }}>
+              style={{ background: 'hsl(220, 20%, 18%)', color: 'white', boxShadow: '0 2px 8px hsla(220, 20%, 18%, 0.3)' }}>
               <svg className="w-[18px] h-[18px] flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M17.05 20.28c-.98.95-2.05.88-3.08.4-1.09-.5-2.08-.48-3.24 0-1.44.62-2.2.44-3.06-.4C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/>
               </svg>
@@ -94,7 +125,7 @@ export default function Auth() {
             </button>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 mb-5">
             <div className="flex-1 h-px bg-border" />
             <span className="text-xs text-muted-foreground font-medium">{t('auth.orEmail')}</span>
             <div className="flex-1 h-px bg-border" />
@@ -122,27 +153,27 @@ export default function Auth() {
               {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : mode === 'login' ? t('auth.signIn') : t('auth.signUp')}
             </button>
           </form>
-        </div>
 
-        <p className="text-center text-sm text-muted-foreground mt-5">
-          {mode === 'login' ? t('auth.noAccount') + ' ' : t('auth.hasAccount') + ' '}
-          <button onClick={() => { setMode(mode === 'login' ? 'signup' : 'login'); setError(''); }} className="text-primary font-semibold hover:underline">
-            {mode === 'login' ? t('auth.signUp') : t('auth.signIn')}
-          </button>
-        </p>
+          <p className="text-center text-sm text-muted-foreground mt-5">
+            {mode === 'login' ? t('auth.noAccount') + ' ' : t('auth.hasAccount') + ' '}
+            <button onClick={() => { setMode(mode === 'login' ? 'signup' : 'login'); setError(''); }} className="text-primary font-semibold hover:underline">
+              {mode === 'login' ? t('auth.signUp') : t('auth.signIn')}
+            </button>
+          </p>
 
-        <div className="mt-4">
-          <LanguageSwitcher />
-        </div>
+          <div className="mt-4">
+            <LanguageSwitcher />
+          </div>
 
-        <div className="flex items-center justify-center gap-3 mt-4 text-xs text-muted-foreground">
-          <a href="/about" className="hover:text-foreground transition-colors">{t('auth.about')}</a>
-          <span>·</span>
-          <a href="/how-it-works" className="hover:text-foreground transition-colors">{t('nav.howItWorks')}</a>
-          <span>·</span>
-          <a href="/faq" className="hover:text-foreground transition-colors">{t('auth.faq')}</a>
-          <span>·</span>
-          <a href="/legal" className="hover:text-foreground transition-colors">{t('nav.termsPrivacy')}</a>
+          <div className="flex items-center justify-center gap-3 mt-4 text-xs text-muted-foreground">
+            <a href="/about" className="hover:text-foreground transition-colors">{t('auth.about')}</a>
+            <span>·</span>
+            <a href="/how-it-works" className="hover:text-foreground transition-colors">{t('nav.howItWorks')}</a>
+            <span>·</span>
+            <a href="/faq" className="hover:text-foreground transition-colors">{t('auth.faq')}</a>
+            <span>·</span>
+            <a href="/legal" className="hover:text-foreground transition-colors">{t('nav.termsPrivacy')}</a>
+          </div>
         </div>
       </div>
     </div>
