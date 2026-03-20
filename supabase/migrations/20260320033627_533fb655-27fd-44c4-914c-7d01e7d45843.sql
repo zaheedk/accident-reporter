@@ -1,0 +1,1 @@
+ALTER TABLE public.insurance_companies ADD COLUMN phone text NOT NULL DEFAULT '';

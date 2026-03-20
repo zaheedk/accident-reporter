@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Printer, Mail, X, Download, Share2 } from 'lucide-react';
+import { ArrowLeft, Printer, Mail, X, Download, Share2, Phone } from 'lucide-react';
 import { getClaims, getVehicles } from '@/lib/storage';
 import { supabase } from '@/integrations/supabase/client';
 import AppLayout from '@/components/AppLayout';
@@ -14,6 +14,7 @@ export default function ClaimDetail() {
   const [photos, setPhotos] = useState<{ id: string; url: string; fileName: string }[]>([]);
   const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [insurerPhone, setInsurerPhone] = useState('');
   const printRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -33,6 +34,15 @@ export default function ClaimDetail() {
             return { id: p.id, url: data.publicUrl, fileName: p.file_name };
           });
           setPhotos(mapped);
+        }
+        // Fetch insurer phone
+        if (foundClaim.insuranceCompany) {
+          const { data: insurer } = await supabase
+            .from('insurance_companies')
+            .select('phone')
+            .eq('name', foundClaim.insuranceCompany)
+            .single();
+          if (insurer?.phone) setInsurerPhone(insurer.phone);
         }
       }
       setLoading(false);
@@ -138,6 +148,15 @@ export default function ClaimDetail() {
 
         <Section title="Insurance & Repairer">
           <Row label="Insurance" value={claim.insuranceCompany} />
+          {insurerPhone && (
+            <div className="flex items-center justify-between gap-4 py-2 border-b border-border/60">
+              <span className="text-[13px] text-muted-foreground flex-shrink-0">Claims line</span>
+              <a href={`tel:${insurerPhone.replace(/\s/g, '')}`} className="flex items-center gap-2 text-[13px] font-medium text-primary hover:underline">
+                <Phone className="w-3.5 h-3.5" strokeWidth={2} />
+                {insurerPhone}
+              </a>
+            </div>
+          )}
           <Row label="Name" value={claim.repairerName} /><Row label="Phone" value={claim.repairerPhone} /><Row label="Address" value={claim.repairerAddress} />
         </Section>
 
