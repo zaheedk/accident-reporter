@@ -63,7 +63,7 @@ export default function Legal() {
               We may update this Privacy Policy periodically. We will notify you of significant changes via email or in-app notification.
             </Section>
             <Section title="8. Contact">
-              For privacy-related enquiries, email support@rift.co.nz or visit our Contact page.
+              For privacy-related enquiries, email support@savo.co.nz or visit our Contact page.
             </Section>
           </TabsContent>
         </Tabs>

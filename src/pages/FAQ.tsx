@@ -4,12 +4,12 @@ import { HelpCircle, MessageSquare } from 'lucide-react';
 
 const faqs = [
   {
-    q: 'What is Rift?',
-    a: 'Rift is a digital tool that helps you document and manage vehicle insurance claims. It guides you through the entire process — from recording incident details to selecting a trusted panel shop for repairs.',
+    q: 'What is Savo?',
+    a: 'Savo is a digital tool that helps you document and manage vehicle insurance claims. It guides you through the entire process — from recording incident details to selecting a trusted panel shop for repairs.',
   },
   {
-    q: 'Is Rift free to use?',
-    a: 'Yes! Rift is completely free for vehicle owners. We make it easy to document claims and connect with panel shops at no cost to you.',
+    q: 'Is Savo free to use?',
+    a: 'Yes! Savo is completely free for vehicle owners. We make it easy to document claims and connect with panel shops at no cost to you.',
   },
   {
     q: 'How do I file a claim?',
@@ -25,7 +25,7 @@ const faqs = [
   },
   {
     q: 'What are panel shops?',
-    a: 'Panel shops are vehicle repair specialists. Rift maintains a curated list of trusted panel shops with ratings, contact details, and locations to help you choose the right repairer.',
+    a: 'Panel shops are vehicle repair specialists. Savo maintains a curated list of trusted panel shops with ratings, contact details, and locations to help you choose the right repairer.',
   },
   {
     q: 'Is my data secure?',
@@ -37,7 +37,7 @@ const faqs = [
   },
   {
     q: 'How do I contact support?',
-    a: 'Visit our About & Contact page, or email us directly at support@rift.co.nz. We aim to respond within 24 hours.',
+    a: 'Visit our About & Contact page, or email us directly at support@savo.co.nz. We aim to respond within 24 hours.',
   },
 ];
 

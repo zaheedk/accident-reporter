@@ -50,7 +50,7 @@ export default function About() {
           <h2 className="text-base font-semibold text-foreground">Contact Us</h2>
           <div className="space-y-3">
             <div className="flex items-center gap-3 text-sm text-muted-foreground">
-              <Mail className="w-4 h-4 text-primary" /> support@rift.co.nz
+              <Mail className="w-4 h-4 text-primary" /> support@savo.co.nz
             </div>
             <div className="flex items-center gap-3 text-sm text-muted-foreground">
               <Phone className="w-4 h-4 text-primary" /> 0800 CLAIMS (252 467)
