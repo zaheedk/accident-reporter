@@ -24,10 +24,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="bg-card px-4 py-3.5 flex items-center justify-between" style={{ boxShadow: '0 1px 2px rgba(0,0,0,0.04)' }}>
+      <header className="bg-card px-4 py-3 flex items-center justify-between border-b border-border/50 sticky top-0 z-30 backdrop-blur-xl bg-card/90">
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-xl bg-foreground flex items-center justify-center">
-            <FileText className="w-4 h-4 text-card" />
+          <div className="w-8 h-8 rounded-xl flex items-center justify-center"
+            style={{ background: 'linear-gradient(135deg, hsl(225, 84%, 55%), hsl(250, 80%, 60%))' }}>
+            <Shield className="w-4 h-4 text-white" />
           </div>
           <span className="text-[15px] font-bold text-foreground tracking-tight">Savo</span>
         </div>
@@ -44,20 +45,20 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
       {/* Slide-down menu */}
       {menuOpen && (
-        <div className="bg-card border-b border-border/60 px-4 py-3 space-y-1 animate-in slide-in-from-top-2 duration-200" style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
+        <div className="bg-card border-b border-border/50 px-4 py-3 space-y-1 animate-in slide-in-from-top-2 duration-200 sticky top-[53px] z-20" style={{ boxShadow: '0 4px 16px rgba(0,0,0,0.06)' }}>
           {contentLinks.map(({ to, icon: Icon, label }) => {
             const active = location.pathname === to;
             return (
               <Link key={to} to={to} onClick={() => setMenuOpen(false)}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${active ? 'bg-muted text-foreground' : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'}`}>
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${active ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'}`}>
                 <Icon className="w-4 h-4" />
                 {label}
               </Link>
             );
           })}
-          <div className="border-t border-border/60 my-2" />
+          <div className="border-t border-border/50 my-2" />
           <Link to="/profile" onClick={() => setMenuOpen(false)}
-            className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${location.pathname === '/profile' ? 'bg-muted text-foreground' : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'}`}>
+            className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${location.pathname === '/profile' ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'}`}>
             <User className="w-4 h-4" />
             Profile
           </Link>
@@ -80,13 +81,15 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </div>
       </div>
 
-      <nav className="fixed bottom-0 left-0 right-0 bg-card border-t border-border/60 flex justify-around py-2 px-4 md:hidden z-20">
+      <nav className="fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-xl border-t border-border/50 flex justify-around py-2 px-4 md:hidden z-20">
         {navItems.map(({ to, icon: Icon, label }) => {
           const active = location.pathname === to || (to !== '/' && location.pathname.startsWith(to));
           return (
             <Link key={to} to={to}
-              className={`flex flex-col items-center gap-0.5 px-3 py-1.5 text-[11px] font-medium transition-colors ${active ? 'text-foreground' : 'text-muted-foreground'}`}>
-              <Icon className="w-5 h-5" strokeWidth={active ? 2.2 : 1.5} />
+              className={`flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-xl text-[11px] font-medium transition-all ${active ? 'text-primary' : 'text-muted-foreground'}`}>
+              <div className={`p-1 rounded-lg transition-colors ${active ? 'bg-primary/10' : ''}`}>
+                <Icon className="w-5 h-5" strokeWidth={active ? 2.2 : 1.5} />
+              </div>
               {label}
             </Link>
           );
