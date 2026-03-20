@@ -53,7 +53,7 @@ export default function InsuranceCompanies() {
 
   const handleUpdate = async (id: string) => {
     if (!editName.trim()) return;
-    const { error } = await supabase.from('insurance_companies').update({ name: editName.trim(), email: editEmail.trim() }).eq('id', id);
+    const { error } = await supabase.from('insurance_companies').update({ name: editName.trim(), email: editEmail.trim(), phone: editPhone.trim() }).eq('id', id);
     if (error) { toast.error('Failed to update'); return; }
     toast.success('Updated');
     setEditingId(null);
