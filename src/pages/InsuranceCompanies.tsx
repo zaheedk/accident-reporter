@@ -142,6 +142,12 @@ export default function InsuranceCompanies() {
                       </div>
                       <div className="min-w-0">
                         <div className="text-sm font-semibold text-foreground truncate">{c.name}</div>
+                        {c.phone && (
+                          <a href={`tel:${c.phone.replace(/\s/g, '')}`} className="flex items-center gap-1 text-xs text-primary hover:underline">
+                            <Phone className="w-3 h-3" strokeWidth={2} />
+                            {c.phone}
+                          </a>
+                        )}
                         {c.email && <div className="text-xs text-muted-foreground truncate">{c.email}</div>}
                       </div>
                     </div>
