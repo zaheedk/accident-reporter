@@ -7,9 +7,11 @@ import AppLayout from '@/components/AppLayout';
 import { Vehicle, ClaimReport } from '@/types';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { supabase } from '@/integrations/supabase/client';
+import { useTranslation } from 'react-i18next';
 
 export default function Dashboard() {
   const { user, signOut, isAdmin } = useAuth();
+  const { t } = useTranslation();
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [claims, setClaims] = useState<ClaimReport[]>([]);
   const [avatarUrl, setAvatarUrl] = useState('');
@@ -35,10 +37,9 @@ export default function Dashboard() {
   return (
     <AppLayout>
       <div className="space-y-5">
-        {/* Greeting row */}
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm text-muted-foreground">Welcome back</p>
+            <p className="text-sm text-muted-foreground">{t('dashboard.welcomeBack')}</p>
             <h1 className="text-[22px] font-extrabold text-foreground tracking-tight -mt-0.5">{firstName} 👋</h1>
           </div>
           <div className="flex items-center gap-2">
@@ -50,13 +51,12 @@ export default function Dashboard() {
                 </AvatarFallback>
               </Avatar>
             </Link>
-            <button onClick={signOut} className="p-2 rounded-xl hover:bg-muted transition-colors" title="Sign out">
+            <button onClick={signOut} className="p-2 rounded-xl hover:bg-muted transition-colors" title={t('common.signOut')}>
               <LogOut className="w-5 h-5 text-muted-foreground" strokeWidth={1.5} />
             </button>
           </div>
         </div>
 
-        {/* Hero CTA card */}
         <Link to="/claims/new" className="card-gradient block group">
           <div className="relative z-10">
             <div className="flex items-center justify-between mb-3">
@@ -65,12 +65,11 @@ export default function Dashboard() {
               </div>
               <ArrowUpRight className="w-5 h-5 text-white/60 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
             </div>
-            <div className="text-lg font-bold text-white">Report an incident</div>
-            <p className="text-sm text-white/70 mt-1">File a new claim report in minutes</p>
+            <div className="text-lg font-bold text-white">{t('dashboard.reportIncident')}</div>
+            <p className="text-sm text-white/70 mt-1">{t('dashboard.reportSubtitle')}</p>
           </div>
         </Link>
 
-        {/* Stats */}
         <div className="grid grid-cols-2 gap-3">
           <Link to="/vehicles" className="card-surface-elevated group hover:border-primary/20 transition-all">
             <div className="flex items-center justify-between mb-3">
@@ -80,7 +79,7 @@ export default function Dashboard() {
               <ArrowUpRight className="w-4 h-4 text-muted-foreground/30 group-hover:text-primary transition-colors" />
             </div>
             <div className="text-3xl font-extrabold tabular-nums text-foreground">{vehicles.length}</div>
-            <div className="text-[13px] text-muted-foreground mt-0.5">Vehicles</div>
+            <div className="text-[13px] text-muted-foreground mt-0.5">{t('dashboard.vehicles')}</div>
           </Link>
           <Link to="/claims" className="card-surface-elevated group hover:border-primary/20 transition-all">
             <div className="flex items-center justify-between mb-3">
@@ -90,42 +89,39 @@ export default function Dashboard() {
               <ArrowUpRight className="w-4 h-4 text-muted-foreground/30 group-hover:text-primary transition-colors" />
             </div>
             <div className="text-3xl font-extrabold tabular-nums text-foreground">{claims.length}</div>
-            <div className="text-[13px] text-muted-foreground mt-0.5">Reports</div>
+            <div className="text-[13px] text-muted-foreground mt-0.5">{t('dashboard.reports')}</div>
           </Link>
         </div>
 
-        {/* Quick Action */}
         <Link to="/vehicles/new" className="card-surface-elevated flex items-center gap-4 group hover:border-primary/20 transition-all">
           <div className="w-11 h-11 rounded-xl bg-muted flex items-center justify-center shrink-0">
             <Plus className="w-5 h-5 text-muted-foreground" />
           </div>
           <div className="flex-1 min-w-0">
-            <div className="text-sm font-bold text-foreground">Add a vehicle</div>
-            <div className="text-xs text-muted-foreground mt-0.5">Register to your garage</div>
+            <div className="text-sm font-bold text-foreground">{t('dashboard.addVehicle')}</div>
+            <div className="text-xs text-muted-foreground mt-0.5">{t('dashboard.registerGarage')}</div>
           </div>
           <ChevronRight className="w-4 h-4 text-muted-foreground/30 group-hover:text-primary transition-colors shrink-0" strokeWidth={1.5} />
         </Link>
 
-        {/* Admin Actions */}
         {isAdmin && (
           <Link to="/admin" className="card-surface-elevated flex items-center gap-4 group hover:border-primary/20 transition-all">
             <div className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: 'hsla(152, 60%, 42%, 0.1)' }}>
               <Shield className="w-5 h-5" style={{ color: 'hsl(152, 60%, 42%)' }} />
             </div>
             <div className="flex-1 min-w-0">
-              <div className="text-sm font-bold text-foreground">Admin Overview</div>
-              <div className="text-xs text-muted-foreground mt-0.5">Manage users, vehicles & reports</div>
+              <div className="text-sm font-bold text-foreground">{t('dashboard.adminOverview')}</div>
+              <div className="text-xs text-muted-foreground mt-0.5">{t('dashboard.adminSubtitle')}</div>
             </div>
             <ChevronRight className="w-4 h-4 text-muted-foreground/30 group-hover:text-primary transition-colors shrink-0" strokeWidth={1.5} />
           </Link>
         )}
 
-        {/* Drafts */}
         {drafts.length > 0 && (
           <div>
             <div className="flex items-center gap-2 mb-2.5">
               <div className="w-1.5 h-1.5 rounded-full bg-warning" style={{ backgroundColor: 'hsl(38, 92%, 50%)' }} />
-              <h2 className="text-[13px] font-semibold text-muted-foreground uppercase tracking-wide">Drafts</h2>
+              <h2 className="text-[13px] font-semibold text-muted-foreground uppercase tracking-wide">{t('dashboard.drafts')}</h2>
             </div>
             <div className="space-y-2">
               {drafts.map(claim => (
@@ -136,8 +132,8 @@ export default function Dashboard() {
                       <Clock className="w-4 h-4" strokeWidth={1.8} style={{ color: 'hsl(38, 92%, 50%)' }} />
                     </div>
                     <div>
-                      <div className="text-sm font-semibold text-foreground">{claim.incidentLocation || 'Untitled report'}</div>
-                      <div className="text-xs text-muted-foreground tabular-nums">{claim.incidentDate || 'No date set'}</div>
+                      <div className="text-sm font-semibold text-foreground">{claim.incidentLocation || t('dashboard.untitledReport')}</div>
+                      <div className="text-xs text-muted-foreground tabular-nums">{claim.incidentDate || t('dashboard.noDateSet')}</div>
                     </div>
                   </div>
                   <ChevronRight className="w-4 h-4 text-muted-foreground/30 group-hover:text-primary transition-colors" strokeWidth={1.5} />
@@ -147,12 +143,11 @@ export default function Dashboard() {
           </div>
         )}
 
-        {/* Submitted */}
         {submitted.length > 0 && (
           <div>
             <div className="flex items-center gap-2 mb-2.5">
               <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: 'hsl(152, 60%, 42%)' }} />
-              <h2 className="text-[13px] font-semibold text-muted-foreground uppercase tracking-wide">Submitted</h2>
+              <h2 className="text-[13px] font-semibold text-muted-foreground uppercase tracking-wide">{t('common.submitted')}</h2>
             </div>
             <div className="space-y-2">
               {submitted.slice(0, 5).map(claim => (
@@ -163,7 +158,7 @@ export default function Dashboard() {
                       <FileText className="w-4 h-4 text-primary" strokeWidth={1.8} />
                     </div>
                     <div>
-                      <div className="text-sm font-semibold text-foreground">{claim.incidentLocation || 'Report'}</div>
+                      <div className="text-sm font-semibold text-foreground">{claim.incidentLocation || t('dashboard.report')}</div>
                       <div className="text-xs text-muted-foreground tabular-nums">{claim.incidentDate}</div>
                     </div>
                   </div>

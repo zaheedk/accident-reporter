@@ -4,10 +4,12 @@ import { Plus, Car, Trash2, ChevronRight, ArrowLeft } from 'lucide-react';
 import { getVehicles, deleteVehicle } from '@/lib/storage';
 import AppLayout from '@/components/AppLayout';
 import { Vehicle } from '@/types';
+import { useTranslation } from 'react-i18next';
 
 export default function VehicleList() {
   const navigate = useNavigate();
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+  const { t } = useTranslation();
 
   useEffect(() => { getVehicles().then(setVehicles); }, []);
 
@@ -25,22 +27,22 @@ export default function VehicleList() {
               <ArrowLeft className="w-5 h-5 text-foreground" strokeWidth={1.5} />
             </button>
             <div>
-              <p className="text-sm text-muted-foreground">Garage</p>
-              <h1 className="text-[22px] font-extrabold text-foreground tracking-tight -mt-0.5">My vehicles</h1>
+              <p className="text-sm text-muted-foreground">{t('vehicles.garage')}</p>
+              <h1 className="text-[22px] font-extrabold text-foreground tracking-tight -mt-0.5">{t('vehicles.myVehicles')}</h1>
             </div>
           </div>
           <Link to="/vehicles/new" className="btn-primary h-8 px-3.5 text-xs rounded-lg">
-            <Plus className="w-3.5 h-3.5" /> Add
+            <Plus className="w-3.5 h-3.5" /> {t('common.add')}
           </Link>
         </div>
 
         {vehicles.length === 0 ? (
           <div className="card-surface text-center py-14">
             <Car className="w-12 h-12 text-muted-foreground/30 mx-auto mb-3" strokeWidth={1.2} />
-            <p className="text-sm font-semibold text-foreground">No vehicles added yet</p>
-            <p className="text-xs text-muted-foreground mt-1 mb-4">Add your vehicles to speed up claim filing.</p>
+            <p className="text-sm font-semibold text-foreground">{t('vehicles.noVehicles')}</p>
+            <p className="text-xs text-muted-foreground mt-1 mb-4">{t('vehicles.noVehiclesHint')}</p>
             <Link to="/vehicles/new" className="btn-primary h-8 px-3.5 text-xs rounded-lg">
-              <Plus className="w-3.5 h-3.5" /> Add vehicle
+              <Plus className="w-3.5 h-3.5" /> {t('vehicles.addVehicle')}
             </Link>
           </div>
         ) : (
