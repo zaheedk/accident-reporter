@@ -4,7 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import AppLayout from '@/components/AppLayout';
 import { Navigate } from 'react-router-dom';
-import { Plus, Trash2, Pencil, Building2, ArrowLeft, X, Check, Phone } from 'lucide-react';
+import { Plus, Trash2, Pencil, Building2, ArrowLeft, X, Check, Phone, Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import {
@@ -29,6 +29,7 @@ export default function InsuranceCompanies() {
   const [newPhone, setNewPhone] = useState('');
   const [showAdd, setShowAdd] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<InsuranceCompany | null>(null);
+  const [search, setSearch] = useState('');
 
   const { data: companies = [], isLoading } = useQuery({
     queryKey: ['insurance-companies'],
@@ -91,6 +92,17 @@ export default function InsuranceCompanies() {
           </button>
         </div>
 
+        {/* Search */}
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
+          <Input
+            placeholder="Search companies..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            className="pl-9"
+          />
+        </div>
+
         {showAdd && (
           <div className="card-surface space-y-3">
             <h3 className="text-sm font-semibold text-foreground">New insurance company</h3>
@@ -116,55 +128,58 @@ export default function InsuranceCompanies() {
             <p className="text-sm font-semibold text-foreground">No insurance companies</p>
             <p className="text-xs text-muted-foreground mt-1">Add companies for users to select from.</p>
           </div>
-        ) : (
-          <div className="space-y-2">
-            {companies.map(c => (
-              <div key={c.id} className="card-surface">
-                {editingId === c.id ? (
-                  <div className="space-y-3">
-                    <Input value={editName} onChange={e => setEditName(e.target.value)} placeholder="Company name" />
-                    <Input value={editEmail} onChange={e => setEditEmail(e.target.value)} placeholder="Email" type="email" />
-                    <Input value={editPhone} onChange={e => setEditPhone(e.target.value)} placeholder="Phone (e.g. 0800 123 456)" />
-                    <div className="flex gap-2">
-                      <Button size="sm" onClick={() => handleUpdate(c.id)} disabled={!editName.trim()}>
-                        <Check className="w-3.5 h-3.5 mr-1" /> Save
-                      </Button>
-                      <Button size="sm" variant="ghost" onClick={() => setEditingId(null)}>
-                        <X className="w-3.5 h-3.5 mr-1" /> Cancel
-                      </Button>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3 min-w-0">
-                      <div className="w-9 h-9 rounded-xl bg-muted flex items-center justify-center flex-shrink-0">
-                        <Building2 className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
-                      </div>
-                      <div className="min-w-0">
-                        <div className="text-sm font-semibold text-foreground truncate">{c.name}</div>
-                        {c.phone && (
-                          <a href={`tel:${c.phone.replace(/\s/g, '')}`} className="flex items-center gap-1 text-xs text-primary hover:underline">
-                            <Phone className="w-3 h-3" strokeWidth={2} />
-                            {c.phone}
-                          </a>
-                        )}
-                        {c.email && <div className="text-xs text-muted-foreground truncate">{c.email}</div>}
+        ) : (() => {
+          const filtered = companies.filter(c => c.name.toLowerCase().includes(search.toLowerCase()));
+          return filtered.length === 0 ? (
+            <div className="text-center py-10 text-muted-foreground text-sm">No companies match "{search}"</div>
+          ) : (
+            <div className="grid grid-cols-2 gap-3">
+              {filtered.map(c => (
+                <div key={c.id} className="card-surface flex flex-col">
+                  {editingId === c.id ? (
+                    <div className="space-y-3">
+                      <Input value={editName} onChange={e => setEditName(e.target.value)} placeholder="Company name" />
+                      <Input value={editEmail} onChange={e => setEditEmail(e.target.value)} placeholder="Email" type="email" />
+                      <Input value={editPhone} onChange={e => setEditPhone(e.target.value)} placeholder="Phone" />
+                      <div className="flex gap-2">
+                        <Button size="sm" onClick={() => handleUpdate(c.id)} disabled={!editName.trim()}>
+                          <Check className="w-3.5 h-3.5 mr-1" /> Save
+                        </Button>
+                        <Button size="sm" variant="ghost" onClick={() => setEditingId(null)}>
+                          <X className="w-3.5 h-3.5 mr-1" /> Cancel
+                        </Button>
                       </div>
                     </div>
-                    <div className="flex items-center gap-1">
-                      <button onClick={() => startEdit(c)} className="p-2 rounded-lg text-muted-foreground/40 hover:text-foreground hover:bg-muted transition-colors">
-                        <Pencil className="w-4 h-4" strokeWidth={1.5} />
-                      </button>
-                      <button onClick={() => setDeleteTarget(c)} className="p-2 rounded-lg text-muted-foreground/40 hover:text-destructive hover:bg-destructive/5 transition-colors">
-                        <Trash2 className="w-4 h-4" strokeWidth={1.5} />
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
+                  ) : (
+                    <>
+                      <div className="flex items-start justify-between mb-2">
+                        <div className="w-9 h-9 rounded-xl bg-muted flex items-center justify-center flex-shrink-0">
+                          <Building2 className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
+                        </div>
+                        <div className="flex items-center gap-0.5">
+                          <button onClick={() => startEdit(c)} className="p-1.5 rounded-lg text-muted-foreground/40 hover:text-foreground hover:bg-muted transition-colors">
+                            <Pencil className="w-3.5 h-3.5" strokeWidth={1.5} />
+                          </button>
+                          <button onClick={() => setDeleteTarget(c)} className="p-1.5 rounded-lg text-muted-foreground/40 hover:text-destructive hover:bg-destructive/5 transition-colors">
+                            <Trash2 className="w-3.5 h-3.5" strokeWidth={1.5} />
+                          </button>
+                        </div>
+                      </div>
+                      <div className="text-sm font-semibold text-foreground truncate">{c.name}</div>
+                      {c.phone && (
+                        <a href={`tel:${c.phone.replace(/\s/g, '')}`} className="flex items-center gap-1 text-xs text-primary hover:underline mt-1">
+                          <Phone className="w-3 h-3" strokeWidth={2} />
+                          {c.phone}
+                        </a>
+                      )}
+                      {c.email && <div className="text-xs text-muted-foreground truncate mt-0.5">{c.email}</div>}
+                    </>
+                  )}
+                </div>
+              ))}
+            </div>
+          );
+        })()}
 
         <p className="text-[10px] text-muted-foreground text-center">{companies.length} compan{companies.length !== 1 ? 'ies' : 'y'}</p>
       </div>
