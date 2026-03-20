@@ -29,9 +29,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen bg-background">
       <header className="bg-card px-4 py-3 flex items-center justify-between border-b border-border/50 sticky top-0 z-30 backdrop-blur-xl bg-card/90">
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-xl flex items-center justify-center"
-            style={{ background: 'linear-gradient(135deg, hsl(225, 84%, 55%), hsl(250, 80%, 60%))' }}>
-            <Shield className="w-4 h-4 text-white" />
+          <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center">
+            <Shield className="w-4 h-4 text-primary" />
+          </div>
           </div>
           <span className="text-[15px] font-bold text-foreground tracking-tight">Savo</span>
         </div>
