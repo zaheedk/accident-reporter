@@ -32,7 +32,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center">
             <Shield className="w-4 h-4 text-primary" />
           </div>
-          </div>
           <span className="text-[15px] font-bold text-foreground tracking-tight">Savo</span>
         </div>
         <div className="flex items-center gap-2">
