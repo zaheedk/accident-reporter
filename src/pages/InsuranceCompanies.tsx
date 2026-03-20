@@ -4,7 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import AppLayout from '@/components/AppLayout';
 import { Navigate } from 'react-router-dom';
-import { Plus, Trash2, Pencil, Building2, ArrowLeft, X, Check, Phone } from 'lucide-react';
+import { Plus, Trash2, Pencil, Building2, ArrowLeft, X, Check, Phone, Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import {
