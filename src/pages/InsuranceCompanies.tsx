@@ -14,7 +14,7 @@ import {
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 
-type InsuranceCompany = { id: string; name: string; email: string };
+type InsuranceCompany = { id: string; name: string; email: string; phone: string };
 
 export default function InsuranceCompanies() {
   const { isAdmin } = useAuth();
