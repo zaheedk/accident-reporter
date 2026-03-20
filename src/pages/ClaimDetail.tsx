@@ -148,6 +148,15 @@ export default function ClaimDetail() {
 
         <Section title="Insurance & Repairer">
           <Row label="Insurance" value={claim.insuranceCompany} />
+          {insurerPhone && (
+            <div className="flex items-center justify-between gap-4 py-2 border-b border-border/60">
+              <span className="text-[13px] text-muted-foreground flex-shrink-0">Claims line</span>
+              <a href={`tel:${insurerPhone.replace(/\s/g, '')}`} className="flex items-center gap-2 text-[13px] font-medium text-primary hover:underline">
+                <Phone className="w-3.5 h-3.5" strokeWidth={2} />
+                {insurerPhone}
+              </a>
+            </div>
+          )}
           <Row label="Name" value={claim.repairerName} /><Row label="Phone" value={claim.repairerPhone} /><Row label="Address" value={claim.repairerAddress} />
         </Section>
 
