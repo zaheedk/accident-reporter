@@ -44,10 +44,10 @@ export default function InsuranceCompanies() {
 
   const handleAdd = async () => {
     if (!newName.trim()) return;
-    const { error } = await supabase.from('insurance_companies').insert({ name: newName.trim(), email: newEmail.trim() });
+    const { error } = await supabase.from('insurance_companies').insert({ name: newName.trim(), email: newEmail.trim(), phone: newPhone.trim() });
     if (error) { toast.error('Failed to add'); return; }
     toast.success('Insurance company added');
-    setNewName(''); setNewEmail(''); setShowAdd(false);
+    setNewName(''); setNewEmail(''); setNewPhone(''); setShowAdd(false);
     queryClient.invalidateQueries({ queryKey: ['insurance-companies'] });
   };
 
