@@ -28,14 +28,15 @@ const queryClient = new QueryClient();
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { session, loading, isDeactivated, signOut } = useAuth();
+  const { t } = useTranslation();
   if (loading) return <div className="min-h-screen bg-background flex items-center justify-center"><Loader2 className="w-6 h-6 animate-spin text-muted-foreground" /></div>;
   if (!session) return <Navigate to="/auth" replace />;
   if (isDeactivated) return (
     <div className="min-h-screen bg-background flex items-center justify-center p-6">
       <div className="text-center space-y-4 max-w-sm">
-        <h1 className="text-lg font-bold text-foreground">Account Deactivated</h1>
-        <p className="text-sm text-muted-foreground">Your account has been deactivated by an administrator. Please contact support for assistance.</p>
-        <button onClick={signOut} className="text-sm text-primary underline underline-offset-2">Sign out</button>
+        <h1 className="text-lg font-bold text-foreground">{t('deactivated.title')}</h1>
+        <p className="text-sm text-muted-foreground">{t('deactivated.description')}</p>
+        <button onClick={signOut} className="text-sm text-primary underline underline-offset-2">{t('common.signOut')}</button>
       </div>
     </div>
   );
