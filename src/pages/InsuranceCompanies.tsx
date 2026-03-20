@@ -96,6 +96,7 @@ export default function InsuranceCompanies() {
             <h3 className="text-sm font-semibold text-foreground">New insurance company</h3>
             <Input placeholder="Company name" value={newName} onChange={e => setNewName(e.target.value)} />
             <Input placeholder="Email address" type="email" value={newEmail} onChange={e => setNewEmail(e.target.value)} />
+            <Input placeholder="Phone (e.g. 0800 123 456)" value={newPhone} onChange={e => setNewPhone(e.target.value)} />
             <div className="flex gap-2">
               <Button size="sm" onClick={handleAdd} disabled={!newName.trim()}>
                 <Check className="w-3.5 h-3.5 mr-1" /> Save
