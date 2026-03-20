@@ -14,6 +14,7 @@ export default function ClaimDetail() {
   const [photos, setPhotos] = useState<{ id: string; url: string; fileName: string }[]>([]);
   const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [insurerPhone, setInsurerPhone] = useState('');
   const printRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
