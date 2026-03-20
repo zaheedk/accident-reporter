@@ -21,9 +21,9 @@ export default function About() {
     <AppLayout>
       <div className="space-y-8">
         <div>
-          <h1 className="text-2xl font-bold text-foreground mb-2">About Rift</h1>
+          <h1 className="text-2xl font-bold text-foreground mb-2">About Savo</h1>
           <p className="text-sm text-muted-foreground leading-relaxed">
-            Rift makes vehicle insurance claims simple, fast, and stress-free. We guide you through every step — from documenting the incident to connecting with trusted panel shops for repairs.
+            Savo makes vehicle insurance claims simple, fast, and stress-free. We guide you through every step — from documenting the incident to connecting with trusted panel shops for repairs.
           </p>
         </div>
 
