@@ -101,7 +101,7 @@ export default function InsuranceCompanies() {
               <Button size="sm" onClick={handleAdd} disabled={!newName.trim()}>
                 <Check className="w-3.5 h-3.5 mr-1" /> Save
               </Button>
-              <Button size="sm" variant="ghost" onClick={() => { setShowAdd(false); setNewName(''); setNewEmail(''); }}>
+              <Button size="sm" variant="ghost" onClick={() => { setShowAdd(false); setNewName(''); setNewEmail(''); setNewPhone(''); }}>
                 <X className="w-3.5 h-3.5 mr-1" /> Cancel
               </Button>
             </div>
