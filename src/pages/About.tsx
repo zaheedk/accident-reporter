@@ -30,7 +30,7 @@ export default function About() {
         <div className="card-surface space-y-4">
           <h2 className="text-base font-semibold text-foreground">Our Mission</h2>
           <p className="text-sm text-muted-foreground leading-relaxed">
-            Filing a claim after a vehicle incident shouldn't be complicated. We built Rift to eliminate the paperwork headaches, keep your records organised, and get you back on the road faster.
+            Filing a claim after a vehicle incident shouldn't be complicated. We built Savo to eliminate the paperwork headaches, keep your records organised, and get you back on the road faster.
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
             {[
