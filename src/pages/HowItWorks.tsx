@@ -31,7 +31,7 @@ export default function HowItWorks() {
         <div>
           <h1 className="text-2xl font-bold text-foreground mb-2">How It Works</h1>
           <p className="text-sm text-muted-foreground leading-relaxed">
-            Rift takes the hassle out of insurance claims in four simple steps.
+            Savo takes the hassle out of insurance claims in four simple steps.
           </p>
         </div>
 
