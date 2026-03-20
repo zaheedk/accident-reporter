@@ -124,6 +124,7 @@ export default function InsuranceCompanies() {
                   <div className="space-y-3">
                     <Input value={editName} onChange={e => setEditName(e.target.value)} placeholder="Company name" />
                     <Input value={editEmail} onChange={e => setEditEmail(e.target.value)} placeholder="Email" type="email" />
+                    <Input value={editPhone} onChange={e => setEditPhone(e.target.value)} placeholder="Phone (e.g. 0800 123 456)" />
                     <div className="flex gap-2">
                       <Button size="sm" onClick={() => handleUpdate(c.id)} disabled={!editName.trim()}>
                         <Check className="w-3.5 h-3.5 mr-1" /> Save
