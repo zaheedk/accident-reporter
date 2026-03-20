@@ -89,8 +89,8 @@
 
   .card-gradient {
     @apply rounded-2xl p-5 text-primary-foreground relative overflow-hidden;
-    background: linear-gradient(135deg, hsl(225 84% 55%), hsl(250 80% 60%));
-    box-shadow: 0 8px 32px hsla(225, 84%, 55%, 0.25), 0 2px 8px hsla(225, 84%, 55%, 0.15);
+    background: linear-gradient(135deg, hsl(22 90% 52%), hsl(16 85% 48%));
+    box-shadow: 0 8px 32px hsla(22, 90%, 52%, 0.25), 0 2px 8px hsla(22, 90%, 52%, 0.15);
   }
 
   .card-gradient::before {
