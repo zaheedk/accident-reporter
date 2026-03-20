@@ -64,11 +64,23 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </div>
       )}
 
-      <main className="max-w-2xl mx-auto px-4 py-5 pb-24">
+      <main className="max-w-2xl mx-auto px-4 py-5 pb-32">
         {children}
       </main>
 
-      <nav className="fixed bottom-0 left-0 right-0 bg-card border-t border-border/60 flex justify-around py-2 px-4 md:hidden">
+      {/* Content links footer */}
+      <div className="fixed bottom-12 md:bottom-0 left-0 right-0 bg-card/80 backdrop-blur-sm border-t border-border/40 z-10">
+        <div className="flex items-center justify-center gap-3 px-4 py-2 text-xs text-muted-foreground">
+          {contentLinks.map(({ to, label }, i) => (
+            <span key={to} className="flex items-center gap-3">
+              {i > 0 && <span className="text-border">·</span>}
+              <Link to={to} className="hover:text-foreground transition-colors">{label}</Link>
+            </span>
+          ))}
+        </div>
+      </div>
+
+      <nav className="fixed bottom-0 left-0 right-0 bg-card border-t border-border/60 flex justify-around py-2 px-4 md:hidden z-20">
         {navItems.map(({ to, icon: Icon, label }) => {
           const active = location.pathname === to || (to !== '/' && location.pathname.startsWith(to));
           return (
