@@ -126,13 +126,13 @@
 
   .btn-primary {
     @apply h-10 px-5 rounded-xl text-sm font-semibold transition-all active:scale-[0.98] disabled:opacity-40 disabled:pointer-events-none inline-flex items-center justify-center gap-2;
-    background: linear-gradient(135deg, hsl(225 84% 55%), hsl(240 70% 58%));
+    background: linear-gradient(135deg, hsl(22 90% 52%), hsl(16 85% 48%));
     color: white;
-    box-shadow: 0 2px 8px hsla(225, 84%, 55%, 0.3);
+    box-shadow: 0 2px 8px hsla(22, 90%, 52%, 0.3);
   }
 
   .btn-primary:hover {
-    box-shadow: 0 4px 16px hsla(225, 84%, 55%, 0.4);
+    box-shadow: 0 4px 16px hsla(22, 90%, 52%, 0.4);
     transform: translateY(-0.5px);
   }
 
