@@ -70,7 +70,7 @@ export default function InsuranceCompanies() {
   };
 
   const startEdit = (c: InsuranceCompany) => {
-    setEditingId(c.id); setEditName(c.name); setEditEmail(c.email);
+    setEditingId(c.id); setEditName(c.name); setEditEmail(c.email); setEditPhone(c.phone || '');
   };
 
   return (
