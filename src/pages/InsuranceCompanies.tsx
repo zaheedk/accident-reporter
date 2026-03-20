@@ -29,6 +29,7 @@ export default function InsuranceCompanies() {
   const [newPhone, setNewPhone] = useState('');
   const [showAdd, setShowAdd] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<InsuranceCompany | null>(null);
+  const [search, setSearch] = useState('');
 
   const { data: companies = [], isLoading } = useQuery({
     queryKey: ['insurance-companies'],
