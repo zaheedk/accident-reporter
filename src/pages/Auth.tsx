@@ -100,21 +100,6 @@ export default function Auth() {
             Savo helps you record accident data instantly — photos, GPS, witness info, and reports — so your claim is airtight from minute one.
           </p>
 
-          {/* Stats row */}
-          <div className="flex items-start gap-8 mt-8">
-            <div>
-              <div className="text-2xl font-extrabold text-dark-surface-foreground tabular-nums">4×</div>
-              <div className="text-[10px] font-semibold text-dark-surface-muted uppercase tracking-widest mt-0.5">Faster Claims</div>
-            </div>
-            <div>
-              <div className="text-2xl font-extrabold text-primary tabular-nums">98%</div>
-              <div className="text-[10px] font-semibold text-dark-surface-muted uppercase tracking-widest mt-0.5">Success Rate</div>
-            </div>
-            <div>
-              <div className="text-2xl font-extrabold text-dark-surface-foreground tabular-nums">120k+</div>
-              <div className="text-[10px] font-semibold text-dark-surface-muted uppercase tracking-widest mt-0.5">Incidents Logged</div>
-            </div>
-          </div>
         </div>
       </div>
 
