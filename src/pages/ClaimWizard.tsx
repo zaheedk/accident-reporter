@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, Check, Save, Camera, X, Search, Star, Send, Loader2, MapPin } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, Save, Camera, X, Search, Star, Send, Loader2, MapPin, Car } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ClaimReport, ThirdPartyVehicle, Witness, WEATHER_OPTIONS, ROAD_OPTIONS, Vehicle } from '@/types';
 import { getVehicles, getClaims, saveClaim } from '@/lib/storage';
@@ -53,6 +53,7 @@ export default function ClaimWizard() {
   const { t } = useTranslation();
   const [step, setStep] = useState(0);
   const [claim, setClaim] = useState<ClaimReport>(emptyClaim);
+  const [claimNumber, setClaimNumber] = useState<number | null>(null);
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [panelShops, setPanelShops] = useState<PanelShop[]>([]);
   const [shopSearch, setShopSearch] = useState('');
@@ -113,6 +114,9 @@ export default function ClaimWizard() {
       getClaims().then(claims => {
         const e = claims.find(c => c.id === id);
         if (e) setClaim(e);
+      });
+      supabase.from('claims').select('claim_number').eq('id', id).single().then(({ data }) => {
+        if (data?.claim_number) setClaimNumber(data.claim_number);
       });
       supabase.from('claim_photos').select('id, file_path, file_name')
         .eq('claim_id', id).then(({ data }) => {
@@ -255,9 +259,16 @@ export default function ClaimWizard() {
           <button onClick={async () => { await autoSave(); navigate(-1); }} className="p-2 -ml-2 rounded-xl hover:bg-muted transition-colors">
             <ArrowLeft className="w-5 h-5 text-foreground" strokeWidth={1.5} />
           </button>
-          <div>
+          <div className="flex-1">
             <h1 className="text-lg font-bold text-foreground">{t('claims.reportIncident')}</h1>
-            <p className="text-xs text-muted-foreground flex items-center gap-1"><Save className="w-3 h-3" /> {t('claims.autoSaved')}</p>
+            <div className="flex items-center gap-2">
+              <p className="text-xs text-muted-foreground flex items-center gap-1"><Save className="w-3 h-3" /> {t('claims.autoSaved')}</p>
+              {(claim.id || claimNumber) && (
+                <span className="text-xs text-muted-foreground">
+                  {claimNumber ? `CLM-${String(claimNumber).padStart(4, '0')}` : ''}{claim.id ? ` · ${claim.id.slice(0, 8).toUpperCase()}` : ''}
+                </span>
+              )}
+            </div>
           </div>
         </div>
 
@@ -284,9 +295,12 @@ export default function ClaimWizard() {
                     <div className="space-y-2">
                       {vehicles.map(v => (
                         <button key={v.id} onClick={() => update('vehicleId', v.id)}
-                          className={`w-full text-left p-3.5 rounded-xl transition-all border ${claim.vehicleId === v.id ? 'border-foreground bg-foreground/[0.03]' : 'border-border hover:border-foreground/20'}`}>
-                          <div className="text-base font-bold text-foreground tabular-nums">{v.regoNumber}</div>
-                          <div className="text-xs text-muted-foreground">{v.year} {v.make} {v.model}</div>
+                          className={`w-full text-left p-3.5 rounded-xl transition-all border flex items-center justify-between ${claim.vehicleId === v.id ? 'border-foreground bg-foreground/[0.03]' : 'border-border hover:border-foreground/20'}`}>
+                          <div>
+                            <div className="text-base font-bold text-foreground tabular-nums">{v.regoNumber}</div>
+                            <div className="text-xs text-muted-foreground">{v.year} {v.make} {v.model}</div>
+                          </div>
+                          <Car className="w-5 h-5 text-muted-foreground/40" strokeWidth={1.5} />
                         </button>
                       ))}
                     </div>
