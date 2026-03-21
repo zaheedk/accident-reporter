@@ -13,7 +13,7 @@ import { useTranslation } from 'react-i18next';
 
 const stepVariants = { initial: { opacity: 0, x: 10 }, animate: { opacity: 1, x: 0 }, exit: { opacity: 0, x: -10 } };
 
-const emptyTP: ThirdPartyVehicle = { ownerName: '', phone: '', address: '', insurer: '', make: '', model: '', regoNumber: '', damageDescription: '' };
+const emptyTP: ThirdPartyVehicle = { ownerName: '', phone: '', address: '', insurer: '', claimNumber: '', claimLodgementDate: '', make: '', model: '', regoNumber: '', damageDescription: '' };
 const emptyW: Witness = { name: '', phone: '', address: '', isPassenger: false };
 
 function emptyClaim(): ClaimReport {

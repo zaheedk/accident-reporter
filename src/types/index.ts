@@ -22,6 +22,8 @@ export interface ThirdPartyVehicle {
   phone: string;
   address: string;
   insurer: string;
+  claimNumber: string;
+  claimLodgementDate: string;
   make: string;
   model: string;
   regoNumber: string;
