@@ -285,8 +285,8 @@ export default function ClaimWizard() {
                       {vehicles.map(v => (
                         <button key={v.id} onClick={() => update('vehicleId', v.id)}
                           className={`w-full text-left p-3.5 rounded-xl transition-all border ${claim.vehicleId === v.id ? 'border-foreground bg-foreground/[0.03]' : 'border-border hover:border-foreground/20'}`}>
-                          <div className="text-sm font-semibold text-foreground">{v.year} {v.make} {v.model}</div>
-                          <div className="text-xs text-muted-foreground tabular-nums">{v.regoNumber}</div>
+                          <div className="text-base font-bold text-foreground tabular-nums">{v.regoNumber}</div>
+                          <div className="text-xs text-muted-foreground">{v.year} {v.make} {v.model}</div>
                         </button>
                       ))}
                     </div>
