@@ -14,6 +14,53 @@ export type Database = {
   }
   public: {
     Tables: {
+      claim_messages: {
+        Row: {
+          body: string
+          claim_id: string
+          created_at: string
+          direction: string
+          from_email: string
+          id: string
+          resend_message_id: string | null
+          subject: string
+          to_email: string
+          user_id: string
+        }
+        Insert: {
+          body?: string
+          claim_id: string
+          created_at?: string
+          direction?: string
+          from_email?: string
+          id?: string
+          resend_message_id?: string | null
+          subject?: string
+          to_email?: string
+          user_id: string
+        }
+        Update: {
+          body?: string
+          claim_id?: string
+          created_at?: string
+          direction?: string
+          from_email?: string
+          id?: string
+          resend_message_id?: string | null
+          subject?: string
+          to_email?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "claim_messages_claim_id_fkey"
+            columns: ["claim_id"]
+            isOneToOne: false
+            referencedRelation: "claims"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       claim_photos: {
         Row: {
           claim_id: string
