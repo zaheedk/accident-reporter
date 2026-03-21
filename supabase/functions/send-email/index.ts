@@ -83,7 +83,7 @@ function getEmailContent(type: string, data: Record<string, string> = {}) {
 
     case 'rego_expiry_reminder':
       return {
-        subject: `Rego Expiry Reminder – ${data.vehicle || 'Your Vehicle'}`,
+        subject: `Rego Expiry Reminder – ${data.vehicle || 'Your Vehicle'}${data.rego ? ` (${data.rego})` : ''}`,
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
             <div style="background: linear-gradient(135deg, #e8551e, #d44a18); padding: 30px; border-radius: 12px 12px 0 0;">
