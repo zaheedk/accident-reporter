@@ -294,7 +294,7 @@ export default function ClaimWizard() {
                   ) : (
                     <div className="space-y-2">
                       {vehicles.map(v => (
-                        <button key={v.id} onClick={() => update('vehicleId', v.id)}
+                        <button key={v.id} onClick={() => { update('vehicleId', v.id); setTimeout(() => next(), 150); }}
                           className={`w-full text-left p-3.5 rounded-xl transition-all border flex items-center justify-between ${claim.vehicleId === v.id ? 'border-foreground bg-foreground/[0.03]' : 'border-border hover:border-foreground/20'}`}>
                           <div>
                             <div className="text-base font-bold text-foreground tabular-nums">{v.regoNumber}</div>
