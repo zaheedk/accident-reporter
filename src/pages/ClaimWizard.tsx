@@ -268,7 +268,17 @@ export default function ClaimWizard() {
                   <div><label className="form-label">{t('claims.incident.date')}</label><input type="date" className="form-input tabular-nums" value={claim.incidentDate} onChange={e => update('incidentDate', e.target.value)} /></div>
                   <div><label className="form-label">{t('claims.incident.time')}</label><input type="time" className="form-input tabular-nums" value={claim.incidentTime} onChange={e => update('incidentTime', e.target.value)} /></div>
                 </div>
-                <div><label className="form-label">{t('claims.incident.location')}</label><input className="form-input" placeholder={t('claims.incident.locationPlaceholder')} value={claim.incidentLocation} onChange={e => update('incidentLocation', e.target.value)} /></div>
+                <div>
+                  <label className="form-label">{t('claims.incident.location')}</label>
+                  <div className="flex gap-2">
+                    <input className="form-input flex-1" placeholder={t('claims.incident.locationPlaceholder')} value={claim.incidentLocation} onChange={e => update('incidentLocation', e.target.value)} />
+                    <button type="button" onClick={detectLocation} disabled={detectingLocation}
+                      className="flex-shrink-0 h-10 px-3 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors flex items-center gap-1.5 text-xs font-medium disabled:opacity-50">
+                      {detectingLocation ? <Loader2 className="w-4 h-4 animate-spin" /> : <MapPin className="w-4 h-4" />}
+                      <span className="hidden sm:inline">{detectingLocation ? 'Detecting...' : 'Detect'}</span>
+                    </button>
+                  </div>
+                </div>
                 <div><label className="form-label">{t('claims.incident.vehicleUsage')}</label><input className="form-input" placeholder={t('claims.incident.vehicleUsagePlaceholder')} value={claim.vehicleUsage} onChange={e => update('vehicleUsage', e.target.value)} /></div>
                 <div><label className="form-label">{t('claims.incident.journeyDetails')}</label><textarea className="form-input min-h-[80px] resize-none" placeholder={t('claims.incident.journeyPlaceholder')} value={claim.journeyDetails} onChange={e => update('journeyDetails', e.target.value)} /></div>
                 <div><label className="form-label">{t('claims.incident.whatHappened')}</label><textarea className="form-input min-h-[100px] resize-none" placeholder={t('claims.incident.whatHappenedPlaceholder')} value={claim.description} onChange={e => update('description', e.target.value)} /></div>
