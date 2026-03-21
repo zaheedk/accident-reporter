@@ -273,29 +273,6 @@ export default function ClaimWizard() {
           <motion.div key={step} variants={stepVariants} initial="initial" animate="animate" exit="exit" transition={{ ease: [0.25, 0.1, 0.25, 1], duration: 0.2 }}>
             {step === 0 && (
               <div className="card-surface space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div><label className="form-label">{t('claims.incident.date')}</label><input type="date" className="form-input tabular-nums" value={claim.incidentDate} onChange={e => update('incidentDate', e.target.value)} /></div>
-                  <div><label className="form-label">{t('claims.incident.time')}</label><input type="time" className="form-input tabular-nums" value={claim.incidentTime} onChange={e => update('incidentTime', e.target.value)} /></div>
-                </div>
-                <div>
-                  <label className="form-label">{t('claims.incident.location')}</label>
-                  <div className="flex gap-2">
-                    <input className="form-input flex-1" placeholder={t('claims.incident.locationPlaceholder')} value={claim.incidentLocation} onChange={e => update('incidentLocation', e.target.value)} />
-                    <button type="button" onClick={detectLocation} disabled={detectingLocation}
-                      className="flex-shrink-0 h-10 px-3 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors flex items-center gap-1.5 text-xs font-medium disabled:opacity-50">
-                      {detectingLocation ? <Loader2 className="w-4 h-4 animate-spin" /> : <MapPin className="w-4 h-4" />}
-                      <span className="hidden sm:inline">{detectingLocation ? 'Detecting...' : 'Detect'}</span>
-                    </button>
-                  </div>
-                </div>
-                <div><label className="form-label">{t('claims.incident.vehicleUsage')}</label><input className="form-input" placeholder={t('claims.incident.vehicleUsagePlaceholder')} value={claim.vehicleUsage} onChange={e => update('vehicleUsage', e.target.value)} /></div>
-                <div><label className="form-label">{t('claims.incident.journeyDetails')}</label><textarea className="form-input min-h-[80px] resize-none" placeholder={t('claims.incident.journeyPlaceholder')} value={claim.journeyDetails} onChange={e => update('journeyDetails', e.target.value)} /></div>
-                <div><label className="form-label">{t('claims.incident.whatHappened')}</label><textarea className="form-input min-h-[100px] resize-none" placeholder={t('claims.incident.whatHappenedPlaceholder')} value={claim.description} onChange={e => update('description', e.target.value)} /></div>
-              </div>
-            )}
-
-            {step === 1 && (
-              <div className="card-surface space-y-4">
                 <div>
                   <label className="form-label">{t('claims.vehicle.selectVehicle')}</label>
                   {vehicles.length === 0 ? (
@@ -315,6 +292,29 @@ export default function ClaimWizard() {
                     </div>
                   )}
                 </div>
+              </div>
+            )}
+
+            {step === 1 && (
+              <div className="card-surface space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div><label className="form-label">{t('claims.incident.date')}</label><input type="date" className="form-input tabular-nums" value={claim.incidentDate} onChange={e => update('incidentDate', e.target.value)} /></div>
+                  <div><label className="form-label">{t('claims.incident.time')}</label><input type="time" className="form-input tabular-nums" value={claim.incidentTime} onChange={e => update('incidentTime', e.target.value)} /></div>
+                </div>
+                <div>
+                  <label className="form-label">{t('claims.incident.location')}</label>
+                  <div className="flex gap-2">
+                    <input className="form-input flex-1" placeholder={t('claims.incident.locationPlaceholder')} value={claim.incidentLocation} onChange={e => update('incidentLocation', e.target.value)} />
+                    <button type="button" onClick={detectLocation} disabled={detectingLocation}
+                      className="flex-shrink-0 h-10 px-3 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors flex items-center gap-1.5 text-xs font-medium disabled:opacity-50">
+                      {detectingLocation ? <Loader2 className="w-4 h-4 animate-spin" /> : <MapPin className="w-4 h-4" />}
+                      <span className="hidden sm:inline">{detectingLocation ? 'Detecting...' : 'Detect'}</span>
+                    </button>
+                  </div>
+                </div>
+                <div><label className="form-label">{t('claims.incident.vehicleUsage')}</label><input className="form-input" placeholder={t('claims.incident.vehicleUsagePlaceholder')} value={claim.vehicleUsage} onChange={e => update('vehicleUsage', e.target.value)} /></div>
+                <div><label className="form-label">{t('claims.incident.journeyDetails')}</label><textarea className="form-input min-h-[80px] resize-none" placeholder={t('claims.incident.journeyPlaceholder')} value={claim.journeyDetails} onChange={e => update('journeyDetails', e.target.value)} /></div>
+                <div><label className="form-label">{t('claims.incident.whatHappened')}</label><textarea className="form-input min-h-[100px] resize-none" placeholder={t('claims.incident.whatHappenedPlaceholder')} value={claim.description} onChange={e => update('description', e.target.value)} /></div>
                 <div><label className="form-label">{t('claims.vehicle.speedBraking')}</label><input className="form-input tabular-nums" placeholder="e.g. 50" value={claim.speedBeforeBraking} onChange={e => update('speedBeforeBraking', e.target.value)} /></div>
                 <div><label className="form-label">{t('claims.vehicle.describeDamage')}</label><textarea className="form-input min-h-[80px] resize-none" placeholder={t('claims.vehicle.describeDamagePlaceholder')} value={claim.damageDescription} onChange={e => update('damageDescription', e.target.value)} /></div>
                 <Toggle active={claim.vehicleTowed} onToggle={() => update('vehicleTowed', !claim.vehicleTowed)} label={t('claims.vehicle.vehicleTowed')} />
