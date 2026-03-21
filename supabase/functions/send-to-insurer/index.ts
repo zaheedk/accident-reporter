@@ -38,14 +38,17 @@ serve(async (req) => {
     // Verify user owns this claim
     const { data: claim, error: claimErr } = await supabase
       .from('claims')
-      .select('id, user_id')
+      .select('id, user_id, claim_number')
       .eq('id', claimId)
       .single();
     if (claimErr || !claim) throw new Error('Claim not found');
     if (claim.user_id !== user.id) throw new Error('Unauthorized: not your claim');
 
-    // Unique reply-to address that maps back to this claim
-    const replyTo = `claim-${claimId}@${REPLY_DOMAIN}`;
+    // Use shorter claim reference number (CLM-0001 format)
+    const claimRef = String(claim.claim_number).padStart(4, '0');
+    const replyToAddress = `claim-${claimRef}@${REPLY_DOMAIN}`;
+    // Show user's email in the reply-to display name so insurer can see it
+    const replyTo = `"${user.email}" <${replyToAddress}>`;
 
     // Get user profile for display name
     const { data: profile } = await supabase

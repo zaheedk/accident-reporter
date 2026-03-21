@@ -25,28 +25,28 @@ serve(async (req) => {
       throw new Error('Missing required fields in webhook payload');
     }
 
-    // Extract claim ID from the to address: claim-{uuid}@replies.savo.co.nz
+    // Extract claim reference from the to address: claim-0001@replies.savo.co.nz
     const toAddress = Array.isArray(to) ? to[0] : to;
-    const match = toAddress.match(/claim-([a-f0-9-]+)@/i);
+    const match = toAddress.match(/claim-(\d+)@/i);
     if (!match) {
-      console.log('No claim ID found in to address:', toAddress);
-      return new Response(JSON.stringify({ success: true, skipped: true, reason: 'No claim ID in address' }), {
+      console.log('No claim reference found in to address:', toAddress);
+      return new Response(JSON.stringify({ success: true, skipped: true, reason: 'No claim ref in address' }), {
         status: 200,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
-    const claimId = match[1];
+    const claimNumber = parseInt(match[1], 10);
 
-    // Verify the claim exists
+    // Look up claim by claim_number
     const { data: claim, error: claimErr } = await supabase
       .from('claims')
       .select('id, user_id, insurance_company')
-      .eq('id', claimId)
+      .eq('claim_number', claimNumber)
       .single();
 
     if (claimErr || !claim) {
-      console.error('Claim not found for inbound email:', claimId);
+      console.error('Claim not found for inbound email, claim_number:', claimNumber);
       return new Response(JSON.stringify({ success: true, skipped: true, reason: 'Claim not found' }), {
         status: 200,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -58,7 +58,7 @@ serve(async (req) => {
 
     // Store the inbound message
     await supabase.from('claim_messages').insert({
-      claim_id: claimId,
+      claim_id: claim.id,
       user_id: claim.user_id,
       direction: 'inbound',
       subject: subject || '(No subject)',
@@ -72,10 +72,10 @@ serve(async (req) => {
       user_id: claim.user_id,
       type: 'insurer_reply',
       title: 'Reply from Insurance Company',
-      message: `You received a reply regarding your claim from ${fromEmail}. Subject: ${subject || '(No subject)'}`,
+      message: `You received a reply regarding claim CLM-${String(claimNumber).padStart(4, '0')} from ${fromEmail}. Subject: ${subject || '(No subject)'}`,
     });
 
-    return new Response(JSON.stringify({ success: true, claimId, stored: true }), {
+    return new Response(JSON.stringify({ success: true, claimId: claim.id, claimNumber, stored: true }), {
       status: 200,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
