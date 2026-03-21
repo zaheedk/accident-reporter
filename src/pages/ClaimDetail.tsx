@@ -18,6 +18,7 @@ export default function ClaimDetail() {
   const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [insurerPhone, setInsurerPhone] = useState('');
+  const [insurerEmail, setInsurerEmail] = useState('');
   const printRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
