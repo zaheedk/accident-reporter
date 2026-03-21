@@ -36,8 +36,9 @@ export default function ClaimDetail() {
           setPhotos(mapped);
         }
         if (foundClaim.insuranceCompany) {
-          const { data: insurer } = await supabase.from('insurance_companies').select('phone').eq('name', foundClaim.insuranceCompany).single();
+          const { data: insurer } = await supabase.from('insurance_companies').select('phone, email').eq('name', foundClaim.insuranceCompany).single();
           if (insurer?.phone) setInsurerPhone(insurer.phone);
+          if (insurer?.email) setInsurerEmail(insurer.email);
         }
       }
       setLoading(false);
