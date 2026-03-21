@@ -9,7 +9,7 @@ const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
 const FROM_EMAIL = 'Savo <info@savo.co.nz>';
 
 interface EmailRequest {
-  type: 'contact_confirmation' | 'claim_submitted' | 'welcome';
+  type: 'contact_confirmation' | 'claim_submitted' | 'welcome' | 'rego_expiry_reminder' | 'wof_expiry_reminder' | 'insurance_expiry_reminder';
   to: string;
   data?: Record<string, string>;
 }
