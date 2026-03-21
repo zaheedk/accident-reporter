@@ -256,9 +256,16 @@ export default function ClaimWizard() {
           <button onClick={async () => { await autoSave(); navigate(-1); }} className="p-2 -ml-2 rounded-xl hover:bg-muted transition-colors">
             <ArrowLeft className="w-5 h-5 text-foreground" strokeWidth={1.5} />
           </button>
-          <div>
+          <div className="flex-1">
             <h1 className="text-lg font-bold text-foreground">{t('claims.reportIncident')}</h1>
-            <p className="text-xs text-muted-foreground flex items-center gap-1"><Save className="w-3 h-3" /> {t('claims.autoSaved')}</p>
+            <div className="flex items-center gap-2">
+              <p className="text-xs text-muted-foreground flex items-center gap-1"><Save className="w-3 h-3" /> {t('claims.autoSaved')}</p>
+              {(claim.id || claimNumber) && (
+                <span className="text-xs text-muted-foreground">
+                  {claimNumber ? `CLM-${String(claimNumber).padStart(4, '0')}` : ''}{claim.id ? ` · ${claim.id.slice(0, 8).toUpperCase()}` : ''}
+                </span>
+              )}
+            </div>
           </div>
         </div>
 
