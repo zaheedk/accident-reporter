@@ -90,7 +90,7 @@ export default function ClaimWizard() {
   }, []);
 
   const STEPS = [
-    t('claims.steps.incidentDetails'), t('claims.steps.yourVehicle'), t('claims.steps.thirdParties'),
+    t('claims.steps.yourVehicle'), t('claims.steps.incidentDetails'), t('claims.steps.thirdParties'),
     t('claims.steps.witnessesPolice'), t('claims.steps.conditionsDamage'), t('claims.steps.insuranceRepairer'), t('claims.steps.review')
   ];
 
