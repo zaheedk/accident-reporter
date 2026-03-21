@@ -81,6 +81,74 @@ function getEmailContent(type: string, data: Record<string, string> = {}) {
           </div>`,
       };
 
+    case 'rego_expiry_reminder':
+      return {
+        subject: `Rego Expiry Reminder – ${data.vehicle || 'Your Vehicle'}`,
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+            <div style="background: linear-gradient(135deg, #e8551e, #d44a18); padding: 30px; border-radius: 12px 12px 0 0;">
+              <h1 style="color: white; margin: 0; font-size: 24px;">Savo</h1>
+            </div>
+            <div style="background: #ffffff; padding: 30px; border: 1px solid #e5e5e5; border-top: none; border-radius: 0 0 12px 12px;">
+              <h2 style="color: #1a1a1a; margin-top: 0;">🚗 Registration Expiry Reminder</h2>
+              <p style="color: #555; line-height: 1.6;">Your vehicle registration is expiring soon. Please renew it to stay compliant.</p>
+              <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+                ${data.vehicle ? `<tr><td style="padding: 8px 0; color: #999; width: 120px;">Vehicle</td><td style="padding: 8px 0; color: #333; font-weight: 500;">${data.vehicle}</td></tr>` : ''}
+                ${data.rego ? `<tr><td style="padding: 8px 0; color: #999;">Rego</td><td style="padding: 8px 0; color: #333; font-weight: 500;">${data.rego}</td></tr>` : ''}
+                ${data.expiryDate ? `<tr><td style="padding: 8px 0; color: #999;">Expires</td><td style="padding: 8px 0; color: #333; font-weight: 500;">${data.expiryDate}</td></tr>` : ''}
+              </table>
+              <p style="color: #555; line-height: 1.6;">Don't forget to renew before the expiry date to avoid fines.</p>
+              <p style="color: #999; font-size: 12px; margin-top: 30px;">— The Savo Team</p>
+            </div>
+          </div>`,
+      };
+
+    case 'wof_expiry_reminder':
+      return {
+        subject: `WOF Expiry Reminder – ${data.vehicle || 'Your Vehicle'}`,
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+            <div style="background: linear-gradient(135deg, #e8551e, #d44a18); padding: 30px; border-radius: 12px 12px 0 0;">
+              <h1 style="color: white; margin: 0; font-size: 24px;">Savo</h1>
+            </div>
+            <div style="background: #ffffff; padding: 30px; border: 1px solid #e5e5e5; border-top: none; border-radius: 0 0 12px 12px;">
+              <h2 style="color: #1a1a1a; margin-top: 0;">🔧 WOF Expiry Reminder</h2>
+              <p style="color: #555; line-height: 1.6;">Your Warrant of Fitness is expiring soon. Book an inspection to stay road-legal.</p>
+              <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+                ${data.vehicle ? `<tr><td style="padding: 8px 0; color: #999; width: 120px;">Vehicle</td><td style="padding: 8px 0; color: #333; font-weight: 500;">${data.vehicle}</td></tr>` : ''}
+                ${data.rego ? `<tr><td style="padding: 8px 0; color: #999;">Rego</td><td style="padding: 8px 0; color: #333; font-weight: 500;">${data.rego}</td></tr>` : ''}
+                ${data.expiryDate ? `<tr><td style="padding: 8px 0; color: #999;">Expires</td><td style="padding: 8px 0; color: #333; font-weight: 500;">${data.expiryDate}</td></tr>` : ''}
+              </table>
+              <p style="color: #555; line-height: 1.6;">Book your WOF inspection today to avoid driving without a valid warrant.</p>
+              <p style="color: #999; font-size: 12px; margin-top: 30px;">— The Savo Team</p>
+            </div>
+          </div>`,
+      };
+
+    case 'insurance_expiry_reminder':
+      return {
+        subject: `Insurance Policy Expiry Reminder – ${data.vehicle || 'Your Vehicle'}`,
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+            <div style="background: linear-gradient(135deg, #e8551e, #d44a18); padding: 30px; border-radius: 12px 12px 0 0;">
+              <h1 style="color: white; margin: 0; font-size: 24px;">Savo</h1>
+            </div>
+            <div style="background: #ffffff; padding: 30px; border: 1px solid #e5e5e5; border-top: none; border-radius: 0 0 12px 12px;">
+              <h2 style="color: #1a1a1a; margin-top: 0;">🛡️ Insurance Policy Expiry Reminder</h2>
+              <p style="color: #555; line-height: 1.6;">Your insurance policy is expiring soon. Renew it to ensure you're covered.</p>
+              <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+                ${data.vehicle ? `<tr><td style="padding: 8px 0; color: #999; width: 120px;">Vehicle</td><td style="padding: 8px 0; color: #333; font-weight: 500;">${data.vehicle}</td></tr>` : ''}
+                ${data.rego ? `<tr><td style="padding: 8px 0; color: #999;">Rego</td><td style="padding: 8px 0; color: #333; font-weight: 500;">${data.rego}</td></tr>` : ''}
+                ${data.insurer ? `<tr><td style="padding: 8px 0; color: #999;">Insurer</td><td style="padding: 8px 0; color: #333; font-weight: 500;">${data.insurer}</td></tr>` : ''}
+                ${data.policyNumber ? `<tr><td style="padding: 8px 0; color: #999;">Policy #</td><td style="padding: 8px 0; color: #333; font-weight: 500;">${data.policyNumber}</td></tr>` : ''}
+                ${data.expiryDate ? `<tr><td style="padding: 8px 0; color: #999;">Expires</td><td style="padding: 8px 0; color: #333; font-weight: 500;">${data.expiryDate}</td></tr>` : ''}
+              </table>
+              <p style="color: #555; line-height: 1.6;">Contact your insurer to renew your policy before it expires.</p>
+              <p style="color: #999; font-size: 12px; margin-top: 30px;">— The Savo Team</p>
+            </div>
+          </div>`,
+      };
+
     default:
       throw new Error(`Unknown email type: ${type}`);
   }
