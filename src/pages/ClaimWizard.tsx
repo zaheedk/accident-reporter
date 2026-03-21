@@ -59,7 +59,35 @@ export default function ClaimWizard() {
   const [photos, setPhotos] = useState<ClaimPhoto[]>([]);
   const [uploading, setUploading] = useState(false);
   const [sending, setSending] = useState(false);
+  const [detectingLocation, setDetectingLocation] = useState(false);
   const photoInputRef = useRef<HTMLInputElement>(null);
+
+  const detectLocation = useCallback(async () => {
+    if (!navigator.geolocation) {
+      toast.error('Geolocation is not supported by your browser');
+      return;
+    }
+    setDetectingLocation(true);
+    try {
+      const position = await new Promise<GeolocationPosition>((resolve, reject) =>
+        navigator.geolocation.getCurrentPosition(resolve, reject, { enableHighAccuracy: true, timeout: 10000 })
+      );
+      const { latitude, longitude } = position.coords;
+      const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json&addressdetails=1`);
+      const data = await res.json();
+      if (data?.display_name) {
+        update('incidentLocation', data.display_name);
+        toast.success('Location detected');
+      } else {
+        update('incidentLocation', `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`);
+        toast.info('Coordinates set (address lookup unavailable)');
+      }
+    } catch (err: any) {
+      toast.error(err?.message || 'Could not detect location');
+    } finally {
+      setDetectingLocation(false);
+    }
+  }, []);
 
   const STEPS = [
     t('claims.steps.incidentDetails'), t('claims.steps.yourVehicle'), t('claims.steps.thirdParties'),
