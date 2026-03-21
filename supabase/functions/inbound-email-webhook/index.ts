@@ -58,7 +58,7 @@ serve(async (req) => {
 
     // Store the inbound message
     await supabase.from('claim_messages').insert({
-      claim_id: claimId,
+      claim_id: claim.id,
       user_id: claim.user_id,
       direction: 'inbound',
       subject: subject || '(No subject)',
@@ -72,10 +72,10 @@ serve(async (req) => {
       user_id: claim.user_id,
       type: 'insurer_reply',
       title: 'Reply from Insurance Company',
-      message: `You received a reply regarding your claim from ${fromEmail}. Subject: ${subject || '(No subject)'}`,
+      message: `You received a reply regarding claim CLM-${String(claimNumber).padStart(4, '0')} from ${fromEmail}. Subject: ${subject || '(No subject)'}`,
     });
 
-    return new Response(JSON.stringify({ success: true, claimId, stored: true }), {
+    return new Response(JSON.stringify({ success: true, claimId: claim.id, claimNumber, stored: true }), {
       status: 200,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
