@@ -293,6 +293,10 @@ export default function ClaimWizard() {
                         <div><label className="form-label">{t('claims.thirdParty.regoNo')}</label><input className="form-input tabular-nums" value={tp.regoNumber} onChange={e => updTP(i, 'regoNumber', e.target.value.toUpperCase())} /></div>
                       </div>
                       <div><label className="form-label">{t('claims.thirdParty.insurer')}</label><input className="form-input" value={tp.insurer} onChange={e => updTP(i, 'insurer', e.target.value)} /></div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div><label className="form-label">Claim Number</label><input className="form-input" placeholder="Optional" value={tp.claimNumber || ''} onChange={e => updTP(i, 'claimNumber', e.target.value)} /></div>
+                        <div><label className="form-label">Date of Lodgement</label><input type="date" className="form-input tabular-nums" value={tp.claimLodgementDate || ''} onChange={e => updTP(i, 'claimLodgementDate', e.target.value)} /></div>
+                      </div>
                       <div><label className="form-label">{t('claims.thirdParty.damageDescription')}</label><textarea className="form-input min-h-[60px] resize-none" value={tp.damageDescription} onChange={e => updTP(i, 'damageDescription', e.target.value)} /></div>
                     </div>
                   ))}
