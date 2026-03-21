@@ -155,6 +155,14 @@ export default function ClaimDetail() {
             </div>
           </Section>
         )}
+
+        {claim.status === 'submitted' && (
+          <ClaimMessages
+            claimId={claim.id!}
+            insurerEmail={insurerEmail}
+            insurerName={claim.insuranceCompany}
+          />
+        )}
       </div>
 
       {lightboxUrl && (
