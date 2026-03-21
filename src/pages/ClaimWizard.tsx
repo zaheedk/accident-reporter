@@ -88,6 +88,22 @@ export default function ClaimWizard() {
   const prev = async () => { await autoSave(); setStep(s => Math.max(s - 1, 0)); };
   const submit = async () => {
     await saveClaim({ ...claim, status: 'submitted' as const, updatedAt: new Date().toISOString() });
+    // Send claim submitted email
+    if (user?.email) {
+      const vehicle = vehicles.find(v => v.id === claim.vehicleId);
+      supabase.functions.invoke('send-email', {
+        body: {
+          type: 'claim_submitted',
+          to: user.email,
+          data: {
+            date: claim.incidentDate,
+            location: claim.incidentLocation,
+            vehicle: vehicle ? `${vehicle.year} ${vehicle.make} ${vehicle.model}` : '',
+            insurer: claim.insuranceCompany,
+          },
+        },
+      }).catch(err => console.error('Email send failed:', err));
+    }
     navigate('/claims');
   };
 

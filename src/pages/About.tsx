@@ -2,19 +2,30 @@ import AppLayout from '@/components/AppLayout';
 import { Mail, Phone, MapPin, Send } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
 
 export default function About() {
   const [form, setForm] = useState({ name: '', email: '', message: '' });
   const [sending, setSending] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSending(true);
-    setTimeout(() => {
+    try {
+      await supabase.functions.invoke('send-email', {
+        body: {
+          type: 'contact_confirmation',
+          to: form.email,
+          data: { name: form.name, message: form.message },
+        },
+      });
       toast.success('Message sent! We\'ll get back to you soon.');
       setForm({ name: '', email: '', message: '' });
+    } catch {
+      toast.error('Failed to send message. Please try again.');
+    } finally {
       setSending(false);
-    }, 1000);
+    }
   };
 
   return (

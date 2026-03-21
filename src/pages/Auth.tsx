@@ -31,6 +31,10 @@ export default function Auth() {
           options: { data: { full_name: name }, emailRedirectTo: window.location.origin },
         });
         if (error) throw error;
+        // Send welcome email
+        supabase.functions.invoke('send-email', {
+          body: { type: 'welcome', to: email },
+        }).catch(err => console.error('Welcome email failed:', err));
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
