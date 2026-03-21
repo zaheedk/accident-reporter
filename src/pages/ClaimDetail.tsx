@@ -4,6 +4,7 @@ import { ArrowLeft, Printer, Mail, X, Download, Share2, Phone } from 'lucide-rea
 import { getClaims, getVehicles } from '@/lib/storage';
 import { supabase } from '@/integrations/supabase/client';
 import AppLayout from '@/components/AppLayout';
+import ClaimMessages from '@/components/ClaimMessages';
 import { WEATHER_OPTIONS, ROAD_OPTIONS, ClaimReport, Vehicle } from '@/types';
 import { useTranslation } from 'react-i18next';
 
@@ -17,6 +18,7 @@ export default function ClaimDetail() {
   const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [insurerPhone, setInsurerPhone] = useState('');
+  const [insurerEmail, setInsurerEmail] = useState('');
   const printRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -34,8 +36,9 @@ export default function ClaimDetail() {
           setPhotos(mapped);
         }
         if (foundClaim.insuranceCompany) {
-          const { data: insurer } = await supabase.from('insurance_companies').select('phone').eq('name', foundClaim.insuranceCompany).single();
+          const { data: insurer } = await supabase.from('insurance_companies').select('phone, email').eq('name', foundClaim.insuranceCompany).single();
           if (insurer?.phone) setInsurerPhone(insurer.phone);
+          if (insurer?.email) setInsurerEmail(insurer.email);
         }
       }
       setLoading(false);
@@ -151,6 +154,14 @@ export default function ClaimDetail() {
               ))}
             </div>
           </Section>
+        )}
+
+        {claim.status === 'submitted' && (
+          <ClaimMessages
+            claimId={claim.id!}
+            insurerEmail={insurerEmail}
+            insurerName={claim.insuranceCompany}
+          />
         )}
       </div>
 
