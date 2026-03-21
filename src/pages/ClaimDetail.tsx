@@ -4,6 +4,7 @@ import { ArrowLeft, Printer, Mail, X, Download, Share2, Phone } from 'lucide-rea
 import { getClaims, getVehicles } from '@/lib/storage';
 import { supabase } from '@/integrations/supabase/client';
 import AppLayout from '@/components/AppLayout';
+import ClaimMessages from '@/components/ClaimMessages';
 import { WEATHER_OPTIONS, ROAD_OPTIONS, ClaimReport, Vehicle } from '@/types';
 import { useTranslation } from 'react-i18next';
 
