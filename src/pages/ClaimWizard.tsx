@@ -17,9 +17,16 @@ const emptyTP: ThirdPartyVehicle = { ownerName: '', phone: '', address: '', insu
 const emptyW: Witness = { name: '', phone: '', address: '', isPassenger: false };
 
 function emptyClaim(): ClaimReport {
+  const now = new Date();
+  const yyyy = now.getFullYear();
+  const mm = String(now.getMonth() + 1).padStart(2, '0');
+  const dd = String(now.getDate()).padStart(2, '0');
+  const hh = String(now.getHours()).padStart(2, '0');
+  const min = String(now.getMinutes()).padStart(2, '0');
+
   return {
-    id: '', status: 'draft', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
-    incidentDate: '', incidentTime: '', incidentLocation: '', vehicleUsage: '', journeyDetails: '', description: '',
+    id: '', status: 'draft', createdAt: now.toISOString(), updatedAt: now.toISOString(),
+    incidentDate: `${yyyy}-${mm}-${dd}`, incidentTime: `${hh}:${min}`, incidentLocation: '', vehicleUsage: '', journeyDetails: '', description: '',
     vehicleId: '', speedBeforeBraking: '', thirdParties: [], otherPropertyDamage: '', otherPropertyOwner: '',
     witnesses: [], policeAttended: false, policeOfficerDetails: '', anyoneHurt: false, injuryDetails: '',
     weatherCondition: '', roadCondition: '', driverConsumedSubstance: false, substanceDetails: '',
