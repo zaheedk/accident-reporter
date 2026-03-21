@@ -115,6 +115,9 @@ export default function ClaimWizard() {
         const e = claims.find(c => c.id === id);
         if (e) setClaim(e);
       });
+      supabase.from('claims').select('claim_number').eq('id', id).single().then(({ data }) => {
+        if (data?.claim_number) setClaimNumber(data.claim_number);
+      });
       supabase.from('claim_photos').select('id, file_path, file_name')
         .eq('claim_id', id).then(({ data }) => {
           if (data) setPhotos(data as ClaimPhoto[]);
