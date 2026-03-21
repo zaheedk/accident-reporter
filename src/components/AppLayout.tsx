@@ -36,6 +36,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           <span className="text-[15px] font-bold text-dark-surface-foreground tracking-tight">Sa<span className="text-primary">vo</span></span>
         </Link>
         <div className="flex items-center gap-2">
+          <NotificationBell />
           <Link to="/claims/new" className="h-8 px-3.5 text-xs rounded-lg bg-primary text-primary-foreground font-semibold inline-flex items-center gap-1.5 transition-all active:scale-[0.98]" style={{ boxShadow: '0 2px 8px hsla(22, 90%, 52%, 0.3)' }}>
             <Plus className="w-3.5 h-3.5" />
             {t('nav.newReport')}
