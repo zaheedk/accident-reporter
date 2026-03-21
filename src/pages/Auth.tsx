@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Navigate } from 'react-router-dom';
-import { Mail, Lock, User, Loader2 } from 'lucide-react';
+import { Mail, Lock, User, Loader2, LogIn, Camera, MapPin, Users, FileText } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { lovable } from '@/integrations/lovable/index';
 import { useAuth } from '@/contexts/AuthContext';
@@ -31,7 +31,6 @@ export default function Auth() {
           options: { data: { full_name: name }, emailRedirectTo: window.location.origin },
         });
         if (error) throw error;
-        // Send welcome email
         supabase.functions.invoke('send-email', {
           body: { type: 'welcome', to: email },
         }).catch(err => console.error('Welcome email failed:', err));
@@ -54,78 +53,112 @@ export default function Auth() {
     if (error) setError(error.message || 'OAuth sign-in failed');
   };
 
+  const features = [
+    { icon: Camera, label: 'Photo capture' },
+    { icon: MapPin, label: 'GPS tagging' },
+    { icon: Users, label: 'Witness forms' },
+    { icon: FileText, label: 'Auto reports' },
+  ];
+
   return (
-    <div className="min-h-screen flex flex-col bg-background">
-      {/* Hero section */}
-      <div className="px-6 pt-12 pb-8">
-        {/* Logo */}
-        <div className="flex items-center gap-2.5 mb-8">
-          <div className="w-11 h-11 rounded-2xl bg-primary/10 flex items-center justify-center">
-            <svg className="w-6 h-6 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-            </svg>
-          </div>
-          <span className="text-lg font-bold text-foreground tracking-tight">Savo</span>
-        </div>
+    <div className="min-h-screen flex flex-col">
+      {/* Dark hero section */}
+      <div className="bg-dark-surface px-6 pt-10 pb-10 relative overflow-hidden">
+        {/* Subtle grid/line decoration */}
+        <div className="absolute inset-0 opacity-[0.06]" style={{
+          backgroundImage: `linear-gradient(hsl(var(--primary) / 0.3) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--primary) / 0.3) 1px, transparent 1px)`,
+          backgroundSize: '60px 60px',
+        }} />
+        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[hsl(var(--dark-surface))] to-transparent" />
 
-        {/* Headline */}
-        <h1 className="text-[32px] leading-[1.1] tracking-tight text-foreground mb-4" style={{ textWrap: 'balance' as any }}>
-          <span className="font-semibold" style={{ fontFamily: "'Playfair Display', serif" }}>Capture the scene.</span>
-          <br />
-          <span className="font-bold italic text-primary" style={{ fontFamily: "'Playfair Display', serif" }}>Protect your claim.</span>
-        </h1>
-
-        {/* Subtitle */}
-        <p className="text-[15px] leading-relaxed text-muted-foreground max-w-xs">
-          Savo helps you record accident data instantly — photos, GPS, witness info, and reports — so your claim is airtight from minute one.
-        </p>
-
-        {/* Stats row */}
-        <div className="flex items-start gap-8 mt-8">
-          <div>
-            <div className="text-2xl font-extrabold text-foreground tabular-nums">4×</div>
-            <div className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mt-0.5">Faster Claims</div>
+        <div className="relative z-10">
+          {/* Logo */}
+          <div className="flex items-center gap-2.5 mb-10">
+            <div className="w-11 h-11 rounded-2xl bg-primary flex items-center justify-center shadow-lg" style={{ boxShadow: '0 4px 16px hsla(22, 90%, 52%, 0.4)' }}>
+              <svg className="w-6 h-6 text-primary-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+              </svg>
+            </div>
+            <span className="text-lg font-bold text-dark-surface-foreground tracking-tight">
+              Sa<span className="text-primary">vo</span>
+            </span>
           </div>
-          <div>
-            <div className="text-2xl font-extrabold text-primary tabular-nums">98%</div>
-            <div className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mt-0.5">Success Rate</div>
-          </div>
-          <div>
-            <div className="text-2xl font-extrabold text-foreground tabular-nums">120k+</div>
-            <div className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mt-0.5">Incidents Logged</div>
+
+          {/* Headline */}
+          <h1 className="text-[34px] leading-[1.08] tracking-tight mb-4" style={{ textWrap: 'balance' as any }}>
+            <span className="font-semibold text-dark-surface-foreground" style={{ fontFamily: "'Playfair Display', serif" }}>
+              Capture the scene.
+            </span>
+            <br />
+            <span className="font-bold italic text-primary" style={{ fontFamily: "'Playfair Display', serif" }}>
+              Protect your claim.
+            </span>
+          </h1>
+
+          {/* Subtitle */}
+          <p className="text-[15px] leading-relaxed text-dark-surface-muted max-w-xs">
+            Savo helps you record accident data instantly — photos, GPS, witness info, and reports — so your claim is airtight from minute one.
+          </p>
+
+          {/* Stats row */}
+          <div className="flex items-start gap-8 mt-8">
+            <div>
+              <div className="text-2xl font-extrabold text-dark-surface-foreground tabular-nums">4×</div>
+              <div className="text-[10px] font-semibold text-dark-surface-muted uppercase tracking-widest mt-0.5">Faster Claims</div>
+            </div>
+            <div>
+              <div className="text-2xl font-extrabold text-primary tabular-nums">98%</div>
+              <div className="text-[10px] font-semibold text-dark-surface-muted uppercase tracking-widest mt-0.5">Success Rate</div>
+            </div>
+            <div>
+              <div className="text-2xl font-extrabold text-dark-surface-foreground tabular-nums">120k+</div>
+              <div className="text-[10px] font-semibold text-dark-surface-muted uppercase tracking-widest mt-0.5">Incidents Logged</div>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Login card */}
-      <div className="flex-1 bg-card rounded-t-3xl px-6 pt-7 pb-8 border-t border-border/40" style={{ boxShadow: '0 -4px 24px rgba(0,0,0,0.04)' }}>
+      {/* Form section */}
+      <div className="flex-1 bg-card px-6 pt-8 pb-8 -mt-3 rounded-t-3xl relative z-10" style={{ boxShadow: '0 -4px 24px rgba(0,0,0,0.08)' }}>
         <div className="max-w-sm mx-auto">
-          <h2 className="text-lg font-bold text-foreground mb-1">
-            {mode === 'login' ? t('auth.welcomeBack') : t('auth.createAccount')}
+          {/* Secure portal badge */}
+          <div className="flex items-center gap-2 mb-4">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-primary/10 text-primary">
+              <span className="w-1.5 h-1.5 rounded-full bg-primary" />
+              Secure Portal
+            </span>
+          </div>
+
+          <h2 className="text-[22px] font-bold text-foreground mb-1" style={{ fontFamily: "'Playfair Display', serif" }}>
+            {mode === 'login' ? (
+              <>Welcome back to <span className="italic text-primary">Savo</span></>
+            ) : (
+              <>Join <span className="italic text-primary">Savo</span> today</>
+            )}
           </h2>
-          <p className="text-sm text-muted-foreground mb-5">
-            {mode === 'login' ? 'Sign in to continue to Savo' : 'Create your free account'}
+          <p className="text-sm text-muted-foreground mb-6">
+            {mode === 'login' ? 'Access your incidents, claims, and reports in one place.' : 'Create your free account to get started.'}
           </p>
 
-          {/* OAuth buttons */}
-          <div className="space-y-2.5 mb-5">
+          {/* OAuth buttons - side by side */}
+          <div className="grid grid-cols-2 gap-3 mb-5">
             <button onClick={() => handleOAuth('google')}
-              className="w-full h-11 px-4 bg-card border border-border rounded-xl text-sm font-medium text-foreground transition-all hover:bg-muted hover:border-border active:scale-[0.98] inline-flex items-center justify-center gap-3 shadow-sm">
+              className="h-12 px-4 bg-card border border-border rounded-xl text-sm font-semibold text-foreground transition-all hover:bg-muted active:scale-[0.98] inline-flex items-center justify-center gap-2.5 shadow-sm">
               <svg className="w-[18px] h-[18px] flex-shrink-0" viewBox="0 0 24 24">
                 <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/>
                 <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
                 <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
                 <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
               </svg>
-              {t('auth.continueGoogle')}
+              Google
             </button>
             <button onClick={() => handleOAuth('apple')}
-              className="w-full h-11 px-4 rounded-xl text-sm font-medium transition-all active:scale-[0.98] inline-flex items-center justify-center gap-3"
-              style={{ background: 'hsl(220, 20%, 18%)', color: 'white', boxShadow: '0 2px 8px hsla(220, 20%, 18%, 0.3)' }}>
+              className="h-12 px-4 rounded-xl text-sm font-semibold transition-all active:scale-[0.98] inline-flex items-center justify-center gap-2.5 bg-primary text-primary-foreground shadow-md"
+              style={{ boxShadow: '0 4px 16px hsla(22, 90%, 52%, 0.35)' }}>
               <svg className="w-[18px] h-[18px] flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M17.05 20.28c-.98.95-2.05.88-3.08.4-1.09-.5-2.08-.48-3.24 0-1.44.62-2.2.44-3.06-.4C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/>
               </svg>
-              {t('auth.continueApple')}
+              Apple
             </button>
           </div>
 
@@ -135,37 +168,77 @@ export default function Auth() {
             <div className="flex-1 h-px bg-border" />
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-3">
+          <form onSubmit={handleSubmit} className="space-y-4">
             {mode === 'signup' && (
-              <div className="relative">
-                <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
-                <input className="form-input pl-10" placeholder={t('auth.fullName')} value={name} onChange={e => setName(e.target.value)} required />
+              <div>
+                <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider mb-1.5 block">Full Name</label>
+                <div className="relative">
+                  <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/50" strokeWidth={1.5} />
+                  <input className="form-input pl-10" placeholder="John Doe" value={name} onChange={e => setName(e.target.value)} required />
+                </div>
               </div>
             )}
-            <div className="relative">
-              <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
-              <input type="email" className="form-input pl-10" placeholder={t('auth.email')} value={email} onChange={e => setEmail(e.target.value)} required />
+            <div>
+              <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider mb-1.5 block">Email Address</label>
+              <div className="relative">
+                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/50" strokeWidth={1.5} />
+                <input type="email" className="form-input pl-10" placeholder="name@company.com" value={email} onChange={e => setEmail(e.target.value)} required />
+              </div>
             </div>
-            <div className="relative">
-              <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
-              <input type="password" className="form-input pl-10" placeholder={t('auth.password')} value={password} onChange={e => setPassword(e.target.value)} required minLength={6} />
+            <div>
+              <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider mb-1.5 block">Password</label>
+              <div className="relative">
+                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/50" strokeWidth={1.5} />
+                <input type="password" className="form-input pl-10" placeholder="••••••••" value={password} onChange={e => setPassword(e.target.value)} required minLength={6} />
+              </div>
             </div>
+
+            {mode === 'login' && (
+              <div className="flex items-center justify-between">
+                <label className="flex items-center gap-2 text-sm text-muted-foreground cursor-pointer">
+                  <input type="checkbox" className="w-4 h-4 rounded border-border text-primary focus:ring-primary/20" />
+                  Keep me signed in
+                </label>
+                <button type="button" className="text-sm text-primary font-semibold hover:underline">
+                  Forgot password?
+                </button>
+              </div>
+            )}
 
             {error && <p className="text-xs text-destructive font-medium bg-destructive/5 px-3 py-2 rounded-lg">{error}</p>}
 
-            <button type="submit" disabled={submitting} className="btn-primary w-full h-11">
-              {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : mode === 'login' ? t('auth.signIn') : t('auth.signUp')}
+            <button type="submit" disabled={submitting}
+              className="btn-primary w-full h-12 text-[15px] rounded-xl"
+              style={{ boxShadow: '0 4px 20px hsla(22, 90%, 52%, 0.4)' }}>
+              {submitting ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <>
+                  <LogIn className="w-4 h-4" />
+                  {mode === 'login' ? 'Sign in to Savo' : 'Create Account'}
+                </>
+              )}
             </button>
           </form>
 
           <p className="text-center text-sm text-muted-foreground mt-5">
-            {mode === 'login' ? t('auth.noAccount') + ' ' : t('auth.hasAccount') + ' '}
-            <button onClick={() => { setMode(mode === 'login' ? 'signup' : 'login'); setError(''); }} className="text-primary font-semibold hover:underline">
-              {mode === 'login' ? t('auth.signUp') : t('auth.signIn')}
+            {mode === 'login' ? 'New to Savo? ' : 'Already have an account? '}
+            <button onClick={() => { setMode(mode === 'login' ? 'signup' : 'login'); setError(''); }} className="text-primary font-bold hover:underline">
+              {mode === 'login' ? 'Create a free account' : 'Sign in'}
             </button>
           </p>
 
-          <div className="mt-4">
+          {/* Feature chips */}
+          <div className="flex flex-wrap items-center justify-center gap-2 mt-6">
+            {features.map(({ icon: Icon, label }) => (
+              <span key={label} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-muted text-muted-foreground border border-border/50">
+                <Icon className="w-3.5 h-3.5" />
+                {label}
+              </span>
+            ))}
+          </div>
+
+          <div className="mt-5">
             <LanguageSwitcher />
           </div>
 
