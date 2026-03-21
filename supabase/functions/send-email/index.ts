@@ -6,7 +6,7 @@ const corsHeaders = {
 };
 
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
-const FROM_EMAIL = 'Savo <noreply@savo.co.nz>';
+const FROM_EMAIL = 'Savo <info@savo.co.nz>';
 
 interface EmailRequest {
   type: 'contact_confirmation' | 'claim_submitted' | 'welcome';
