@@ -68,26 +68,26 @@ export default function NotificationBell() {
       {open && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
-          <div className="absolute right-0 top-10 w-80 bg-card border border-border rounded-xl shadow-lg z-50 overflow-hidden animate-in slide-in-from-top-2 duration-200">
-            <div className="flex items-center justify-between px-4 py-3 border-b border-border">
-              <span className="text-sm font-semibold text-foreground">Notifications</span>
+          <div className="fixed right-2 left-2 sm:left-auto sm:absolute sm:right-0 top-14 sm:top-10 sm:w-72 bg-card border border-border rounded-xl shadow-lg z-50 overflow-hidden animate-in slide-in-from-top-2 duration-200">
+            <div className="flex items-center justify-between px-3 py-2.5 border-b border-border">
+              <span className="text-xs font-semibold text-foreground">Notifications</span>
               {unreadCount > 0 && (
-                <button onClick={markAllRead} className="text-xs text-primary hover:underline">Mark all read</button>
+                <button onClick={markAllRead} className="text-[11px] text-primary hover:underline">Mark all read</button>
               )}
             </div>
-            <div className="max-h-80 overflow-y-auto">
+            <div className="max-h-64 overflow-y-auto">
               {notifications.length === 0 ? (
-                <div className="px-4 py-8 text-center text-sm text-muted-foreground">No notifications yet</div>
+                <div className="px-3 py-6 text-center text-xs text-muted-foreground">No notifications yet</div>
               ) : (
                 notifications.map(n => (
                   <button key={n.id} onClick={() => markRead(n.id)}
-                    className={`w-full text-left px-4 py-3 border-b border-border/50 hover:bg-muted/50 transition-colors ${!n.is_read ? 'bg-primary/5' : ''}`}>
-                    <div className="flex items-start gap-2">
-                      {!n.is_read && <span className="mt-1.5 w-2 h-2 rounded-full bg-primary flex-shrink-0" />}
-                      <div className={!n.is_read ? '' : 'pl-4'}>
-                        <p className="text-sm font-medium text-foreground">{n.title}</p>
-                        <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">{n.message}</p>
-                        <p className="text-[10px] text-muted-foreground/60 mt-1">
+                    className={`w-full text-left px-3 py-2.5 border-b border-border/50 hover:bg-muted/50 transition-colors ${!n.is_read ? 'bg-primary/5' : ''}`}>
+                    <div className="flex items-start gap-1.5">
+                      {!n.is_read && <span className="mt-1 w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0" />}
+                      <div className={!n.is_read ? '' : 'pl-3'}>
+                        <p className="text-xs font-medium text-foreground leading-tight">{n.title}</p>
+                        <p className="text-[11px] text-muted-foreground mt-0.5 line-clamp-2 leading-snug">{n.message}</p>
+                        <p className="text-[9px] text-muted-foreground/60 mt-0.5">
                           {formatDistanceToNow(new Date(n.created_at), { addSuffix: true })}
                         </p>
                       </div>
