@@ -28,12 +28,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-background">
       <header className="bg-dark-surface px-4 py-3 flex items-center justify-between border-b border-[hsl(var(--dark-surface))] sticky top-0 z-30">
-        <div className="flex items-center gap-2.5">
+        <Link to="/" className="flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-xl bg-primary flex items-center justify-center" style={{ boxShadow: '0 2px 8px hsla(22, 90%, 52%, 0.3)' }}>
             <Shield className="w-4 h-4 text-primary-foreground" />
           </div>
           <span className="text-[15px] font-bold text-dark-surface-foreground tracking-tight">Sa<span className="text-primary">vo</span></span>
-        </div>
+        </Link>
         <div className="flex items-center gap-2">
           <Link to="/claims/new" className="h-8 px-3.5 text-xs rounded-lg bg-primary text-primary-foreground font-semibold inline-flex items-center gap-1.5 transition-all active:scale-[0.98]" style={{ boxShadow: '0 2px 8px hsla(22, 90%, 52%, 0.3)' }}>
             <Plus className="w-3.5 h-3.5" />
