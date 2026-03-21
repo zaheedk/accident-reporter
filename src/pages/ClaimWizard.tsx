@@ -94,8 +94,17 @@ export default function ClaimWizard() {
     t('claims.steps.witnessesPolice'), t('claims.steps.conditionsDamage'), t('claims.steps.insuranceRepairer'), t('claims.steps.review')
   ];
 
+  const [autoSkipped, setAutoSkipped] = useState(false);
+
   useEffect(() => {
-    getVehicles().then(setVehicles);
+    getVehicles().then(v => {
+      setVehicles(v);
+      if (!id && v.length === 1 && !autoSkipped) {
+        setClaim(prev => ({ ...prev, vehicleId: v[0].id }));
+        setStep(1);
+        setAutoSkipped(true);
+      }
+    });
     supabase.from('panel_shops').select('*').gte('google_rating', 4.5)
       .order('google_rating', { ascending: false }).then(({ data }) => {
         if (data) setPanelShops(data as PanelShop[]);
