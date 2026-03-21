@@ -72,7 +72,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         {children}
       </main>
 
-      <div className="fixed bottom-12 md:bottom-0 left-0 right-0 bg-card/80 backdrop-blur-sm border-t border-border/40 z-10">
+      <div className="hidden md:block fixed bottom-0 left-0 right-0 bg-card/80 backdrop-blur-sm border-t border-border/40 z-10">
         <div className="flex items-center justify-center gap-3 px-4 py-2 text-xs text-muted-foreground">
           {contentLinks.map(({ to, label }, i) => (
             <span key={to} className="flex items-center gap-3">
