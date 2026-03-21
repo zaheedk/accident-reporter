@@ -53,6 +53,7 @@ export default function ClaimWizard() {
   const { t } = useTranslation();
   const [step, setStep] = useState(0);
   const [claim, setClaim] = useState<ClaimReport>(emptyClaim);
+  const [claimNumber, setClaimNumber] = useState<number | null>(null);
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [panelShops, setPanelShops] = useState<PanelShop[]>([]);
   const [shopSearch, setShopSearch] = useState('');
