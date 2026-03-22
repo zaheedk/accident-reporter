@@ -759,12 +759,21 @@ export default function ClaimWizard() {
           </motion.div>
         </AnimatePresence>
 
-        <div className="flex gap-3 pb-16 md:pb-0">
-          {step > 0 && <button onClick={prev} className="btn-secondary flex-1 h-11"><ArrowLeft className="w-4 h-4" strokeWidth={1.5} /> {t('common.back')}</button>}
-          {step < STEPS.length - 1 ? (
-            <button onClick={next} className="btn-primary flex-1 h-11">{t('common.next')} <ArrowRight className="w-4 h-4" /></button>
-          ) : (
-            <button onClick={submit} className="btn-primary flex-1 h-11"><Check className="w-4 h-4" /> {t('claims.submitReport')}</button>
+        <div className="flex flex-col gap-3 pb-16 md:pb-0">
+          <div className="flex gap-3">
+            {step > 0 && <button onClick={prev} className="btn-secondary flex-1 h-11"><ArrowLeft className="w-4 h-4" strokeWidth={1.5} /> {t('common.back')}</button>}
+            {step < STEPS.length - 1 ? (
+              <button onClick={next} className="btn-primary flex-1 h-11">{t('common.next')} <ArrowRight className="w-4 h-4" /></button>
+            ) : (
+              <button onClick={submit} className="btn-primary flex-1 h-11"><Save className="w-4 h-4" /> {t('common.save')} report</button>
+            )}
+          </div>
+          {step === STEPS.length - 1 && claim.insuranceCompany && (
+            <button type="button" onClick={sendToInsurer} disabled={sendingToInsurer || !claim.id}
+              className="btn-secondary w-full h-11 gap-2">
+              {sendingToInsurer ? <Loader2 className="w-4 h-4 animate-spin" /> : <Mail className="w-4 h-4" />}
+              {sendingToInsurer ? 'Sending...' : `Email report to ${claim.insuranceCompany}`}
+            </button>
           )}
         </div>
       </div>
