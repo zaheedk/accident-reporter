@@ -305,6 +305,9 @@ export default function Dashboard() {
                       {tc.address}
                     </div>
                     <div className="text-xs text-muted-foreground mt-0.5">{tc.phone}</div>
+                    {getDistanceLabel(tc) && (
+                      <div className="text-xs font-medium mt-0.5" style={{ color: 'hsl(152, 60%, 42%)' }}>{getDistanceLabel(tc)}</div>
+                    )}
                   </div>
                   <a
                     href={`tel:${tc.phone.replace(/\s/g, '')}`}
