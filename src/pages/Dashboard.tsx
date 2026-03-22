@@ -85,7 +85,7 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <a href="tel:0800705211" className="block card-surface-elevated group hover:border-primary/20 transition-all">
+        <button onClick={handleOpenTowSheet} className="w-full block card-surface-elevated group hover:border-primary/20 transition-all text-left">
           <div className="flex items-center gap-4">
             <div className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: 'hsla(152, 60%, 42%, 0.1)' }}>
               <Phone className="w-5 h-5" style={{ color: 'hsl(152, 60%, 42%)' }} strokeWidth={1.8} />
@@ -96,7 +96,7 @@ export default function Dashboard() {
             </div>
             <ArrowUpRight className="w-4 h-4 text-muted-foreground/30 group-hover:text-primary transition-colors shrink-0" />
           </div>
-        </a>
+        </button>
 
         <Link to="/claims/new" className="card-gradient block group">
           <div className="relative z-10">
