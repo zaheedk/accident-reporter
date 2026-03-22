@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, Check, Save, Camera, X, Search, Star, Send, Loader2, MapPin, Car, Phone, Sparkles } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, Save, Camera, X, Search, Star, Send, Loader2, MapPin, Car, Phone, Sparkles, Mail } from 'lucide-react';
 import { DamagePhotoAnalyzer, ThirdPartyPhotos } from '@/components/PhotoAnalyzer';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ClaimReport, ThirdPartyVehicle, Witness, WEATHER_OPTIONS, ROAD_OPTIONS, Vehicle } from '@/types';
@@ -65,6 +65,9 @@ export default function ClaimWizard() {
   const [towCompanies, setTowCompanies] = useState<{ id: string; name: string; phone: string; address: string }[]>([]);
   const [towSearch, setTowSearch] = useState('');
   const [insuranceCompanies, setInsuranceCompanies] = useState<{ id: string; name: string }[]>([]);
+  const [insurerEmail, setInsurerEmail] = useState('');
+  const [insurerPhone, setInsurerPhone] = useState('');
+  const [sendingToInsurer, setSendingToInsurer] = useState(false);
   const photoInputRef = useRef<HTMLInputElement>(null);
 
   const detectLocation = useCallback(async () => {
@@ -134,6 +137,19 @@ export default function ClaimWizard() {
         });
     }
   }, [id]);
+
+  // Fetch insurer contact details when insurance company changes
+  useEffect(() => {
+    if (claim.insuranceCompany) {
+      supabase.from('insurance_companies').select('email, phone').eq('name', claim.insuranceCompany).single().then(({ data }) => {
+        setInsurerEmail(data?.email || '');
+        setInsurerPhone(data?.phone || '');
+      });
+    } else {
+      setInsurerEmail('');
+      setInsurerPhone('');
+    }
+  }, [claim.insuranceCompany]);
 
   const update = (field: keyof ClaimReport, value: any) => setClaim(prev => ({ ...prev, [field]: value, updatedAt: new Date().toISOString() }));
 
@@ -269,6 +285,61 @@ export default function ClaimWizard() {
     }
     setSending(false);
     toast.success('Repair request sent to ' + selectedShop.name);
+  };
+
+  const sendToInsurer = async () => {
+    if (!claim.insuranceCompany || !claim.id || !user) return;
+    setSendingToInsurer(true);
+    try {
+      const vehicle = vehicles.find(v => v.id === claim.vehicleId);
+      const claimRef = claimNumber ? `CLM-${String(claimNumber).padStart(4, '0')}` : claim.id.slice(0, 8).toUpperCase();
+
+      // Send via edge function with PDF attachment
+      await supabase.functions.invoke('send-email', {
+        body: {
+          type: 'claim_submitted',
+          to: insurerEmail || user.email,
+          data: {
+            date: claim.incidentDate,
+            time: claim.incidentTime,
+            location: claim.incidentLocation,
+            vehicle: vehicle ? `${vehicle.year} ${vehicle.make} ${vehicle.model}` : '',
+            rego: vehicle?.regoNumber || '',
+            insurer: claim.insuranceCompany,
+            policyNumber: vehicle?.insurancePolicyNumber || '',
+            description: claim.description,
+            damageDescription: claim.damageDescription,
+            vehicleUsage: claim.vehicleUsage,
+            journeyDetails: claim.journeyDetails,
+            speedBeforeBraking: claim.speedBeforeBraking,
+            vehicleTowed: claim.vehicleTowed ? 'Yes' : 'No',
+            towingCompany: claim.towingCompany,
+            weatherCondition: claim.weatherCondition,
+            roadCondition: claim.roadCondition,
+            policeAttended: claim.policeAttended ? 'Yes' : 'No',
+            policeOfficerDetails: claim.policeOfficerDetails,
+            anyoneHurt: claim.anyoneHurt ? 'Yes' : 'No',
+            injuryDetails: claim.injuryDetails,
+            driverConsumedSubstance: claim.driverConsumedSubstance ? 'Yes' : 'No',
+            substanceDetails: claim.substanceDetails,
+            blameDescription: claim.blameDescription,
+            liabilityAdmitted: claim.liabilityAdmitted ? 'Yes' : 'No',
+            liabilityDetails: claim.liabilityDetails,
+            repairerName: claim.repairerName,
+            repairerPhone: claim.repairerPhone,
+            repairerAddress: claim.repairerAddress,
+            thirdParties: JSON.stringify(claim.thirdParties),
+            witnesses: JSON.stringify(claim.witnesses),
+            claimNumber: claimNumber?.toString() || '',
+          },
+        },
+      });
+      toast.success(`Report emailed to ${claim.insuranceCompany}`);
+    } catch (err: any) {
+      toast.error(err?.message || 'Failed to send email');
+    } finally {
+      setSendingToInsurer(false);
+    }
   };
 
   const addTP = () => update('thirdParties', [...claim.thirdParties, { ...emptyTP }]);
@@ -577,6 +648,18 @@ export default function ClaimWizard() {
                         <option key={ic.id} value={ic.name}>{ic.name}</option>
                       ))}
                     </select>
+                  )}
+                  {insurerPhone && (
+                    <a href={`tel:${insurerPhone.replace(/\s/g, '')}`} className="flex items-center gap-2 text-xs text-primary hover:underline">
+                      <Phone className="w-3.5 h-3.5" />{insurerPhone}
+                    </a>
+                  )}
+                  {claim.insuranceCompany && (
+                    <button type="button" onClick={sendToInsurer} disabled={sendingToInsurer || !claim.id}
+                      className="btn-primary w-full h-10 gap-2 text-sm">
+                      {sendingToInsurer ? <Loader2 className="w-4 h-4 animate-spin" /> : <Mail className="w-4 h-4" />}
+                      {sendingToInsurer ? 'Sending...' : `Email report to ${claim.insuranceCompany}`}
+                    </button>
                   )}
                 </div>
 
