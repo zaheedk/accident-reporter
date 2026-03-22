@@ -242,7 +242,14 @@ export default function ClaimDetail() {
               </div>
               <div>
                 <label className="text-[11px] font-medium text-muted-foreground mb-1 block">Repairer Name</label>
-                <input className="form-input text-sm" value={editRepairerName} onChange={e => setEditRepairerName(e.target.value)} />
+                <select className="form-input text-sm" value={editRepairerName} onChange={e => {
+                  const shop = panelShops.find(s => s.name === e.target.value);
+                  setEditRepairerName(e.target.value);
+                  if (shop) { setEditRepairerPhone(shop.phone); setEditRepairerAddress(shop.address); }
+                }}>
+                  <option value="">Select a repairer</option>
+                  {panelShops.map(s => <option key={s.id} value={s.name}>{s.name}</option>)}
+                </select>
               </div>
               <div>
                 <label className="text-[11px] font-medium text-muted-foreground mb-1 block">Repairer Phone</label>
