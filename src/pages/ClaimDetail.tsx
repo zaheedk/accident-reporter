@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Printer, Mail, X, Download, Share2, Phone } from 'lucide-react';
+import { ArrowLeft, Printer, Mail, X, Download, Share2, Phone, Pencil } from 'lucide-react';
 import { getClaims, getVehicles } from '@/lib/storage';
 import { supabase } from '@/integrations/supabase/client';
 import AppLayout from '@/components/AppLayout';
@@ -72,6 +72,9 @@ export default function ClaimDetail() {
             <p className="text-sm text-muted-foreground">{t('dashboard.report')}</p>
             <h1 className="text-lg font-bold text-foreground -mt-0.5">{t('claims.detail.incidentReport')}</h1>
           </div>
+          <button onClick={() => navigate(`/claims/${claim.id}/edit`)} className="p-2 rounded-xl hover:bg-muted transition-colors" title="Edit report">
+            <Pencil className="w-5 h-5 text-muted-foreground" strokeWidth={1.5} />
+          </button>
           <button onClick={handleEmail} className="p-2 rounded-xl hover:bg-muted transition-colors" title="Email report">
             <Mail className="w-5 h-5 text-muted-foreground" strokeWidth={1.5} />
           </button>
