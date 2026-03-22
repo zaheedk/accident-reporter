@@ -64,6 +64,7 @@ export default function ClaimWizard() {
   const [detectingLocation, setDetectingLocation] = useState(false);
   const [towCompanies, setTowCompanies] = useState<{ id: string; name: string; phone: string; address: string }[]>([]);
   const [towSearch, setTowSearch] = useState('');
+  const [insuranceCompanies, setInsuranceCompanies] = useState<{ id: string; name: string }[]>([]);
   const photoInputRef = useRef<HTMLInputElement>(null);
 
   const detectLocation = useCallback(async () => {
@@ -104,7 +105,7 @@ export default function ClaimWizard() {
     getVehicles().then(v => {
       setVehicles(v);
       if (!id && v.length === 1 && !autoSkipped) {
-        setClaim(prev => ({ ...prev, vehicleId: v[0].id }));
+        setClaim(prev => ({ ...prev, vehicleId: v[0].id, insuranceCompany: v[0].insuranceCompany || '' }));
         setStep(1);
         setAutoSkipped(true);
       }
@@ -115,6 +116,9 @@ export default function ClaimWizard() {
       });
     supabase.from('tow_companies').select('*').order('name').then(({ data }) => {
       if (data) setTowCompanies(data as any[]);
+    });
+    supabase.from('insurance_companies').select('id, name').order('name').then(({ data }) => {
+      if (data) setInsuranceCompanies(data);
     });
     if (id) {
       getClaims().then(claims => {
@@ -300,7 +304,7 @@ export default function ClaimWizard() {
                   ) : (
                     <div className="space-y-2">
                       {vehicles.map(v => (
-                        <button key={v.id} onClick={() => { update('vehicleId', v.id); setTimeout(() => next(), 150); }}
+                        <button key={v.id} onClick={() => { update('vehicleId', v.id); setClaim(prev => ({ ...prev, vehicleId: v.id, insuranceCompany: v.insuranceCompany || '' })); setTimeout(() => next(), 150); }}
                           className={`w-full text-left p-3.5 rounded-xl transition-all border flex items-center justify-between ${claim.vehicleId === v.id ? 'border-foreground bg-foreground/[0.03]' : 'border-border hover:border-foreground/20'}`}>
                           <div>
                             <div className="text-base font-bold text-foreground tabular-nums">{v.regoNumber}</div>
@@ -537,7 +541,16 @@ export default function ClaimWizard() {
               <div className="space-y-4">
                 <div className="card-surface space-y-3">
                   <label className="form-label">{t('claims.insurance.insuranceCompany')}</label>
-                  <input className="form-input" placeholder={t('claims.insurance.insurancePlaceholder')} value={claim.insuranceCompany} onChange={e => update('insuranceCompany', e.target.value)} />
+                  {selV?.insuranceCompany ? (
+                    <div className="form-input bg-muted/50 text-foreground font-medium">{claim.insuranceCompany}</div>
+                  ) : (
+                    <select className="form-input" value={claim.insuranceCompany} onChange={e => update('insuranceCompany', e.target.value)}>
+                      <option value="">{t('claims.insurance.insurancePlaceholder')}</option>
+                      {insuranceCompanies.map(ic => (
+                        <option key={ic.id} value={ic.name}>{ic.name}</option>
+                      ))}
+                    </select>
+                  )}
                 </div>
 
                 <div className="card-surface space-y-3">
