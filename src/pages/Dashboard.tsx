@@ -266,10 +266,10 @@ export default function Dashboard() {
             )}
           </div>
           <div className="overflow-y-auto flex-1 px-5 pb-5 space-y-2" style={{ maxHeight: 'calc(85vh - 160px)' }}>
-            {filteredTowCompanies.length === 0 ? (
+            {displayedTowCompanies.length === 0 ? (
               <div className="text-center py-8 text-sm text-muted-foreground">No tow companies found</div>
             ) : (
-              filteredTowCompanies.map(tc => (
+              displayedTowCompanies.map(tc => (
                 <div key={tc.id} className="flex items-center gap-3 p-3 rounded-xl border border-border hover:border-primary/20 transition-all">
                   <div className="flex-1 min-w-0">
                     <div className="text-sm font-semibold text-foreground">{tc.name}</div>
