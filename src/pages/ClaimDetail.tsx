@@ -36,6 +36,15 @@ export default function ClaimDetail() {
           });
           setPhotos(mapped);
         }
+        // Fetch third-party photos
+        const { data: tpRows } = await supabase.from('tp_photos').select('*').eq('claim_id', foundClaim.id);
+        if (tpRows) {
+          const mappedTp = tpRows.map((p: any) => {
+            const { data } = supabase.storage.from('tp-photos').getPublicUrl(p.file_path);
+            return { id: p.id, url: data.publicUrl, type: p.type, tpIndex: p.tp_index };
+          });
+          setTpPhotos(mappedTp);
+        }
         if (foundClaim.insuranceCompany) {
           const { data: insurer } = await supabase.from('insurance_companies').select('phone, email').eq('name', foundClaim.insuranceCompany).single();
           if (insurer?.phone) setInsurerPhone(insurer.phone);
