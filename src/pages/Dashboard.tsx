@@ -68,6 +68,21 @@ export default function Dashboard() {
     }
   };
 
+  const sortByDistance = (list: any[]) => {
+    if (userLat == null || userLng == null) return list;
+    return [...list].sort((a, b) => {
+      const distA = (a.latitude && a.longitude) ? haversineDistance(userLat, userLng, a.latitude, a.longitude) : Infinity;
+      const distB = (b.latitude && b.longitude) ? haversineDistance(userLat, userLng, b.latitude, b.longitude) : Infinity;
+      return distA - distB;
+    });
+  };
+
+  const getDistanceLabel = (tc: any) => {
+    if (userLat == null || userLng == null || !tc.latitude || !tc.longitude) return null;
+    const d = haversineDistance(userLat, userLng, tc.latitude, tc.longitude);
+    return d < 1 ? `${Math.round(d * 1000)}m away` : `${Math.round(d)}km away`;
+  };
+
   // Filter by search term; if search is empty, try to match by detected region/city
   const getDisplayedTowCompanies = () => {
     if (towSearch) {
@@ -75,20 +90,20 @@ export default function Dashboard() {
         tc.name.toLowerCase().includes(towSearch.toLowerCase()) ||
         tc.address.toLowerCase().includes(towSearch.toLowerCase())
       );
-      return filtered.length > 0 ? filtered : towCompanies;
+      return sortByDistance(filtered.length > 0 ? filtered : towCompanies);
     }
     // Auto-filter by detected location
     if (userCity || userRegion) {
       const byCity = towCompanies.filter(tc =>
         tc.address.toLowerCase().includes(userCity.toLowerCase())
       );
-      if (byCity.length > 0) return byCity;
+      if (byCity.length > 0) return sortByDistance(byCity);
       const byRegion = towCompanies.filter(tc =>
         tc.address.toLowerCase().includes(userRegion.toLowerCase())
       );
-      if (byRegion.length > 0) return byRegion;
+      if (byRegion.length > 0) return sortByDistance(byRegion);
     }
-    return towCompanies;
+    return sortByDistance(towCompanies);
   };
 
   const displayedTowCompanies = getDisplayedTowCompanies();
