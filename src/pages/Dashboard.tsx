@@ -38,6 +38,14 @@ export default function Dashboard() {
     }
   }, [user]);
 
+  const haversineDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
+    const R = 6371;
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = Math.sin(dLat / 2) ** 2 + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon / 2) ** 2;
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  };
+
   const handleOpenTowSheet = () => {
     setTowSheetOpen(true);
     setTowSearch('');
@@ -46,6 +54,8 @@ export default function Dashboard() {
     });
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(async (pos) => {
+        setUserLat(pos.coords.latitude);
+        setUserLng(pos.coords.longitude);
         try {
           const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&format=json`);
           const geo = await res.json();
