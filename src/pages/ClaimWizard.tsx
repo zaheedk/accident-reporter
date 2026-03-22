@@ -287,6 +287,61 @@ export default function ClaimWizard() {
     toast.success('Repair request sent to ' + selectedShop.name);
   };
 
+  const sendToInsurer = async () => {
+    if (!claim.insuranceCompany || !claim.id || !user) return;
+    setSendingToInsurer(true);
+    try {
+      const vehicle = vehicles.find(v => v.id === claim.vehicleId);
+      const claimRef = claimNumber ? `CLM-${String(claimNumber).padStart(4, '0')}` : claim.id.slice(0, 8).toUpperCase();
+
+      // Send via edge function with PDF attachment
+      await supabase.functions.invoke('send-email', {
+        body: {
+          type: 'claim_submitted',
+          to: insurerEmail || user.email,
+          data: {
+            date: claim.incidentDate,
+            time: claim.incidentTime,
+            location: claim.incidentLocation,
+            vehicle: vehicle ? `${vehicle.year} ${vehicle.make} ${vehicle.model}` : '',
+            rego: vehicle?.regoNumber || '',
+            insurer: claim.insuranceCompany,
+            policyNumber: vehicle?.insurancePolicyNumber || '',
+            description: claim.description,
+            damageDescription: claim.damageDescription,
+            vehicleUsage: claim.vehicleUsage,
+            journeyDetails: claim.journeyDetails,
+            speedBeforeBraking: claim.speedBeforeBraking,
+            vehicleTowed: claim.vehicleTowed ? 'Yes' : 'No',
+            towingCompany: claim.towingCompany,
+            weatherCondition: claim.weatherCondition,
+            roadCondition: claim.roadCondition,
+            policeAttended: claim.policeAttended ? 'Yes' : 'No',
+            policeOfficerDetails: claim.policeOfficerDetails,
+            anyoneHurt: claim.anyoneHurt ? 'Yes' : 'No',
+            injuryDetails: claim.injuryDetails,
+            driverConsumedSubstance: claim.driverConsumedSubstance ? 'Yes' : 'No',
+            substanceDetails: claim.substanceDetails,
+            blameDescription: claim.blameDescription,
+            liabilityAdmitted: claim.liabilityAdmitted ? 'Yes' : 'No',
+            liabilityDetails: claim.liabilityDetails,
+            repairerName: claim.repairerName,
+            repairerPhone: claim.repairerPhone,
+            repairerAddress: claim.repairerAddress,
+            thirdParties: JSON.stringify(claim.thirdParties),
+            witnesses: JSON.stringify(claim.witnesses),
+            claimNumber: claimNumber?.toString() || '',
+          },
+        },
+      });
+      toast.success(`Report emailed to ${claim.insuranceCompany}`);
+    } catch (err: any) {
+      toast.error(err?.message || 'Failed to send email');
+    } finally {
+      setSendingToInsurer(false);
+    }
+  };
+
   const addTP = () => update('thirdParties', [...claim.thirdParties, { ...emptyTP }]);
   const updTP = (i: number, f: string, v: string) => { const u = [...claim.thirdParties]; (u[i] as any)[f] = v; update('thirdParties', u); };
   const rmTP = (i: number) => update('thirdParties', claim.thirdParties.filter((_, idx) => idx !== i));
