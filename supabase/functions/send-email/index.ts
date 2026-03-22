@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { jsPDF } from "https://esm.sh/jspdf@2.5.2";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -13,6 +14,150 @@ interface EmailRequest {
   to: string;
   data?: Record<string, string>;
 }
+
+// --- PDF Generation ---
+
+function generateClaimPdf(data: Record<string, string>): string {
+  const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const margin = 20;
+  const contentWidth = pageWidth - margin * 2;
+  let y = 20;
+
+  const checkPage = (needed: number) => {
+    if (y + needed > 270) { doc.addPage(); y = 20; }
+  };
+
+  // Header bar
+  doc.setFillColor(232, 85, 30);
+  doc.rect(0, 0, pageWidth, 28, 'F');
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(18);
+  doc.setFont('helvetica', 'bold');
+  doc.text('Savo – Incident Report', margin, 18);
+  y = 38;
+
+  // Claim reference
+  const claimRef = data.claimNumber ? `CLM-${data.claimNumber.padStart(4, '0')}` : '';
+  if (claimRef) {
+    doc.setTextColor(100, 100, 100);
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`Reference: ${claimRef}`, margin, y);
+    y += 8;
+  }
+
+  const addSection = (title: string) => {
+    checkPage(14);
+    y += 4;
+    doc.setFillColor(245, 245, 245);
+    doc.rect(margin, y - 4, contentWidth, 8, 'F');
+    doc.setTextColor(50, 50, 50);
+    doc.setFontSize(11);
+    doc.setFont('helvetica', 'bold');
+    doc.text(title, margin + 3, y + 1);
+    y += 10;
+  };
+
+  const addRow = (label: string, value: string) => {
+    if (!value || value === '—') return;
+    checkPage(8);
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(120, 120, 120);
+    doc.text(label, margin + 2, y);
+    doc.setTextColor(30, 30, 30);
+    doc.setFont('helvetica', 'bold');
+    // Wrap long text
+    const lines = doc.splitTextToSize(value, contentWidth - 55);
+    doc.text(lines, margin + 55, y);
+    y += Math.max(lines.length * 4.5, 6);
+  };
+
+  // Incident Details
+  addSection('Incident Details');
+  addRow('Date & Time', `${data.date || ''} at ${data.time || ''}`);
+  addRow('Location', data.location || '');
+  addRow('Vehicle Usage', data.vehicleUsage || '');
+  addRow('Journey', data.journeyDetails || '');
+  addRow('Description', data.description || '');
+
+  // Vehicle
+  addSection('Your Vehicle');
+  addRow('Vehicle', data.vehicle || '');
+  addRow('Registration', data.rego || '');
+  addRow('Speed Before Braking', data.speedBeforeBraking ? `${data.speedBeforeBraking} km/h` : '');
+  addRow('Damage', data.damageDescription || '');
+  addRow('Vehicle Towed', data.vehicleTowed || '');
+  if (data.vehicleTowed === 'Yes') addRow('Towing Company', data.towingCompany || '');
+
+  // Third Parties
+  try {
+    const tps = JSON.parse(data.thirdParties || '[]');
+    if (tps.length > 0) {
+      addSection('Third Parties');
+      tps.forEach((tp: Record<string, string>, i: number) => {
+        addRow(`Party ${i + 1} – Owner`, tp.ownerName || '');
+        addRow('Vehicle', `${tp.make || ''} ${tp.model || ''} – ${tp.regoNumber || ''}`);
+        addRow('Phone', tp.phone || '');
+        addRow('Insurer', tp.insurer || '');
+        addRow('Damage', tp.damageDescription || '');
+        if (i < tps.length - 1) y += 3;
+      });
+    }
+  } catch {}
+
+  // Witnesses
+  try {
+    const ws = JSON.parse(data.witnesses || '[]');
+    if (ws.length > 0) {
+      addSection('Witnesses');
+      ws.forEach((w: Record<string, string | boolean>, i: number) => {
+        addRow(`Witness ${i + 1}`, `${w.name || ''} – ${w.phone || ''}${w.isPassenger ? ' (Passenger)' : ''}`);
+      });
+    }
+  } catch {}
+
+  // Police & Injuries
+  addSection('Police & Injuries');
+  addRow('Police Attended', data.policeAttended || '');
+  if (data.policeAttended === 'Yes') addRow('Officer Details', data.policeOfficerDetails || '');
+  addRow('Anyone Hurt', data.anyoneHurt || '');
+  if (data.anyoneHurt === 'Yes') addRow('Injury Details', data.injuryDetails || '');
+
+  // Conditions
+  addSection('Conditions & Liability');
+  addRow('Weather', data.weatherCondition || '');
+  addRow('Road', data.roadCondition || '');
+  addRow('Substance Use', data.driverConsumedSubstance || '');
+  if (data.driverConsumedSubstance === 'Yes') addRow('Details', data.substanceDetails || '');
+  addRow('Fault Assessment', data.blameDescription || '');
+  addRow('Liability Admitted', data.liabilityAdmitted || '');
+  if (data.liabilityAdmitted === 'Yes') addRow('Details', data.liabilityDetails || '');
+
+  // Insurance & Repairer
+  addSection('Insurance & Repairer');
+  addRow('Insurance Company', data.insurer || '');
+  addRow('Policy Number', data.policyNumber || '');
+  addRow('Repairer', data.repairerName || '');
+  addRow('Repairer Phone', data.repairerPhone || '');
+  addRow('Repairer Address', data.repairerAddress || '');
+
+  // Footer
+  const pageCount = doc.getNumberOfPages();
+  for (let i = 1; i <= pageCount; i++) {
+    doc.setPage(i);
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(180, 180, 180);
+    doc.text(`Generated by Savo · Page ${i} of ${pageCount}`, pageWidth / 2, 290, { align: 'center' });
+  }
+
+  // Return base64
+  return doc.output('datauristring').split(',')[1];
+}
+
+// --- Email Templates ---
 
 function getEmailContent(type: string, data: Record<string, string> = {}) {
   switch (type) {
@@ -44,15 +189,14 @@ function getEmailContent(type: string, data: Record<string, string> = {}) {
             </div>
             <div style="background: #ffffff; padding: 30px; border: 1px solid #e5e5e5; border-top: none; border-radius: 0 0 12px 12px;">
               <h2 style="color: #1a1a1a; margin-top: 0;">Claim Submitted Successfully</h2>
-              <p style="color: #555; line-height: 1.6;">Your incident report has been submitted. Here's a summary:</p>
+              <p style="color: #555; line-height: 1.6;">Your incident report has been submitted. Please find the full report attached as a PDF.</p>
               <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
                 ${data.date ? `<tr><td style="padding: 8px 0; color: #999; width: 120px;">Date</td><td style="padding: 8px 0; color: #333; font-weight: 500;">${data.date}</td></tr>` : ''}
                 ${data.location ? `<tr><td style="padding: 8px 0; color: #999;">Location</td><td style="padding: 8px 0; color: #333; font-weight: 500;">${data.location}</td></tr>` : ''}
                 ${data.vehicle ? `<tr><td style="padding: 8px 0; color: #999;">Vehicle</td><td style="padding: 8px 0; color: #333; font-weight: 500;">${data.vehicle}</td></tr>` : ''}
                 ${data.insurer ? `<tr><td style="padding: 8px 0; color: #999;">Insurer</td><td style="padding: 8px 0; color: #333; font-weight: 500;">${data.insurer}</td></tr>` : ''}
               </table>
-              <p style="color: #555; line-height: 1.6;">You can view your full report anytime in the Savo app. If you selected a panel shop, a repair request has been sent on your behalf.</p>
-              <p style="color: #555; line-height: 1.6;">Need to contact your insurer? Call them directly from the app.</p>
+              <p style="color: #555; line-height: 1.6;">You can view your full report anytime in the Savo app.</p>
               <p style="color: #999; font-size: 12px; margin-top: 30px;">— The Savo Team</p>
             </div>
           </div>`,
@@ -172,18 +316,38 @@ serve(async (req) => {
 
     const { subject, html } = getEmailContent(type, data);
 
+    // Build email payload
+    const emailPayload: Record<string, unknown> = {
+      from: FROM_EMAIL,
+      to: [to],
+      subject,
+      html,
+    };
+
+    // Generate and attach PDF for claim submissions
+    if (type === 'claim_submitted' && data) {
+      try {
+        const pdfBase64 = generateClaimPdf(data);
+        const claimRef = data.claimNumber ? `CLM-${data.claimNumber.padStart(4, '0')}` : 'Incident-Report';
+        emailPayload.attachments = [
+          {
+            filename: `${claimRef}.pdf`,
+            content: pdfBase64,
+          },
+        ];
+        console.log('PDF generated and attached successfully');
+      } catch (pdfErr) {
+        console.error('PDF generation failed, sending without attachment:', pdfErr);
+      }
+    }
+
     const res = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${RESEND_API_KEY}`,
       },
-      body: JSON.stringify({
-        from: FROM_EMAIL,
-        to: [to],
-        subject,
-        html,
-      }),
+      body: JSON.stringify(emailPayload),
     });
 
     const result = await res.json();
