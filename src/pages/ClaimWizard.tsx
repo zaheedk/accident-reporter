@@ -541,7 +541,16 @@ export default function ClaimWizard() {
               <div className="space-y-4">
                 <div className="card-surface space-y-3">
                   <label className="form-label">{t('claims.insurance.insuranceCompany')}</label>
-                  <input className="form-input" placeholder={t('claims.insurance.insurancePlaceholder')} value={claim.insuranceCompany} onChange={e => update('insuranceCompany', e.target.value)} />
+                  {selV?.insuranceCompany ? (
+                    <div className="form-input bg-muted/50 text-foreground font-medium">{claim.insuranceCompany}</div>
+                  ) : (
+                    <select className="form-input" value={claim.insuranceCompany} onChange={e => update('insuranceCompany', e.target.value)}>
+                      <option value="">{t('claims.insurance.insurancePlaceholder')}</option>
+                      {insuranceCompanies.map(ic => (
+                        <option key={ic.id} value={ic.name}>{ic.name}</option>
+                      ))}
+                    </select>
+                  )}
                 </div>
 
                 <div className="card-surface space-y-3">
