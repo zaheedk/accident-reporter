@@ -22,6 +22,8 @@ export default function Dashboard() {
   const [towSearch, setTowSearch] = useState('');
   const [userCity, setUserCity] = useState('');
   const [userRegion, setUserRegion] = useState('');
+  const [userLat, setUserLat] = useState<number | null>(null);
+  const [userLng, setUserLng] = useState<number | null>(null);
 
   useEffect(() => {
     getVehicles().then(setVehicles);
