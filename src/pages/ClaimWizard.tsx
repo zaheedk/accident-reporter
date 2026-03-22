@@ -105,7 +105,7 @@ export default function ClaimWizard() {
     getVehicles().then(v => {
       setVehicles(v);
       if (!id && v.length === 1 && !autoSkipped) {
-        setClaim(prev => ({ ...prev, vehicleId: v[0].id }));
+        setClaim(prev => ({ ...prev, vehicleId: v[0].id, insuranceCompany: v[0].insuranceCompany || '' }));
         setStep(1);
         setAutoSkipped(true);
       }
