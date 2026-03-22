@@ -170,7 +170,8 @@ export default function ClaimWizard() {
         body: {
           type: 'claim_submitted',
           to: user.email,
-          data: {
+           data: {
+            claimId: claim.id || '',
             date: claim.incidentDate,
             time: claim.incidentTime,
             location: claim.incidentLocation,
