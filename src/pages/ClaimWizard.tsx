@@ -302,6 +302,7 @@ export default function ClaimWizard() {
           type: 'claim_submitted',
           to: insurerEmail || user.email,
           data: {
+            claimId: claim.id || '',
             date: claim.incidentDate,
             time: claim.incidentTime,
             location: claim.incidentLocation,
