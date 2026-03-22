@@ -306,8 +306,8 @@ export default function ClaimDetail() {
   );
 }
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
-  return <div className="card-surface space-y-1"><h3 className="text-[13px] font-semibold text-muted-foreground mb-2">{title}</h3>{children}</div>;
+function Section({ title, children, action }: { title: string; children: React.ReactNode; action?: React.ReactNode }) {
+  return <div className="card-surface space-y-1"><div className="flex items-center justify-between mb-2"><h3 className="text-[13px] font-semibold text-muted-foreground">{title}</h3>{action}</div>{children}</div>;
 }
 function Row({ label, value }: { label: string; value: string }) {
   return (
