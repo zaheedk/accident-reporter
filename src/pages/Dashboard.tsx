@@ -17,6 +17,10 @@ export default function Dashboard() {
   const [claims, setClaims] = useState<ClaimReport[]>([]);
   const [avatarUrl, setAvatarUrl] = useState('');
   const [displayName, setDisplayName] = useState('');
+  const [towSheetOpen, setTowSheetOpen] = useState(false);
+  const [towCompanies, setTowCompanies] = useState<any[]>([]);
+  const [towSearch, setTowSearch] = useState('');
+  const [userCity, setUserCity] = useState('');
 
   useEffect(() => {
     getVehicles().then(setVehicles);
