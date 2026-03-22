@@ -117,12 +117,56 @@ export default function ClaimDetail() {
 
         {claim.thirdParties.length > 0 && (
           <Section title={t('claims.review.thirdParties')}>
-            {claim.thirdParties.map((tp, i) => (
-              <div key={i} className="p-3 rounded-xl bg-background space-y-1">
-                <Row label={t('claims.review.owner')} value={tp.ownerName} /><Row label={t('claims.review.vehicle')} value={`${tp.make} ${tp.model} – ${tp.regoNumber}`} />
-                <Row label={t('claims.thirdParty.phone')} value={tp.phone} /><Row label={t('claims.thirdParty.insurer')} value={tp.insurer} /><Row label={t('claims.review.damage')} value={tp.damageDescription} />
-              </div>
-            ))}
+            {claim.thirdParties.map((tp, i) => {
+              const tpDamagePhotos = tpPhotos.filter(p => p.tpIndex === i && p.type === 'damage');
+              const tpRegoPhotos = tpPhotos.filter(p => p.tpIndex === i && p.type === 'rego');
+              const tpLicensePhotos = tpPhotos.filter(p => p.tpIndex === i && p.type === 'license');
+              return (
+                <div key={i} className="p-3 rounded-xl bg-background space-y-2">
+                  <Row label={t('claims.review.owner')} value={tp.ownerName} />
+                  <Row label={t('claims.review.vehicle')} value={`${tp.make} ${tp.model} – ${tp.regoNumber}`} />
+                  <Row label={t('claims.thirdParty.phone')} value={tp.phone} />
+                  <Row label={t('claims.thirdParty.insurer')} value={tp.insurer} />
+                  <Row label={t('claims.review.damage')} value={tp.damageDescription} />
+                  {tpDamagePhotos.length > 0 && (
+                    <div className="space-y-1">
+                      <span className="text-[11px] font-semibold text-muted-foreground">Damage photos</span>
+                      <div className="grid grid-cols-4 gap-1.5">
+                        {tpDamagePhotos.map(p => (
+                          <button key={p.id} onClick={() => setLightboxUrl(p.url)} className="rounded-lg overflow-hidden aspect-square bg-muted">
+                            <img src={p.url} alt="Damage" className="w-full h-full object-cover" loading="lazy" />
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {tpRegoPhotos.length > 0 && (
+                    <div className="space-y-1">
+                      <span className="text-[11px] font-semibold text-muted-foreground">Rego/plate photos</span>
+                      <div className="grid grid-cols-4 gap-1.5">
+                        {tpRegoPhotos.map(p => (
+                          <button key={p.id} onClick={() => setLightboxUrl(p.url)} className="rounded-lg overflow-hidden aspect-square bg-muted">
+                            <img src={p.url} alt="Rego" className="w-full h-full object-cover" loading="lazy" />
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {tpLicensePhotos.length > 0 && (
+                    <div className="space-y-1">
+                      <span className="text-[11px] font-semibold text-muted-foreground">Driver's license</span>
+                      <div className="grid grid-cols-4 gap-1.5">
+                        {tpLicensePhotos.map(p => (
+                          <button key={p.id} onClick={() => setLightboxUrl(p.url)} className="rounded-lg overflow-hidden aspect-square bg-muted">
+                            <img src={p.url} alt="License" className="w-full h-full object-cover" loading="lazy" />
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </Section>
         )}
 
