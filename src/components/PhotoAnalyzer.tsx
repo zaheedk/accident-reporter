@@ -69,9 +69,31 @@ export function ThirdPartyPhotos({ tpIndex, claimId, userId, onRegoDetected, onL
   const [photos, setPhotos] = useState<TPPhoto[]>([]);
   const [uploading, setUploading] = useState<string | null>(null);
   const [analyzing, setAnalyzing] = useState<string | null>(null);
+  const [loaded, setLoaded] = useState(false);
   const damageRef = useRef<HTMLInputElement>(null);
   const regoRef = useRef<HTMLInputElement>(null);
   const licenseRef = useRef<HTMLInputElement>(null);
+
+  // Load existing photos from database on mount
+  useState(() => {
+    if (claimId && !loaded) {
+      supabase
+        .from('tp_photos')
+        .select('*')
+        .eq('claim_id', claimId)
+        .eq('tp_index', tpIndex)
+        .then(({ data }) => {
+          if (data && data.length > 0) {
+            const mapped = data.map((p: any) => {
+              const { data: urlData } = supabase.storage.from('tp-photos').getPublicUrl(p.file_path);
+              return { id: p.id, type: p.type as TPPhoto['type'], url: urlData.publicUrl, path: p.file_path };
+            });
+            setPhotos(mapped);
+          }
+          setLoaded(true);
+        });
+    }
+  });
 
   const getPhotoUrl = (filePath: string) => {
     const { data } = supabase.storage.from('tp-photos').getPublicUrl(filePath);
@@ -91,7 +113,19 @@ export function ThirdPartyPhotos({ tpIndex, claimId, userId, onRegoDetected, onL
       if (uploadError) throw uploadError;
 
       const url = getPhotoUrl(path);
-      const photoEntry: TPPhoto = { id: `${Date.now()}`, type, url, path };
+
+      // Persist to database
+      const { data: insertedRow, error: dbError } = await supabase.from('tp_photos').insert({
+        claim_id: claimId,
+        user_id: userId,
+        tp_index: tpIndex,
+        type,
+        file_path: path,
+        file_name: file.name,
+      }).select().single();
+      if (dbError) throw dbError;
+
+      const photoEntry: TPPhoto = { id: insertedRow.id, type, url, path };
       setPhotos(prev => [...prev, photoEntry]);
       setUploading(null);
 
@@ -143,6 +177,7 @@ export function ThirdPartyPhotos({ tpIndex, claimId, userId, onRegoDetected, onL
 
   const removePhoto = async (photo: TPPhoto) => {
     await supabase.storage.from('tp-photos').remove([photo.path]);
+    await supabase.from('tp_photos').delete().eq('id', photo.id);
     setPhotos(prev => prev.filter(p => p.id !== photo.id));
   };
 
