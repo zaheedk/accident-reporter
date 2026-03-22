@@ -337,6 +337,15 @@ export default function ClaimWizard() {
                 <div><label className="form-label">{t('claims.incident.whatHappened')}</label><textarea className="form-input min-h-[100px] resize-none" placeholder={t('claims.incident.whatHappenedPlaceholder')} value={claim.description} onChange={e => update('description', e.target.value)} /></div>
                 <div><label className="form-label">{t('claims.vehicle.speedBraking')}</label><input className="form-input tabular-nums" placeholder="e.g. 50" value={claim.speedBeforeBraking} onChange={e => update('speedBeforeBraking', e.target.value)} /></div>
                 <div><label className="form-label">{t('claims.vehicle.describeDamage')}</label><textarea className="form-input min-h-[80px] resize-none" placeholder={t('claims.vehicle.describeDamagePlaceholder')} value={claim.damageDescription} onChange={e => update('damageDescription', e.target.value)} /></div>
+                {claim.id && user && (
+                  <DamagePhotoAnalyzer
+                    claimId={claim.id}
+                    userId={user.id}
+                    currentDescription={claim.damageDescription}
+                    onDescriptionGenerated={(desc) => update('damageDescription', desc)}
+                    photos={photos}
+                  />
+                )}
                 <Toggle active={claim.vehicleTowed} onToggle={() => update('vehicleTowed', !claim.vehicleTowed)} label={t('claims.vehicle.vehicleTowed')} />
                 {claim.vehicleTowed && (
                   <div className="space-y-3">
