@@ -18,7 +18,7 @@ interface EmailRequest {
 
 // --- PDF Generation ---
 
-function generateClaimPdf(data: Record<string, string>): string {
+function generateClaimPdf(data: Record<string, string>, photoImages: { label: string; base64: string; mime: string }[] = []): string {
   const doc = new jsPDF({ unit: 'mm', format: 'a4' });
   const pageWidth = doc.internal.pageSize.getWidth();
   const margin = 20;
@@ -143,6 +143,37 @@ function generateClaimPdf(data: Record<string, string>): string {
   addRow('Repairer', data.repairerName || '');
   addRow('Repairer Phone', data.repairerPhone || '');
   addRow('Repairer Address', data.repairerAddress || '');
+
+  // Photos
+  if (photoImages.length > 0) {
+    addSection('Photos');
+    const imgWidth = 75;
+    const imgHeight = 56; // 4:3 ratio
+    let currentLabel = '';
+
+    for (const photo of photoImages) {
+      // Add label if different from previous
+      if (photo.label !== currentLabel) {
+        checkPage(imgHeight + 14);
+        currentLabel = photo.label;
+        doc.setFontSize(9);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(80, 80, 80);
+        doc.text(currentLabel, margin + 2, y);
+        y += 5;
+      } else {
+        checkPage(imgHeight + 4);
+      }
+
+      try {
+        const format = photo.mime.includes('png') ? 'PNG' : 'JPEG';
+        doc.addImage(photo.base64, format, margin + 2, y, imgWidth, imgHeight);
+        y += imgHeight + 4;
+      } catch (imgErr) {
+        console.error('Failed to add image to PDF:', imgErr);
+      }
+    }
+  }
 
   // Footer
   const pageCount = doc.getNumberOfPages();
