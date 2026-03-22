@@ -542,26 +542,16 @@ export default function ClaimWizard() {
 
                 <div className="card-surface space-y-3">
                   <label className="form-label">{t('claims.insurance.damagePhotos')}</label>
-                  <p className="text-xs text-muted-foreground -mt-1">{t('claims.insurance.damagePhotosHint')}</p>
+                  <p className="text-xs text-muted-foreground -mt-1">{photos.length > 0 ? `${photos.length} photo(s) uploaded in Incident Details step` : 'Upload photos in the Incident Details step'}</p>
                   {photos.length > 0 && (
-                    <div className="grid grid-cols-3 gap-2">
+                    <div className="grid grid-cols-4 gap-2">
                       {photos.map(photo => (
                         <div key={photo.id} className="relative aspect-square rounded-xl overflow-hidden bg-muted">
                           <img src={getPhotoUrl(photo.file_path)} alt={photo.file_name} className="w-full h-full object-cover" />
-                          <button onClick={() => removePhoto(photo)}
-                            className="absolute top-1 right-1 w-6 h-6 rounded-full bg-foreground/80 text-card flex items-center justify-center">
-                            <X className="w-3 h-3" />
-                          </button>
                         </div>
                       ))}
                     </div>
                   )}
-                  <button type="button" onClick={() => photoInputRef.current?.click()} disabled={uploading}
-                    className="btn-secondary w-full h-10 gap-2 text-sm">
-                    {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Camera className="w-4 h-4" />}
-                    {uploading ? t('claims.insurance.uploading') : t('claims.insurance.addPhotos')}
-                  </button>
-                  <input ref={photoInputRef} type="file" accept="image/*" multiple className="hidden" onChange={handlePhotoUpload} />
                 </div>
 
                 <div className="card-surface space-y-3">
