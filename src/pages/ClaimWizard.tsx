@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, Check, Save, Camera, X, Search, Star, Send, Loader2, MapPin, Car } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, Save, Camera, X, Search, Star, Send, Loader2, MapPin, Car, Phone } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ClaimReport, ThirdPartyVehicle, Witness, WEATHER_OPTIONS, ROAD_OPTIONS, Vehicle } from '@/types';
 import { getVehicles, getClaims, saveClaim } from '@/lib/storage';
@@ -61,6 +61,8 @@ export default function ClaimWizard() {
   const [uploading, setUploading] = useState(false);
   const [sending, setSending] = useState(false);
   const [detectingLocation, setDetectingLocation] = useState(false);
+  const [towCompanies, setTowCompanies] = useState<{ id: string; name: string; phone: string; address: string }[]>([]);
+  const [towSearch, setTowSearch] = useState('');
   const photoInputRef = useRef<HTMLInputElement>(null);
 
   const detectLocation = useCallback(async () => {
@@ -110,6 +112,9 @@ export default function ClaimWizard() {
       .order('google_rating', { ascending: false }).then(({ data }) => {
         if (data) setPanelShops(data as PanelShop[]);
       });
+    supabase.from('tow_companies').select('*').order('name').then(({ data }) => {
+      if (data) setTowCompanies(data as any[]);
+    });
     if (id) {
       getClaims().then(claims => {
         const e = claims.find(c => c.id === id);
@@ -332,7 +337,35 @@ export default function ClaimWizard() {
                 <div><label className="form-label">{t('claims.vehicle.speedBraking')}</label><input className="form-input tabular-nums" placeholder="e.g. 50" value={claim.speedBeforeBraking} onChange={e => update('speedBeforeBraking', e.target.value)} /></div>
                 <div><label className="form-label">{t('claims.vehicle.describeDamage')}</label><textarea className="form-input min-h-[80px] resize-none" placeholder={t('claims.vehicle.describeDamagePlaceholder')} value={claim.damageDescription} onChange={e => update('damageDescription', e.target.value)} /></div>
                 <Toggle active={claim.vehicleTowed} onToggle={() => update('vehicleTowed', !claim.vehicleTowed)} label={t('claims.vehicle.vehicleTowed')} />
-                {claim.vehicleTowed && <div><label className="form-label">{t('claims.vehicle.towingCompany')}</label><input className="form-input" value={claim.towingCompany} onChange={e => update('towingCompany', e.target.value)} /></div>}
+                {claim.vehicleTowed && (
+                  <div className="space-y-3">
+                    <div><label className="form-label">{t('claims.vehicle.towingCompany')}</label><input className="form-input" value={claim.towingCompany} onChange={e => update('towingCompany', e.target.value)} placeholder="Enter or select below" /></div>
+                    <div>
+                      <label className="form-label">Find a tow company</label>
+                      <div className="relative">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                        <input className="form-input pl-9" placeholder="Search by name or location..." value={towSearch} onChange={e => setTowSearch(e.target.value)} />
+                      </div>
+                    </div>
+                    <div className="space-y-1.5 max-h-48 overflow-y-auto">
+                      {towCompanies
+                        .filter(tc => tc.name.toLowerCase().includes(towSearch.toLowerCase()) || tc.address.toLowerCase().includes(towSearch.toLowerCase()))
+                        .map(tc => (
+                          <div key={tc.id} className={`flex items-center justify-between p-3 rounded-xl border transition-all ${claim.towingCompany === tc.name ? 'border-foreground bg-foreground/[0.03]' : 'border-border'}`}>
+                            <button type="button" onClick={() => update('towingCompany', tc.name)} className="flex-1 text-left min-w-0">
+                              <div className="text-sm font-semibold text-foreground">{tc.name}</div>
+                              <div className="text-xs text-muted-foreground">{tc.address}</div>
+                            </button>
+                            <a href={`tel:${tc.phone}`} className="flex-shrink-0 ml-2 h-9 px-3 rounded-lg bg-primary text-primary-foreground flex items-center gap-1.5 text-xs font-medium hover:bg-primary/90 transition-colors">
+                              <Phone className="w-3.5 h-3.5" />
+                              <span className="hidden sm:inline">{tc.phone}</span>
+                              <span className="sm:hidden">Call</span>
+                            </a>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
