@@ -72,6 +72,33 @@ export default function ClaimDetail() {
   const weather = claim.weatherCondition ? t(`weather.${claim.weatherCondition}`) : '—';
   const road = claim.roadCondition ? t(`road.${claim.roadCondition}`) : '—';
 
+  const startEditInsurance = () => {
+    setEditInsurance(claim.insuranceCompany);
+    setEditRepairerName(claim.repairerName);
+    setEditRepairerPhone(claim.repairerPhone);
+    setEditRepairerAddress(claim.repairerAddress);
+    setEditingInsurance(true);
+  };
+
+  const saveInsuranceDetails = async () => {
+    if (!claim.id) return;
+    setSavingInsurance(true);
+    await supabase.from('claims').update({
+      insurance_company: editInsurance,
+      repairer_name: editRepairerName,
+      repairer_phone: editRepairerPhone,
+      repairer_address: editRepairerAddress,
+    }).eq('id', claim.id);
+    setClaim({ ...claim, insuranceCompany: editInsurance, repairerName: editRepairerName, repairerPhone: editRepairerPhone, repairerAddress: editRepairerAddress });
+    if (editInsurance) {
+      const { data: ins } = await supabase.from('insurance_companies').select('phone, email').eq('name', editInsurance).single();
+      setInsurerPhone(ins?.phone || '');
+      setInsurerEmail(ins?.email || '');
+    }
+    setEditingInsurance(false);
+    setSavingInsurance(false);
+  };
+
   const handlePrint = () => { window.print(); };
   const handleEmail = () => {
     const subject = encodeURIComponent(`Incident Report – ${claim.incidentDate}`);
