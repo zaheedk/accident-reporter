@@ -5,23 +5,23 @@ import { HelpCircle, MessageSquare } from 'lucide-react';
 const faqs = [
   {
     q: 'What is Savo?',
-    a: 'Savo is a digital tool that helps you document and manage vehicle insurance claims. It guides you through the entire process — from recording incident details to selecting a trusted panel shop for repairs.',
+    a: 'Savo is a digital tool that helps you document and manage vehicle insurance incidents. It guides you through the entire process — from recording incident details to selecting a trusted panel shop for repairs.',
   },
   {
     q: 'Is Savo free to use?',
-    a: 'Yes! Savo is completely free for vehicle owners. We make it easy to document claims and connect with panel shops at no cost to you.',
+    a: 'Yes! Savo is completely free for vehicle owners. We make it easy to document incidents and connect with panel shops at no cost to you.',
   },
   {
-    q: 'How do I file a claim?',
+    q: 'How do I file an incident report?',
     a: 'Tap "New Report" from the dashboard, then follow our step-by-step wizard. You\'ll enter incident details, vehicle information, third-party details, witness info, conditions, and damage/repairer preferences.',
   },
   {
     q: 'Can I save a draft and finish later?',
-    a: 'Absolutely. Your claim report is saved as a draft automatically. Come back anytime to complete and submit it.',
+    a: 'Absolutely. Your incident report is saved as a draft automatically. Come back anytime to complete and submit it.',
   },
   {
-    q: 'How do I add photos to my claim?',
-    a: 'After creating a claim, open the claim detail page and use the photo upload section to attach images of the damage, the scene, or any relevant documents.',
+    q: 'How do I add photos to my incident report?',
+    a: 'After creating an incident report, open the incident detail page and use the photo upload section to attach images of the damage, the scene, or any relevant documents.',
   },
   {
     q: 'What are panel shops?',
@@ -29,11 +29,11 @@ const faqs = [
   },
   {
     q: 'Is my data secure?',
-    a: 'Yes. All your data is stored securely with encryption. Only you can access your claims, vehicles, and personal information through your authenticated account.',
+    a: 'Yes. All your data is stored securely with encryption. Only you can access your incident reports, vehicles, and personal information through your authenticated account.',
   },
   {
-    q: 'Can I edit a submitted claim?',
-    a: 'Once a claim is submitted, it cannot be edited to maintain record integrity. You can however view all the details and print or share the report.',
+    q: 'Can I edit a submitted incident report?',
+    a: 'Once an incident report is submitted, it cannot be edited to maintain record integrity. You can however view all the details and print or share the report.',
   },
   {
     q: 'How do I contact support?',
@@ -48,7 +48,7 @@ export default function FAQ() {
         <div>
           <h1 className="text-2xl font-bold text-foreground mb-2">FAQ & Help Centre</h1>
           <p className="text-sm text-muted-foreground leading-relaxed">
-            Find answers to common questions about using ClaimSorted.
+            Find answers to common questions about using Savo.
           </p>
         </div>
 
