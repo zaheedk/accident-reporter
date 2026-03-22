@@ -60,8 +60,12 @@ export default function ClaimDetail() {
         }
       }
       // Load insurance companies list
-      const { data: insurers } = await supabase.from('insurance_companies').select('id, name').order('name');
+      const [{ data: insurers }, { data: shops }] = await Promise.all([
+        supabase.from('insurance_companies').select('id, name').order('name'),
+        supabase.from('panel_shops').select('id, name, phone, address').order('name'),
+      ]);
       if (insurers) setInsuranceCompanies(insurers);
+      if (shops) setPanelShops(shops);
       setLoading(false);
     });
   }, [id]);
