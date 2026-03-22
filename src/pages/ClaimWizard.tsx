@@ -481,31 +481,52 @@ export default function ClaimWizard() {
                 <Toggle active={claim.vehicleTowed} onToggle={() => update('vehicleTowed', !claim.vehicleTowed)} label={t('claims.vehicle.vehicleTowed')} />
                 {claim.vehicleTowed && (
                   <div className="space-y-3">
-                    <div><label className="form-label">{t('claims.vehicle.towingCompany')}</label><input className="form-input" value={claim.towingCompany} onChange={e => update('towingCompany', e.target.value)} placeholder="Enter or select below" /></div>
                     <div>
-                      <label className="form-label">Find a tow company</label>
+                      <label className="form-label">{t('claims.vehicle.towingCompany')}</label>
                       <div className="relative">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                        <input className="form-input pl-9" placeholder="Search by name or location..." value={towSearch} onChange={e => setTowSearch(e.target.value)} />
+                        <input
+                          className="form-input pl-9"
+                          placeholder="Search tow companies..."
+                          value={towSearch || (claim.towingCompany && !towDropdownOpen ? '' : towSearch)}
+                          onChange={e => { setTowSearch(e.target.value); setTowDropdownOpen(true); }}
+                          onFocus={() => setTowDropdownOpen(true)}
+                        />
                       </div>
+                      {towDropdownOpen && (
+                        <div className="mt-1 border border-border rounded-xl bg-background max-h-52 overflow-y-auto shadow-lg z-10">
+                          {towCompanies
+                            .filter(tc => tc.name.toLowerCase().includes(towSearch.toLowerCase()) || tc.address.toLowerCase().includes(towSearch.toLowerCase()))
+                            .map(tc => (
+                              <button
+                                key={tc.id}
+                                type="button"
+                                onClick={() => { update('towingCompany', tc.name); setTowSearch(''); setTowDropdownOpen(false); }}
+                                className={`w-full text-left px-3 py-2.5 border-b border-border last:border-b-0 hover:bg-muted/50 transition-colors ${claim.towingCompany === tc.name ? 'bg-primary/5' : ''}`}
+                              >
+                                <div className="text-sm font-semibold text-foreground">{tc.name}</div>
+                                <div className="text-xs text-muted-foreground">{tc.address}</div>
+                              </button>
+                            ))}
+                        </div>
+                      )}
                     </div>
-                    <div className="space-y-1.5 max-h-48 overflow-y-auto">
-                      {towCompanies
-                        .filter(tc => tc.name.toLowerCase().includes(towSearch.toLowerCase()) || tc.address.toLowerCase().includes(towSearch.toLowerCase()))
-                        .map(tc => (
-                          <div key={tc.id} className={`flex items-center justify-between p-3 rounded-xl border transition-all ${claim.towingCompany === tc.name ? 'border-foreground bg-foreground/[0.03]' : 'border-border'}`}>
-                            <button type="button" onClick={() => update('towingCompany', tc.name)} className="flex-1 text-left min-w-0">
-                              <div className="text-sm font-semibold text-foreground">{tc.name}</div>
-                              <div className="text-xs text-muted-foreground">{tc.address}</div>
-                            </button>
-                            <a href={`tel:${tc.phone}`} className="flex-shrink-0 ml-2 h-9 px-3 rounded-lg bg-primary text-primary-foreground flex items-center gap-1.5 text-xs font-medium hover:bg-primary/90 transition-colors">
-                              <Phone className="w-3.5 h-3.5" />
-                              <span className="hidden sm:inline">{tc.phone}</span>
-                              <span className="sm:hidden">Call</span>
-                            </a>
+                    {claim.towingCompany && (() => {
+                      const selected = towCompanies.find(tc => tc.name === claim.towingCompany);
+                      return (
+                        <div className="flex items-center justify-between p-3 rounded-xl border border-primary/30 bg-primary/5">
+                          <div className="min-w-0">
+                            <div className="text-sm font-bold text-foreground">{claim.towingCompany}</div>
+                            {selected && <div className="text-xs text-muted-foreground">{selected.address}</div>}
                           </div>
-                        ))}
-                    </div>
+                          {selected && (
+                            <a href={`tel:${selected.phone}`} className="flex-shrink-0 ml-2 h-9 px-3 rounded-lg bg-primary text-primary-foreground flex items-center gap-1.5 text-xs font-medium hover:bg-primary/90 transition-colors">
+                              <Phone className="w-3.5 h-3.5" /> Call
+                            </a>
+                          )}
+                        </div>
+                      );
+                    })()}
                   </div>
                 )}
               </div>
