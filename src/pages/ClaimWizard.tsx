@@ -302,6 +302,8 @@ export default function ClaimWizard() {
           type: 'claim_submitted',
           to: insurerEmail || user.email,
           data: {
+            isInsurerEmail: 'true',
+            clientName: user.user_metadata?.full_name || user.user_metadata?.name || user.email || '',
             claimId: claim.id || '',
             date: claim.incidentDate,
             time: claim.incidentTime,

@@ -211,10 +211,33 @@ function getEmailContent(type: string, data: Record<string, string> = {}) {
           </div>`,
       };
 
-    case 'claim_submitted':
-      return {
-        subject: `Your claim has been submitted – ${data.date || 'Savo'}`,
-        html: `
+    case 'claim_submitted': {
+      const isInsurer = data.isInsurerEmail === 'true';
+      const subjectLine = isInsurer
+        ? `New Claim Submitted – Policy ${data.policyNumber || 'N/A'} | ${data.rego || ''}`
+        : `Your claim has been submitted – ${data.date || 'Savo'}`;
+      const bodyHtml = isInsurer
+        ? `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+            <div style="background: linear-gradient(135deg, #e8551e, #d44a18); padding: 30px; border-radius: 12px 12px 0 0;">
+              <h1 style="color: white; margin: 0; font-size: 24px;">Savo</h1>
+            </div>
+            <div style="background: #ffffff; padding: 30px; border: 1px solid #e5e5e5; border-top: none; border-radius: 0 0 12px 12px;">
+              <h2 style="color: #1a1a1a; margin-top: 0;">New Incident Claim Submitted</h2>
+              <p style="color: #555; line-height: 1.6;">Your client <strong>${data.clientName || 'N/A'}</strong> has submitted an incident claim. Please find the full report attached as a PDF.</p>
+              <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+                <tr><td style="padding: 8px 0; color: #999; width: 140px;">Client Name</td><td style="padding: 8px 0; color: #333; font-weight: 500;">${data.clientName || 'N/A'}</td></tr>
+                <tr><td style="padding: 8px 0; color: #999;">Policy Number</td><td style="padding: 8px 0; color: #333; font-weight: 500;">${data.policyNumber || 'N/A'}</td></tr>
+                <tr><td style="padding: 8px 0; color: #999;">Vehicle Registration</td><td style="padding: 8px 0; color: #333; font-weight: 500;">${data.rego || 'N/A'}</td></tr>
+                ${data.vehicle ? `<tr><td style="padding: 8px 0; color: #999;">Vehicle</td><td style="padding: 8px 0; color: #333; font-weight: 500;">${data.vehicle}</td></tr>` : ''}
+                ${data.date ? `<tr><td style="padding: 8px 0; color: #999;">Incident Date</td><td style="padding: 8px 0; color: #333; font-weight: 500;">${data.date}</td></tr>` : ''}
+                ${data.location ? `<tr><td style="padding: 8px 0; color: #999;">Location</td><td style="padding: 8px 0; color: #333; font-weight: 500;">${data.location}</td></tr>` : ''}
+              </table>
+              <p style="color: #555; line-height: 1.6;">Please review the attached PDF for full incident details including damage photos, third-party information, and witness statements.</p>
+              <p style="color: #999; font-size: 12px; margin-top: 30px;">— Sent via Savo</p>
+            </div>
+          </div>`
+        : `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
             <div style="background: linear-gradient(135deg, #e8551e, #d44a18); padding: 30px; border-radius: 12px 12px 0 0;">
               <h1 style="color: white; margin: 0; font-size: 24px;">Savo</h1>
@@ -231,8 +254,9 @@ function getEmailContent(type: string, data: Record<string, string> = {}) {
               <p style="color: #555; line-height: 1.6;">You can view your full report anytime in the Savo app.</p>
               <p style="color: #999; font-size: 12px; margin-top: 30px;">— The Savo Team</p>
             </div>
-          </div>`,
-      };
+          </div>`;
+      return { subject: subjectLine, html: bodyHtml };
+    }
 
     case 'welcome':
       return {
