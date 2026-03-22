@@ -112,6 +112,9 @@ export default function ClaimWizard() {
       .order('google_rating', { ascending: false }).then(({ data }) => {
         if (data) setPanelShops(data as PanelShop[]);
       });
+    supabase.from('tow_companies').select('*').order('name').then(({ data }) => {
+      if (data) setTowCompanies(data as any[]);
+    });
     if (id) {
       getClaims().then(claims => {
         const e = claims.find(c => c.id === id);
