@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, Check, Save, Camera, X, Search, Star, Send, Loader2, MapPin, Car, Phone } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, Save, Camera, X, Search, Star, Send, Loader2, MapPin, Car, Phone, Sparkles } from 'lucide-react';
+import { DamagePhotoAnalyzer, ThirdPartyPhotos } from '@/components/PhotoAnalyzer';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ClaimReport, ThirdPartyVehicle, Witness, WEATHER_OPTIONS, ROAD_OPTIONS, Vehicle } from '@/types';
 import { getVehicles, getClaims, saveClaim } from '@/lib/storage';
@@ -336,6 +337,15 @@ export default function ClaimWizard() {
                 <div><label className="form-label">{t('claims.incident.whatHappened')}</label><textarea className="form-input min-h-[100px] resize-none" placeholder={t('claims.incident.whatHappenedPlaceholder')} value={claim.description} onChange={e => update('description', e.target.value)} /></div>
                 <div><label className="form-label">{t('claims.vehicle.speedBraking')}</label><input className="form-input tabular-nums" placeholder="e.g. 50" value={claim.speedBeforeBraking} onChange={e => update('speedBeforeBraking', e.target.value)} /></div>
                 <div><label className="form-label">{t('claims.vehicle.describeDamage')}</label><textarea className="form-input min-h-[80px] resize-none" placeholder={t('claims.vehicle.describeDamagePlaceholder')} value={claim.damageDescription} onChange={e => update('damageDescription', e.target.value)} /></div>
+                {claim.id && user && (
+                  <DamagePhotoAnalyzer
+                    claimId={claim.id}
+                    userId={user.id}
+                    currentDescription={claim.damageDescription}
+                    onDescriptionGenerated={(desc) => update('damageDescription', desc)}
+                    photos={photos}
+                  />
+                )}
                 <Toggle active={claim.vehicleTowed} onToggle={() => update('vehicleTowed', !claim.vehicleTowed)} label={t('claims.vehicle.vehicleTowed')} />
                 {claim.vehicleTowed && (
                   <div className="space-y-3">
@@ -399,6 +409,19 @@ export default function ClaimWizard() {
                         <div><label className="form-label">Date of Lodgement</label><input type="date" className="form-input tabular-nums" value={tp.claimLodgementDate || ''} onChange={e => updTP(i, 'claimLodgementDate', e.target.value)} /></div>
                       </div>
                       <div><label className="form-label">{t('claims.thirdParty.damageDescription')}</label><textarea className="form-input min-h-[60px] resize-none" value={tp.damageDescription} onChange={e => updTP(i, 'damageDescription', e.target.value)} /></div>
+                      {claim.id && user && (
+                        <ThirdPartyPhotos
+                          tpIndex={i}
+                          claimId={claim.id}
+                          userId={user.id}
+                          onRegoDetected={(rego) => updTP(i, 'regoNumber', rego)}
+                          onLicenseDetected={(data) => {
+                            if (data.fullName) updTP(i, 'ownerName', data.fullName);
+                            if (data.address) updTP(i, 'address', data.address);
+                          }}
+                          onDamageDescriptionGenerated={(desc) => updTP(i, 'damageDescription', desc)}
+                        />
+                      )}
                     </div>
                   ))}
                 </div>
