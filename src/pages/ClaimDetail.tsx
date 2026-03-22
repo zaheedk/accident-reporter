@@ -15,6 +15,7 @@ export default function ClaimDetail() {
   const [claim, setClaim] = useState<ClaimReport | null>(null);
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [photos, setPhotos] = useState<{ id: string; url: string; fileName: string }[]>([]);
+  const [tpPhotos, setTpPhotos] = useState<{ id: string; url: string; type: string; tpIndex: number }[]>([]);
   const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [insurerPhone, setInsurerPhone] = useState('');
