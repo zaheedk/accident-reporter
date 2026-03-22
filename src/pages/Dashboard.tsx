@@ -38,6 +38,7 @@ export default function Dashboard() {
 
   const handleOpenTowSheet = () => {
     setTowSheetOpen(true);
+    setTowSearch('');
     supabase.from('tow_companies').select('*').then(({ data }) => {
       if (data) setTowCompanies(data);
     });
@@ -47,17 +48,38 @@ export default function Dashboard() {
           const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&format=json`);
           const geo = await res.json();
           const city = geo.address?.city || geo.address?.town || geo.address?.suburb || '';
+          const region = geo.address?.state || geo.address?.region || '';
           setUserCity(city);
-          setTowSearch(city);
+          setUserRegion(region);
         } catch { /* ignore */ }
       }, () => { /* permission denied */ });
     }
   };
 
-  const filteredTowCompanies = towCompanies.filter(tc =>
-    tc.name.toLowerCase().includes(towSearch.toLowerCase()) ||
-    tc.address.toLowerCase().includes(towSearch.toLowerCase())
-  );
+  // Filter by search term; if search is empty, try to match by detected region/city
+  const getDisplayedTowCompanies = () => {
+    if (towSearch) {
+      const filtered = towCompanies.filter(tc =>
+        tc.name.toLowerCase().includes(towSearch.toLowerCase()) ||
+        tc.address.toLowerCase().includes(towSearch.toLowerCase())
+      );
+      return filtered.length > 0 ? filtered : towCompanies;
+    }
+    // Auto-filter by detected location
+    if (userCity || userRegion) {
+      const byCity = towCompanies.filter(tc =>
+        tc.address.toLowerCase().includes(userCity.toLowerCase())
+      );
+      if (byCity.length > 0) return byCity;
+      const byRegion = towCompanies.filter(tc =>
+        tc.address.toLowerCase().includes(userRegion.toLowerCase())
+      );
+      if (byRegion.length > 0) return byRegion;
+    }
+    return towCompanies;
+  };
+
+  const displayedTowCompanies = getDisplayedTowCompanies();
 
   const drafts = claims.filter(c => c.status === 'draft');
   const submitted = claims.filter(c => c.status === 'submitted');
