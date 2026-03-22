@@ -500,10 +500,10 @@ export default function ClaimWizard() {
                 <div className="card-surface space-y-4">
                   <div>
                     <label className="form-label">{t('claims.conditions.weather')}</label>
-                    <div className="flex flex-wrap gap-2">
+                    <div className="grid grid-cols-3 gap-2">
                       {WEATHER_OPTIONS.map(opt => (
                         <button key={opt.value} onClick={() => update('weatherCondition', opt.value)}
-                          className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition-all ${
+                          className={`px-3 py-2 rounded-xl text-xs font-semibold transition-all text-center ${
                             claim.weatherCondition === opt.value ? 'bg-foreground text-card' : 'bg-background text-foreground hover:bg-muted'
                           }`}>{t(`weather.${opt.value}`)}</button>
                       ))}
@@ -511,10 +511,10 @@ export default function ClaimWizard() {
                   </div>
                   <div>
                     <label className="form-label">{t('claims.conditions.road')}</label>
-                    <div className="flex flex-wrap gap-2">
+                    <div className="grid grid-cols-3 gap-2">
                       {ROAD_OPTIONS.map(opt => (
                         <button key={opt.value} onClick={() => update('roadCondition', opt.value)}
-                          className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition-all ${
+                          className={`px-3 py-2 rounded-xl text-xs font-semibold transition-all text-center ${
                             claim.roadCondition === opt.value ? 'bg-foreground text-card' : 'bg-background text-foreground hover:bg-muted'
                           }`}>{t(`road.${opt.value}`)}</button>
                       ))}
