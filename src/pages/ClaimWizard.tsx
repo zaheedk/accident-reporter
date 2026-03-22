@@ -649,6 +649,18 @@ export default function ClaimWizard() {
                       ))}
                     </select>
                   )}
+                  {insurerPhone && (
+                    <a href={`tel:${insurerPhone.replace(/\s/g, '')}`} className="flex items-center gap-2 text-xs text-primary hover:underline">
+                      <Phone className="w-3.5 h-3.5" />{insurerPhone}
+                    </a>
+                  )}
+                  {claim.insuranceCompany && (
+                    <button type="button" onClick={sendToInsurer} disabled={sendingToInsurer || !claim.id}
+                      className="btn-primary w-full h-10 gap-2 text-sm">
+                      {sendingToInsurer ? <Loader2 className="w-4 h-4 animate-spin" /> : <Mail className="w-4 h-4" />}
+                      {sendingToInsurer ? 'Sending...' : `Email report to ${claim.insuranceCompany}`}
+                    </button>
+                  )}
                 </div>
 
                 <div className="card-surface space-y-3">
