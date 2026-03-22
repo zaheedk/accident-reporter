@@ -138,6 +138,19 @@ export default function ClaimWizard() {
     }
   }, [id]);
 
+  // Fetch insurer contact details when insurance company changes
+  useEffect(() => {
+    if (claim.insuranceCompany) {
+      supabase.from('insurance_companies').select('email, phone').eq('name', claim.insuranceCompany).single().then(({ data }) => {
+        setInsurerEmail(data?.email || '');
+        setInsurerPhone(data?.phone || '');
+      });
+    } else {
+      setInsurerEmail('');
+      setInsurerPhone('');
+    }
+  }, [claim.insuranceCompany]);
+
   const update = (field: keyof ClaimReport, value: any) => setClaim(prev => ({ ...prev, [field]: value, updatedAt: new Date().toISOString() }));
 
   const autoSave = async () => {
