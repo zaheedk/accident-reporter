@@ -18,19 +18,19 @@ export default function Legal() {
               By accessing or using Savo ("the Service"), you agree to be bound by these Terms of Service. If you do not agree, do not use the Service.
             </Section>
             <Section title="2. Description of Service">
-              Savo provides a digital platform for documenting vehicle insurance claims, managing vehicle records, and connecting with panel repair shops. The Service is provided "as is" for informational and organisational purposes only.
+              Savo provides a digital platform for documenting vehicle insurance incidents, managing vehicle records, and connecting with panel repair shops. The Service is provided "as is" for informational and organisational purposes only.
             </Section>
             <Section title="3. User Accounts">
               You must create an account to use the Service. You are responsible for maintaining the confidentiality of your credentials and for all activity under your account. You must provide accurate and complete information.
             </Section>
             <Section title="4. Acceptable Use">
-              You agree not to misuse the Service, submit false or misleading claim information, attempt to gain unauthorised access, or use the platform for any unlawful purpose.
+              You agree not to misuse the Service, submit false or misleading incident information, attempt to gain unauthorised access, or use the platform for any unlawful purpose.
             </Section>
             <Section title="5. Intellectual Property">
               All content, trademarks, and materials on Savo are owned by us or our licensors. You may not copy, modify, or distribute any part of the Service without written permission.
             </Section>
             <Section title="6. Limitation of Liability">
-              Savo is not an insurance provider or legal advisor. We do not guarantee claim outcomes. To the fullest extent permitted by law, we are not liable for any indirect, incidental, or consequential damages arising from your use of the Service.
+              Savo is not an insurance provider or legal advisor. We do not guarantee incident outcomes. To the fullest extent permitted by law, we are not liable for any indirect, incidental, or consequential damages arising from your use of the Service.
             </Section>
             <Section title="7. Modifications">
               We reserve the right to modify these terms at any time. Continued use of the Service constitutes acceptance of updated terms.
@@ -42,10 +42,10 @@ export default function Legal() {
 
           <TabsContent value="privacy" className="card-surface space-y-5">
             <Section title="1. Information We Collect">
-              We collect information you provide directly: name, email, phone number, vehicle details, and claim information. We also collect usage data such as device type, browser, and interaction patterns.
+              We collect information you provide directly: name, email, phone number, vehicle details, and incident information. We also collect usage data such as device type, browser, and interaction patterns.
             </Section>
             <Section title="2. How We Use Your Information">
-              Your data is used to provide and improve the Service, process and store your claim reports, communicate with you about your account, and connect you with panel shops when requested.
+              Your data is used to provide and improve the Service, process and store your incident reports, communicate with you about your account, and connect you with panel shops when requested.
             </Section>
             <Section title="3. Data Storage & Security">
               Your data is stored securely using industry-standard encryption and access controls. We use secure cloud infrastructure to protect your personal information.

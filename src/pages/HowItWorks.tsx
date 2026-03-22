@@ -9,7 +9,7 @@ const steps = [
   },
   {
     icon: FileText,
-    title: 'File a Claim Report',
+    title: 'File an Incident Report',
     desc: 'Our step-by-step wizard walks you through documenting the incident: date, location, third parties, witnesses, and conditions.',
   },
   {
@@ -31,7 +31,7 @@ export default function HowItWorks() {
         <div>
           <h1 className="text-2xl font-bold text-foreground mb-2">How It Works</h1>
           <p className="text-sm text-muted-foreground leading-relaxed">
-            Savo takes the hassle out of insurance claims in four simple steps.
+            Savo takes the hassle out of insurance incidents in four simple steps.
           </p>
         </div>
 
@@ -60,10 +60,10 @@ export default function HowItWorks() {
         <div className="card-surface bg-primary/5 border border-primary/10">
           <h3 className="text-sm font-semibold text-foreground mb-2">Ready to get started?</h3>
           <p className="text-sm text-muted-foreground mb-4">
-            Create your first claim report in minutes — no paperwork required.
+            Create your first incident report in minutes — no paperwork required.
           </p>
           <a href="/claims/new" className="btn-primary inline-flex">
-            Start a Claim Report
+            Start an Incident Report
           </a>
         </div>
       </div>

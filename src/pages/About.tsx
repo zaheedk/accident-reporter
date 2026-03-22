@@ -34,18 +34,18 @@ export default function About() {
         <div>
           <h1 className="text-2xl font-bold text-foreground mb-2">About Savo</h1>
           <p className="text-sm text-muted-foreground leading-relaxed">
-            Savo makes vehicle insurance claims simple, fast, and stress-free. We guide you through every step — from documenting the incident to connecting with trusted panel shops for repairs.
+            Savo makes vehicle insurance incidents simple, fast, and stress-free. We guide you through every step — from documenting the incident to connecting with trusted panel shops for repairs.
           </p>
         </div>
 
         <div className="card-surface space-y-4">
           <h2 className="text-base font-semibold text-foreground">Our Mission</h2>
           <p className="text-sm text-muted-foreground leading-relaxed">
-            Filing a claim after a vehicle incident shouldn't be complicated. We built Savo to eliminate the paperwork headaches, keep your records organised, and get you back on the road faster.
+            Filing an incident report after a vehicle accident shouldn't be complicated. We built Savo to eliminate the paperwork headaches, keep your records organised, and get you back on the road faster.
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
             {[
-              { num: '500+', label: 'Claims processed' },
+              { num: '500+', label: 'Incidents processed' },
               { num: '50+', label: 'Partner shops' },
               { num: '4.8★', label: 'User rating' },
             ].map(({ num, label }) => (
@@ -64,7 +64,7 @@ export default function About() {
               <Mail className="w-4 h-4 text-primary" /> support@savo.co.nz
             </div>
             <div className="flex items-center gap-3 text-sm text-muted-foreground">
-              <Phone className="w-4 h-4 text-primary" /> 0800 CLAIMS (252 467)
+              <Phone className="w-4 h-4 text-primary" /> 0800 SAVO (7286)
             </div>
             <div className="flex items-center gap-3 text-sm text-muted-foreground">
               <MapPin className="w-4 h-4 text-primary" /> Auckland, New Zealand
