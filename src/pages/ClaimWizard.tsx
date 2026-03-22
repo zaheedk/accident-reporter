@@ -61,6 +61,8 @@ export default function ClaimWizard() {
   const [uploading, setUploading] = useState(false);
   const [sending, setSending] = useState(false);
   const [detectingLocation, setDetectingLocation] = useState(false);
+  const [towCompanies, setTowCompanies] = useState<{ id: string; name: string; phone: string; address: string }[]>([]);
+  const [towSearch, setTowSearch] = useState('');
   const photoInputRef = useRef<HTMLInputElement>(null);
 
   const detectLocation = useCallback(async () => {
