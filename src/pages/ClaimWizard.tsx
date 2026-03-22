@@ -117,6 +117,9 @@ export default function ClaimWizard() {
     supabase.from('tow_companies').select('*').order('name').then(({ data }) => {
       if (data) setTowCompanies(data as any[]);
     });
+    supabase.from('insurance_companies').select('id, name').order('name').then(({ data }) => {
+      if (data) setInsuranceCompanies(data);
+    });
     if (id) {
       getClaims().then(claims => {
         const e = claims.find(c => c.id === id);
