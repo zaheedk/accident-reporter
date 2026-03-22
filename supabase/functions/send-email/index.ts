@@ -359,7 +359,50 @@ serve(async (req) => {
     // Generate and attach PDF for claim submissions
     if (type === 'claim_submitted' && data) {
       try {
-        const pdfBase64 = generateClaimPdf(data);
+        // Fetch photos from storage if claimId provided
+        let photoImages: { label: string; base64: string; mime: string }[] = [];
+        if (data.claimId) {
+          const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+          const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+          const supabase = createClient(supabaseUrl, supabaseKey);
+
+          // Fetch vehicle damage photos
+          const { data: claimPhotos } = await supabase.from('claim_photos').select('file_path, file_name').eq('claim_id', data.claimId);
+          if (claimPhotos) {
+            for (const p of claimPhotos) {
+              try {
+                const { data: urlData } = supabase.storage.from('claim-photos').getPublicUrl(p.file_path);
+                const imgResp = await fetch(urlData.publicUrl);
+                if (imgResp.ok) {
+                  const buf = await imgResp.arrayBuffer();
+                  const base64 = btoa(String.fromCharCode(...new Uint8Array(buf)));
+                  const mime = imgResp.headers.get('content-type') || 'image/jpeg';
+                  photoImages.push({ label: 'Vehicle Damage', base64: `data:${mime};base64,${base64}`, mime });
+                }
+              } catch (e) { console.error('Failed to fetch claim photo:', e); }
+            }
+          }
+
+          // Fetch third-party photos
+          const { data: tpPhotos } = await supabase.from('tp_photos').select('file_path, type, tp_index').eq('claim_id', data.claimId).order('tp_index');
+          if (tpPhotos) {
+            for (const p of tpPhotos) {
+              try {
+                const { data: urlData } = supabase.storage.from('tp-photos').getPublicUrl(p.file_path);
+                const imgResp = await fetch(urlData.publicUrl);
+                if (imgResp.ok) {
+                  const buf = await imgResp.arrayBuffer();
+                  const base64 = btoa(String.fromCharCode(...new Uint8Array(buf)));
+                  const mime = imgResp.headers.get('content-type') || 'image/jpeg';
+                  const typeLabel = p.type === 'damage' ? 'Damage' : p.type === 'rego' ? 'Registration' : 'License';
+                  photoImages.push({ label: `Third Party ${p.tp_index + 1} – ${typeLabel}`, base64: `data:${mime};base64,${base64}`, mime });
+                }
+              } catch (e) { console.error('Failed to fetch tp photo:', e); }
+            }
+          }
+        }
+
+        const pdfBase64 = generateClaimPdf(data, photoImages);
         const claimRef = data.claimNumber ? `CLM-${data.claimNumber.padStart(4, '0')}` : 'Incident-Report';
         emailPayload.attachments = [
           {
@@ -367,7 +410,7 @@ serve(async (req) => {
             content: pdfBase64,
           },
         ];
-        console.log('PDF generated and attached successfully');
+        console.log(`PDF generated with ${photoImages.length} photos and attached successfully`);
       } catch (pdfErr) {
         console.error('PDF generation failed, sending without attachment:', pdfErr);
       }
