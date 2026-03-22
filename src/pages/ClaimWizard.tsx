@@ -336,16 +336,46 @@ export default function ClaimWizard() {
                 <div><label className="form-label">{t('claims.incident.journeyDetails')}</label><textarea className="form-input min-h-[80px] resize-none" placeholder={t('claims.incident.journeyPlaceholder')} value={claim.journeyDetails} onChange={e => update('journeyDetails', e.target.value)} /></div>
                 <div><label className="form-label">{t('claims.incident.whatHappened')}</label><textarea className="form-input min-h-[100px] resize-none" placeholder={t('claims.incident.whatHappenedPlaceholder')} value={claim.description} onChange={e => update('description', e.target.value)} /></div>
                 <div><label className="form-label">{t('claims.vehicle.speedBraking')}</label><input className="form-input tabular-nums" placeholder="e.g. 50" value={claim.speedBeforeBraking} onChange={e => update('speedBeforeBraking', e.target.value)} /></div>
-                <div><label className="form-label">{t('claims.vehicle.describeDamage')}</label><textarea className="form-input min-h-[80px] resize-none" placeholder={t('claims.vehicle.describeDamagePlaceholder')} value={claim.damageDescription} onChange={e => update('damageDescription', e.target.value)} /></div>
-                {claim.id && user && (
-                  <DamagePhotoAnalyzer
-                    claimId={claim.id}
-                    userId={user.id}
-                    currentDescription={claim.damageDescription}
-                    onDescriptionGenerated={(desc) => update('damageDescription', desc)}
-                    photos={photos}
-                  />
-                )}
+                <div className="space-y-3">
+                  <label className="form-label">{t('claims.vehicle.describeDamage')}</label>
+                  <div className="space-y-2">
+                    {photos.length > 0 && (
+                      <div className="grid grid-cols-4 gap-2">
+                        {photos.map(photo => (
+                          <div key={photo.id} className="relative aspect-square rounded-xl overflow-hidden bg-muted">
+                            <img src={getPhotoUrl(photo.file_path)} alt={photo.file_name} className="w-full h-full object-cover" />
+                            <button onClick={() => removePhoto(photo)}
+                              className="absolute top-1 right-1 w-5 h-5 rounded-full bg-foreground/80 text-card flex items-center justify-center">
+                              <X className="w-3 h-3" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    <button type="button" onClick={async () => {
+                      if (!claim.id) {
+                        const savedId = await saveClaim({ ...claim, updatedAt: new Date().toISOString() });
+                        if (savedId) setClaim(prev => ({ ...prev, id: savedId }));
+                      }
+                      photoInputRef.current?.click();
+                    }} disabled={uploading}
+                      className="btn-secondary w-full h-9 gap-2 text-xs">
+                      {uploading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Camera className="w-3.5 h-3.5" />}
+                      {uploading ? t('claims.insurance.uploading') : t('claims.insurance.addPhotos')}
+                    </button>
+                    <input ref={photoInputRef} type="file" accept="image/*" multiple className="hidden" onChange={handlePhotoUpload} />
+                  </div>
+                  <textarea className="form-input min-h-[80px] resize-none" placeholder={t('claims.vehicle.describeDamagePlaceholder')} value={claim.damageDescription} onChange={e => update('damageDescription', e.target.value)} />
+                  {claim.id && user && photos.length > 0 && (
+                    <DamagePhotoAnalyzer
+                      claimId={claim.id}
+                      userId={user.id}
+                      currentDescription={claim.damageDescription}
+                      onDescriptionGenerated={(desc) => update('damageDescription', desc)}
+                      photos={photos}
+                    />
+                  )}
+                </div>
                 <Toggle active={claim.vehicleTowed} onToggle={() => update('vehicleTowed', !claim.vehicleTowed)} label={t('claims.vehicle.vehicleTowed')} />
                 {claim.vehicleTowed && (
                   <div className="space-y-3">
