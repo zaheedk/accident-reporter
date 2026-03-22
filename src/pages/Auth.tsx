@@ -104,7 +104,7 @@ export default function Auth() {
       </div>
 
       {/* Form section */}
-      <div className="flex-1 bg-card px-6 pt-8 pb-8 -mt-3 rounded-t-3xl relative z-10" style={{ boxShadow: '0 -4px 24px rgba(0,0,0,0.08)' }}>
+      <div className="flex-1 bg-card px-6 pt-8 pb-8 -mt-3 rounded-t-3xl relative z-10 lg:mt-0 lg:rounded-none lg:flex lg:items-center lg:justify-center" style={{ boxShadow: '0 -4px 24px rgba(0,0,0,0.08)' }}>
         <div className="max-w-sm mx-auto">
           {/* Secure portal badge */}
           <div className="flex items-center gap-2 mb-4">
