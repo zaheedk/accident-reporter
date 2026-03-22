@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, Check, Save, Camera, X, Search, Star, Send, Loader2, MapPin, Car, Phone, Sparkles } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, Save, Camera, X, Search, Star, Send, Loader2, MapPin, Car, Phone, Sparkles, Mail } from 'lucide-react';
 import { DamagePhotoAnalyzer, ThirdPartyPhotos } from '@/components/PhotoAnalyzer';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ClaimReport, ThirdPartyVehicle, Witness, WEATHER_OPTIONS, ROAD_OPTIONS, Vehicle } from '@/types';
