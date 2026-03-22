@@ -58,6 +58,9 @@ export default function ClaimDetail() {
           if (insurer?.email) setInsurerEmail(insurer.email);
         }
       }
+      // Load insurance companies list
+      const { data: insurers } = await supabase.from('insurance_companies').select('id, name').order('name');
+      if (insurers) setInsuranceCompanies(insurers);
       setLoading(false);
     });
   }, [id]);
