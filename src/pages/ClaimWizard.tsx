@@ -409,6 +409,19 @@ export default function ClaimWizard() {
                         <div><label className="form-label">Date of Lodgement</label><input type="date" className="form-input tabular-nums" value={tp.claimLodgementDate || ''} onChange={e => updTP(i, 'claimLodgementDate', e.target.value)} /></div>
                       </div>
                       <div><label className="form-label">{t('claims.thirdParty.damageDescription')}</label><textarea className="form-input min-h-[60px] resize-none" value={tp.damageDescription} onChange={e => updTP(i, 'damageDescription', e.target.value)} /></div>
+                      {claim.id && user && (
+                        <ThirdPartyPhotos
+                          tpIndex={i}
+                          claimId={claim.id}
+                          userId={user.id}
+                          onRegoDetected={(rego) => updTP(i, 'regoNumber', rego)}
+                          onLicenseDetected={(data) => {
+                            if (data.fullName) updTP(i, 'ownerName', data.fullName);
+                            if (data.address) updTP(i, 'address', data.address);
+                          }}
+                          onDamageDescriptionGenerated={(desc) => updTP(i, 'damageDescription', desc)}
+                        />
+                      )}
                     </div>
                   ))}
                 </div>
