@@ -184,7 +184,7 @@ export default function ClaimWizard() {
             repairerAddress: claim.repairerAddress,
             thirdParties: JSON.stringify(claim.thirdParties),
             witnesses: JSON.stringify(claim.witnesses),
-            claimNumber: claim.claimNumber?.toString() || '',
+            claimNumber: claimNumber?.toString() || '',
           },
         },
       }).catch(err => console.error('Email send failed:', err));
