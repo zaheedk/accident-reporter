@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Printer, Mail, X, Download, Share2, Phone, Pencil } from 'lucide-react';
+import { ArrowLeft, Printer, Mail, X, Download, Share2, Phone, Pencil, Save, Loader2 } from 'lucide-react';
 import { getClaims, getVehicles } from '@/lib/storage';
 import { supabase } from '@/integrations/supabase/client';
 import AppLayout from '@/components/AppLayout';
@@ -20,6 +20,13 @@ export default function ClaimDetail() {
   const [loading, setLoading] = useState(true);
   const [insurerPhone, setInsurerPhone] = useState('');
   const [insurerEmail, setInsurerEmail] = useState('');
+  const [insuranceCompanies, setInsuranceCompanies] = useState<{ id: string; name: string }[]>([]);
+  const [editingInsurance, setEditingInsurance] = useState(false);
+  const [editInsurance, setEditInsurance] = useState('');
+  const [editRepairerName, setEditRepairerName] = useState('');
+  const [editRepairerPhone, setEditRepairerPhone] = useState('');
+  const [editRepairerAddress, setEditRepairerAddress] = useState('');
+  const [savingInsurance, setSavingInsurance] = useState(false);
   const printRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -51,6 +58,9 @@ export default function ClaimDetail() {
           if (insurer?.email) setInsurerEmail(insurer.email);
         }
       }
+      // Load insurance companies list
+      const { data: insurers } = await supabase.from('insurance_companies').select('id, name').order('name');
+      if (insurers) setInsuranceCompanies(insurers);
       setLoading(false);
     });
   }, [id]);
@@ -61,6 +71,33 @@ export default function ClaimDetail() {
   const vehicle = vehicles.find(v => v.id === claim.vehicleId);
   const weather = claim.weatherCondition ? t(`weather.${claim.weatherCondition}`) : '—';
   const road = claim.roadCondition ? t(`road.${claim.roadCondition}`) : '—';
+
+  const startEditInsurance = () => {
+    setEditInsurance(claim.insuranceCompany);
+    setEditRepairerName(claim.repairerName);
+    setEditRepairerPhone(claim.repairerPhone);
+    setEditRepairerAddress(claim.repairerAddress);
+    setEditingInsurance(true);
+  };
+
+  const saveInsuranceDetails = async () => {
+    if (!claim.id) return;
+    setSavingInsurance(true);
+    await supabase.from('claims').update({
+      insurance_company: editInsurance,
+      repairer_name: editRepairerName,
+      repairer_phone: editRepairerPhone,
+      repairer_address: editRepairerAddress,
+    }).eq('id', claim.id);
+    setClaim({ ...claim, insuranceCompany: editInsurance, repairerName: editRepairerName, repairerPhone: editRepairerPhone, repairerAddress: editRepairerAddress });
+    if (editInsurance) {
+      const { data: ins } = await supabase.from('insurance_companies').select('phone, email').eq('name', editInsurance).single();
+      setInsurerPhone(ins?.phone || '');
+      setInsurerEmail(ins?.email || '');
+    }
+    setEditingInsurance(false);
+    setSavingInsurance(false);
+  };
 
   const handlePrint = () => { window.print(); };
   const handleEmail = () => {
@@ -188,17 +225,49 @@ export default function ClaimDetail() {
           <Row label={t('claims.detail.liabilityAdmitted')} value={claim.liabilityAdmitted ? claim.liabilityDetails : t('common.no')} />
         </Section>
 
-        <Section title={t('claims.review.insuranceRepairer')}>
-          <Row label={t('claims.review.insurance')} value={claim.insuranceCompany} />
-          {insurerPhone && (
-            <div className="flex items-center justify-between gap-4 py-2 border-b border-border/60">
-              <span className="text-[13px] text-muted-foreground flex-shrink-0">{t('claims.detail.claimsLine')}</span>
-              <a href={`tel:${insurerPhone.replace(/\s/g, '')}`} className="flex items-center gap-2 text-[13px] font-medium text-primary hover:underline">
-                <Phone className="w-3.5 h-3.5" strokeWidth={2} />{insurerPhone}
-              </a>
+        <Section title={t('claims.review.insuranceRepairer')} action={!editingInsurance ? <button onClick={startEditInsurance} className="p-1 rounded-lg hover:bg-muted transition-colors"><Pencil className="w-4 h-4 text-muted-foreground" /></button> : undefined}>
+          {editingInsurance ? (
+            <div className="space-y-3">
+              <div>
+                <label className="text-[11px] font-medium text-muted-foreground mb-1 block">Insurance Company</label>
+                <select className="form-input text-sm" value={editInsurance} onChange={e => setEditInsurance(e.target.value)}>
+                  <option value="">Select insurance</option>
+                  {insuranceCompanies.map(ic => <option key={ic.id} value={ic.name}>{ic.name}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="text-[11px] font-medium text-muted-foreground mb-1 block">Repairer Name</label>
+                <input className="form-input text-sm" value={editRepairerName} onChange={e => setEditRepairerName(e.target.value)} />
+              </div>
+              <div>
+                <label className="text-[11px] font-medium text-muted-foreground mb-1 block">Repairer Phone</label>
+                <input className="form-input text-sm" value={editRepairerPhone} onChange={e => setEditRepairerPhone(e.target.value)} />
+              </div>
+              <div>
+                <label className="text-[11px] font-medium text-muted-foreground mb-1 block">Repairer Address</label>
+                <input className="form-input text-sm" value={editRepairerAddress} onChange={e => setEditRepairerAddress(e.target.value)} />
+              </div>
+              <div className="flex gap-2">
+                <button onClick={saveInsuranceDetails} disabled={savingInsurance} className="flex-1 h-9 rounded-lg bg-primary text-primary-foreground text-sm font-medium flex items-center justify-center gap-1.5">
+                  {savingInsurance ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} Save
+                </button>
+                <button onClick={() => setEditingInsurance(false)} className="h-9 px-4 rounded-lg border border-border text-sm font-medium text-muted-foreground">Cancel</button>
+              </div>
             </div>
+          ) : (
+            <>
+              <Row label={t('claims.review.insurance')} value={claim.insuranceCompany} />
+              {insurerPhone && (
+                <div className="flex items-center justify-between gap-4 py-2 border-b border-border/60">
+                  <span className="text-[13px] text-muted-foreground flex-shrink-0">{t('claims.detail.claimsLine')}</span>
+                  <a href={`tel:${insurerPhone.replace(/\s/g, '')}`} className="flex items-center gap-2 text-[13px] font-medium text-primary hover:underline">
+                    <Phone className="w-3.5 h-3.5" strokeWidth={2} />{insurerPhone}
+                  </a>
+                </div>
+              )}
+              <Row label={t('claims.detail.name')} value={claim.repairerName} /><Row label={t('claims.detail.phone')} value={claim.repairerPhone} /><Row label={t('profile.address')} value={claim.repairerAddress} />
+            </>
           )}
-          <Row label={t('claims.detail.name')} value={claim.repairerName} /><Row label={t('claims.detail.phone')} value={claim.repairerPhone} /><Row label={t('profile.address')} value={claim.repairerAddress} />
         </Section>
 
         {photos.length > 0 && (
@@ -237,8 +306,8 @@ export default function ClaimDetail() {
   );
 }
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
-  return <div className="card-surface space-y-1"><h3 className="text-[13px] font-semibold text-muted-foreground mb-2">{title}</h3>{children}</div>;
+function Section({ title, children, action }: { title: string; children: React.ReactNode; action?: React.ReactNode }) {
+  return <div className="card-surface space-y-1"><div className="flex items-center justify-between mb-2"><h3 className="text-[13px] font-semibold text-muted-foreground">{title}</h3>{action}</div>{children}</div>;
 }
 function Row({ label, value }: { label: string; value: string }) {
   return (
