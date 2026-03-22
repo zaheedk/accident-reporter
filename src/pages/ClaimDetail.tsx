@@ -27,6 +27,7 @@ export default function ClaimDetail() {
   const [editRepairerPhone, setEditRepairerPhone] = useState('');
   const [editRepairerAddress, setEditRepairerAddress] = useState('');
   const [savingInsurance, setSavingInsurance] = useState(false);
+  const [panelShops, setPanelShops] = useState<{ id: string; name: string; phone: string; address: string }[]>([]);
   const printRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
