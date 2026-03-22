@@ -61,19 +61,19 @@ export default function Auth() {
   ];
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col lg:flex-row">
       {/* Dark hero section */}
-      <div className="bg-dark-surface px-6 pt-10 pb-10 relative overflow-hidden">
+      <div className="bg-dark-surface px-6 pt-10 pb-10 relative overflow-hidden lg:w-1/2 lg:min-h-screen lg:flex lg:items-center lg:justify-center">
         {/* Subtle grid/line decoration */}
         <div className="absolute inset-0 opacity-[0.06]" style={{
           backgroundImage: `linear-gradient(hsl(var(--primary) / 0.3) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--primary) / 0.3) 1px, transparent 1px)`,
           backgroundSize: '60px 60px',
         }} />
-        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[hsl(var(--dark-surface))] to-transparent" />
+        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[hsl(var(--dark-surface))] to-transparent lg:hidden" />
 
-        <div className="relative z-10">
+        <div className="relative z-10 lg:text-center lg:max-w-md">
           {/* Logo */}
-          <div className="flex items-center gap-2.5 mb-10">
+          <div className="flex items-center gap-2.5 mb-10 lg:justify-center">
             <div className="w-11 h-11 rounded-2xl bg-primary flex items-center justify-center shadow-lg" style={{ boxShadow: '0 4px 16px hsla(22, 90%, 52%, 0.4)' }}>
               <svg className="w-6 h-6 text-primary-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
@@ -96,7 +96,7 @@ export default function Auth() {
           </h1>
 
           {/* Subtitle */}
-          <p className="text-[15px] leading-relaxed text-dark-surface-muted max-w-xs">
+          <p className="text-[15px] leading-relaxed text-dark-surface-muted max-w-xs lg:max-w-sm lg:mx-auto">
             Savo helps you record accident data instantly — photos, GPS, witness info, and reports — so your claim is airtight from minute one.
           </p>
 
