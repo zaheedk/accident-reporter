@@ -20,6 +20,13 @@ export default function ClaimDetail() {
   const [loading, setLoading] = useState(true);
   const [insurerPhone, setInsurerPhone] = useState('');
   const [insurerEmail, setInsurerEmail] = useState('');
+  const [insuranceCompanies, setInsuranceCompanies] = useState<{ id: string; name: string }[]>([]);
+  const [editingInsurance, setEditingInsurance] = useState(false);
+  const [editInsurance, setEditInsurance] = useState('');
+  const [editRepairerName, setEditRepairerName] = useState('');
+  const [editRepairerPhone, setEditRepairerPhone] = useState('');
+  const [editRepairerAddress, setEditRepairerAddress] = useState('');
+  const [savingInsurance, setSavingInsurance] = useState(false);
   const printRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
