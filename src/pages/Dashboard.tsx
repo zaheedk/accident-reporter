@@ -35,6 +35,29 @@ export default function Dashboard() {
     }
   }, [user]);
 
+  const handleOpenTowSheet = () => {
+    setTowSheetOpen(true);
+    supabase.from('tow_companies').select('*').then(({ data }) => {
+      if (data) setTowCompanies(data);
+    });
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(async (pos) => {
+        try {
+          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&format=json`);
+          const geo = await res.json();
+          const city = geo.address?.city || geo.address?.town || geo.address?.suburb || '';
+          setUserCity(city);
+          setTowSearch(city);
+        } catch { /* ignore */ }
+      }, () => { /* permission denied */ });
+    }
+  };
+
+  const filteredTowCompanies = towCompanies.filter(tc =>
+    tc.name.toLowerCase().includes(towSearch.toLowerCase()) ||
+    tc.address.toLowerCase().includes(towSearch.toLowerCase())
+  );
+
   const drafts = claims.filter(c => c.status === 'draft');
   const submitted = claims.filter(c => c.status === 'submitted');
   const firstName = displayName ? displayName.split(' ')[0] : 'there';
