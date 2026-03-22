@@ -146,7 +146,7 @@ export default function ClaimWizard() {
   const prev = async () => { await autoSave(); setStep(s => Math.max(s - 1, 0)); };
   const submit = async () => {
     await saveClaim({ ...claim, status: 'submitted' as const, updatedAt: new Date().toISOString() });
-    // Send claim submitted email
+    // Send claim submitted email with full report data for PDF attachment
     if (user?.email) {
       const vehicle = vehicles.find(v => v.id === claim.vehicleId);
       supabase.functions.invoke('send-email', {
@@ -155,9 +155,36 @@ export default function ClaimWizard() {
           to: user.email,
           data: {
             date: claim.incidentDate,
+            time: claim.incidentTime,
             location: claim.incidentLocation,
             vehicle: vehicle ? `${vehicle.year} ${vehicle.make} ${vehicle.model}` : '',
+            rego: vehicle?.regoNumber || '',
             insurer: claim.insuranceCompany,
+            policyNumber: vehicle?.insurancePolicyNumber || '',
+            description: claim.description,
+            damageDescription: claim.damageDescription,
+            vehicleUsage: claim.vehicleUsage,
+            journeyDetails: claim.journeyDetails,
+            speedBeforeBraking: claim.speedBeforeBraking,
+            vehicleTowed: claim.vehicleTowed ? 'Yes' : 'No',
+            towingCompany: claim.towingCompany,
+            weatherCondition: claim.weatherCondition,
+            roadCondition: claim.roadCondition,
+            policeAttended: claim.policeAttended ? 'Yes' : 'No',
+            policeOfficerDetails: claim.policeOfficerDetails,
+            anyoneHurt: claim.anyoneHurt ? 'Yes' : 'No',
+            injuryDetails: claim.injuryDetails,
+            driverConsumedSubstance: claim.driverConsumedSubstance ? 'Yes' : 'No',
+            substanceDetails: claim.substanceDetails,
+            blameDescription: claim.blameDescription,
+            liabilityAdmitted: claim.liabilityAdmitted ? 'Yes' : 'No',
+            liabilityDetails: claim.liabilityDetails,
+            repairerName: claim.repairerName,
+            repairerPhone: claim.repairerPhone,
+            repairerAddress: claim.repairerAddress,
+            thirdParties: JSON.stringify(claim.thirdParties),
+            witnesses: JSON.stringify(claim.witnesses),
+            claimNumber: claim.claimNumber?.toString() || '',
           },
         },
       }).catch(err => console.error('Email send failed:', err));
