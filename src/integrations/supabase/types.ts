@@ -442,6 +442,47 @@ export type Database = {
         }
         Relationships: []
       }
+      tp_photos: {
+        Row: {
+          claim_id: string
+          created_at: string
+          file_name: string
+          file_path: string
+          id: string
+          tp_index: number
+          type: string
+          user_id: string
+        }
+        Insert: {
+          claim_id: string
+          created_at?: string
+          file_name?: string
+          file_path: string
+          id?: string
+          tp_index: number
+          type: string
+          user_id: string
+        }
+        Update: {
+          claim_id?: string
+          created_at?: string
+          file_name?: string
+          file_path?: string
+          id?: string
+          tp_index?: number
+          type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tp_photos_claim_id_fkey"
+            columns: ["claim_id"]
+            isOneToOne: false
+            referencedRelation: "claims"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string
