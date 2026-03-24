@@ -335,10 +335,10 @@ export default function ClaimWizard() {
                 <div className="card-surface space-y-3">
                   <label className="form-label mb-0">{t('claims.thirdParty.otherVehicles')}</label>
                   {claim.thirdParties.length === 0 && (
-                    <div className="p-4 rounded-xl bg-background text-center">
+                    <button onClick={addTP} className="w-full p-4 rounded-xl bg-background text-center cursor-pointer hover:bg-muted/50 transition-colors">
                       <p className="text-sm text-muted-foreground">{t('claims.thirdParty.noThirdParties')}</p>
-                      <button onClick={addTP} className="text-sm text-primary font-medium mt-2 hover:underline">+ Add other vehicle</button>
-                    </div>
+                      <span className="text-sm text-primary font-medium mt-2 inline-block hover:underline">+ Add other vehicle</span>
+                    </button>
                   )}
                   {claim.thirdParties.map((tp, i) => (
                     <div key={i} className="p-4 rounded-xl bg-background space-y-3">
