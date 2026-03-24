@@ -280,9 +280,9 @@ export default function ClaimWizard() {
               <div className="card-surface space-y-4">
                 <p className="text-xs text-muted-foreground -mt-1">Capture the essentials now. You can add more details later.</p>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                  <div className="min-w-0"><label className="form-label">{t('claims.incident.date')}</label><input type="date" className="form-input tabular-nums w-full min-w-0" value={claim.incidentDate} onChange={e => update('incidentDate', e.target.value)} /></div>
-                  <div className="min-w-0"><label className="form-label">{t('claims.incident.time')}</label><input type="time" className="form-input tabular-nums w-full min-w-0" value={claim.incidentTime} onChange={e => update('incidentTime', e.target.value)} /></div>
+                <div className="flex gap-4">
+                  <div className="flex-[2] min-w-0"><label className="form-label">{t('claims.incident.date')}</label><input type="date" className="form-input tabular-nums w-full" value={claim.incidentDate} onChange={e => update('incidentDate', e.target.value)} /></div>
+                  <div className="flex-1 min-w-0"><label className="form-label">{t('claims.incident.time')}</label><input type="time" className="form-input tabular-nums w-full" value={claim.incidentTime} onChange={e => update('incidentTime', e.target.value)} /></div>
                 </div>
 
                 <div>
