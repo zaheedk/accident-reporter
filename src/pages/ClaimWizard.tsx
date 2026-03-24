@@ -390,6 +390,11 @@ export default function ClaimWizard() {
                       </div>
                     </div>
                   ))}
+                  {claim.witnesses.length > 0 && (
+                    <button onClick={addW} className="w-full py-3 rounded-xl border border-dashed border-primary/30 text-sm text-primary font-medium hover:bg-primary/5 transition-colors">
+                      + {t('claims.witnesses.addWitness')}
+                    </button>
+                  )}
                 </div>
               </div>
             )}
