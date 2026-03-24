@@ -55,12 +55,14 @@ const corsHeaders = {
         );
       }
 
-      // Send SMS via Twilio gateway
-      const smsResponse = await fetch(`${GATEWAY_URL}/Messages.json`, {
+      // Send SMS via Twilio REST API directly
+      const twilioUrl = `https://api.twilio.com/2010-04-01/Accounts/${TWILIO_ACCOUNT_SID}/Messages.json`;
+      const credentials = btoa(`${TWILIO_ACCOUNT_SID}:${TWILIO_AUTH_TOKEN}`);
+
+      const smsResponse = await fetch(twilioUrl, {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${LOVABLE_API_KEY}`,
-          "X-Connection-Api-Key": TWILIO_API_KEY,
+          Authorization: `Basic ${credentials}`,
           "Content-Type": "application/x-www-form-urlencoded",
         },
         body: new URLSearchParams({
