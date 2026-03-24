@@ -7,6 +7,14 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type",
 };
 
+const generateOtp = () =>
+  String(Math.floor(100000 + Math.random() * 900000));
+
+serve(async (req) => {
+  if (req.method === "OPTIONS") {
+    return new Response(null, { headers: corsHeaders });
+  }
+
   const TWILIO_ACCOUNT_SID = Deno.env.get("TWILIO_ACCOUNT_SID");
   if (!TWILIO_ACCOUNT_SID) {
     return new Response(
@@ -42,7 +50,6 @@ const corsHeaders = {
       const otpCode = generateOtp();
       const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString();
 
-      // Store OTP
       const { error: dbError } = await supabaseAdmin
         .from("phone_otps")
         .insert({ phone_number: phone, otp_code: otpCode, expires_at: expiresAt });
@@ -95,7 +102,6 @@ const corsHeaders = {
         );
       }
 
-      // Find valid OTP
       const { data: otpRecord, error: findError } = await supabaseAdmin
         .from("phone_otps")
         .select("*")
@@ -114,13 +120,11 @@ const corsHeaders = {
         );
       }
 
-      // Mark OTP as verified
       await supabaseAdmin
         .from("phone_otps")
         .update({ verified: true })
         .eq("id", otpRecord.id);
 
-      // Check if user exists with this phone
       const { data: existingProfile } = await supabaseAdmin
         .from("profiles")
         .select("user_id")
@@ -128,7 +132,6 @@ const corsHeaders = {
         .maybeSingle();
 
       if (existingProfile) {
-        // Generate a magic link / sign in the existing user
         const { data: signInData, error: signInError } = await supabaseAdmin.auth.admin.generateLink({
           type: "magiclink",
           email: `phone_${phone.replace(/\+/g, "")}@savo.phone.local`,
@@ -152,7 +155,6 @@ const corsHeaders = {
           { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       } else {
-        // Create new user with phone
         const fakeEmail = `phone_${phone.replace(/\+/g, "")}@savo.phone.local`;
         const tempPassword = crypto.randomUUID();
 
@@ -171,7 +173,6 @@ const corsHeaders = {
           );
         }
 
-        // Update profile with phone number
         if (newUser?.user) {
           await supabaseAdmin
             .from("profiles")
@@ -179,7 +180,6 @@ const corsHeaders = {
             .eq("user_id", newUser.user.id);
         }
 
-        // Sign the user in
         const { data: signInData, error: signInError } = await supabaseAdmin.auth.admin.generateLink({
           type: "magiclink",
           email: fakeEmail,
