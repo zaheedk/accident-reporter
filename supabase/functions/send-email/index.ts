@@ -434,7 +434,6 @@ serve(async (req) => {
                 photoImages.push({ label: `Third Party ${p.tp_index + 1} – ${typeLabel}`, base64: `data:${mime};base64,${base64}`, mime });
               } catch (e) { console.error('Failed to fetch tp photo:', e); }
             }
-            }
           }
         }
 
