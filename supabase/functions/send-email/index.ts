@@ -16,6 +16,19 @@ interface EmailRequest {
   data?: Record<string, string>;
 }
 
+// --- Helpers ---
+
+function arrayBufferToBase64(buffer: ArrayBuffer): string {
+  const bytes = new Uint8Array(buffer);
+  let binary = '';
+  const chunkSize = 8192;
+  for (let i = 0; i < bytes.length; i += chunkSize) {
+    const chunk = bytes.subarray(i, i + chunkSize);
+    binary += String.fromCharCode(...chunk);
+  }
+  return btoa(binary);
+}
+
 // --- PDF Generation ---
 
 function generateClaimPdf(data: Record<string, string>, photoImages: { label: string; base64: string; mime: string }[] = []): string {
@@ -392,35 +405,33 @@ serve(async (req) => {
 
           // Fetch vehicle damage photos
           const { data: claimPhotos } = await supabase.from('claim_photos').select('file_path, file_name').eq('claim_id', data.claimId);
+          console.log(`Found ${claimPhotos?.length || 0} claim photos`);
           if (claimPhotos) {
             for (const p of claimPhotos) {
               try {
-                const { data: urlData } = supabase.storage.from('claim-photos').getPublicUrl(p.file_path);
-                const imgResp = await fetch(urlData.publicUrl);
-                if (imgResp.ok) {
-                  const buf = await imgResp.arrayBuffer();
-                  const base64 = btoa(String.fromCharCode(...new Uint8Array(buf)));
-                  const mime = imgResp.headers.get('content-type') || 'image/jpeg';
-                  photoImages.push({ label: 'Vehicle Damage', base64: `data:${mime};base64,${base64}`, mime });
-                }
+                const { data: fileData, error: dlErr } = await supabase.storage.from('claim-photos').download(p.file_path);
+                if (dlErr || !fileData) { console.error('Failed to download claim photo:', p.file_path, dlErr); continue; }
+                const buf = await fileData.arrayBuffer();
+                const base64 = arrayBufferToBase64(buf);
+                const mime = fileData.type || 'image/jpeg';
+                photoImages.push({ label: 'Vehicle Damage', base64: `data:${mime};base64,${base64}`, mime });
               } catch (e) { console.error('Failed to fetch claim photo:', e); }
             }
           }
 
           // Fetch third-party photos
           const { data: tpPhotos } = await supabase.from('tp_photos').select('file_path, type, tp_index').eq('claim_id', data.claimId).order('tp_index');
+          console.log(`Found ${tpPhotos?.length || 0} tp photos`);
           if (tpPhotos) {
             for (const p of tpPhotos) {
               try {
-                const { data: urlData } = supabase.storage.from('tp-photos').getPublicUrl(p.file_path);
-                const imgResp = await fetch(urlData.publicUrl);
-                if (imgResp.ok) {
-                  const buf = await imgResp.arrayBuffer();
-                  const base64 = btoa(String.fromCharCode(...new Uint8Array(buf)));
-                  const mime = imgResp.headers.get('content-type') || 'image/jpeg';
-                  const typeLabel = p.type === 'damage' ? 'Damage' : p.type === 'rego' ? 'Registration' : 'License';
-                  photoImages.push({ label: `Third Party ${p.tp_index + 1} – ${typeLabel}`, base64: `data:${mime};base64,${base64}`, mime });
-                }
+                const { data: fileData, error: dlErr } = await supabase.storage.from('tp-photos').download(p.file_path);
+                if (dlErr || !fileData) { console.error('Failed to download tp photo:', p.file_path, dlErr); continue; }
+                const buf = await fileData.arrayBuffer();
+                const base64 = arrayBufferToBase64(buf);
+                const mime = fileData.type || 'image/jpeg';
+                const typeLabel = p.type === 'damage' ? 'Damage' : p.type === 'rego' ? 'Registration' : 'License';
+                photoImages.push({ label: `Third Party ${p.tp_index + 1} – ${typeLabel}`, base64: `data:${mime};base64,${base64}`, mime });
               } catch (e) { console.error('Failed to fetch tp photo:', e); }
             }
           }
