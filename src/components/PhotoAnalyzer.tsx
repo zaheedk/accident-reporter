@@ -223,7 +223,7 @@ export function ThirdPartyPhotos({ tpIndex, claimId, userId, onRegoDetected, onL
       
       <PhotoButton type="license" label="Capture driver's license" icon={CreditCard} inputRef={licenseRef} />
       <input ref={damageRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={handleFileChange('damage')} />
-      <input ref={regoRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={handleFileChange('rego')} />
+      
       <input ref={licenseRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={handleFileChange('license')} />
     </div>
   );
