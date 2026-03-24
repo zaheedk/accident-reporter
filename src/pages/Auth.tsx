@@ -151,69 +151,100 @@ export default function Auth() {
 
           <div className="flex items-center gap-3 mb-5">
             <div className="flex-1 h-px bg-border" />
-            <span className="text-xs text-muted-foreground font-medium">{t('auth.orEmail')}</span>
+            <span className="text-xs text-muted-foreground font-medium">or continue with</span>
             <div className="flex-1 h-px bg-border" />
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {mode === 'signup' && (
-              <div>
-                <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider mb-1.5 block">Full Name</label>
-                <div className="relative">
-                  <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/50" strokeWidth={1.5} />
-                  <input className="form-input pl-10" placeholder="John Doe" value={name} onChange={e => setName(e.target.value)} required />
+          {/* Email / Phone toggle */}
+          <div className="flex rounded-xl bg-muted p-1 mb-5">
+            <button
+              onClick={() => { setAuthMethod('email'); setError(''); }}
+              className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-semibold transition-all ${
+                authMethod === 'email' ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              <Mail className="w-3.5 h-3.5" />
+              Email
+            </button>
+            <button
+              onClick={() => { setAuthMethod('phone'); setError(''); }}
+              className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-semibold transition-all ${
+                authMethod === 'phone' ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              <Phone className="w-3.5 h-3.5" />
+              Mobile
+            </button>
+          </div>
+
+          {authMethod === 'phone' ? (
+            <>
+              <PhoneAuth onError={setError} />
+              {error && <p className="text-xs text-destructive font-medium bg-destructive/5 px-3 py-2 rounded-lg mt-4">{error}</p>}
+            </>
+          ) : (
+            <>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                {mode === 'signup' && (
+                  <div>
+                    <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider mb-1.5 block">Full Name</label>
+                    <div className="relative">
+                      <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/50" strokeWidth={1.5} />
+                      <input className="form-input pl-10" placeholder="John Doe" value={name} onChange={e => setName(e.target.value)} required />
+                    </div>
+                  </div>
+                )}
+                <div>
+                  <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider mb-1.5 block">Email Address</label>
+                  <div className="relative">
+                    <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/50" strokeWidth={1.5} />
+                    <input type="email" className="form-input pl-10" placeholder="name@company.com" value={email} onChange={e => setEmail(e.target.value)} required />
+                  </div>
                 </div>
-              </div>
-            )}
-            <div>
-              <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider mb-1.5 block">Email Address</label>
-              <div className="relative">
-                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/50" strokeWidth={1.5} />
-                <input type="email" className="form-input pl-10" placeholder="name@company.com" value={email} onChange={e => setEmail(e.target.value)} required />
-              </div>
-            </div>
-            <div>
-              <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider mb-1.5 block">Password</label>
-              <div className="relative">
-                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/50" strokeWidth={1.5} />
-                <input type="password" className="form-input pl-10" placeholder="••••••••" value={password} onChange={e => setPassword(e.target.value)} required minLength={6} />
-              </div>
-            </div>
+                <div>
+                  <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider mb-1.5 block">Password</label>
+                  <div className="relative">
+                    <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/50" strokeWidth={1.5} />
+                    <input type="password" className="form-input pl-10" placeholder="••••••••" value={password} onChange={e => setPassword(e.target.value)} required minLength={6} />
+                  </div>
+                </div>
 
-            {mode === 'login' && (
-              <div className="flex items-center justify-between">
-                <label className="flex items-center gap-2 text-sm text-muted-foreground cursor-pointer">
-                  <input type="checkbox" className="w-4 h-4 rounded border-border text-primary focus:ring-primary/20" />
-                  Keep me signed in
-                </label>
-                <button type="button" className="text-sm text-primary font-semibold hover:underline">
-                  Forgot password?
+                {mode === 'login' && (
+                  <div className="flex items-center justify-between">
+                    <label className="flex items-center gap-2 text-sm text-muted-foreground cursor-pointer">
+                      <input type="checkbox" className="w-4 h-4 rounded border-border text-primary focus:ring-primary/20" />
+                      Keep me signed in
+                    </label>
+                    <button type="button" className="text-sm text-primary font-semibold hover:underline">
+                      Forgot password?
+                    </button>
+                  </div>
+                )}
+
+                {error && <p className="text-xs text-destructive font-medium bg-destructive/5 px-3 py-2 rounded-lg">{error}</p>}
+
+                <button type="submit" disabled={submitting}
+                  className="btn-primary w-full h-12 text-[15px] rounded-xl"
+                  style={{ boxShadow: '0 4px 20px hsla(22, 90%, 52%, 0.4)' }}>
+                  {submitting ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <>
+                      <LogIn className="w-4 h-4" />
+                      {mode === 'login' ? 'Sign in to Savo' : 'Create Account'}
+                    </>
+                  )}
                 </button>
-              </div>
-            )}
+              </form>
 
-            {error && <p className="text-xs text-destructive font-medium bg-destructive/5 px-3 py-2 rounded-lg">{error}</p>}
-
-            <button type="submit" disabled={submitting}
-              className="btn-primary w-full h-12 text-[15px] rounded-xl"
-              style={{ boxShadow: '0 4px 20px hsla(22, 90%, 52%, 0.4)' }}>
-              {submitting ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <>
-                  <LogIn className="w-4 h-4" />
-                  {mode === 'login' ? 'Sign in to Savo' : 'Create Account'}
-                </>
-              )}
-            </button>
-          </form>
-
-          <p className="text-center text-sm text-muted-foreground mt-5">
-            {mode === 'login' ? 'New to Savo? ' : 'Already have an account? '}
-            <button onClick={() => { setMode(mode === 'login' ? 'signup' : 'login'); setError(''); }} className="text-primary font-bold hover:underline">
-              {mode === 'login' ? 'Create a free account' : 'Sign in'}
-            </button>
-          </p>
+              <p className="text-center text-sm text-muted-foreground mt-5">
+                {mode === 'login' ? 'New to Savo? ' : 'Already have an account? '}
+                <button onClick={() => { setMode(mode === 'login' ? 'signup' : 'login'); setError(''); }} className="text-primary font-bold hover:underline">
+                  {mode === 'login' ? 'Create a free account' : 'Sign in'}
+                </button>
+              </p>
+            </>
+          )}
 
           {/* Feature chips */}
           <div className="flex flex-wrap items-center justify-center gap-2 mt-6">
