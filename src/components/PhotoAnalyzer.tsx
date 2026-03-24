@@ -170,8 +170,10 @@ export function ThirdPartyPhotos({ tpIndex, claimId, userId, onRegoDetected, onL
   };
 
   const handleFileChange = (type: 'damage' | 'rego' | 'license') => (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) uploadAndAnalyze(file, type);
+    const files = e.target.files;
+    if (files) {
+      Array.from(files).forEach(file => uploadAndAnalyze(file, type));
+    }
     e.target.value = '';
   };
 
