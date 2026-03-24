@@ -430,10 +430,10 @@ serve(async (req) => {
                 const buf = await fileData.arrayBuffer();
                 const base64 = arrayBufferToBase64(buf);
                 const mime = fileData.type || 'image/jpeg';
-                  const typeLabel = p.type === 'damage' ? 'Damage' : p.type === 'rego' ? 'Registration' : 'License';
-                  photoImages.push({ label: `Third Party ${p.tp_index + 1} – ${typeLabel}`, base64: `data:${mime};base64,${base64}`, mime });
-                }
+                const typeLabel = p.type === 'damage' ? 'Damage' : p.type === 'rego' ? 'Registration' : 'License';
+                photoImages.push({ label: `Third Party ${p.tp_index + 1} – ${typeLabel}`, base64: `data:${mime};base64,${base64}`, mime });
               } catch (e) { console.error('Failed to fetch tp photo:', e); }
+            }
             }
           }
         }
