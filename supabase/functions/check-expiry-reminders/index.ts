@@ -37,10 +37,25 @@ serve(async (req) => {
       const vehicleName = `${v.year} ${v.make} ${v.model}`;
       const vehicleData = { vehicle: vehicleName, rego: v.rego_number };
 
-      // Get user email
+      // Get user email - for phone users, use verified profile email
       const { data: userData } = await supabase.auth.admin.getUserById(v.user_id);
-      const userEmail = isTest ? testEmail : userData?.user?.email;
-      if (!userEmail) continue;
+      let userEmail = isTest ? testEmail : userData?.user?.email;
+      
+      // If user signed up via phone (fake email), check for verified profile email
+      if (!isTest && userEmail?.endsWith('@savo.phone.local')) {
+        const { data: profileData } = await supabase
+          .from('profiles')
+          .select('email, email_verified')
+          .eq('user_id', v.user_id)
+          .single();
+        if (profileData?.email && profileData?.email_verified) {
+          userEmail = profileData.email;
+        } else {
+          // No verified email — skip sending email (still create in-app notification)
+          userEmail = null;
+        }
+      }
+
 
       const checks = [
         { field: v.rego_expiry, type: 'rego_expiry_reminder', title: 'Registration Expiry Reminder', message: `Your registration for ${vehicleName} (${v.rego_number}) expires on ${v.rego_expiry}. Please renew it soon.` },
@@ -85,11 +100,15 @@ serve(async (req) => {
           emailData.policyNumber = v.insurance_policy_number || '';
         }
 
-        await supabase.functions.invoke('send-email', {
-          body: { type: check.type, to: userEmail, data: emailData },
-        });
-
-        results.push(`Sent ${check.type} for ${vehicleName} to ${userEmail}`);
+        // Only send email if user has a valid email address
+        if (userEmail) {
+          await supabase.functions.invoke('send-email', {
+            body: { type: check.type, to: userEmail, data: emailData },
+          });
+          results.push(`Sent ${check.type} for ${vehicleName} to ${userEmail}`);
+        } else {
+          results.push(`Created notification for ${check.type} for ${vehicleName} (no verified email)`);
+        }
       }
     }
 
