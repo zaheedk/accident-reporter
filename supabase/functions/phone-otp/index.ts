@@ -1,0 +1,227 @@
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type",
+};
+
+const GATEWAY_URL = "https://connector-gateway.lovable.dev/twilio";
+
+const generateOtp = () =>
+  String(Math.floor(100000 + Math.random() * 900000));
+
+serve(async (req) => {
+  if (req.method === "OPTIONS") {
+    return new Response(null, { headers: corsHeaders });
+  }
+
+  const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+  if (!LOVABLE_API_KEY) {
+    return new Response(
+      JSON.stringify({ error: "LOVABLE_API_KEY is not configured" }),
+      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
+  }
+
+  const TWILIO_API_KEY = Deno.env.get("TWILIO_API_KEY");
+  if (!TWILIO_API_KEY) {
+    return new Response(
+      JSON.stringify({ error: "TWILIO_API_KEY is not configured" }),
+      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
+  }
+
+  const supabaseAdmin = createClient(
+    Deno.env.get("SUPABASE_URL")!,
+    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
+  );
+
+  try {
+    const { action, phone, otp } = await req.json();
+
+    if (action === "send") {
+      if (!phone) {
+        return new Response(
+          JSON.stringify({ error: "Phone number is required" }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      const otpCode = generateOtp();
+      const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString();
+
+      // Store OTP
+      const { error: dbError } = await supabaseAdmin
+        .from("phone_otps")
+        .insert({ phone_number: phone, otp_code: otpCode, expires_at: expiresAt });
+
+      if (dbError) {
+        console.error("DB error:", dbError);
+        return new Response(
+          JSON.stringify({ error: "Failed to store OTP" }),
+          { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      // Send SMS via Twilio gateway
+      const smsResponse = await fetch(`${GATEWAY_URL}/Messages.json`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${LOVABLE_API_KEY}`,
+          "X-Connection-Api-Key": TWILIO_API_KEY,
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: new URLSearchParams({
+          To: phone,
+          From: Deno.env.get("TWILIO_PHONE_NUMBER") || "",
+          Body: `Your Savo verification code is: ${otpCode}. It expires in 10 minutes.`,
+        }),
+      });
+
+      const smsData = await smsResponse.json();
+      if (!smsResponse.ok) {
+        console.error("Twilio error:", smsData);
+        return new Response(
+          JSON.stringify({ error: "Failed to send SMS" }),
+          { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      return new Response(
+        JSON.stringify({ success: true, message: "OTP sent" }),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    if (action === "verify") {
+      if (!phone || !otp) {
+        return new Response(
+          JSON.stringify({ error: "Phone and OTP are required" }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      // Find valid OTP
+      const { data: otpRecord, error: findError } = await supabaseAdmin
+        .from("phone_otps")
+        .select("*")
+        .eq("phone_number", phone)
+        .eq("otp_code", otp)
+        .eq("verified", false)
+        .gte("expires_at", new Date().toISOString())
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (findError || !otpRecord) {
+        return new Response(
+          JSON.stringify({ error: "Invalid or expired OTP" }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      // Mark OTP as verified
+      await supabaseAdmin
+        .from("phone_otps")
+        .update({ verified: true })
+        .eq("id", otpRecord.id);
+
+      // Check if user exists with this phone
+      const { data: existingProfile } = await supabaseAdmin
+        .from("profiles")
+        .select("user_id")
+        .eq("phone_number", phone)
+        .maybeSingle();
+
+      if (existingProfile) {
+        // Generate a magic link / sign in the existing user
+        const { data: signInData, error: signInError } = await supabaseAdmin.auth.admin.generateLink({
+          type: "magiclink",
+          email: `phone_${phone.replace(/\+/g, "")}@savo.phone.local`,
+        });
+
+        if (signInError) {
+          console.error("Sign in error:", signInError);
+          return new Response(
+            JSON.stringify({ error: "Failed to sign in" }),
+            { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        }
+
+        return new Response(
+          JSON.stringify({
+            success: true,
+            isNewUser: false,
+            token: signInData?.properties?.hashed_token,
+            actionLink: signInData?.properties?.action_link,
+          }),
+          { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      } else {
+        // Create new user with phone
+        const fakeEmail = `phone_${phone.replace(/\+/g, "")}@savo.phone.local`;
+        const tempPassword = crypto.randomUUID();
+
+        const { data: newUser, error: createError } = await supabaseAdmin.auth.admin.createUser({
+          email: fakeEmail,
+          password: tempPassword,
+          email_confirm: true,
+          user_metadata: { phone_number: phone, full_name: "" },
+        });
+
+        if (createError) {
+          console.error("Create user error:", createError);
+          return new Response(
+            JSON.stringify({ error: "Failed to create account" }),
+            { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        }
+
+        // Update profile with phone number
+        if (newUser?.user) {
+          await supabaseAdmin
+            .from("profiles")
+            .update({ phone_number: phone })
+            .eq("user_id", newUser.user.id);
+        }
+
+        // Sign the user in
+        const { data: signInData, error: signInError } = await supabaseAdmin.auth.admin.generateLink({
+          type: "magiclink",
+          email: fakeEmail,
+        });
+
+        if (signInError) {
+          return new Response(
+            JSON.stringify({ error: "Account created but sign-in failed" }),
+            { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        }
+
+        return new Response(
+          JSON.stringify({
+            success: true,
+            isNewUser: true,
+            token: signInData?.properties?.hashed_token,
+            actionLink: signInData?.properties?.action_link,
+          }),
+          { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+    }
+
+    return new Response(
+      JSON.stringify({ error: "Invalid action" }),
+      { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
+  } catch (error) {
+    console.error("Error:", error);
+    const message = error instanceof Error ? error.message : "Unknown error";
+    return new Response(
+      JSON.stringify({ error: message }),
+      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
+  }
+});
