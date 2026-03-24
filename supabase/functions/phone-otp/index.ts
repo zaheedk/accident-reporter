@@ -7,8 +7,6 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type",
 };
 
-const GATEWAY_URL = "https://connector-gateway.lovable.dev/twilio";
-
 const generateOtp = () =>
   String(Math.floor(100000 + Math.random() * 900000));
 
@@ -17,18 +15,18 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
-  const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-  if (!LOVABLE_API_KEY) {
+  const TWILIO_ACCOUNT_SID = Deno.env.get("TWILIO_ACCOUNT_SID");
+  if (!TWILIO_ACCOUNT_SID) {
     return new Response(
-      JSON.stringify({ error: "LOVABLE_API_KEY is not configured" }),
+      JSON.stringify({ error: "TWILIO_ACCOUNT_SID is not configured" }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
 
-  const TWILIO_API_KEY = Deno.env.get("TWILIO_API_KEY");
-  if (!TWILIO_API_KEY) {
+  const TWILIO_AUTH_TOKEN = Deno.env.get("TWILIO_AUTH_TOKEN");
+  if (!TWILIO_AUTH_TOKEN) {
     return new Response(
-      JSON.stringify({ error: "TWILIO_API_KEY is not configured" }),
+      JSON.stringify({ error: "TWILIO_AUTH_TOKEN is not configured" }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
@@ -52,7 +50,6 @@ serve(async (req) => {
       const otpCode = generateOtp();
       const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString();
 
-      // Store OTP
       const { error: dbError } = await supabaseAdmin
         .from("phone_otps")
         .insert({ phone_number: phone, otp_code: otpCode, expires_at: expiresAt });
@@ -65,12 +62,14 @@ serve(async (req) => {
         );
       }
 
-      // Send SMS via Twilio gateway
-      const smsResponse = await fetch(`${GATEWAY_URL}/Messages.json`, {
+      // Send SMS via Twilio REST API directly
+      const twilioUrl = `https://api.twilio.com/2010-04-01/Accounts/${TWILIO_ACCOUNT_SID}/Messages.json`;
+      const credentials = btoa(`${TWILIO_ACCOUNT_SID}:${TWILIO_AUTH_TOKEN}`);
+
+      const smsResponse = await fetch(twilioUrl, {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${LOVABLE_API_KEY}`,
-          "X-Connection-Api-Key": TWILIO_API_KEY,
+          Authorization: `Basic ${credentials}`,
           "Content-Type": "application/x-www-form-urlencoded",
         },
         body: new URLSearchParams({
@@ -103,7 +102,6 @@ serve(async (req) => {
         );
       }
 
-      // Find valid OTP
       const { data: otpRecord, error: findError } = await supabaseAdmin
         .from("phone_otps")
         .select("*")
@@ -122,13 +120,11 @@ serve(async (req) => {
         );
       }
 
-      // Mark OTP as verified
       await supabaseAdmin
         .from("phone_otps")
         .update({ verified: true })
         .eq("id", otpRecord.id);
 
-      // Check if user exists with this phone
       const { data: existingProfile } = await supabaseAdmin
         .from("profiles")
         .select("user_id")
@@ -136,7 +132,6 @@ serve(async (req) => {
         .maybeSingle();
 
       if (existingProfile) {
-        // Generate a magic link / sign in the existing user
         const { data: signInData, error: signInError } = await supabaseAdmin.auth.admin.generateLink({
           type: "magiclink",
           email: `phone_${phone.replace(/\+/g, "")}@savo.phone.local`,
@@ -160,7 +155,6 @@ serve(async (req) => {
           { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       } else {
-        // Create new user with phone
         const fakeEmail = `phone_${phone.replace(/\+/g, "")}@savo.phone.local`;
         const tempPassword = crypto.randomUUID();
 
@@ -179,7 +173,6 @@ serve(async (req) => {
           );
         }
 
-        // Update profile with phone number
         if (newUser?.user) {
           await supabaseAdmin
             .from("profiles")
@@ -187,7 +180,6 @@ serve(async (req) => {
             .eq("user_id", newUser.user.id);
         }
 
-        // Sign the user in
         const { data: signInData, error: signInError } = await supabaseAdmin.auth.admin.generateLink({
           type: "magiclink",
           email: fakeEmail,
