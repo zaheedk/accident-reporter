@@ -170,8 +170,10 @@ export function ThirdPartyPhotos({ tpIndex, claimId, userId, onRegoDetected, onL
   };
 
   const handleFileChange = (type: 'damage' | 'rego' | 'license') => (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) uploadAndAnalyze(file, type);
+    const files = e.target.files;
+    if (files) {
+      Array.from(files).forEach(file => uploadAndAnalyze(file, type));
+    }
     e.target.value = '';
   };
 
@@ -222,9 +224,9 @@ export function ThirdPartyPhotos({ tpIndex, claimId, userId, onRegoDetected, onL
       <PhotoButton type="damage" label="Take damage photo" icon={Camera} inputRef={damageRef} />
       
       <PhotoButton type="license" label="Capture driver's license" icon={CreditCard} inputRef={licenseRef} />
-      <input ref={damageRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={handleFileChange('damage')} />
+      <input ref={damageRef} type="file" accept="image/*" capture="environment" multiple className="hidden" onChange={handleFileChange('damage')} />
       
-      <input ref={licenseRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={handleFileChange('license')} />
+      <input ref={licenseRef} type="file" accept="image/*" capture="environment" multiple className="hidden" onChange={handleFileChange('license')} />
     </div>
   );
 }
