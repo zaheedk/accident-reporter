@@ -26,9 +26,9 @@ serve(async (req) => {
       const token = url.searchParams.get("token");
 
       if (!token) {
-        return new Response("<h2>Invalid verification link</h2>", {
+        return new Response("<!DOCTYPE html><html><head><meta charset=\"utf-8\"></head><body><h2>Invalid verification link</h2></body></html>", {
           status: 400,
-          headers: { "Content-Type": "text/html" },
+          headers: { ...corsHeaders, "Content-Type": "text/html; charset=utf-8" },
         });
       }
 
