@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { ArrowLeft, Camera, Loader2, User, Phone, MapPin, Mail, ShieldOff, Trash2 } from 'lucide-react';
+import { ArrowLeft, Camera, Loader2, User, Phone, MapPin, Mail, ShieldOff, Trash2, CheckCircle, AlertCircle, Send } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -18,6 +18,8 @@ interface ProfileData {
   phone_number: string;
   address: string;
   avatar_url: string;
+  email: string;
+  email_verified: boolean;
 }
 
 export default function Profile() {
@@ -28,22 +30,27 @@ export default function Profile() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [sendingVerification, setSendingVerification] = useState(false);
   const [showDeactivate, setShowDeactivate] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
   const [deleteConfirmText, setDeleteConfirmText] = useState('');
   const [actionLoading, setActionLoading] = useState(false);
   const [profile, setProfile] = useState<ProfileData>({
-    display_name: '', phone_number: '', address: '', avatar_url: '',
+    display_name: '', phone_number: '', address: '', avatar_url: '', email: '', email_verified: false,
   });
+
+  // Detect if user signed in via phone (fake email pattern)
+  const isPhoneUser = user?.email?.endsWith('@savo.phone.local') || false;
 
   useEffect(() => {
     if (!user) return;
-    supabase.from('profiles').select('display_name, phone_number, address, avatar_url')
+    supabase.from('profiles').select('display_name, phone_number, address, avatar_url, email, email_verified')
       .eq('user_id', user.id).single().then(({ data }) => {
         if (data) {
           setProfile({
             display_name: data.display_name || '', phone_number: data.phone_number || '',
             address: data.address || '', avatar_url: data.avatar_url || '',
+            email: (data as any).email || '', email_verified: (data as any).email_verified || false,
           });
         }
         setLoading(false);
@@ -54,11 +61,36 @@ export default function Profile() {
     e.preventDefault();
     if (!user) return;
     setSaving(true);
-    const { error } = await supabase.from('profiles').update({
+    const updateData: Record<string, any> = {
       display_name: profile.display_name, phone_number: profile.phone_number, address: profile.address,
-    }).eq('user_id', user.id);
+    };
+    // For phone users, also save email (but don't change verified status here)
+    if (isPhoneUser) {
+      updateData.email = profile.email;
+    }
+    const { error } = await supabase.from('profiles').update(updateData).eq('user_id', user.id);
     setSaving(false);
     if (error) { toast.error(t('profile.profileFailed')); } else { toast.success(t('profile.profileUpdated')); }
+  };
+
+  const handleSendVerification = async () => {
+    if (!profile.email || !profile.email.includes('@')) {
+      toast.error('Please enter a valid email address first');
+      return;
+    }
+    setSendingVerification(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('verify-email', {
+        body: { email: profile.email },
+      });
+      if (error) throw new Error(error.message);
+      if (data?.error) throw new Error(data.error);
+      toast.success('Verification email sent! Please check your inbox.');
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to send verification email');
+    } finally {
+      setSendingVerification(false);
+    }
   };
 
   const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -112,7 +144,7 @@ export default function Profile() {
           </div>
           <div className="text-center">
             <p className="text-sm font-semibold text-foreground">{profile.display_name || t('profile.noNameSet')}</p>
-            <p className="text-xs text-muted-foreground">{user?.email}</p>
+            <p className="text-xs text-muted-foreground">{isPhoneUser ? profile.phone_number : user?.email}</p>
           </div>
         </div>
 
@@ -121,10 +153,55 @@ export default function Profile() {
             <label className="form-label flex items-center gap-1.5"><User className="w-3.5 h-3.5" strokeWidth={1.5} />{t('profile.fullName')}</label>
             <input className="form-input" placeholder={t('profile.fullNamePlaceholder')} value={profile.display_name} onChange={e => setProfile(p => ({ ...p, display_name: e.target.value }))} />
           </div>
-          <div>
-            <label className="form-label flex items-center gap-1.5"><Mail className="w-3.5 h-3.5" strokeWidth={1.5} />{t('profile.email')}</label>
-            <input className="form-input opacity-60" value={user?.email || ''} disabled />
-          </div>
+
+          {isPhoneUser ? (
+            <div>
+              <label className="form-label flex items-center gap-1.5">
+                <Mail className="w-3.5 h-3.5" strokeWidth={1.5} />
+                {t('profile.email')}
+                {profile.email && (
+                  profile.email_verified ? (
+                    <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-green-600 bg-green-50 px-1.5 py-0.5 rounded-full ml-1">
+                      <CheckCircle className="w-3 h-3" /> Verified
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded-full ml-1">
+                      <AlertCircle className="w-3 h-3" /> Unverified
+                    </span>
+                  )
+                )}
+              </label>
+              <div className="flex gap-2">
+                <input
+                  className="form-input flex-1"
+                  type="email"
+                  placeholder="your@email.com"
+                  value={profile.email}
+                  onChange={e => setProfile(p => ({ ...p, email: e.target.value, email_verified: false }))}
+                />
+                {profile.email && !profile.email_verified && (
+                  <button
+                    type="button"
+                    onClick={handleSendVerification}
+                    disabled={sendingVerification}
+                    className="btn-primary h-10 px-3 text-xs rounded-lg shrink-0 flex items-center gap-1.5"
+                  >
+                    {sendingVerification ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
+                    Verify
+                  </button>
+                )}
+              </div>
+              {profile.email && !profile.email_verified && (
+                <p className="text-[11px] text-muted-foreground mt-1">Save your email first, then click Verify to receive a verification link.</p>
+              )}
+            </div>
+          ) : (
+            <div>
+              <label className="form-label flex items-center gap-1.5"><Mail className="w-3.5 h-3.5" strokeWidth={1.5} />{t('profile.email')}</label>
+              <input className="form-input opacity-60" value={user?.email || ''} disabled />
+            </div>
+          )}
+
           <div>
             <label className="form-label flex items-center gap-1.5"><Phone className="w-3.5 h-3.5" strokeWidth={1.5} />{t('profile.phoneNumber')}</label>
             <input className="form-input" type="tel" placeholder={t('profile.phonePlaceholder')} value={profile.phone_number} onChange={e => setProfile(p => ({ ...p, phone_number: e.target.value }))} />
