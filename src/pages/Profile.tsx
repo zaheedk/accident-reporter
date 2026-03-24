@@ -161,11 +161,11 @@ export default function Profile() {
                 {t('profile.email')}
                 {profile.email && (
                   profile.email_verified ? (
-                    <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-green-600 bg-green-50 px-1.5 py-0.5 rounded-full ml-1">
+                    <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-primary bg-primary/10 px-1.5 py-0.5 rounded-full ml-1">
                       <CheckCircle className="w-3 h-3" /> Verified
                     </span>
                   ) : (
-                    <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded-full ml-1">
+                    <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-destructive bg-destructive/10 px-1.5 py-0.5 rounded-full ml-1">
                       <AlertCircle className="w-3 h-3" /> Unverified
                     </span>
                   )
