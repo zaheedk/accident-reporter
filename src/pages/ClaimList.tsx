@@ -49,7 +49,7 @@ export default function ClaimList() {
                     <div className="flex items-center gap-2 mt-0.5">
                       <span className="text-xs text-muted-foreground tabular-nums">{c.incidentDate || t('claims.noDate')}</span>
                       <span className={`text-[11px] font-medium px-1.5 py-0.5 rounded-md ${c.status === 'draft' ? 'bg-muted text-muted-foreground' : 'bg-primary/8 text-primary'}`}>
-                        {c.status === 'draft' ? t('common.draft') : t('common.submitted')}
+                        {c.status === 'draft' ? t('common.draft') : c.status === 'saved' ? 'Saved' : t('common.submitted')}
                       </span>
                     </div>
                   </div>

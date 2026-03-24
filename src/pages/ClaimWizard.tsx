@@ -126,7 +126,7 @@ export default function ClaimWizard() {
   const prev = async () => { await autoSave(); setStep(s => Math.max(s - 1, 0)); };
 
   const submit = async () => {
-    await saveClaim({ ...claim, status: 'submitted' as const, updatedAt: new Date().toISOString() });
+    await saveClaim({ ...claim, status: 'saved' as const, updatedAt: new Date().toISOString() });
     if (user?.email) {
       const vehicle = vehicles.find(v => v.id === claim.vehicleId);
       supabase.functions.invoke('send-email', {

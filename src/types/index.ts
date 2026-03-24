@@ -42,7 +42,7 @@ export type RoadCondition = 'sealed' | 'metal' | 'wet' | 'dry' | 'ice';
 
 export interface ClaimReport {
   id: string;
-  status: 'draft' | 'submitted';
+  status: 'draft' | 'saved' | 'submitted';
   createdAt: string;
   updatedAt: string;
 
