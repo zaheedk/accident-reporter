@@ -333,10 +333,7 @@ export default function ClaimWizard() {
             {step === 2 && (
               <div className="space-y-4">
                 <div className="card-surface space-y-3">
-                  <div className="flex items-center justify-between">
-                    <label className="form-label mb-0">{t('claims.thirdParty.otherVehicles')}</label>
-                    <button onClick={addTP} className="text-xs text-primary font-semibold hover:underline">{t('claims.thirdParty.addVehicle')}</button>
-                  </div>
+                  <label className="form-label mb-0">{t('claims.thirdParty.otherVehicles')}</label>
                   {claim.thirdParties.length === 0 && (
                     <div className="p-4 rounded-xl bg-background text-center">
                       <p className="text-sm text-muted-foreground">{t('claims.thirdParty.noThirdParties')}</p>
