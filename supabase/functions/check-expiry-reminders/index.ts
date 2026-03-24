@@ -100,11 +100,15 @@ serve(async (req) => {
           emailData.policyNumber = v.insurance_policy_number || '';
         }
 
-        await supabase.functions.invoke('send-email', {
-          body: { type: check.type, to: userEmail, data: emailData },
-        });
-
-        results.push(`Sent ${check.type} for ${vehicleName} to ${userEmail}`);
+        // Only send email if user has a valid email address
+        if (userEmail) {
+          await supabase.functions.invoke('send-email', {
+            body: { type: check.type, to: userEmail, data: emailData },
+          });
+          results.push(`Sent ${check.type} for ${vehicleName} to ${userEmail}`);
+        } else {
+          results.push(`Created notification for ${check.type} for ${vehicleName} (no verified email)`);
+        }
       }
     }
 
