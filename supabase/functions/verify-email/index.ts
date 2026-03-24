@@ -26,9 +26,9 @@ serve(async (req) => {
       const token = url.searchParams.get("token");
 
       if (!token) {
-        return new Response("<h2>Invalid verification link</h2>", {
+        return new Response("<!DOCTYPE html><html><head><meta charset=\"utf-8\"></head><body><h2>Invalid verification link</h2></body></html>", {
           status: 400,
-          headers: { "Content-Type": "text/html" },
+          headers: { ...corsHeaders, "Content-Type": "text/html; charset=utf-8" },
         });
       }
 
@@ -41,13 +41,13 @@ serve(async (req) => {
 
       if (error || !profile) {
         return new Response(
-          `<html><body style="font-family:Arial;display:flex;justify-content:center;align-items:center;min-height:100vh;margin:0;background:#f5f5f5">
+          `<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"></head><body style="font-family:Arial,sans-serif;display:flex;justify-content:center;align-items:center;min-height:100vh;margin:0;background:#f5f5f5">
             <div style="text-align:center;padding:40px;background:white;border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,0.1)">
               <h2 style="color:#e8551e">Verification Failed</h2>
               <p style="color:#555">This link is invalid or has expired. Please request a new verification email from your profile.</p>
             </div>
           </body></html>`,
-          { status: 400, headers: { "Content-Type": "text/html" } }
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "text/html; charset=utf-8" } }
         );
       }
 
@@ -61,14 +61,14 @@ serve(async (req) => {
         .eq("user_id", profile.user_id);
 
       return new Response(
-        `<html><body style="font-family:Arial;display:flex;justify-content:center;align-items:center;min-height:100vh;margin:0;background:#f5f5f5">
+        `<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"></head><body style="font-family:Arial,sans-serif;display:flex;justify-content:center;align-items:center;min-height:100vh;margin:0;background:#f5f5f5">
           <div style="text-align:center;padding:40px;background:white;border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,0.1)">
             <h2 style="color:#22c55e">✅ Email Verified!</h2>
             <p style="color:#555">Your email <strong>${profile.email}</strong> has been verified successfully.</p>
             <p style="color:#555">You can close this tab and return to the app.</p>
           </div>
         </body></html>`,
-        { status: 200, headers: { "Content-Type": "text/html" } }
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "text/html; charset=utf-8" } }
       );
     }
 
