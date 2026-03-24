@@ -7,28 +7,18 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type",
 };
 
-const GATEWAY_URL = "https://connector-gateway.lovable.dev/twilio";
-
-const generateOtp = () =>
-  String(Math.floor(100000 + Math.random() * 900000));
-
-serve(async (req) => {
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
-  }
-
-  const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-  if (!LOVABLE_API_KEY) {
+  const TWILIO_ACCOUNT_SID = Deno.env.get("TWILIO_ACCOUNT_SID");
+  if (!TWILIO_ACCOUNT_SID) {
     return new Response(
-      JSON.stringify({ error: "LOVABLE_API_KEY is not configured" }),
+      JSON.stringify({ error: "TWILIO_ACCOUNT_SID is not configured" }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
 
-  const TWILIO_API_KEY = Deno.env.get("TWILIO_API_KEY");
-  if (!TWILIO_API_KEY) {
+  const TWILIO_AUTH_TOKEN = Deno.env.get("TWILIO_AUTH_TOKEN");
+  if (!TWILIO_AUTH_TOKEN) {
     return new Response(
-      JSON.stringify({ error: "TWILIO_API_KEY is not configured" }),
+      JSON.stringify({ error: "TWILIO_AUTH_TOKEN is not configured" }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
