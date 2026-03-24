@@ -325,21 +325,6 @@ export default function ClaimWizard() {
                     {uploading ? t('claims.insurance.uploading') : t('claims.insurance.addPhotos')}
                   </button>
                   <input ref={photoInputRef} type="file" accept="image/*" multiple className="hidden" onChange={handlePhotoUpload} />
-                  {claim.id && user && photos.length > 0 && (
-                    <DamagePhotoAnalyzer
-                      claimId={claim.id}
-                      userId={user.id}
-                      currentDescription={claim.damageDescription}
-                      onDescriptionGenerated={(desc) => update('damageDescription', desc)}
-                      photos={photos}
-                    />
-                  )}
-                  {claim.damageDescription && (
-                    <div>
-                      <label className="form-label text-xs flex items-center gap-1"><Sparkles className="w-3 h-3" /> AI Damage Assessment</label>
-                      <p className="text-xs text-muted-foreground bg-muted/50 rounded-lg p-2.5">{claim.damageDescription}</p>
-                    </div>
-                  )}
                 </div>
               </div>
             )}
