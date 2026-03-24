@@ -371,11 +371,13 @@ export default function ClaimWizard() {
                 </div>
 
                 <div className="card-surface space-y-3">
-                  <div className="flex items-center justify-between">
-                    <label className="form-label mb-0">{t('claims.witnesses.title')}</label>
-                    <button onClick={addW} className="text-xs text-primary font-semibold hover:underline">{t('claims.witnesses.addWitness')}</button>
-                  </div>
-                  {claim.witnesses.length === 0 && <p className="text-sm text-muted-foreground">{t('claims.witnesses.noWitnesses')}</p>}
+                  <label className="form-label mb-0">{t('claims.witnesses.title')}</label>
+                  {claim.witnesses.length === 0 && (
+                    <button onClick={addW} className="w-full p-4 rounded-xl bg-background text-center cursor-pointer hover:bg-muted/50 transition-colors">
+                      <p className="text-sm text-muted-foreground">{t('claims.witnesses.noWitnesses')}</p>
+                      <span className="text-sm text-primary font-medium mt-2 inline-block">+ {t('claims.witnesses.addWitness')}</span>
+                    </button>
+                  )}
                   {claim.witnesses.map((w, i) => (
                     <div key={i} className="p-4 rounded-xl bg-background space-y-3">
                       <div className="flex items-center justify-between">
@@ -388,6 +390,11 @@ export default function ClaimWizard() {
                       </div>
                     </div>
                   ))}
+                  {claim.witnesses.length > 0 && (
+                    <button onClick={addW} className="w-full py-3 rounded-xl border border-dashed border-primary/30 text-sm text-primary font-medium hover:bg-primary/5 transition-colors">
+                      + {t('claims.witnesses.addWitness')}
+                    </button>
+                  )}
                 </div>
               </div>
             )}
