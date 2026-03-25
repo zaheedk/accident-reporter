@@ -135,31 +135,29 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <button onClick={handleOpenTowSheet} className="w-full block card-surface-elevated group hover:border-primary/20 transition-all text-left">
-          <div className="flex items-center gap-4">
-            <div className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: 'hsla(152, 60%, 42%, 0.1)' }}>
+        <div className="grid grid-cols-2 gap-3">
+          <button onClick={handleOpenTowSheet} className="card-surface-elevated group hover:border-primary/20 transition-all text-left h-[140px] flex flex-col justify-between">
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: 'hsla(152, 60%, 42%, 0.1)' }}>
               <Phone className="w-5 h-5" style={{ color: 'hsl(152, 60%, 42%)' }} strokeWidth={1.8} />
             </div>
-            <div className="flex-1 min-w-0">
+            <div>
               <div className="text-sm font-bold text-foreground">Call a tow truck</div>
-              <div className="text-xs text-muted-foreground mt-0.5">24/7 emergency towing assistance</div>
+              <div className="text-xs text-muted-foreground mt-0.5">24/7 emergency towing</div>
             </div>
-            <ArrowUpRight className="w-4 h-4 text-muted-foreground/30 group-hover:text-primary transition-colors shrink-0" />
-          </div>
-        </button>
+          </button>
 
-        <Link to="/claims/new" className="card-gradient block group">
-          <div className="relative z-10">
-            <div className="flex items-center justify-between mb-3">
+          <Link to="/claims/new" className="card-gradient block group h-[140px] flex flex-col justify-between">
+            <div className="relative z-10 flex flex-col justify-between h-full">
               <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
                 <AlertTriangle className="w-5 h-5 text-white" />
               </div>
-              <ArrowUpRight className="w-5 h-5 text-white/60 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+              <div>
+                <div className="text-sm font-bold text-white">{t('dashboard.reportIncident')}</div>
+                <p className="text-xs text-white/70 mt-0.5">{t('dashboard.reportSubtitle')}</p>
+              </div>
             </div>
-            <div className="text-lg font-bold text-white">{t('dashboard.reportIncident')}</div>
-            <p className="text-sm text-white/70 mt-1">{t('dashboard.reportSubtitle')}</p>
-          </div>
-        </Link>
+          </Link>
+        </div>
 
         <div className="grid grid-cols-2 gap-3">
           <Link to="/vehicles" className="card-surface-elevated group hover:border-primary/20 transition-all">
