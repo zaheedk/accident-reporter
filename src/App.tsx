@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -5,24 +6,32 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
-import Dashboard from "./pages/Dashboard";
-import VehicleList from "./pages/VehicleList";
-import VehicleForm from "./pages/VehicleForm";
-import ClaimList from "./pages/ClaimList";
-import ClaimWizard from "./pages/ClaimWizard";
-import ClaimDetail from "./pages/ClaimDetail";
-import PanelShops from "./pages/PanelShops";
-import Profile from "./pages/Profile";
-import UserManagement from "./pages/UserManagement";
-import AdminDashboard from "./pages/AdminDashboard";
-import InsuranceCompanies from "./pages/InsuranceCompanies";
-import Auth from "./pages/Auth";
-import About from "./pages/About";
-import HowItWorks from "./pages/HowItWorks";
-import FAQ from "./pages/FAQ";
-import Legal from "./pages/Legal";
-import NotFound from "./pages/NotFound";
 import { Loader2 } from "lucide-react";
+
+// Lazy-loaded pages for code splitting
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+const VehicleList = lazy(() => import("./pages/VehicleList"));
+const VehicleForm = lazy(() => import("./pages/VehicleForm"));
+const ClaimList = lazy(() => import("./pages/ClaimList"));
+const ClaimWizard = lazy(() => import("./pages/ClaimWizard"));
+const ClaimDetail = lazy(() => import("./pages/ClaimDetail"));
+const PanelShops = lazy(() => import("./pages/PanelShops"));
+const Profile = lazy(() => import("./pages/Profile"));
+const UserManagement = lazy(() => import("./pages/UserManagement"));
+const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
+const InsuranceCompanies = lazy(() => import("./pages/InsuranceCompanies"));
+const Auth = lazy(() => import("./pages/Auth"));
+const About = lazy(() => import("./pages/About"));
+const HowItWorks = lazy(() => import("./pages/HowItWorks"));
+const FAQ = lazy(() => import("./pages/FAQ"));
+const Legal = lazy(() => import("./pages/Legal"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+
+const PageLoader = () => (
+  <div className="min-h-screen bg-background flex items-center justify-center">
+    <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+  </div>
+);
 
 const queryClient = new QueryClient();
 
