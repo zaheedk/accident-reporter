@@ -9,7 +9,7 @@ import LanguageSwitcher from '@/components/LanguageSwitcher';
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
   const { t } = useTranslation();
 
   const navItems = [
