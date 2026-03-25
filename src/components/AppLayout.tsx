@@ -64,6 +64,16 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           </Link>
           <div className="border-t border-border/50 my-2" />
           <LanguageSwitcher />
+          {user && (
+            <>
+              <div className="border-t border-border/50 my-2" />
+              <button onClick={() => { setMenuOpen(false); signOut(); }}
+                className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors text-destructive hover:bg-destructive/10 w-full text-left">
+                <LogOut className="w-4 h-4" />
+                {t('common.signOut')}
+              </button>
+            </>
+          )}
         </div>
       )}
 
