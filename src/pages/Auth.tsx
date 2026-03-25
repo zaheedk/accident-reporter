@@ -246,8 +246,8 @@ export default function Auth() {
             </>
           )}
 
-          {/* Feature chips */}
-          <div className="flex flex-wrap items-center justify-center gap-2 mt-6">
+          {/* Feature chips - hidden on mobile to save space */}
+          <div className="hidden lg:flex flex-wrap items-center justify-center gap-2 mt-6">
             {features.map(({ icon: Icon, label }) => (
               <span key={label} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-muted text-muted-foreground border border-border/50">
                 <Icon className="w-3.5 h-3.5" />
