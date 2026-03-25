@@ -85,11 +85,8 @@ export default function Auth() {
 
         <div className="relative z-10 lg:text-center lg:max-w-md">
           {/* Logo */}
-          <div className="flex items-center gap-2.5 mb-10 lg:justify-center">
-            <img src="/savo-icon.svg" alt="Savo" className="w-11 h-11 rounded-2xl shadow-lg" />
-            <span className="text-lg font-bold text-dark-surface-foreground tracking-tight">
-              Sa<span className="text-primary">vo</span>
-            </span>
+          <div className="flex items-center mb-10 lg:justify-center">
+            <img src="/savo-logo.svg" alt="Savo" className="h-20 lg:h-24" />
           </div>
 
           {/* Headline */}
