@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Car, FileText, Plus, Wrench, Info, HelpCircle, BookOpen, Shield, Menu, X, User } from 'lucide-react';
+import { LayoutDashboard, Car, FileText, Plus, Wrench, Info, HelpCircle, BookOpen, Shield, Menu, X, User, LogOut } from 'lucide-react';
 import NotificationBell from '@/components/NotificationBell';
 import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
@@ -9,7 +9,7 @@ import LanguageSwitcher from '@/components/LanguageSwitcher';
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
   const { t } = useTranslation();
 
   const navItems = [
@@ -64,6 +64,16 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           </Link>
           <div className="border-t border-border/50 my-2" />
           <LanguageSwitcher />
+          {user && (
+            <>
+              <div className="border-t border-border/50 my-2" />
+              <button onClick={() => { setMenuOpen(false); signOut(); }}
+                className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors text-destructive hover:bg-destructive/10 w-full text-left">
+                <LogOut className="w-4 h-4" />
+                {t('common.signOut')}
+              </button>
+            </>
+          )}
         </div>
       )}
 
