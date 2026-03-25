@@ -49,10 +49,20 @@ export default function Auth() {
 
   const handleOAuth = async (provider: 'google' | 'apple') => {
     setError('');
-    const { error } = await lovable.auth.signInWithOAuth(provider, {
-      redirect_uri: window.location.origin,
-    });
-    if (error) setError(error.message || 'OAuth sign-in failed');
+    if (provider === 'google') {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: window.location.origin,
+        },
+      });
+      if (error) setError(error.message || 'OAuth sign-in failed');
+    } else {
+      const { error } = await lovable.auth.signInWithOAuth(provider, {
+        redirect_uri: window.location.origin,
+      });
+      if (error) setError(error.message || 'OAuth sign-in failed');
+    }
   };
 
   const features = [
