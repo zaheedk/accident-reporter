@@ -13,7 +13,16 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const { user, signOut } = useAuth();
   const { t } = useTranslation();
+  const [profile, setProfile] = useState<{ display_name: string | null; avatar_url: string | null } | null>(null);
 
+  useEffect(() => {
+    if (!user) return;
+    supabase.from('profiles').select('display_name, avatar_url').eq('user_id', user.id).maybeSingle()
+      .then(({ data }) => setProfile(data));
+  }, [user?.id]);
+
+  const initials = (profile?.display_name || user?.email || '?')
+    .split(/[\s@]/).filter(Boolean).slice(0, 2).map(s => s[0].toUpperCase()).join('');
   const navItems = [
     { to: '/', icon: LayoutDashboard, label: t('nav.dashboard') },
     { to: '/vehicles', icon: Car, label: t('nav.vehicles') },
@@ -61,8 +70,14 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           <div className="border-t border-border/50 my-2" />
           <Link to="/profile" onClick={() => setMenuOpen(false)}
             className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${location.pathname === '/profile' ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'}`}>
-            <User className="w-4 h-4" />
-            {t('nav.profile')}
+            <Avatar className="w-6 h-6 text-[10px]">
+              {profile?.avatar_url && <AvatarImage src={profile.avatar_url} alt={profile?.display_name || ''} />}
+              <AvatarFallback className="bg-primary/15 text-primary text-[10px] font-semibold">{initials}</AvatarFallback>
+            </Avatar>
+            <span className="flex flex-col leading-tight">
+              <span>{t('nav.profile')}</span>
+              {profile?.display_name && <span className="text-xs text-muted-foreground font-normal">{profile.display_name}</span>}
+            </span>
           </Link>
           <div className="border-t border-border/50 my-2" />
           <LanguageSwitcher />
