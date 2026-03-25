@@ -86,11 +86,7 @@ export default function Auth() {
         <div className="relative z-10 lg:text-center lg:max-w-md">
           {/* Logo */}
           <div className="flex items-center gap-2.5 mb-10 lg:justify-center">
-            <div className="w-11 h-11 rounded-2xl bg-primary flex items-center justify-center shadow-lg" style={{ boxShadow: '0 4px 16px hsla(22, 90%, 52%, 0.4)' }}>
-              <svg className="w-6 h-6 text-primary-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-              </svg>
-            </div>
+            <img src="/savo-icon.svg" alt="Savo" className="w-11 h-11 rounded-2xl shadow-lg" />
             <span className="text-lg font-bold text-dark-surface-foreground tracking-tight">
               Sa<span className="text-primary">vo</span>
             </span>
