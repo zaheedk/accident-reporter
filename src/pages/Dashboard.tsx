@@ -108,9 +108,6 @@ export default function Dashboard() {
 
   const displayedTowCompanies = getDisplayedTowCompanies();
 
-  const drafts = claims.filter(c => c.status === 'draft');
-  const submitted = claims.filter(c => c.status === 'submitted');
-  const firstName = displayName ? displayName.split(' ')[0] : 'there';
 
   return (
     <AppLayout>
@@ -204,58 +201,6 @@ export default function Dashboard() {
             </div>
             <ChevronRight className="w-4 h-4 text-muted-foreground/30 group-hover:text-primary transition-colors shrink-0" strokeWidth={1.5} />
           </Link>
-        )}
-
-        {drafts.length > 0 && (
-          <div>
-            <div className="flex items-center gap-2 mb-2.5">
-              <div className="w-1.5 h-1.5 rounded-full bg-warning" style={{ backgroundColor: 'hsl(38, 92%, 50%)' }} />
-              <h2 className="text-[13px] font-semibold text-muted-foreground uppercase tracking-wide">{t('dashboard.drafts')}</h2>
-            </div>
-            <div className="space-y-2">
-              {drafts.map(claim => (
-                <Link key={claim.id} to={`/claims/${claim.id}/edit`}
-                  className="card-surface flex items-center justify-between group hover:border-primary/20 transition-all">
-                  <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ backgroundColor: 'hsla(38, 92%, 50%, 0.1)' }}>
-                      <Clock className="w-4 h-4" strokeWidth={1.8} style={{ color: 'hsl(38, 92%, 50%)' }} />
-                    </div>
-                    <div>
-                      <div className="text-sm font-semibold text-foreground">{claim.incidentLocation || t('dashboard.untitledReport')}</div>
-                      <div className="text-xs text-muted-foreground tabular-nums">{claim.incidentDate || t('dashboard.noDateSet')}</div>
-                    </div>
-                  </div>
-                  <ChevronRight className="w-4 h-4 text-muted-foreground/30 group-hover:text-primary transition-colors" strokeWidth={1.5} />
-                </Link>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {submitted.length > 0 && (
-          <div>
-            <div className="flex items-center gap-2 mb-2.5">
-              <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: 'hsl(152, 60%, 42%)' }} />
-              <h2 className="text-[13px] font-semibold text-muted-foreground uppercase tracking-wide">{t('common.submitted')}</h2>
-            </div>
-            <div className="space-y-2">
-              {submitted.slice(0, 5).map(claim => (
-                <Link key={claim.id} to={`/claims/${claim.id}`}
-                  className="card-surface flex items-center justify-between group hover:border-primary/20 transition-all">
-                  <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-xl bg-primary/8 flex items-center justify-center">
-                      <FileText className="w-4 h-4 text-primary" strokeWidth={1.8} />
-                    </div>
-                    <div>
-                      <div className="text-sm font-semibold text-foreground">{claim.incidentLocation || t('dashboard.report')}</div>
-                      <div className="text-xs text-muted-foreground tabular-nums">{claim.incidentDate}</div>
-                    </div>
-                  </div>
-                  <ChevronRight className="w-4 h-4 text-muted-foreground/30 group-hover:text-primary transition-colors" strokeWidth={1.5} />
-                </Link>
-              ))}
-            </div>
-          </div>
         )}
       </div>
 
