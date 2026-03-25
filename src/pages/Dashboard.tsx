@@ -110,7 +110,7 @@ export default function Dashboard() {
 
   const firstName = displayName ? displayName.split(' ')[0] : 'there';
 
-
+  return (
     <AppLayout>
       <div className="space-y-5">
         <div className="flex items-center justify-between">
