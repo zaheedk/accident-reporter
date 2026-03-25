@@ -7,6 +7,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { Loader2 } from "lucide-react";
+import InstallPrompt from "@/components/InstallPrompt";
 
 // Lazy-loaded pages for code splitting
 const Dashboard = lazy(() => import("./pages/Dashboard"));
@@ -81,6 +82,7 @@ const App = () => (
               <Route path="/legal" element={<Legal />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
+            <InstallPrompt />
           </Suspense>
         </BrowserRouter>
       </TooltipProvider>
