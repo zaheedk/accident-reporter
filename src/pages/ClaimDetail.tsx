@@ -69,6 +69,7 @@ export default function ClaimDetail() {
       };
       setClaim(foundClaim);
       setVehicles(vehs);
+      if (claimNumData?.claim_number) setClaimNumber(String(claimNumData.claim_number));
 
       // Parallel fetch photos, tp_photos, insurer info, and reference data
       const [photosRes, tpRes, insurersRes, shopsRes] = await Promise.all([
