@@ -378,17 +378,31 @@ export default function ClaimWizard() {
                       ))}
                     </div>
                   )}
-                  <button type="button" onClick={async () => {
-                    if (!claim.id) {
-                      const savedId = await saveClaim({ ...claim, updatedAt: new Date().toISOString() });
-                      if (savedId) setClaim(prev => ({ ...prev, id: savedId }));
-                    }
-                    photoInputRef.current?.click();
-                  }} disabled={uploading}
-                    className="btn-secondary w-full h-9 gap-2 text-xs">
-                    {uploading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Camera className="w-3.5 h-3.5" />}
-                    {uploading ? t('claims.insurance.uploading') : t('claims.insurance.addPhotos')}
-                  </button>
+                  <div className="flex gap-2">
+                    <button type="button" onClick={async () => {
+                      if (!claim.id) {
+                        const savedId = await saveClaim({ ...claim, updatedAt: new Date().toISOString() });
+                        if (savedId) setClaim(prev => ({ ...prev, id: savedId }));
+                      }
+                      cameraInputRef.current?.click();
+                    }} disabled={uploading}
+                      className="btn-secondary flex-1 h-9 gap-2 text-xs">
+                      {uploading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Camera className="w-3.5 h-3.5" />}
+                      {t('claims.insurance.takePhoto', 'Take photo')}
+                    </button>
+                    <button type="button" onClick={async () => {
+                      if (!claim.id) {
+                        const savedId = await saveClaim({ ...claim, updatedAt: new Date().toISOString() });
+                        if (savedId) setClaim(prev => ({ ...prev, id: savedId }));
+                      }
+                      photoInputRef.current?.click();
+                    }} disabled={uploading}
+                      className="btn-secondary flex-1 h-9 gap-2 text-xs">
+                      {uploading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <span>📁</span>}
+                      {t('claims.insurance.gallery', 'Gallery')}
+                    </button>
+                  </div>
+                  <input ref={cameraInputRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={handlePhotoUpload} />
                   <input ref={photoInputRef} type="file" accept="image/*" multiple className="hidden" onChange={handlePhotoUpload} />
                 </div>
               </div>
