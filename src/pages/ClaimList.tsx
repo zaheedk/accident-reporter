@@ -1,16 +1,11 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { Plus, FileText, Trash2, ChevronRight, Search, X, Calendar, Car } from 'lucide-react';
-import { getClaims, deleteClaim, getVehicles } from '@/lib/storage';
+import { Plus, FileText, ChevronRight, Search, X, Calendar, Car } from 'lucide-react';
+import { getClaims, getVehicles } from '@/lib/storage';
 import { ClaimReport, Vehicle } from '@/types';
 import AppLayout from '@/components/AppLayout';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
-import {
-  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
-  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
 
 export default function ClaimList() {
   const [claims, setClaims] = useState<ClaimReport[]>([]);
@@ -69,11 +64,6 @@ export default function ClaimList() {
       return rego.includes(q) || date.includes(q) || claimNumStr.includes(q) || reportNum.includes(q) || location.includes(q);
     });
   }, [claims, search, vehicleMap, claimMeta]);
-
-  const handleDelete = async (id: string) => {
-    await deleteClaim(id);
-    setClaims(await getClaims());
-  };
 
   return (
     <AppLayout>
@@ -170,26 +160,6 @@ export default function ClaimList() {
                       </div>
                     </div>
                   </Link>
-                  <div className="flex items-center justify-end px-3 pb-2 -mt-1">
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <button className="flex items-center gap-1.5 text-xs text-muted-foreground/50 hover:text-destructive transition-colors">
-                          <Trash2 className="w-3.5 h-3.5" strokeWidth={1.5} />
-                          Delete
-                        </button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Delete report?</AlertDialogTitle>
-                          <AlertDialogDescription>This action cannot be undone. This will permanently delete this accident report.</AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancel</AlertDialogCancel>
-                          <AlertDialogAction onClick={() => handleDelete(c.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Delete</AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                  </div>
                 </div>
               );
             })}
