@@ -4,7 +4,7 @@ import { ArrowLeft, ArrowRight, Save, Camera, X, Loader2, MapPin, Car, Sparkles,
 import { DamagePhotoAnalyzer, ThirdPartyPhotos } from '@/components/PhotoAnalyzer';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ClaimReport, ThirdPartyVehicle, Witness, Vehicle } from '@/types';
-import { deleteClaim, getVehicles, getClaims, saveClaim } from '@/lib/storage';
+import { deleteClaim, getVehicles, saveClaim } from '@/lib/storage';
 import { compressImage } from '@/lib/image-compress';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
