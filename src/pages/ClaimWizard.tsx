@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, Save, Camera, X, Loader2, MapPin, Car, Sparkles, Trash2 } from 'lucide-react';
 import { DamagePhotoAnalyzer, ThirdPartyPhotos } from '@/components/PhotoAnalyzer';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ClaimReport, ThirdPartyVehicle, Witness, Vehicle } from '@/types';
+import { ClaimReport, ThirdPartyVehicle, Witness, Vehicle, WEATHER_OPTIONS, ROAD_OPTIONS } from '@/types';
 import { deleteClaim, getVehicles, saveClaim } from '@/lib/storage';
 import { compressImage } from '@/lib/image-compress';
 import { supabase } from '@/integrations/supabase/client';
