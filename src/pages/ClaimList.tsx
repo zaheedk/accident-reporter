@@ -75,9 +75,14 @@ export default function ClaimList() {
     <AppLayout>
       <div className="space-y-5">
         <div className="flex items-center justify-between">
-          <div>
-            <p className="text-sm text-muted-foreground">{t('claims.reports')}</p>
-            <h1 className="text-[22px] font-extrabold text-foreground tracking-tight -mt-0.5">{t('claims.accidentReports')}</h1>
+          <div className="flex items-center gap-3">
+            <button onClick={() => window.history.back()} className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors">
+              <ArrowLeft className="w-5 h-5" />
+            </button>
+            <div>
+              <p className="text-sm text-muted-foreground">{t('claims.reports')}</p>
+              <h1 className="text-[22px] font-extrabold text-foreground tracking-tight -mt-0.5">{t('claims.accidentReports')}</h1>
+            </div>
           </div>
           <Link to="/claims/new" className="btn-primary h-8 px-3.5 text-xs rounded-lg">
             <Plus className="w-3.5 h-3.5" /> {t('common.new')}
