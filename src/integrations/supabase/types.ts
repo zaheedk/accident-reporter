@@ -121,6 +121,7 @@ export type Database = {
           repairer_address: string
           repairer_name: string
           repairer_phone: string
+          report_number: string | null
           road_condition: string
           selected_panel_shop_id: string | null
           speed_before_braking: string
@@ -160,6 +161,7 @@ export type Database = {
           repairer_address?: string
           repairer_name?: string
           repairer_phone?: string
+          report_number?: string | null
           road_condition?: string
           selected_panel_shop_id?: string | null
           speed_before_braking?: string
@@ -199,6 +201,7 @@ export type Database = {
           repairer_address?: string
           repairer_name?: string
           repairer_phone?: string
+          report_number?: string | null
           road_condition?: string
           selected_panel_shop_id?: string | null
           speed_before_braking?: string
