@@ -66,7 +66,9 @@ function dbVehicleToVehicle(row: any): Vehicle {
 // ── Claim helpers ──
 
 export async function getClaims(): Promise<ClaimReport[]> {
-  const { data, error } = await supabase.from('claims').select('*').order('created_at', { ascending: false });
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return [];
+  const { data, error } = await supabase.from('claims').select('*').eq('user_id', user.id).order('created_at', { ascending: false });
   if (error) { console.error('getClaims', error); return []; }
   return (data || []).map(dbClaimToClaim);
 }
