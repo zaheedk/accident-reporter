@@ -1,12 +1,15 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Printer, Mail, X, Download, Share2, Phone, Pencil, Save, Loader2 } from 'lucide-react';
+import { ArrowLeft, Printer, Mail, X, Download, Share2, Phone, Pencil, Save, Loader2, Send } from 'lucide-react';
 import { getClaims, getVehicles } from '@/lib/storage';
 import { supabase } from '@/integrations/supabase/client';
 import AppLayout from '@/components/AppLayout';
 import ClaimMessages from '@/components/ClaimMessages';
 import { WEATHER_OPTIONS, ROAD_OPTIONS, ClaimReport, Vehicle } from '@/types';
 import { useTranslation } from 'react-i18next';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
 
 export default function ClaimDetail() {
   const { id } = useParams();
@@ -29,14 +32,19 @@ export default function ClaimDetail() {
   const [savingInsurance, setSavingInsurance] = useState(false);
   const [panelShops, setPanelShops] = useState<{ id: string; name: string; phone: string; address: string }[]>([]);
   const printRef = useRef<HTMLDivElement>(null);
+  const [emailDialogOpen, setEmailDialogOpen] = useState(false);
+  const [emailTo, setEmailTo] = useState('');
+  const [sendingEmail, setSendingEmail] = useState(false);
+  const [claimNumber, setClaimNumber] = useState('');
 
   useEffect(() => {
     if (!id) return;
     const load = async () => {
       // Fetch only the specific claim and user's vehicles in parallel
-      const [{ data: claimRow }, vehs] = await Promise.all([
+      const [{ data: claimRow }, vehs, { data: claimNumData }] = await Promise.all([
         supabase.from('claims').select('*').eq('id', id).single(),
         getVehicles(),
+        supabase.from('claims').select('claim_number').eq('id', id).single(),
       ]);
       
       if (!claimRow) { setLoading(false); return; }
@@ -61,6 +69,7 @@ export default function ClaimDetail() {
       };
       setClaim(foundClaim);
       setVehicles(vehs);
+      if (claimNumData?.claim_number) setClaimNumber(String(claimNumData.claim_number));
 
       // Parallel fetch photos, tp_photos, insurer info, and reference data
       const [photosRes, tpRes, insurersRes, shopsRes] = await Promise.all([
@@ -134,12 +143,71 @@ export default function ClaimDetail() {
 
   const handlePrint = () => { window.print(); };
   const handleEmail = () => {
-    const subject = encodeURIComponent(`Incident Report – ${claim.incidentDate}`);
-    const body = encodeURIComponent(
-      `Please find the incident report attached.\n\nDate: ${claim.incidentDate} at ${claim.incidentTime}\nLocation: ${claim.incidentLocation}\nVehicle: ${vehicle ? `${vehicle.year} ${vehicle.make} ${vehicle.model}` : 'N/A'}\nStatus: ${claim.status === 'draft' ? t('common.draft') : t('common.submitted')}\n\nDescription:\n${claim.description}\n\nDamage:\n${claim.damageDescription}\n\nTo generate a PDF, open the report in your browser and use Print → Save as PDF.`
-    );
-    window.open(`mailto:?subject=${subject}&body=${body}`);
+    setEmailTo(insurerEmail);
+    setEmailDialogOpen(true);
   };
+
+  const sendReportEmail = async () => {
+    if (!emailTo.trim()) { toast.error('Please enter a recipient email'); return; }
+    setSendingEmail(true);
+    try {
+      const veh = vehicles.find(v => v.id === claim.vehicleId);
+      const isInsurer = emailTo === insurerEmail && !!insurerEmail;
+      const { data: profile } = await supabase.from('profiles').select('display_name').eq('user_id', (await supabase.auth.getUser()).data.user?.id || '').single();
+      
+      const { error } = await supabase.functions.invoke('send-email', {
+        body: {
+          type: 'claim_submitted',
+          to: emailTo,
+          data: {
+            claimId: claim.id,
+            claimNumber: claimNumber,
+            date: claim.incidentDate,
+            time: claim.incidentTime,
+            location: claim.incidentLocation,
+            description: claim.description,
+            vehicle: veh ? `${veh.year} ${veh.make} ${veh.model}` : '',
+            rego: veh?.regoNumber || '',
+            insurer: claim.insuranceCompany,
+            policyNumber: veh?.insurancePolicyNumber || '',
+            damageDescription: claim.damageDescription,
+            vehicleUsage: claim.vehicleUsage,
+            journeyDetails: claim.journeyDetails,
+            speedBeforeBraking: claim.speedBeforeBraking,
+            vehicleTowed: claim.vehicleTowed ? 'Yes' : 'No',
+            towingCompany: claim.towingCompany,
+            thirdParties: JSON.stringify(claim.thirdParties),
+            witnesses: JSON.stringify(claim.witnesses),
+            policeAttended: claim.policeAttended ? 'Yes' : 'No',
+            policeOfficerDetails: claim.policeOfficerDetails,
+            anyoneHurt: claim.anyoneHurt ? 'Yes' : 'No',
+            injuryDetails: claim.injuryDetails,
+            weatherCondition: claim.weatherCondition,
+            roadCondition: claim.roadCondition,
+            driverConsumedSubstance: claim.driverConsumedSubstance ? 'Yes' : 'No',
+            substanceDetails: claim.substanceDetails,
+            blameDescription: claim.blameDescription,
+            liabilityAdmitted: claim.liabilityAdmitted ? 'Yes' : 'No',
+            liabilityDetails: claim.liabilityDetails,
+            repairerName: claim.repairerName,
+            repairerPhone: claim.repairerPhone,
+            repairerAddress: claim.repairerAddress,
+            clientName: profile?.display_name || '',
+            isInsurerEmail: isInsurer ? 'true' : 'false',
+          },
+        },
+      });
+      if (error) throw error;
+      toast.success(`Report sent to ${emailTo}`);
+      setEmailDialogOpen(false);
+      setEmailTo('');
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to send email');
+    } finally {
+      setSendingEmail(false);
+    }
+  };
+
 
   return (
     <AppLayout>
@@ -322,13 +390,11 @@ export default function ClaimDetail() {
           </Section>
         )}
 
-        {claim.status === 'submitted' && (
-          <ClaimMessages
-            claimId={claim.id!}
-            insurerEmail={insurerEmail}
-            insurerName={claim.insuranceCompany}
-          />
-        )}
+        <ClaimMessages
+          claimId={claim.id!}
+          insurerEmail={insurerEmail}
+          insurerName={claim.insuranceCompany}
+        />
       </div>
 
       {lightboxUrl && (
@@ -342,6 +408,40 @@ export default function ClaimDetail() {
           <img src={lightboxUrl} alt="Damage photo" className="max-w-full max-h-full rounded-xl object-contain" onClick={e => e.stopPropagation()} />
         </div>
       )}
+
+      <Dialog open={emailDialogOpen} onOpenChange={setEmailDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Email Report</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p className="text-sm text-muted-foreground">Send the full incident report as a PDF attachment.</p>
+            {insurerEmail && (
+              <button
+                onClick={() => setEmailTo(insurerEmail)}
+                className={`w-full text-left px-3 py-2.5 rounded-lg border text-sm transition-colors ${emailTo === insurerEmail ? 'border-primary bg-primary/5 text-primary' : 'border-border hover:bg-muted'}`}
+              >
+                <span className="font-medium">{claim.insuranceCompany}</span>
+                <span className="block text-xs text-muted-foreground mt-0.5">{insurerEmail}</span>
+              </button>
+            )}
+            <div>
+              <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Recipient email</label>
+              <input
+                type="email"
+                placeholder="Enter email address"
+                value={emailTo}
+                onChange={e => setEmailTo(e.target.value)}
+                className="w-full px-3 py-2 text-sm rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/20"
+              />
+            </div>
+            <Button onClick={sendReportEmail} disabled={sendingEmail || !emailTo.trim()} className="w-full">
+              {sendingEmail ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Send className="w-4 h-4 mr-2" />}
+              {sendingEmail ? 'Sending...' : 'Send Report'}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </AppLayout>
   );
 }
