@@ -5,6 +5,7 @@ import { DamagePhotoAnalyzer, ThirdPartyPhotos } from '@/components/PhotoAnalyze
 import { motion, AnimatePresence } from 'framer-motion';
 import { ClaimReport, ThirdPartyVehicle, Witness, Vehicle } from '@/types';
 import { deleteClaim, getVehicles, getClaims, saveClaim } from '@/lib/storage';
+import { compressImage } from '@/lib/image-compress';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import AppLayout from '@/components/AppLayout';
@@ -208,8 +209,9 @@ export default function ClaimWizard() {
     if (!claim.id) setClaim(prev => ({ ...prev, id: claimId }));
 
     setUploading(true);
-    for (const file of Array.from(files)) {
-      if (file.size > 10 * 1024 * 1024) { toast.error(`${file.name} is too large (max 10MB)`); continue; }
+    for (const rawFile of Array.from(files)) {
+      if (rawFile.size > 10 * 1024 * 1024) { toast.error(`${rawFile.name} is too large (max 10MB)`); continue; }
+      const file = await compressImage(rawFile);
       const ext = file.name.split('.').pop();
       const path = `${user.id}/${claimId}/${Date.now()}.${ext}`;
       const { error: uploadError } = await supabase.storage.from('claim-photos').upload(path, file);

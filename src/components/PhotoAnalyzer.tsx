@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import { Camera, Loader2, X, Sparkles, ScanLine, CreditCard } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { compressImage } from '@/lib/image-compress';
 import { toast } from 'sonner';
 
 interface DamagePhotoAnalyzerProps {
@@ -100,13 +101,14 @@ export function ThirdPartyPhotos({ tpIndex, claimId, userId, onRegoDetected, onL
     return data.publicUrl;
   };
 
-  const uploadAndAnalyze = async (file: File, type: 'damage' | 'rego' | 'license') => {
-    if (file.size > 10 * 1024 * 1024) {
+  const uploadAndAnalyze = async (rawFile: File, type: 'damage' | 'rego' | 'license') => {
+    if (rawFile.size > 10 * 1024 * 1024) {
       toast.error('File too large (max 10MB)');
       return;
     }
     setUploading(type);
     try {
+      const file = await compressImage(rawFile);
       const ext = file.name.split('.').pop();
       const path = `${userId}/${claimId}/tp${tpIndex}/${type}_${Date.now()}.${ext}`;
       const { error: uploadError } = await supabase.storage.from('tp-photos').upload(path, file);
