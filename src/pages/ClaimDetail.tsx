@@ -1,12 +1,15 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Printer, Mail, X, Download, Share2, Phone, Pencil, Save, Loader2 } from 'lucide-react';
+import { ArrowLeft, Printer, Mail, X, Download, Share2, Phone, Pencil, Save, Loader2, Send } from 'lucide-react';
 import { getClaims, getVehicles } from '@/lib/storage';
 import { supabase } from '@/integrations/supabase/client';
 import AppLayout from '@/components/AppLayout';
 import ClaimMessages from '@/components/ClaimMessages';
 import { WEATHER_OPTIONS, ROAD_OPTIONS, ClaimReport, Vehicle } from '@/types';
 import { useTranslation } from 'react-i18next';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
 
 export default function ClaimDetail() {
   const { id } = useParams();
@@ -29,6 +32,10 @@ export default function ClaimDetail() {
   const [savingInsurance, setSavingInsurance] = useState(false);
   const [panelShops, setPanelShops] = useState<{ id: string; name: string; phone: string; address: string }[]>([]);
   const printRef = useRef<HTMLDivElement>(null);
+  const [emailDialogOpen, setEmailDialogOpen] = useState(false);
+  const [emailTo, setEmailTo] = useState('');
+  const [sendingEmail, setSendingEmail] = useState(false);
+  const [claimNumber, setClaimNumber] = useState('');
 
   useEffect(() => {
     if (!id) return;
