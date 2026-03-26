@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { Plus, FileText, Trash2, ChevronRight, Search, X, Calendar } from 'lucide-react';
+import { Plus, FileText, Trash2, ChevronRight, Search, X, Calendar, Car } from 'lucide-react';
 import { getClaims, deleteClaim, getVehicles } from '@/lib/storage';
 import { ClaimReport, Vehicle } from '@/types';
 import AppLayout from '@/components/AppLayout';
@@ -15,18 +15,35 @@ import {
 export default function ClaimList() {
   const [claims, setClaims] = useState<ClaimReport[]>([]);
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
-  const [claimNumbers, setClaimNumbers] = useState<Record<string, number | null>>({});
+  const [claimMeta, setClaimMeta] = useState<Record<string, { claimNumber: number | null; reportNumber: string | null }>>({});
+  const [claimPhotos, setClaimPhotos] = useState<Record<string, string>>({});
   const [search, setSearch] = useState('');
   const { t } = useTranslation();
 
   useEffect(() => {
     getClaims().then(setClaims);
     getVehicles().then(setVehicles);
-    supabase.from('claims').select('id, claim_number').then(({ data }) => {
+
+    // Fetch claim metadata
+    supabase.from('claims').select('id, claim_number, report_number').then(({ data }) => {
       if (data) {
-        const map: Record<string, number | null> = {};
-        data.forEach((c: any) => { map[c.id] = c.claim_number; });
-        setClaimNumbers(map);
+        const map: Record<string, { claimNumber: number | null; reportNumber: string | null }> = {};
+        data.forEach((c: any) => { map[c.id] = { claimNumber: c.claim_number, reportNumber: c.report_number }; });
+        setClaimMeta(map);
+      }
+    });
+
+    // Fetch first photo per claim
+    supabase.from('claim_photos').select('claim_id, file_path').order('created_at', { ascending: true }).then(({ data }) => {
+      if (data && data.length > 0) {
+        const photoMap: Record<string, string> = {};
+        data.forEach((p: any) => {
+          if (!photoMap[p.claim_id]) {
+            const { data: urlData } = supabase.storage.from('claim-photos').getPublicUrl(p.file_path);
+            photoMap[p.claim_id] = urlData?.publicUrl || '';
+          }
+        });
+        setClaimPhotos(photoMap);
       }
     });
   }, []);
@@ -45,12 +62,13 @@ export default function ClaimList() {
     return claims.filter(c => {
       const rego = getRegoForClaim(c).toLowerCase();
       const date = (c.incidentDate || '').toLowerCase();
-      const cn = claimNumbers[c.id];
-      const claimNumStr = cn ? String(cn) : '';
+      const meta = claimMeta[c.id];
+      const claimNumStr = meta?.claimNumber ? String(meta.claimNumber) : '';
+      const reportNum = (meta?.reportNumber || '').toLowerCase();
       const location = (c.incidentLocation || '').toLowerCase();
-      return rego.includes(q) || date.includes(q) || claimNumStr.includes(q) || location.includes(q);
+      return rego.includes(q) || date.includes(q) || claimNumStr.includes(q) || reportNum.includes(q) || location.includes(q);
     });
-  }, [claims, search, vehicleMap, claimNumbers]);
+  }, [claims, search, vehicleMap, claimMeta]);
 
   const handleDelete = async (id: string) => {
     await deleteClaim(id);
@@ -75,7 +93,7 @@ export default function ClaimList() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <input
               type="text"
-              placeholder="Search by rego, date, or claim #..."
+              placeholder="Search by rego, date, or report #..."
               value={search}
               onChange={e => setSearch(e.target.value)}
               className="w-full pl-9 pr-9 py-2.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
@@ -102,40 +120,57 @@ export default function ClaimList() {
           <div className="space-y-3">
             {filteredClaims.map(c => {
               const rego = getRegoForClaim(c);
-              const cn = claimNumbers[c.id];
+              const meta = claimMeta[c.id];
+              const reportNum = meta?.reportNumber || '';
               const href = c.status === 'draft' ? `/claims/${c.id}/edit` : `/claims/${c.id}`;
               const isDraft = c.status === 'draft';
               const statusLabel = isDraft ? t('common.draft') : c.status === 'saved' ? 'Saved' : t('common.submitted');
+              const photoUrl = claimPhotos[c.id];
               return (
                 <div key={c.id} className="card-surface overflow-hidden hover:shadow-md transition-all group">
-                  <Link to={href} className="block p-4">
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-2 mb-1.5">
-                          <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${isDraft ? 'bg-muted text-muted-foreground' : 'bg-primary/10 text-primary'}`}>
+                  <Link to={href} className="block">
+                    <div className="flex gap-3">
+                      {/* Photo thumbnail */}
+                      <div className="w-24 h-24 flex-shrink-0 bg-muted overflow-hidden rounded-l-xl">
+                        {photoUrl ? (
+                          <img src={photoUrl} alt="Damage" className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <Car className="w-8 h-8 text-muted-foreground/20" strokeWidth={1.2} />
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Content */}
+                      <div className="flex-1 min-w-0 py-3 pr-3">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${isDraft ? 'bg-muted text-muted-foreground' : 'bg-primary/10 text-primary'}`}>
                             {statusLabel}
                           </span>
-                          {cn && <span className="text-[11px] font-medium text-muted-foreground">#{cn}</span>}
-                        </div>
-                        <h3 className="text-[15px] font-semibold text-foreground truncate leading-tight">
-                          {c.incidentLocation || t('dashboard.untitledReport')}
-                        </h3>
-                        <div className="flex items-center gap-3 mt-2">
-                          {rego && (
-                            <span className="text-[12px] font-bold text-primary bg-primary/8 px-2 py-0.5 rounded-md tracking-wide">
-                              {rego}
+                          {reportNum && (
+                            <span className="text-[10px] font-mono font-medium text-muted-foreground">
+                              {reportNum}
                             </span>
                           )}
-                          <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                            <Calendar className="w-3 h-3" />
+                          <ChevronRight className="w-4 h-4 text-muted-foreground/30 ml-auto group-hover:text-primary transition-colors flex-shrink-0" />
+                        </div>
+
+                        {rego && (
+                          <p className="text-lg font-extrabold text-foreground tracking-wide leading-tight">
+                            {rego}
+                          </p>
+                        )}
+
+                        <div className="flex items-center gap-1 mt-0.5">
+                          <Calendar className="w-3.5 h-3.5 text-muted-foreground" />
+                          <span className="text-sm font-bold text-foreground">
                             {c.incidentDate || t('claims.noDate')}
                           </span>
                         </div>
                       </div>
-                      <ChevronRight className="w-5 h-5 text-muted-foreground/30 mt-1 group-hover:text-primary transition-colors flex-shrink-0" />
                     </div>
                   </Link>
-                  <div className="flex items-center justify-end px-4 pb-3 -mt-1">
+                  <div className="flex items-center justify-end px-3 pb-2 -mt-1">
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
                         <button className="flex items-center gap-1.5 text-xs text-muted-foreground/50 hover:text-destructive transition-colors">
