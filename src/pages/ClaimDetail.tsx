@@ -76,30 +76,22 @@ export default function ClaimDetail() {
         if (insurer?.email) setInsurerEmail(insurer.email);
       }
       
-      const results = await Promise.all(promises);
-      
-      const photoRows = results[0].data;
-      if (photoRows) {
-        setPhotos(photoRows.map((p: any) => {
+      if (photosRes.data) {
+        setPhotos(photosRes.data.map((p: any) => {
           const { data } = supabase.storage.from('claim-photos').getPublicUrl(p.file_path);
           return { id: p.id, url: data.publicUrl, fileName: p.file_name };
         }));
       }
       
-      const tpRows = results[1].data;
-      if (tpRows) {
-        setTpPhotos(tpRows.map((p: any) => {
+      if (tpRes.data) {
+        setTpPhotos(tpRes.data.map((p: any) => {
           const { data } = supabase.storage.from('tp-photos').getPublicUrl(p.file_path);
           return { id: p.id, url: data.publicUrl, type: p.type, tpIndex: p.tp_index };
         }));
       }
       
-      if (results[2].data) setInsuranceCompanies(results[2].data);
-      if (results[3].data) setPanelShops(results[3].data);
-      if (results[4]?.data) {
-        if (results[4].data.phone) setInsurerPhone(results[4].data.phone);
-        if (results[4].data.email) setInsurerEmail(results[4].data.email);
-      }
+      if (insurersRes.data) setInsuranceCompanies(insurersRes.data);
+      if (shopsRes.data) setPanelShops(shopsRes.data);
       
       setLoading(false);
     };
