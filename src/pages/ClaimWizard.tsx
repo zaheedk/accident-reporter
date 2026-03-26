@@ -97,7 +97,15 @@ export default function ClaimWizard() {
     }
   }, []);
 
-  const STEPS = [
+  const isEdit = !!id;
+  const STEPS = isEdit ? [
+    t('claims.steps.yourVehicle'),
+    'Incident Details',
+    'Damage & Vehicle',
+    'Other Party & Witnesses',
+    'Conditions & Liability',
+    t('claims.steps.review'),
+  ] : [
     t('claims.steps.yourVehicle'),
     'At the Scene',
     'Other Party & Witnesses',
