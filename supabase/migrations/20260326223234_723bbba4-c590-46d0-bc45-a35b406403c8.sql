@@ -1,0 +1,1 @@
+ALTER TABLE public.vehicles ADD CONSTRAINT vehicles_rego_number_unique UNIQUE (rego_number);
