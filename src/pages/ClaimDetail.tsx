@@ -41,9 +41,10 @@ export default function ClaimDetail() {
     if (!id) return;
     const load = async () => {
       // Fetch only the specific claim and user's vehicles in parallel
-      const [{ data: claimRow }, vehs] = await Promise.all([
+      const [{ data: claimRow }, vehs, { data: claimNumData }] = await Promise.all([
         supabase.from('claims').select('*').eq('id', id).single(),
         getVehicles(),
+        supabase.from('claims').select('claim_number').eq('id', id).single(),
       ]);
       
       if (!claimRow) { setLoading(false); return; }
