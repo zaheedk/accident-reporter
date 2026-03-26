@@ -317,18 +317,23 @@ export default function ClaimWizard() {
                       <button onClick={async () => { await autoSave(); navigate('/vehicles/new'); }} className="text-sm text-primary font-medium mt-2 hover:underline">{t('claims.vehicle.addFirst')}</button>
                     </div>
                   ) : (
-                    <div className="space-y-2">
+                    <select
+                      value={claim.vehicleId}
+                      onChange={e => {
+                        const vid = e.target.value;
+                        if (!vid) return;
+                        const v = vehicles.find(x => x.id === vid);
+                        setClaim(prev => ({ ...prev, vehicleId: vid, insuranceCompany: v?.insuranceCompany || '' }));
+                      }}
+                      className="w-full p-3.5 rounded-xl border border-border bg-background text-sm font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 appearance-none"
+                    >
+                      <option value="">{t('claims.vehicle.selectVehicle')}</option>
                       {vehicles.map(v => (
-                        <button key={v.id} onClick={() => { update('vehicleId', v.id); setClaim(prev => ({ ...prev, vehicleId: v.id, insuranceCompany: v.insuranceCompany || '' })); setTimeout(() => next(), 150); }}
-                          className={`w-full text-left p-3.5 rounded-xl transition-all border flex items-center justify-between ${claim.vehicleId === v.id ? 'border-foreground bg-foreground/[0.03]' : 'border-border hover:border-foreground/20'}`}>
-                          <div>
-                            <div className="text-base font-bold text-foreground tabular-nums">{v.regoNumber}</div>
-                            <div className="text-xs text-muted-foreground">{v.year} {v.make} {v.model}</div>
-                          </div>
-                          <Car className="w-5 h-5 text-muted-foreground/40" strokeWidth={1.5} />
-                        </button>
+                        <option key={v.id} value={v.id}>
+                          {v.regoNumber} — {v.year} {v.make} {v.model}
+                        </option>
                       ))}
-                    </div>
+                    </select>
                   )}
                 </div>
               </div>
