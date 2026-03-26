@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { Plus, FileText, ChevronRight, Search, X, Calendar, Car } from 'lucide-react';
+import { Plus, FileText, ChevronRight, Search, X, Calendar, Car, ArrowLeft } from 'lucide-react';
 import { getClaims, getVehicles } from '@/lib/storage';
 import { ClaimReport, Vehicle } from '@/types';
 import AppLayout from '@/components/AppLayout';
