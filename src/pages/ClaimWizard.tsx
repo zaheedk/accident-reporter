@@ -1,15 +1,26 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, Save, Camera, X, Loader2, MapPin, Car, Sparkles } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Save, Camera, X, Loader2, MapPin, Car, Sparkles, Trash2 } from 'lucide-react';
 import { DamagePhotoAnalyzer, ThirdPartyPhotos } from '@/components/PhotoAnalyzer';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ClaimReport, ThirdPartyVehicle, Witness, Vehicle } from '@/types';
-import { getVehicles, getClaims, saveClaim } from '@/lib/storage';
+import { deleteClaim, getVehicles, getClaims, saveClaim } from '@/lib/storage';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import AppLayout from '@/components/AppLayout';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 
 const stepVariants = { initial: { opacity: 0, x: 10 }, animate: { opacity: 1, x: 0 }, exit: { opacity: 0, x: -10 } };
 
@@ -53,6 +64,7 @@ export default function ClaimWizard() {
   const [photos, setPhotos] = useState<ClaimPhoto[]>([]);
   const [uploading, setUploading] = useState(false);
   const [detectingLocation, setDetectingLocation] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const photoInputRef = useRef<HTMLInputElement>(null);
 
   const detectLocation = useCallback(async () => {
@@ -120,6 +132,20 @@ export default function ClaimWizard() {
   const autoSave = async () => {
     const savedId = await saveClaim({ ...claim, updatedAt: new Date().toISOString() });
     if (!claim.id && savedId) setClaim(prev => ({ ...prev, id: savedId }));
+  };
+
+  const handleDeleteReport = async () => {
+    if (!claim.id) return;
+    setDeleting(true);
+    try {
+      await deleteClaim(claim.id);
+      toast.success('Report deleted');
+      navigate('/claims');
+    } catch (err: any) {
+      toast.error(err?.message || 'Could not delete report');
+    } finally {
+      setDeleting(false);
+    }
   };
 
   const next = async () => { await autoSave(); setStep(s => Math.min(s + 1, STEPS.length - 1)); };
@@ -234,6 +260,39 @@ export default function ClaimWizard() {
               )}
             </div>
           </div>
+
+          {claim.id && (
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <button
+                  type="button"
+                  disabled={deleting}
+                  className="p-2 rounded-xl hover:bg-muted transition-colors disabled:opacity-50"
+                  title="Delete report"
+                >
+                  <Trash2 className="w-5 h-5 text-muted-foreground" strokeWidth={1.5} />
+                </button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Delete report?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This action cannot be undone. This will permanently delete this accident report.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel disabled={deleting}>Cancel</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={handleDeleteReport}
+                    disabled={deleting}
+                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                  >
+                    {deleting ? 'Deleting…' : 'Delete'}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
         </div>
 
         <div className="flex gap-1">

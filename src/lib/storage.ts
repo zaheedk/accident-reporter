@@ -121,7 +121,38 @@ export async function saveClaim(claim: ClaimReport): Promise<string> {
 }
 
 export async function deleteClaim(id: string): Promise<void> {
-  await supabase.from('claims').delete().eq('id', id);
+  // Claims can have dependent rows (photos, messages, repair requests, etc.).
+  // Delete dependents first to avoid FK constraint failures.
+  try {
+    const { data: claimPhotos, error: claimPhotosSelectError } = await supabase
+      .from('claim_photos')
+      .select('file_path')
+      .eq('claim_id', id);
+
+    if (!claimPhotosSelectError && claimPhotos && claimPhotos.length > 0) {
+      await supabase.storage.from('claim-photos').remove(claimPhotos.map((p: any) => p.file_path));
+    }
+    await supabase.from('claim_photos').delete().eq('claim_id', id);
+
+    const { data: tpPhotos, error: tpPhotosSelectError } = await supabase
+      .from('tp_photos')
+      .select('file_path')
+      .eq('claim_id', id);
+
+    if (!tpPhotosSelectError && tpPhotos && tpPhotos.length > 0) {
+      await supabase.storage.from('tp-photos').remove(tpPhotos.map((p: any) => p.file_path));
+    }
+    await supabase.from('tp_photos').delete().eq('claim_id', id);
+
+    await supabase.from('claim_messages').delete().eq('claim_id', id);
+    await supabase.from('repair_requests').delete().eq('claim_id', id);
+
+    const { error } = await supabase.from('claims').delete().eq('id', id);
+    if (error) throw error;
+  } catch (error) {
+    console.error('deleteClaim', error);
+    throw error;
+  }
 }
 
 function dbClaimToClaim(row: any): ClaimReport {
