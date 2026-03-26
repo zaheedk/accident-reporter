@@ -267,6 +267,16 @@ export default function ClaimWizard() {
   const rmW = (i: number) => update('witnesses', claim.witnesses.filter((_, idx) => idx !== i));
   const selV = vehicles.find(v => v.id === claim.vehicleId);
 
+  if (loadingClaim) {
+    return (
+      <AppLayout>
+        <div className="flex items-center justify-center py-20">
+          <Loader2 className="w-6 h-6 animate-spin text-primary" />
+        </div>
+      </AppLayout>
+    );
+  }
+
   return (
     <AppLayout>
       <div className="space-y-4">
