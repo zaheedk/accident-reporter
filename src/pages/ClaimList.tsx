@@ -16,31 +16,37 @@ export default function ClaimList() {
   const { t } = useTranslation();
 
   useEffect(() => {
-    getClaims().then(setClaims);
-    getVehicles().then(setVehicles);
+    const load = async () => {
+      const [c, v] = await Promise.all([getClaims(), getVehicles()]);
+      setClaims(c);
+      setVehicles(v);
 
-    // Fetch claim metadata
-    supabase.from('claims').select('id, claim_number, report_number').then(({ data }) => {
-      if (data) {
-        const map: Record<string, { claimNumber: number | null; reportNumber: string | null }> = {};
-        data.forEach((c: any) => { map[c.id] = { claimNumber: c.claim_number, reportNumber: c.report_number }; });
-        setClaimMeta(map);
-      }
-    });
+      // Build metadata from claims data (already fetched)
+      const meta: Record<string, { claimNumber: number | null; reportNumber: string | null }> = {};
+      const claimIds = c.map(cl => cl.id).filter(Boolean);
 
-    // Fetch first photo per claim
-    supabase.from('claim_photos').select('claim_id, file_path').order('created_at', { ascending: true }).then(({ data }) => {
-      if (data && data.length > 0) {
-        const photoMap: Record<string, string> = {};
-        data.forEach((p: any) => {
-          if (!photoMap[p.claim_id]) {
-            const { data: urlData } = supabase.storage.from('claim-photos').getPublicUrl(p.file_path);
-            photoMap[p.claim_id] = urlData?.publicUrl || '';
-          }
-        });
-        setClaimPhotos(photoMap);
+      if (claimIds.length > 0) {
+        const { data: metaData } = await supabase.from('claims').select('id, claim_number, report_number').in('id', claimIds);
+        if (metaData) {
+          metaData.forEach((m: any) => { meta[m.id] = { claimNumber: m.claim_number, reportNumber: m.report_number }; });
+        }
+
+        // Fetch first photo per claim (only for user's claims)
+        const { data: photoData } = await supabase.from('claim_photos').select('claim_id, file_path').in('claim_id', claimIds).order('created_at', { ascending: true });
+        if (photoData && photoData.length > 0) {
+          const photoMap: Record<string, string> = {};
+          photoData.forEach((p: any) => {
+            if (!photoMap[p.claim_id]) {
+              const { data: urlData } = supabase.storage.from('claim-photos').getPublicUrl(p.file_path);
+              photoMap[p.claim_id] = urlData?.publicUrl || '';
+            }
+          });
+          setClaimPhotos(photoMap);
+        }
       }
-    });
+      setClaimMeta(meta);
+    };
+    load();
   }, []);
 
   const vehicleMap = useMemo(() => {
