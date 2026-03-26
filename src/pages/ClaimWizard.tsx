@@ -116,17 +116,38 @@ export default function ClaimWizard() {
       }
     });
     if (id) {
-      getClaims().then(claims => {
-        const e = claims.find(c => c.id === id);
-        if (e) setClaim(e);
-      });
-      supabase.from('claims').select('claim_number').eq('id', id).single().then(({ data }) => {
-        if (data?.claim_number) setClaimNumber(data.claim_number);
-      });
-      supabase.from('claim_photos').select('id, file_path, file_name')
-        .eq('claim_id', id).then(({ data }) => {
-          if (data) setPhotos(data as ClaimPhoto[]);
-        });
+      const loadClaim = async () => {
+        const [{ data: claimRow }, { data: claimNumData }, { data: photosData }] = await Promise.all([
+          supabase.from('claims').select('*').eq('id', id).single(),
+          supabase.from('claims').select('claim_number').eq('id', id).single(),
+          supabase.from('claim_photos').select('id, file_path, file_name').eq('claim_id', id),
+        ]);
+        if (claimRow) {
+          const loaded: ClaimReport = {
+            id: claimRow.id, status: claimRow.status as any, createdAt: claimRow.created_at, updatedAt: claimRow.updated_at,
+            incidentDate: claimRow.incident_date, incidentTime: claimRow.incident_time, incidentLocation: claimRow.incident_location,
+            vehicleUsage: claimRow.vehicle_usage, journeyDetails: claimRow.journey_details, description: claimRow.description,
+            vehicleId: claimRow.vehicle_id, speedBeforeBraking: claimRow.speed_before_braking,
+            thirdParties: (claimRow.third_parties as any) || [], otherPropertyDamage: claimRow.other_property_damage,
+            otherPropertyOwner: claimRow.other_property_owner, witnesses: (claimRow.witnesses as any) || [],
+            policeAttended: claimRow.police_attended, policeOfficerDetails: claimRow.police_officer_details,
+            anyoneHurt: claimRow.anyone_hurt, injuryDetails: claimRow.injury_details,
+            weatherCondition: claimRow.weather_condition as any, roadCondition: claimRow.road_condition as any,
+            driverConsumedSubstance: claimRow.driver_consumed_substance, substanceDetails: claimRow.substance_details,
+            blameDescription: claimRow.blame_description, liabilityAdmitted: claimRow.liability_admitted,
+            liabilityDetails: claimRow.liability_details, damageDescription: claimRow.damage_description,
+            vehicleTowed: claimRow.vehicle_towed, towingCompany: claimRow.towing_company,
+            repairerName: claimRow.repairer_name, repairerPhone: claimRow.repairer_phone,
+            repairerAddress: claimRow.repairer_address, insuranceCompany: claimRow.insurance_company || '',
+            selectedPanelShopId: claimRow.selected_panel_shop_id || '',
+          };
+          setClaim(loaded);
+        }
+        if (claimNumData?.claim_number) setClaimNumber(claimNumData.claim_number);
+        if (photosData) setPhotos(photosData as ClaimPhoto[]);
+        setLoadingClaim(false);
+      };
+      loadClaim();
     }
   }, [id]);
 
