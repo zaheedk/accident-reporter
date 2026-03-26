@@ -42,7 +42,7 @@ export default function ClaimDetail() {
       if (!claimRow) { setLoading(false); return; }
       
       const foundClaim: ClaimReport = {
-        id: claimRow.id, status: claimRow.status, createdAt: claimRow.created_at, updatedAt: claimRow.updated_at,
+        id: claimRow.id, status: claimRow.status as any, createdAt: claimRow.created_at, updatedAt: claimRow.updated_at,
         incidentDate: claimRow.incident_date, incidentTime: claimRow.incident_time, incidentLocation: claimRow.incident_location,
         vehicleUsage: claimRow.vehicle_usage, journeyDetails: claimRow.journey_details, description: claimRow.description,
         vehicleId: claimRow.vehicle_id, speedBeforeBraking: claimRow.speed_before_braking,
@@ -50,7 +50,7 @@ export default function ClaimDetail() {
         otherPropertyOwner: claimRow.other_property_owner, witnesses: claimRow.witnesses as any || [],
         policeAttended: claimRow.police_attended, policeOfficerDetails: claimRow.police_officer_details,
         anyoneHurt: claimRow.anyone_hurt, injuryDetails: claimRow.injury_details,
-        weatherCondition: claimRow.weather_condition, roadCondition: claimRow.road_condition,
+        weatherCondition: claimRow.weather_condition as any, roadCondition: claimRow.road_condition as any,
         driverConsumedSubstance: claimRow.driver_consumed_substance, substanceDetails: claimRow.substance_details,
         blameDescription: claimRow.blame_description, liabilityAdmitted: claimRow.liability_admitted,
         liabilityDetails: claimRow.liability_details, damageDescription: claimRow.damage_description,
@@ -63,14 +63,17 @@ export default function ClaimDetail() {
       setVehicles(vehs);
 
       // Parallel fetch photos, tp_photos, insurer info, and reference data
-      const promises: Promise<any>[] = [
+      const [photosRes, tpRes, insurersRes, shopsRes] = await Promise.all([
         supabase.from('claim_photos').select('*').eq('claim_id', id),
         supabase.from('tp_photos').select('*').eq('claim_id', id),
         supabase.from('insurance_companies').select('id, name').order('name'),
         supabase.from('panel_shops').select('id, name, phone, address').order('name'),
-      ];
+      ]);
+
       if (foundClaim.insuranceCompany) {
-        promises.push(supabase.from('insurance_companies').select('phone, email').eq('name', foundClaim.insuranceCompany).single());
+        const { data: insurer } = await supabase.from('insurance_companies').select('phone, email').eq('name', foundClaim.insuranceCompany).single();
+        if (insurer?.phone) setInsurerPhone(insurer.phone);
+        if (insurer?.email) setInsurerEmail(insurer.email);
       }
       
       const results = await Promise.all(promises);
