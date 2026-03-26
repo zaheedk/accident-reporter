@@ -382,10 +382,10 @@ export default function ClaimWizard() {
               </div>
             )}
 
-            {/* Step 1: At the Scene — date/time, location, own vehicle photos */}
+            {/* At the Scene / Incident Details */}
             {step === 1 && (
               <div className="card-surface space-y-4">
-                <p className="text-xs text-muted-foreground -mt-1">Capture the essentials now. You can add more details later.</p>
+                {!isEdit && <p className="text-xs text-muted-foreground -mt-1">Capture the essentials now. You can add more details later.</p>}
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:max-w-[28rem]">
                   <div className="min-w-0"><label className="form-label">{t('claims.incident.date')}</label><input type="date" className="form-input tabular-nums w-full min-w-0 h-10 px-3 text-sm" value={claim.incidentDate} onChange={e => update('incidentDate', e.target.value)} /></div>
@@ -403,6 +403,14 @@ export default function ClaimWizard() {
                     </button>
                   </div>
                 </div>
+
+                {isEdit && (
+                  <>
+                    <div><label className="form-label">Vehicle usage</label><input className="form-input" placeholder="e.g. Personal, Business" value={claim.vehicleUsage} onChange={e => update('vehicleUsage', e.target.value)} /></div>
+                    <div><label className="form-label">Journey details</label><textarea className="form-input min-h-[60px]" placeholder="Where were you going?" value={claim.journeyDetails} onChange={e => update('journeyDetails', e.target.value)} /></div>
+                    <div><label className="form-label">Description of incident</label><textarea className="form-input min-h-[80px]" placeholder="Describe what happened" value={claim.description} onChange={e => update('description', e.target.value)} /></div>
+                  </>
+                )}
 
                 <div className="space-y-3">
                   <label className="form-label flex items-center gap-1.5"><Camera className="w-3.5 h-3.5" /> Your Vehicle Photos</label>
@@ -450,8 +458,33 @@ export default function ClaimWizard() {
               </div>
             )}
 
-            {/* Step 2: Other Party & Witnesses */}
-            {step === 2 && (
+            {/* Edit-only Step 2: Damage & Vehicle */}
+            {isEdit && step === 2 && (
+              <div className="card-surface space-y-4">
+                <div><label className="form-label">Speed before braking (km/h)</label><input className="form-input" type="text" placeholder="e.g. 50" value={claim.speedBeforeBraking} onChange={e => update('speedBeforeBraking', e.target.value)} /></div>
+                <div><label className="form-label">Damage description</label><textarea className="form-input min-h-[80px]" placeholder="Describe the damage to your vehicle" value={claim.damageDescription} onChange={e => update('damageDescription', e.target.value)} /></div>
+                <div className="flex items-center gap-3">
+                  <input type="checkbox" id="vehicleTowed" className="w-4 h-4 rounded border-border text-primary focus:ring-primary/20" checked={claim.vehicleTowed} onChange={e => update('vehicleTowed', e.target.checked)} />
+                  <label htmlFor="vehicleTowed" className="text-sm font-medium text-foreground">Vehicle was towed</label>
+                </div>
+                {claim.vehicleTowed && (
+                  <div><label className="form-label">Towing company</label><input className="form-input" placeholder="Company name" value={claim.towingCompany} onChange={e => update('towingCompany', e.target.value)} /></div>
+                )}
+                <div className="border-t border-border pt-4 mt-2">
+                  <p className="text-xs font-semibold text-muted-foreground mb-3">Repairer details</p>
+                  <div className="space-y-3">
+                    <div><label className="form-label">Repairer name</label><input className="form-input" value={claim.repairerName} onChange={e => update('repairerName', e.target.value)} /></div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div><label className="form-label">Phone</label><input className="form-input" type="tel" value={claim.repairerPhone} onChange={e => update('repairerPhone', e.target.value)} /></div>
+                    </div>
+                    <div><label className="form-label">Address</label><input className="form-input" value={claim.repairerAddress} onChange={e => update('repairerAddress', e.target.value)} /></div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Other Party & Witnesses (step 2 in create, step 3 in edit) */}
+            {step === (isEdit ? 3 : 2) && (
               <div className="space-y-4">
                 <div className="card-surface space-y-3">
                   <label className="form-label mb-0">{t('claims.thirdParty.otherVehicles')}</label>
@@ -472,6 +505,20 @@ export default function ClaimWizard() {
                         <div><label className="form-label">{t('claims.thirdParty.ownerDriver')}</label><input className="form-input" placeholder="Driver's name" value={tp.ownerName} onChange={e => updTP(i, 'ownerName', e.target.value)} /></div>
                         <div><label className="form-label">{t('claims.thirdParty.phone')}</label><input className="form-input" type="tel" placeholder="Phone number" value={tp.phone} onChange={e => updTP(i, 'phone', e.target.value)} /></div>
                       </div>
+                      {isEdit && (
+                        <>
+                          <div><label className="form-label">Address</label><input className="form-input" value={tp.address} onChange={e => updTP(i, 'address', e.target.value)} /></div>
+                          <div className="grid grid-cols-2 gap-3">
+                            <div><label className="form-label">Insurer</label><input className="form-input" value={tp.insurer} onChange={e => updTP(i, 'insurer', e.target.value)} /></div>
+                            <div><label className="form-label">Claim #</label><input className="form-input" value={tp.claimNumber} onChange={e => updTP(i, 'claimNumber', e.target.value)} /></div>
+                          </div>
+                          <div className="grid grid-cols-2 gap-3">
+                            <div><label className="form-label">Make</label><input className="form-input" value={tp.make} onChange={e => updTP(i, 'make', e.target.value)} /></div>
+                            <div><label className="form-label">Model</label><input className="form-input" value={tp.model} onChange={e => updTP(i, 'model', e.target.value)} /></div>
+                          </div>
+                          <div><label className="form-label">Damage description</label><textarea className="form-input min-h-[60px]" value={tp.damageDescription} onChange={e => updTP(i, 'damageDescription', e.target.value)} /></div>
+                        </>
+                      )}
 
                       {/* Third-party photos: vehicle damage, rego plate, driver license */}
                       {claim.id && user && (
@@ -489,6 +536,11 @@ export default function ClaimWizard() {
                       )}
                     </div>
                   ))}
+                  {claim.thirdParties.length > 0 && (
+                    <button onClick={addTP} className="w-full py-3 rounded-xl border border-dashed border-primary/30 text-sm text-primary font-medium hover:bg-primary/5 transition-colors">
+                      + Add another vehicle
+                    </button>
+                  )}
                 </div>
 
                 <div className="card-surface space-y-3">
@@ -509,6 +561,15 @@ export default function ClaimWizard() {
                         <div><label className="form-label">{t('claims.witnesses.fullName')}</label><input className="form-input" value={w.name} onChange={e => updW(i, 'name', e.target.value)} /></div>
                         <div><label className="form-label">{t('claims.witnesses.phone')}</label><input className="form-input" value={w.phone} onChange={e => updW(i, 'phone', e.target.value)} /></div>
                       </div>
+                      {isEdit && (
+                        <>
+                          <div><label className="form-label">Address</label><input className="form-input" value={w.address} onChange={e => updW(i, 'address', e.target.value)} /></div>
+                          <div className="flex items-center gap-3">
+                            <input type="checkbox" id={`passenger-${i}`} className="w-4 h-4 rounded border-border text-primary focus:ring-primary/20" checked={w.isPassenger} onChange={e => updW(i, 'isPassenger', e.target.checked)} />
+                            <label htmlFor={`passenger-${i}`} className="text-sm text-foreground">Was a passenger</label>
+                          </div>
+                        </>
+                      )}
                     </div>
                   ))}
                   {claim.witnesses.length > 0 && (
@@ -517,25 +578,89 @@ export default function ClaimWizard() {
                     </button>
                   )}
                 </div>
+
+                {isEdit && (
+                  <div className="card-surface space-y-3">
+                    <div className="flex items-center gap-3">
+                      <input type="checkbox" id="policeAttended" className="w-4 h-4 rounded border-border text-primary focus:ring-primary/20" checked={claim.policeAttended} onChange={e => update('policeAttended', e.target.checked)} />
+                      <label htmlFor="policeAttended" className="text-sm font-medium text-foreground">Police attended</label>
+                    </div>
+                    {claim.policeAttended && (
+                      <div><label className="form-label">Officer details</label><input className="form-input" placeholder="Officer name / badge number" value={claim.policeOfficerDetails} onChange={e => update('policeOfficerDetails', e.target.value)} /></div>
+                    )}
+                    <div className="flex items-center gap-3">
+                      <input type="checkbox" id="anyoneHurt" className="w-4 h-4 rounded border-border text-primary focus:ring-primary/20" checked={claim.anyoneHurt} onChange={e => update('anyoneHurt', e.target.checked)} />
+                      <label htmlFor="anyoneHurt" className="text-sm font-medium text-foreground">Anyone injured</label>
+                    </div>
+                    {claim.anyoneHurt && (
+                      <div><label className="form-label">Injury details</label><textarea className="form-input min-h-[60px]" value={claim.injuryDetails} onChange={e => update('injuryDetails', e.target.value)} /></div>
+                    )}
+                  </div>
+                )}
               </div>
             )}
 
-            {/* Step 3: Review */}
-            {step === 3 && (
-              <div className="space-y-3">
-                <div className="p-3 rounded-xl bg-primary/5 border border-primary/20">
-                  <p className="text-xs text-primary font-medium">💡 You can add more details like insurance, repairer, conditions and liability from the incident detail page later.</p>
+            {/* Edit-only Step 4: Conditions & Liability */}
+            {isEdit && step === 4 && (
+              <div className="card-surface space-y-4">
+                <div>
+                  <label className="form-label">Weather condition</label>
+                  <select className="form-input" value={claim.weatherCondition} onChange={e => update('weatherCondition', e.target.value)}>
+                    <option value="">Select...</option>
+                    {WEATHER_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+                  </select>
                 </div>
+                <div>
+                  <label className="form-label">Road condition</label>
+                  <select className="form-input" value={claim.roadCondition} onChange={e => update('roadCondition', e.target.value)}>
+                    <option value="">Select...</option>
+                    {ROAD_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+                  </select>
+                </div>
+                <div className="flex items-center gap-3">
+                  <input type="checkbox" id="substance" className="w-4 h-4 rounded border-border text-primary focus:ring-primary/20" checked={claim.driverConsumedSubstance} onChange={e => update('driverConsumedSubstance', e.target.checked)} />
+                  <label htmlFor="substance" className="text-sm font-medium text-foreground">Driver consumed alcohol or drugs</label>
+                </div>
+                {claim.driverConsumedSubstance && (
+                  <div><label className="form-label">Substance details</label><input className="form-input" value={claim.substanceDetails} onChange={e => update('substanceDetails', e.target.value)} /></div>
+                )}
+                <div className="border-t border-border pt-4 mt-2">
+                  <p className="text-xs font-semibold text-muted-foreground mb-3">Liability</p>
+                  <div className="space-y-3">
+                    <div><label className="form-label">Who is to blame and why?</label><textarea className="form-input min-h-[80px]" value={claim.blameDescription} onChange={e => update('blameDescription', e.target.value)} /></div>
+                    <div className="flex items-center gap-3">
+                      <input type="checkbox" id="liabilityAdmitted" className="w-4 h-4 rounded border-border text-primary focus:ring-primary/20" checked={claim.liabilityAdmitted} onChange={e => update('liabilityAdmitted', e.target.checked)} />
+                      <label htmlFor="liabilityAdmitted" className="text-sm font-medium text-foreground">Liability admitted</label>
+                    </div>
+                    {claim.liabilityAdmitted && (
+                      <div><label className="form-label">Details</label><textarea className="form-input min-h-[60px]" value={claim.liabilityDetails} onChange={e => update('liabilityDetails', e.target.value)} /></div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Review (step 3 in create, step 5 in edit) */}
+            {step === STEPS.length - 1 && (
+              <div className="space-y-3">
+                {!isEdit && (
+                  <div className="p-3 rounded-xl bg-primary/5 border border-primary/20">
+                    <p className="text-xs text-primary font-medium">💡 You can add more details like insurance, repairer, conditions and liability from the incident detail page later.</p>
+                  </div>
+                )}
                 <RSection title={t('claims.review.incident')}>
                   <RRow label={t('claims.review.date')} value={claim.incidentDate} />
                   <RRow label={t('claims.review.time')} value={claim.incidentTime} />
                   <RRow label={t('claims.review.location')} value={claim.incidentLocation} />
+                  {isEdit && claim.vehicleUsage && <RRow label="Usage" value={claim.vehicleUsage} />}
+                  {isEdit && claim.description && <RRow label="Description" value={claim.description} />}
                 </RSection>
                 <RSection title={t('claims.review.yourVehicle')}>
                   <RRow label={t('claims.review.vehicle')} value={selV ? `${selV.year} ${selV.make} ${selV.model}` : '—'} />
                   <RRow label={t('claims.review.rego')} value={selV?.regoNumber || '—'} />
                   <RRow label={t('claims.review.photos')} value={t('claims.review.uploaded', { count: photos.length })} />
                   {claim.damageDescription && <RRow label={t('claims.review.damage')} value={claim.damageDescription} />}
+                  {isEdit && claim.speedBeforeBraking && <RRow label="Speed" value={`${claim.speedBeforeBraking} km/h`} />}
                 </RSection>
                 <RSection title={t('claims.review.thirdParties')}>
                   {claim.thirdParties.length === 0 ? <p className="text-sm text-muted-foreground">{t('common.none')}</p> : claim.thirdParties.map((tp, i) => (
@@ -549,6 +674,13 @@ export default function ClaimWizard() {
                 <RSection title={t('claims.review.witnesses')}>
                   {claim.witnesses.length === 0 ? <p className="text-sm text-muted-foreground">{t('common.none')}</p> : claim.witnesses.map((w, i) => <RRow key={i} label={t('claims.witnesses.witnessNumber', { number: i + 1 })} value={`${w.name} – ${w.phone}`} />)}
                 </RSection>
+                {isEdit && (claim.weatherCondition || claim.roadCondition || claim.blameDescription) && (
+                  <RSection title="Conditions & Liability">
+                    {claim.weatherCondition && <RRow label="Weather" value={WEATHER_OPTIONS.find(o => o.value === claim.weatherCondition)?.label || claim.weatherCondition} />}
+                    {claim.roadCondition && <RRow label="Road" value={ROAD_OPTIONS.find(o => o.value === claim.roadCondition)?.label || claim.roadCondition} />}
+                    {claim.blameDescription && <RRow label="Blame" value={claim.blameDescription} />}
+                  </RSection>
+                )}
               </div>
             )}
 
