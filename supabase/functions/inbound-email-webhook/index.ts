@@ -17,11 +17,14 @@ serve(async (req) => {
     const supabase = createClient(supabaseUrl, supabaseKey);
 
     const payload = await req.json();
+    console.log('Inbound webhook payload keys:', JSON.stringify(Object.keys(payload)));
 
-    // Resend inbound webhook payload
-    const { from, to, subject, text, html } = payload;
+    // Resend wraps inbound email data inside a "data" object
+    const emailData = payload.data || payload;
+    const { from, to, subject, text, html } = emailData;
 
-    if (!to || !from) {
+    if (!to && !from) {
+      console.log('Full payload for debugging:', JSON.stringify(payload).slice(0, 500));
       throw new Error('Missing required fields in webhook payload');
     }
 
