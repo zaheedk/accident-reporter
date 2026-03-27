@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Car, FileText, Plus, AlertTriangle, ChevronRight, ArrowUpRight, LogOut, User, Shield, Phone, Search, MapPin, X } from 'lucide-react';
+import { Car, FileText, Plus, AlertTriangle, ChevronRight, ArrowUpRight, LogOut, User, Shield, Phone, Search, MapPin, X, MessageSquare, ArrowDownRight } from 'lucide-react';
 import { getVehicles, getClaims } from '@/lib/storage';
 import { useAuth } from '@/contexts/AuthContext';
 import AppLayout from '@/components/AppLayout';
@@ -9,6 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { supabase } from '@/integrations/supabase/client';
 import { useTranslation } from 'react-i18next';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { formatDistanceToNow } from 'date-fns';
 
 export default function Dashboard() {
   const { user, signOut, isAdmin } = useAuth();
@@ -24,6 +25,7 @@ export default function Dashboard() {
   const [userRegion, setUserRegion] = useState('');
   const [userLat, setUserLat] = useState<number | null>(null);
   const [userLng, setUserLng] = useState<number | null>(null);
+  const [recentMessages, setRecentMessages] = useState<any[]>([]);
 
   useEffect(() => {
     getVehicles().then(setVehicles);
@@ -35,6 +37,16 @@ export default function Dashboard() {
           setDisplayName(data.display_name || '');
         }
       });
+      // Load recent messages across all claims
+      supabase
+        .from('claim_messages')
+        .select('id, direction, subject, body, from_email, created_at, claim_id')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(5)
+        .then(({ data }) => {
+          if (data) setRecentMessages(data);
+        });
     }
   }, [user]);
 
@@ -190,6 +202,29 @@ export default function Dashboard() {
           </div>
           <ChevronRight className="w-4 h-4 text-muted-foreground/30 group-hover:text-primary transition-colors shrink-0" strokeWidth={1.5} />
         </Link>
+
+        {recentMessages.length > 0 && (
+          <div className="card-surface-elevated space-y-2">
+            <div className="flex items-center gap-2 mb-1">
+              <MessageSquare className="w-4 h-4 text-primary" />
+              <span className="text-[13px] font-semibold text-foreground">Recent Messages</span>
+            </div>
+            {recentMessages.map(msg => (
+              <Link key={msg.id} to={`/claims/${msg.claim_id}`}
+                className="flex items-start gap-2.5 p-2.5 rounded-xl hover:bg-muted/50 transition-colors -mx-1">
+                <ArrowDownRight className={`w-3.5 h-3.5 mt-0.5 shrink-0 ${msg.direction === 'inbound' ? 'text-emerald-600' : 'text-primary'}`} />
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-medium text-foreground truncate">{msg.subject || '(No subject)'}</p>
+                  <p className="text-[11px] text-muted-foreground truncate mt-0.5">{msg.body?.slice(0, 80)}</p>
+                  <p className="text-[10px] text-muted-foreground/60 mt-0.5">
+                    {msg.direction === 'inbound' ? msg.from_email : 'You'} · {formatDistanceToNow(new Date(msg.created_at), { addSuffix: true })}
+                  </p>
+                </div>
+                <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/30 mt-1 shrink-0" />
+              </Link>
+            ))}
+          </div>
+        )}
 
         {isAdmin && (
           <Link to="/admin" className="card-surface-elevated flex items-center gap-4 group hover:border-primary/20 transition-all">
