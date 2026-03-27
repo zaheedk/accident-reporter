@@ -37,6 +37,16 @@ export default function Dashboard() {
           setDisplayName(data.display_name || '');
         }
       });
+      // Load recent messages across all claims
+      supabase
+        .from('claim_messages')
+        .select('id, direction, subject, body, from_email, created_at, claim_id')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(5)
+        .then(({ data }) => {
+          if (data) setRecentMessages(data);
+        });
     }
   }, [user]);
 
