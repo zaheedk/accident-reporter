@@ -47,8 +47,7 @@ serve(async (req) => {
     // Use shorter claim reference number (CLM-0001 format)
     const claimRef = String(claim.claim_number).padStart(4, '0');
     const replyToAddress = `claim-${claimRef}@${REPLY_DOMAIN}`;
-    // Show user's email in the reply-to display name so insurer can see it
-    const replyTo = `"${user.email}" <${replyToAddress}>`;
+    const replyTo = `"Reply to Claim CLM-${claimRef}" <${replyToAddress}>`;
 
     // Get user profile for display name
     const { data: profile } = await supabase
