@@ -41,7 +41,6 @@ export default function ClaimDetail() {
   useEffect(() => {
     if (!id) return;
     const load = async () => {
-      // Fetch only the specific claim and user's vehicles in parallel
       const [{ data: claimRow }, vehs, { data: claimNumData }] = await Promise.all([
         supabase.from('claims').select('*').eq('id', id).single(),
         getVehicles(),
@@ -72,7 +71,6 @@ export default function ClaimDetail() {
       setVehicles(vehs);
       if (claimNumData?.claim_number) setClaimNumber(String(claimNumData.claim_number));
 
-      // Parallel fetch photos, tp_photos, insurer info, and reference data
       const [photosRes, tpRes, insurersRes, shopsRes] = await Promise.all([
         supabase.from('claim_photos').select('*').eq('claim_id', id),
         supabase.from('tp_photos').select('*').eq('claim_id', id),
@@ -211,7 +209,6 @@ export default function ClaimDetail() {
       setSendingEmail(false);
     }
   };
-
 
   return (
     <AppLayout>
@@ -408,151 +405,6 @@ export default function ClaimDetail() {
           )}
         </Section>
 
-
-
-          <Row label={t('claims.review.rego')} value={vehicle?.regoNumber || '—'} />
-          <Row label={t('claims.detail.speedBraking')} value={claim.speedBeforeBraking ? `${claim.speedBeforeBraking} km/h` : '—'} />
-          <Row label={t('claims.review.damage')} value={claim.damageDescription} />
-          <Row label={t('claims.detail.towed')} value={claim.vehicleTowed ? `${t('common.yes')} – ${claim.towingCompany}` : t('common.no')} />
-        </Section>
-
-        {claim.thirdParties.length > 0 && (
-          <Section title={t('claims.review.thirdParties')} icon={<Users className="w-4 h-4 text-primary" />}>
-            {claim.thirdParties.map((tp, i) => {
-              const tpDamagePhotos = tpPhotos.filter(p => p.tpIndex === i && p.type === 'damage');
-              const tpRegoPhotos = tpPhotos.filter(p => p.tpIndex === i && p.type === 'rego');
-              const tpLicensePhotos = tpPhotos.filter(p => p.tpIndex === i && p.type === 'license');
-              return (
-                <div key={i} className="p-3 rounded-xl bg-background space-y-2">
-                  <Row label={t('claims.review.owner')} value={tp.ownerName} />
-                  <Row label={t('claims.review.vehicle')} value={`${tp.make} ${tp.model} – ${tp.regoNumber}`} />
-                  <Row label={t('claims.thirdParty.phone')} value={tp.phone} />
-                  <Row label={t('claims.thirdParty.insurer')} value={tp.insurer} />
-                  <Row label={t('claims.review.damage')} value={tp.damageDescription} />
-                  {tpDamagePhotos.length > 0 && (
-                    <div className="space-y-1">
-                      <span className="text-[11px] font-semibold text-muted-foreground">Damage photos</span>
-                      <div className="grid grid-cols-4 gap-1.5">
-                        {tpDamagePhotos.map(p => (
-                          <button key={p.id} onClick={() => setLightboxUrl(p.url)} className="rounded-lg overflow-hidden aspect-square bg-muted">
-                            <img src={p.url} alt="Damage" className="w-full h-full object-cover" loading="lazy" />
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                  {tpRegoPhotos.length > 0 && (
-                    <div className="space-y-1">
-                      <span className="text-[11px] font-semibold text-muted-foreground">Rego/plate photos</span>
-                      <div className="grid grid-cols-4 gap-1.5">
-                        {tpRegoPhotos.map(p => (
-                          <button key={p.id} onClick={() => setLightboxUrl(p.url)} className="rounded-lg overflow-hidden aspect-square bg-muted">
-                            <img src={p.url} alt="Rego" className="w-full h-full object-cover" loading="lazy" />
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                  {tpLicensePhotos.length > 0 && (
-                    <div className="space-y-1">
-                      <span className="text-[11px] font-semibold text-muted-foreground">Driver's license</span>
-                      <div className="grid grid-cols-4 gap-1.5">
-                        {tpLicensePhotos.map(p => (
-                          <button key={p.id} onClick={() => setLightboxUrl(p.url)} className="rounded-lg overflow-hidden aspect-square bg-muted">
-                            <img src={p.url} alt="License" className="w-full h-full object-cover" loading="lazy" />
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </Section>
-        )}
-
-        {claim.witnesses.length > 0 && (
-          <Section title={t('claims.review.witnesses')} icon={<Eye className="w-4 h-4 text-primary" />}>
-            {claim.witnesses.map((w, i) => <Row key={i} label={t('claims.witnesses.witnessNumber', { number: i + 1 })} value={`${w.name} – ${w.phone}${w.isPassenger ? ` (${t('claims.witnesses.passenger')})` : ''}`} />)}
-          </Section>
-        )}
-
-        <Section title={t('claims.detail.policeInjuries')} icon={<Shield className="w-4 h-4 text-primary" />}>
-          <Row label={t('claims.detail.policeAttended')} value={claim.policeAttended ? `${t('common.yes')} – ${claim.policeOfficerDetails}` : t('common.no')} />
-          <Row label={t('claims.detail.injuries')} value={claim.anyoneHurt ? claim.injuryDetails : t('common.no')} />
-        </Section>
-
-        <Section title={t('claims.review.conditions')} icon={<CloudSun className="w-4 h-4 text-primary" />}>
-          <Row label={t('claims.review.weatherLabel')} value={weather} /><Row label={t('claims.review.roadLabel')} value={road} />
-          <Row label={t('claims.detail.substanceUse')} value={claim.driverConsumedSubstance ? claim.substanceDetails : t('common.no')} />
-          <Row label={t('claims.detail.faultAssessment')} value={claim.blameDescription} />
-          <Row label={t('claims.detail.liabilityAdmitted')} value={claim.liabilityAdmitted ? claim.liabilityDetails : t('common.no')} />
-        </Section>
-
-        <Section title={t('claims.review.insuranceRepairer')} icon={<Wrench className="w-4 h-4 text-primary" />} action={!editingInsurance ? <button onClick={startEditInsurance} className="p-1 rounded-lg hover:bg-muted transition-colors"><Pencil className="w-4 h-4 text-muted-foreground" /></button> : undefined}>
-          {editingInsurance ? (
-            <div className="space-y-3">
-              <div>
-                <label className="text-[11px] font-medium text-muted-foreground mb-1 block">Insurance Company</label>
-                <select className="form-input text-sm" value={editInsurance} onChange={e => setEditInsurance(e.target.value)}>
-                  <option value="">Select insurance</option>
-                  {insuranceCompanies.map(ic => <option key={ic.id} value={ic.name}>{ic.name}</option>)}
-                </select>
-              </div>
-              <div>
-                <label className="text-[11px] font-medium text-muted-foreground mb-1 block">Repairer Name</label>
-                <select className="form-input text-sm" value={editRepairerName} onChange={e => {
-                  const shop = panelShops.find(s => s.name === e.target.value);
-                  setEditRepairerName(e.target.value);
-                  if (shop) { setEditRepairerPhone(shop.phone); setEditRepairerAddress(shop.address); }
-                }}>
-                  <option value="">Select a repairer</option>
-                  {panelShops.map(s => <option key={s.id} value={s.name}>{s.name}</option>)}
-                </select>
-              </div>
-              <div>
-                <label className="text-[11px] font-medium text-muted-foreground mb-1 block">Repairer Phone</label>
-                <input className="form-input text-sm" value={editRepairerPhone} onChange={e => setEditRepairerPhone(e.target.value)} />
-              </div>
-              <div>
-                <label className="text-[11px] font-medium text-muted-foreground mb-1 block">Repairer Address</label>
-                <input className="form-input text-sm" value={editRepairerAddress} onChange={e => setEditRepairerAddress(e.target.value)} />
-              </div>
-              <div className="flex gap-2">
-                <button onClick={saveInsuranceDetails} disabled={savingInsurance} className="flex-1 h-9 rounded-lg bg-primary text-primary-foreground text-sm font-medium flex items-center justify-center gap-1.5">
-                  {savingInsurance ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} Save
-                </button>
-                <button onClick={() => setEditingInsurance(false)} className="h-9 px-4 rounded-lg border border-border text-sm font-medium text-muted-foreground">Cancel</button>
-              </div>
-            </div>
-          ) : (
-            <>
-              <Row label={t('claims.review.insurance')} value={claim.insuranceCompany} />
-              {insurerPhone && (
-                <div className="flex items-center justify-between gap-4 py-2 border-b border-border/60">
-                  <span className="text-[13px] text-muted-foreground flex-shrink-0">{t('claims.detail.claimsLine')}</span>
-                  <a href={`tel:${insurerPhone.replace(/\s/g, '')}`} className="flex items-center gap-2 text-[13px] font-medium text-primary hover:underline">
-                    <Phone className="w-3.5 h-3.5" strokeWidth={2} />{insurerPhone}
-                  </a>
-                </div>
-              )}
-              <Row label={t('claims.detail.name')} value={claim.repairerName} /><Row label={t('claims.detail.phone')} value={claim.repairerPhone} /><Row label={t('profile.address')} value={claim.repairerAddress} />
-            </>
-          )}
-        </Section>
-
-        {photos.length > 0 && (
-          <Section title={t('claims.detail.damagePhotos')} icon={<Camera className="w-4 h-4 text-primary" />}>
-            <div className="grid grid-cols-3 gap-2">
-              {photos.map(p => (
-                <button key={p.id} onClick={() => setLightboxUrl(p.url)} className="rounded-xl overflow-hidden aspect-square bg-muted">
-                  <img src={p.url} alt={p.fileName} className="w-full h-full object-cover" loading="lazy" />
-                </button>
-              ))}
-            </div>
-          </Section>
-        )}
-
         <ClaimMessages
           claimId={claim.id!}
           insurerEmail={insurerEmail}
@@ -609,6 +461,10 @@ export default function ClaimDetail() {
   );
 }
 
+function SubHeading({ children }: { children: string }) {
+  return <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground pt-4 pb-1 first:pt-0">{children}</p>;
+}
+
 function Section({ title, children, action, icon }: { title: string; children: React.ReactNode; action?: React.ReactNode; icon?: React.ReactNode }) {
   return (
     <Accordion type="single" collapsible defaultValue="item">
@@ -631,6 +487,7 @@ function Section({ title, children, action, icon }: { title: string; children: R
     </Accordion>
   );
 }
+
 function Row({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex justify-between gap-4 py-2.5 border-b border-border/40 last:border-0">
