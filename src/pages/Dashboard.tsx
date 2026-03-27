@@ -25,6 +25,7 @@ export default function Dashboard() {
   const [userRegion, setUserRegion] = useState('');
   const [userLat, setUserLat] = useState<number | null>(null);
   const [userLng, setUserLng] = useState<number | null>(null);
+  const [recentMessages, setRecentMessages] = useState<any[]>([]);
 
   useEffect(() => {
     getVehicles().then(setVehicles);
