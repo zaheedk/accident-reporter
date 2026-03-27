@@ -9,6 +9,7 @@ const corsHeaders = {
 
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
 const FROM_EMAIL = 'Savo <info@savo.co.nz>';
+const REPLY_DOMAIN = 'replies.savo.co.nz';
 
 interface EmailRequest {
   type: 'contact_confirmation' | 'claim_submitted' | 'welcome' | 'rego_expiry_reminder' | 'wof_expiry_reminder' | 'insurance_expiry_reminder';
@@ -385,13 +386,27 @@ serve(async (req) => {
 
     const { subject, html } = getEmailContent(type, data);
 
+    const isInsurer = data?.isInsurerEmail === 'true';
+
     // Build email payload
     const emailPayload: Record<string, unknown> = {
-      from: FROM_EMAIL,
+      from: isInsurer && data?.clientName
+        ? `${data.clientName} via Savo <claims@savo.co.nz>`
+        : FROM_EMAIL,
       to: [to],
       subject,
       html,
     };
+
+    // Add reply-to routing for insurer emails so replies come back into the app
+    if (isInsurer && data?.claimNumber) {
+      const claimRef = String(data.claimNumber).padStart(4, '0');
+      const replyToAddress = `claim-${claimRef}@${REPLY_DOMAIN}`;
+      const userEmail = data?.userEmail || '';
+      emailPayload.reply_to = userEmail
+        ? `"${userEmail}" <${replyToAddress}>`
+        : replyToAddress;
+    }
 
     // Generate and attach PDF for claim submissions
     if (type === 'claim_submitted' && data) {
@@ -465,6 +480,27 @@ serve(async (req) => {
     if (!res.ok) {
       console.error('Resend API error:', result);
       throw new Error(`Resend error: ${JSON.stringify(result)}`);
+    }
+
+    // Log the outbound email in claim_messages so it appears in the conversation
+    if (isInsurer && data?.claimId && data?.userId) {
+      try {
+        const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+        const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+        const sb = createClient(supabaseUrl, supabaseKey);
+        await sb.from('claim_messages').insert({
+          claim_id: data.claimId,
+          user_id: data.userId,
+          direction: 'outbound',
+          subject,
+          body: `[PDF Report Sent]\n\nIncident report with ${data.claimNumber ? 'CLM-' + String(data.claimNumber).padStart(4, '0') : ''} was emailed to the insurance company.`,
+          from_email: data.userEmail || '',
+          to_email: to,
+          resend_message_id: result.id,
+        });
+      } catch (logErr) {
+        console.error('Failed to log outbound message:', logErr);
+      }
     }
 
     return new Response(JSON.stringify({ success: true, id: result.id }), {

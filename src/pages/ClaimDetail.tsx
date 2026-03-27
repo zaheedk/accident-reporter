@@ -153,7 +153,8 @@ export default function ClaimDetail() {
     try {
       const veh = vehicles.find(v => v.id === claim.vehicleId);
       const isInsurer = emailTo === insurerEmail && !!insurerEmail;
-      const { data: profile } = await supabase.from('profiles').select('display_name').eq('user_id', (await supabase.auth.getUser()).data.user?.id || '').single();
+      const user = (await supabase.auth.getUser()).data.user;
+      const { data: profile } = await supabase.from('profiles').select('display_name').eq('user_id', user?.id || '').single();
       
       const { error } = await supabase.functions.invoke('send-email', {
         body: {
@@ -194,6 +195,8 @@ export default function ClaimDetail() {
             repairerAddress: claim.repairerAddress,
             clientName: profile?.display_name || '',
             isInsurerEmail: isInsurer ? 'true' : 'false',
+            userEmail: user?.email || '',
+            userId: user?.id || '',
           },
         },
       });
