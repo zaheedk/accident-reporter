@@ -408,8 +408,8 @@ export default function ClaimDetail() {
           )}
         </Section>
 
-        <Section title={t('claims.review.yourVehicle')} icon={<Car className="w-4 h-4 text-primary" />}>
-          <Row label={t('claims.review.vehicle')} value={vehicle ? `${vehicle.year} ${vehicle.make} ${vehicle.model}` : '—'} />
+
+
           <Row label={t('claims.review.rego')} value={vehicle?.regoNumber || '—'} />
           <Row label={t('claims.detail.speedBraking')} value={claim.speedBeforeBraking ? `${claim.speedBeforeBraking} km/h` : '—'} />
           <Row label={t('claims.review.damage')} value={claim.damageDescription} />
