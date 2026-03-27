@@ -40,9 +40,24 @@ export default function NotificationBell() {
     if (data) setNotifications(data as Notification[]);
   };
 
+  const handleNotificationClick = async (n: Notification) => {
+    await markRead(n.id);
+    // Navigate to claim if it's a message notification
+    if (n.type === 'insurer_reply') {
+      const match = n.message.match(/CLM-(\d+)/);
+      if (match) {
+        const claimNum = parseInt(match[1], 10);
+        const { data: claim } = await supabase.from('claims').select('id').eq('claim_number', claimNum).single();
+        if (claim) {
+          setOpen(false);
+          navigate(`/claims/${claim.id}`);
+          return;
+        }
+      }
+    }
+  };
+
   const markRead = async (id: string) => {
-    await supabase.from('notifications').update({ is_read: true } as any).eq('id', id);
-    setNotifications(prev => prev.map(n => n.id === id ? { ...n, is_read: true } : n));
   };
 
   const markAllRead = async () => {
