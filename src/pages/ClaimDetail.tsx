@@ -450,17 +450,22 @@ export default function ClaimDetail() {
   );
 }
 
-function Section({ title, children, action, value }: { title: string; children: React.ReactNode; action?: React.ReactNode; value?: string }) {
+function Section({ title, children, action, icon }: { title: string; children: React.ReactNode; action?: React.ReactNode; icon?: React.ReactNode }) {
   return (
     <Accordion type="single" collapsible defaultValue="item">
-      <AccordionItem value="item" className="card-surface border-0">
-        <AccordionTrigger className="py-2 px-0 hover:no-underline">
-          <div className="flex items-center gap-2 flex-1">
-            <h3 className="text-[13px] font-semibold text-muted-foreground">{title}</h3>
+      <AccordionItem value="item" className="bg-card rounded-2xl border border-border/50 overflow-hidden shadow-sm">
+        <AccordionTrigger className="px-4 py-3.5 hover:no-underline hover:bg-muted/30 transition-colors [&[data-state=open]]:border-b [&[data-state=open]]:border-border/40">
+          <div className="flex items-center gap-3 flex-1">
+            {icon && (
+              <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                {icon}
+              </div>
+            )}
+            <h3 className="text-sm font-semibold text-foreground">{title}</h3>
             {action && <div className="ml-auto mr-2" onClick={e => e.stopPropagation()}>{action}</div>}
           </div>
         </AccordionTrigger>
-        <AccordionContent className="pb-1 pt-1 space-y-1">
+        <AccordionContent className="px-4 pb-3 pt-2 space-y-0.5">
           {children}
         </AccordionContent>
       </AccordionItem>
@@ -469,7 +474,7 @@ function Section({ title, children, action, value }: { title: string; children: 
 }
 function Row({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex justify-between gap-4 py-2 border-b border-border/60 last:border-0">
+    <div className="flex justify-between gap-4 py-2.5 border-b border-border/40 last:border-0">
       <span className="text-[13px] text-muted-foreground flex-shrink-0">{label}</span>
       <span className="text-[13px] font-medium text-foreground text-right">{value || '—'}</span>
     </div>
