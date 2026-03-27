@@ -403,9 +403,7 @@ serve(async (req) => {
       const claimRef = String(data.claimNumber).padStart(4, '0');
       const replyToAddress = `claim-${claimRef}@${REPLY_DOMAIN}`;
       const userEmail = data?.userEmail || '';
-      emailPayload.reply_to = userEmail
-        ? `"${userEmail}" <${replyToAddress}>`
-        : replyToAddress;
+      emailPayload.reply_to = `"Reply to Claim CLM-${claimRef}" <${replyToAddress}>`;
     }
 
     // Generate and attach PDF for claim submissions
