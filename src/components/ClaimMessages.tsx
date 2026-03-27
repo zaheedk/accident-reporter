@@ -160,28 +160,7 @@ export default function ClaimMessages({ claimId, insurerEmail, insurerName }: Cl
       ) : (
         <div className="space-y-2 max-h-96 overflow-y-auto">
           {messages.map(msg => (
-            <div
-              key={msg.id}
-              className={`p-3 rounded-xl border text-sm ${
-                msg.direction === 'outbound'
-                  ? 'bg-primary/5 border-primary/10 ml-4'
-                  : 'bg-muted/50 border-border/60 mr-4'
-              }`}
-            >
-              <div className="flex items-center gap-2 mb-1">
-                {msg.direction === 'outbound' ? (
-                  <ArrowUpRight className="w-3.5 h-3.5 text-primary flex-shrink-0" />
-                ) : (
-                  <ArrowDownRight className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0" />
-                )}
-                <span className="text-[11px] font-medium text-foreground">
-                  {msg.direction === 'outbound' ? 'You' : msg.from_email}
-                </span>
-                <span className="text-[10px] text-muted-foreground ml-auto">{formatDate(msg.created_at)}</span>
-              </div>
-              <p className="text-[12px] font-medium text-foreground mb-1">{msg.subject}</p>
-              <p className="text-[12px] text-muted-foreground whitespace-pre-wrap leading-relaxed">{msg.body}</p>
-            </div>
+            <MessageBubble key={msg.id} msg={msg} formatDate={formatDate} />
           ))}
           <div ref={bottomRef} />
         </div>
