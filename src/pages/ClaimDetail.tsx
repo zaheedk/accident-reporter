@@ -241,7 +241,7 @@ export default function ClaimDetail() {
           <p className="text-sm text-muted-foreground">{t('claims.review.date')}: {claim.incidentDate} · Status: {claim.status === 'draft' ? t('common.draft') : t('common.submitted')}</p>
         </div>
 
-        <Section title={t('claims.steps.incidentDetails')}>
+        <Section title={t('claims.steps.incidentDetails')} icon={<Shield className="w-4 h-4 text-primary" />}>
           <Row label={t('claims.detail.dateTime')} value={`${claim.incidentDate} at ${claim.incidentTime}`} />
           <Row label={t('claims.review.location')} value={claim.incidentLocation} />
           <Row label={t('claims.detail.vehicleUsage')} value={claim.vehicleUsage} />
@@ -249,7 +249,7 @@ export default function ClaimDetail() {
           <Row label={t('claims.review.description')} value={claim.description} />
         </Section>
 
-        <Section title={t('claims.review.yourVehicle')}>
+        <Section title={t('claims.review.yourVehicle')} icon={<Car className="w-4 h-4 text-primary" />}>
           <Row label={t('claims.review.vehicle')} value={vehicle ? `${vehicle.year} ${vehicle.make} ${vehicle.model}` : '—'} />
           <Row label={t('claims.review.rego')} value={vehicle?.regoNumber || '—'} />
           <Row label={t('claims.detail.speedBraking')} value={claim.speedBeforeBraking ? `${claim.speedBeforeBraking} km/h` : '—'} />
@@ -258,7 +258,7 @@ export default function ClaimDetail() {
         </Section>
 
         {claim.thirdParties.length > 0 && (
-          <Section title={t('claims.review.thirdParties')}>
+          <Section title={t('claims.review.thirdParties')} icon={<Users className="w-4 h-4 text-primary" />}>
             {claim.thirdParties.map((tp, i) => {
               const tpDamagePhotos = tpPhotos.filter(p => p.tpIndex === i && p.type === 'damage');
               const tpRegoPhotos = tpPhotos.filter(p => p.tpIndex === i && p.type === 'rego');
@@ -313,24 +313,24 @@ export default function ClaimDetail() {
         )}
 
         {claim.witnesses.length > 0 && (
-          <Section title={t('claims.review.witnesses')}>
+          <Section title={t('claims.review.witnesses')} icon={<Eye className="w-4 h-4 text-primary" />}>
             {claim.witnesses.map((w, i) => <Row key={i} label={t('claims.witnesses.witnessNumber', { number: i + 1 })} value={`${w.name} – ${w.phone}${w.isPassenger ? ` (${t('claims.witnesses.passenger')})` : ''}`} />)}
           </Section>
         )}
 
-        <Section title={t('claims.detail.policeInjuries')}>
+        <Section title={t('claims.detail.policeInjuries')} icon={<Shield className="w-4 h-4 text-primary" />}>
           <Row label={t('claims.detail.policeAttended')} value={claim.policeAttended ? `${t('common.yes')} – ${claim.policeOfficerDetails}` : t('common.no')} />
           <Row label={t('claims.detail.injuries')} value={claim.anyoneHurt ? claim.injuryDetails : t('common.no')} />
         </Section>
 
-        <Section title={t('claims.review.conditions')}>
+        <Section title={t('claims.review.conditions')} icon={<CloudSun className="w-4 h-4 text-primary" />}>
           <Row label={t('claims.review.weatherLabel')} value={weather} /><Row label={t('claims.review.roadLabel')} value={road} />
           <Row label={t('claims.detail.substanceUse')} value={claim.driverConsumedSubstance ? claim.substanceDetails : t('common.no')} />
           <Row label={t('claims.detail.faultAssessment')} value={claim.blameDescription} />
           <Row label={t('claims.detail.liabilityAdmitted')} value={claim.liabilityAdmitted ? claim.liabilityDetails : t('common.no')} />
         </Section>
 
-        <Section title={t('claims.review.insuranceRepairer')} action={!editingInsurance ? <button onClick={startEditInsurance} className="p-1 rounded-lg hover:bg-muted transition-colors"><Pencil className="w-4 h-4 text-muted-foreground" /></button> : undefined}>
+        <Section title={t('claims.review.insuranceRepairer')} icon={<Wrench className="w-4 h-4 text-primary" />} action={!editingInsurance ? <button onClick={startEditInsurance} className="p-1 rounded-lg hover:bg-muted transition-colors"><Pencil className="w-4 h-4 text-muted-foreground" /></button> : undefined}>
           {editingInsurance ? (
             <div className="space-y-3">
               <div>
@@ -383,7 +383,7 @@ export default function ClaimDetail() {
         </Section>
 
         {photos.length > 0 && (
-          <Section title={t('claims.detail.damagePhotos')}>
+          <Section title={t('claims.detail.damagePhotos')} icon={<Camera className="w-4 h-4 text-primary" />}>
             <div className="grid grid-cols-3 gap-2">
               {photos.map(p => (
                 <button key={p.id} onClick={() => setLightboxUrl(p.url)} className="rounded-xl overflow-hidden aspect-square bg-muted">
