@@ -226,7 +226,7 @@ export default function Dashboard() {
           </div>
         )}
 
-
+        {isAdmin && (
           <Link to="/admin" className="card-surface-elevated flex items-center gap-4 group hover:border-primary/20 transition-all">
             <div className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: 'hsla(152, 60%, 42%, 0.1)' }}>
               <Shield className="w-5 h-5" style={{ color: 'hsl(152, 60%, 42%)' }} />
