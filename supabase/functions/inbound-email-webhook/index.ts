@@ -21,7 +21,14 @@ serve(async (req) => {
 
     // Resend wraps inbound email data inside a "data" object
     const emailData = payload.data || payload;
-    const { from, to, subject, text, html } = emailData;
+    console.log('Email data keys:', JSON.stringify(Object.keys(emailData)));
+    console.log('Email data snippet:', JSON.stringify(emailData).slice(0, 1000));
+
+    const from = emailData.from;
+    const to = emailData.to;
+    const subject = emailData.subject;
+    const text = emailData.text || emailData.plain_text || emailData.body || '';
+    const html = emailData.html || '';
 
     if (!to && !from) {
       console.log('Full payload for debugging:', JSON.stringify(payload).slice(0, 500));
