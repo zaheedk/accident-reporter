@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Printer, Mail, X, Download, Share2, Phone, Pencil, Save, Loader2, Send } from 'lucide-react';
+import { ArrowLeft, Printer, Mail, X, Download, Share2, Phone, Pencil, Save, Loader2, Send, Car, Users, Eye, Shield, CloudSun, Wrench, Camera, ChevronRight } from 'lucide-react';
 import { getClaims, getVehicles } from '@/lib/storage';
 import { supabase } from '@/integrations/supabase/client';
 import AppLayout from '@/components/AppLayout';
