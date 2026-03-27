@@ -203,7 +203,30 @@ export default function Dashboard() {
           <ChevronRight className="w-4 h-4 text-muted-foreground/30 group-hover:text-primary transition-colors shrink-0" strokeWidth={1.5} />
         </Link>
 
-        {isAdmin && (
+        {recentMessages.length > 0 && (
+          <div className="card-surface-elevated space-y-2">
+            <div className="flex items-center gap-2 mb-1">
+              <MessageSquare className="w-4 h-4 text-primary" />
+              <span className="text-[13px] font-semibold text-foreground">Recent Messages</span>
+            </div>
+            {recentMessages.map(msg => (
+              <Link key={msg.id} to={`/claims/${msg.claim_id}`}
+                className="flex items-start gap-2.5 p-2.5 rounded-xl hover:bg-muted/50 transition-colors -mx-1">
+                <ArrowDownRight className={`w-3.5 h-3.5 mt-0.5 shrink-0 ${msg.direction === 'inbound' ? 'text-emerald-600' : 'text-primary'}`} />
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-medium text-foreground truncate">{msg.subject || '(No subject)'}</p>
+                  <p className="text-[11px] text-muted-foreground truncate mt-0.5">{msg.body?.slice(0, 80)}</p>
+                  <p className="text-[10px] text-muted-foreground/60 mt-0.5">
+                    {msg.direction === 'inbound' ? msg.from_email : 'You'} · {formatDistanceToNow(new Date(msg.created_at), { addSuffix: true })}
+                  </p>
+                </div>
+                <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/30 mt-1 shrink-0" />
+              </Link>
+            ))}
+          </div>
+        )}
+
+
           <Link to="/admin" className="card-surface-elevated flex items-center gap-4 group hover:border-primary/20 transition-all">
             <div className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: 'hsla(152, 60%, 42%, 0.1)' }}>
               <Shield className="w-5 h-5" style={{ color: 'hsl(152, 60%, 42%)' }} />
