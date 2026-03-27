@@ -1,8 +1,60 @@
 import { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { Send, MessageSquare, ArrowDownRight, ArrowUpRight, Loader2 } from 'lucide-react';
+import { Send, MessageSquare, ArrowDownRight, ArrowUpRight, Loader2, ChevronDown } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+
+function MessageBubble({ msg, formatDate }: { msg: Message; formatDate: (d: string) => string }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <button
+        onClick={() => setOpen(true)}
+        className={`w-full text-left p-3 rounded-xl border text-sm cursor-pointer hover:ring-1 hover:ring-primary/30 transition-all ${
+          msg.direction === 'outbound'
+            ? 'bg-primary/5 border-primary/10 ml-4'
+            : 'bg-muted/50 border-border/60 mr-4'
+        }`}
+      >
+        <div className="flex items-center gap-2 mb-1">
+          {msg.direction === 'outbound' ? (
+            <ArrowUpRight className="w-3.5 h-3.5 text-primary flex-shrink-0" />
+          ) : (
+            <ArrowDownRight className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0" />
+          )}
+          <span className="text-[11px] font-medium text-foreground">
+            {msg.direction === 'outbound' ? 'You' : msg.from_email}
+          </span>
+          <span className="text-[10px] text-muted-foreground ml-auto">{formatDate(msg.created_at)}</span>
+        </div>
+        <p className="text-[12px] font-medium text-foreground mb-1">{msg.subject}</p>
+        <p className="text-[12px] text-muted-foreground line-clamp-2 leading-snug">{msg.body}</p>
+      </button>
+
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-sm">{msg.subject}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-2 text-sm">
+            <div className="flex items-center gap-2 text-muted-foreground text-xs">
+              {msg.direction === 'outbound' ? (
+                <><ArrowUpRight className="w-3.5 h-3.5 text-primary" /> <span>You → {msg.to_email}</span></>
+              ) : (
+                <><ArrowDownRight className="w-3.5 h-3.5 text-emerald-600" /> <span>{msg.from_email}</span></>
+              )}
+              <span className="ml-auto">{formatDate(msg.created_at)}</span>
+            </div>
+            <div className="border-t border-border pt-3">
+              <p className="text-foreground whitespace-pre-wrap leading-relaxed">{msg.body}</p>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+}
 
 interface Message {
   id: string;
