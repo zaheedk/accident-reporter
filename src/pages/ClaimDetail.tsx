@@ -450,8 +450,22 @@ export default function ClaimDetail() {
   );
 }
 
-function Section({ title, children, action }: { title: string; children: React.ReactNode; action?: React.ReactNode }) {
-  return <div className="card-surface space-y-1"><div className="flex items-center justify-between mb-2"><h3 className="text-[13px] font-semibold text-muted-foreground">{title}</h3>{action}</div>{children}</div>;
+function Section({ title, children, action, value }: { title: string; children: React.ReactNode; action?: React.ReactNode; value?: string }) {
+  return (
+    <Accordion type="single" collapsible defaultValue="item">
+      <AccordionItem value="item" className="card-surface border-0">
+        <AccordionTrigger className="py-2 px-0 hover:no-underline">
+          <div className="flex items-center gap-2 flex-1">
+            <h3 className="text-[13px] font-semibold text-muted-foreground">{title}</h3>
+            {action && <div className="ml-auto mr-2" onClick={e => e.stopPropagation()}>{action}</div>}
+          </div>
+        </AccordionTrigger>
+        <AccordionContent className="pb-1 pt-1 space-y-1">
+          {children}
+        </AccordionContent>
+      </AccordionItem>
+    </Accordion>
+  );
 }
 function Row({ label, value }: { label: string; value: string }) {
   return (
