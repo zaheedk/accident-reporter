@@ -97,12 +97,15 @@ export default function NotificationBell() {
                 <div className="px-3 py-6 text-center text-xs text-muted-foreground">No notifications yet</div>
               ) : (
                 notifications.map(n => (
-                  <button key={n.id} onClick={() => markRead(n.id)}
+                  <button key={n.id} onClick={() => handleNotificationClick(n)}
                     className={`w-full text-left px-3 py-2.5 border-b border-border/50 hover:bg-muted/50 transition-colors ${!n.is_read ? 'bg-primary/5' : ''}`}>
                     <div className="flex items-start gap-1.5">
                       {!n.is_read && <span className="mt-1 w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0" />}
                       <div className={!n.is_read ? '' : 'pl-3'}>
-                        <p className="text-xs font-medium text-foreground leading-tight">{n.title}</p>
+                        <div className="flex items-center gap-1">
+                          {n.type === 'insurer_reply' && <MessageSquare className="w-3 h-3 text-emerald-600 shrink-0" />}
+                          <p className="text-xs font-medium text-foreground leading-tight">{n.title}</p>
+                        </div>
                         <p className="text-[11px] text-muted-foreground mt-0.5 line-clamp-2 leading-snug">{n.message}</p>
                         <p className="text-[9px] text-muted-foreground/60 mt-0.5">
                           {formatDistanceToNow(new Date(n.created_at), { addSuffix: true })}
