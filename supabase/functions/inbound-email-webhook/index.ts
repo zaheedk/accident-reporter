@@ -6,6 +6,64 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+function extractString(value: unknown): string {
+  if (!value) return '';
+
+  if (typeof value === 'string') return value.trim();
+
+  if (Array.isArray(value)) {
+    for (const item of value) {
+      const extracted = extractString(item);
+      if (extracted) return extracted;
+    }
+    return '';
+  }
+
+  if (typeof value === 'object') {
+    const obj = value as Record<string, unknown>;
+
+    // Common address object shapes
+    if (typeof obj.address === 'string' && obj.address.trim()) return obj.address.trim();
+    if (typeof obj.email === 'string' && obj.email.trim()) return obj.email.trim();
+
+    // Common content object shapes
+    const candidates = [obj.text, obj.plain_text, obj.plain, obj.body, obj.value, obj.content];
+    for (const candidate of candidates) {
+      const extracted = extractString(candidate);
+      if (extracted) return extracted;
+    }
+  }
+
+  return '';
+}
+
+function firstNonEmpty(...values: unknown[]): string {
+  for (const value of values) {
+    const extracted = extractString(value);
+    if (extracted) return extracted;
+  }
+  return '';
+}
+
+function htmlToText(html: string): string {
+  if (!html) return '';
+
+  return html
+    .replace(/<style[\s\S]*?<\/style>/gi, '')
+    .replace(/<script[\s\S]*?<\/script>/gi, '')
+    .replace(/<br\s*\/?>/gi, '\n')
+    .replace(/<\/p>/gi, '\n')
+    .replace(/<\/div>/gi, '\n')
+    .replace(/<[^>]*>/g, '')
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/&amp;/gi, '&')
+    .replace(/&lt;/gi, '<')
+    .replace(/&gt;/gi, '>')
+    .replace(/\r\n/g, '\n')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -17,26 +75,52 @@ serve(async (req) => {
     const supabase = createClient(supabaseUrl, supabaseKey);
 
     const payload = await req.json();
-    console.log('Inbound webhook payload keys:', JSON.stringify(Object.keys(payload)));
+    const emailData = (payload?.data || payload || {}) as Record<string, unknown>;
 
-    // Resend wraps inbound email data inside a "data" object
-    const emailData = payload.data || payload;
-    console.log('Email data keys:', JSON.stringify(Object.keys(emailData)));
-    console.log('Email data snippet:', JSON.stringify(emailData).slice(0, 1000));
+    // Support multiple provider payload shapes
+    const from = firstNonEmpty(
+      emailData.from,
+      emailData.sender,
+      emailData.from_email,
+      (emailData.envelope as Record<string, unknown> | undefined)?.from,
+    );
 
-    const from = emailData.from;
-    const to = emailData.to;
-    const subject = emailData.subject;
-    const text = emailData.text || emailData.plain_text || emailData.body || '';
-    const html = emailData.html || '';
+    const toRaw =
+      emailData.to ||
+      (emailData.envelope as Record<string, unknown> | undefined)?.to ||
+      emailData.rcpt_to ||
+      emailData.recipient;
 
-    if (!to && !from) {
-      console.log('Full payload for debugging:', JSON.stringify(payload).slice(0, 500));
+    const toAddress = firstNonEmpty(Array.isArray(toRaw) ? toRaw[0] : toRaw);
+    const subject = firstNonEmpty(emailData.subject, '(No subject)');
+
+    const text = firstNonEmpty(
+      emailData.text,
+      emailData.plain_text,
+      emailData.text_body,
+      emailData.body_text,
+      emailData.body,
+      (emailData.content as Record<string, unknown> | undefined)?.text,
+      (emailData.content as Record<string, unknown> | undefined)?.plain,
+      (emailData.email as Record<string, unknown> | undefined)?.text,
+    );
+
+    const html = firstNonEmpty(
+      emailData.html,
+      emailData.html_body,
+      emailData.stripped_html,
+      (emailData.content as Record<string, unknown> | undefined)?.html,
+      (emailData.email as Record<string, unknown> | undefined)?.html,
+    );
+
+    const bodyText = firstNonEmpty(text, htmlToText(html));
+
+    if (!toAddress && !from) {
+      console.log('Inbound payload missing to/from. Keys:', JSON.stringify(Object.keys(emailData)));
       throw new Error('Missing required fields in webhook payload');
     }
 
     // Extract claim reference from the to address: claim-0001@replies.savo.co.nz
-    const toAddress = Array.isArray(to) ? to[0] : to;
     const match = toAddress.match(/claim-(\d+)@/i);
     if (!match) {
       console.log('No claim reference found in to address:', toAddress);
@@ -63,8 +147,7 @@ serve(async (req) => {
       });
     }
 
-    const fromEmail = typeof from === 'string' ? from : (from?.address || from?.email || JSON.stringify(from));
-    const bodyText = text || (html ? html.replace(/<[^>]*>/g, '') : '');
+    const fromEmail = from || 'unknown@unknown';
 
     // Store the inbound message
     await supabase.from('claim_messages').insert({
@@ -72,7 +155,7 @@ serve(async (req) => {
       user_id: claim.user_id,
       direction: 'inbound',
       subject: subject || '(No subject)',
-      body: bodyText,
+      body: bodyText || '(No body content was included in the email payload)',
       from_email: fromEmail,
       to_email: toAddress,
     });
@@ -93,7 +176,7 @@ serve(async (req) => {
     const message = error instanceof Error ? error.message : 'Unknown error';
     console.error('Inbound email webhook error:', message);
     return new Response(JSON.stringify({ success: false, error: message }), {
-      status: 200, // Return 200 to prevent Resend from retrying
+      status: 200, // Return 200 to prevent provider retries on malformed payloads
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   }
