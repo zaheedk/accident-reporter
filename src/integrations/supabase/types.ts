@@ -251,6 +251,36 @@ export type Database = {
         }
         Relationships: []
       }
+      login_tokens: {
+        Row: {
+          created_at: string
+          expires_at: string
+          id: string
+          rego_number: string
+          token: string
+          used: boolean
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at: string
+          id?: string
+          rego_number?: string
+          token: string
+          used?: boolean
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          rego_number?: string
+          token?: string
+          used?: boolean
+          user_id?: string
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
           created_at: string
