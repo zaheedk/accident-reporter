@@ -55,6 +55,7 @@ type ClaimPhoto = {
 
 export default function ClaimWizard() {
   const { id } = useParams();
+  const [searchParams] = useSearchParams();
   const { user } = useAuth();
   const navigate = useNavigate();
   const { t } = useTranslation();
