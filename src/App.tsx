@@ -27,6 +27,7 @@ const HowItWorks = lazy(() => import("./pages/HowItWorks"));
 const FAQ = lazy(() => import("./pages/FAQ"));
 const Legal = lazy(() => import("./pages/Legal"));
 const NotFound = lazy(() => import("./pages/NotFound"));
+const ExternalLogin = lazy(() => import("./pages/ExternalLogin"));
 
 const PageLoader = () => (
   <div className="min-h-screen bg-background flex items-center justify-center">
