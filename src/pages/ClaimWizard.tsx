@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, Save, Camera, X, Loader2, MapPin, Car, Sparkles, Trash2 } from 'lucide-react';
 import { DamagePhotoAnalyzer, ThirdPartyPhotos } from '@/components/PhotoAnalyzer';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -55,6 +55,7 @@ type ClaimPhoto = {
 
 export default function ClaimWizard() {
   const { id } = useParams();
+  const [searchParams] = useSearchParams();
   const { user } = useAuth();
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -117,7 +118,16 @@ export default function ClaimWizard() {
   useEffect(() => {
     getVehicles().then(v => {
       setVehicles(v);
-      if (!id && v.length === 1 && !autoSkipped) {
+      const regoParam = searchParams.get('rego');
+      if (!id && regoParam) {
+        // Auto-select vehicle by rego from external link
+        const match = v.find(veh => veh.regoNumber?.toLowerCase() === regoParam.toLowerCase());
+        if (match) {
+          setClaim(prev => ({ ...prev, vehicleId: match.id, insuranceCompany: match.insuranceCompany || '' }));
+          setStep(1);
+          setAutoSkipped(true);
+        }
+      } else if (!id && v.length === 1 && !autoSkipped) {
         setClaim(prev => ({ ...prev, vehicleId: v[0].id, insuranceCompany: v[0].insuranceCompany || '' }));
         setStep(1);
         setAutoSkipped(true);
