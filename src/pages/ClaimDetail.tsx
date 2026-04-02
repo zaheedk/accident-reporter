@@ -104,17 +104,22 @@ export default function ClaimDetail() {
       }
       
       if (photosRes.data) {
-        setPhotos(photosRes.data.map((p: any) => {
-          const { data } = supabase.storage.from('claim-photos').getPublicUrl(p.file_path);
-          return { id: p.id, url: data.publicUrl, fileName: p.file_name };
-        }));
+        setPhotos(photosRes.data.map((p: any) => ({
+          id: p.id,
+          url: getMediumUrl('claim-photos', p.file_path),
+          fullUrl: getFullUrl('claim-photos', p.file_path),
+          fileName: p.file_name,
+        })));
       }
       
       if (tpRes.data) {
-        setTpPhotos(tpRes.data.map((p: any) => {
-          const { data } = supabase.storage.from('tp-photos').getPublicUrl(p.file_path);
-          return { id: p.id, url: data.publicUrl, type: p.type, tpIndex: p.tp_index };
-        }));
+        setTpPhotos(tpRes.data.map((p: any) => ({
+          id: p.id,
+          url: getMediumUrl('tp-photos', p.file_path),
+          fullUrl: getFullUrl('tp-photos', p.file_path),
+          type: p.type,
+          tpIndex: p.tp_index,
+        })));
       }
       
       if (insurersRes.data) setInsuranceCompanies(insurersRes.data);
