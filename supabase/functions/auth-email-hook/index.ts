@@ -1,199 +1,317 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import * as React from 'npm:react@18.3.1'
+import { renderAsync } from 'npm:@react-email/components@0.0.22'
+import { parseEmailWebhookPayload } from 'npm:@lovable.dev/email-js'
+import { WebhookError, verifyWebhookRequest } from 'npm:@lovable.dev/webhooks-js'
+import { createClient } from 'npm:@supabase/supabase-js@2'
+import { SignupEmail } from '../_shared/email-templates/signup.tsx'
+import { InviteEmail } from '../_shared/email-templates/invite.tsx'
+import { MagicLinkEmail } from '../_shared/email-templates/magic-link.tsx'
+import { RecoveryEmail } from '../_shared/email-templates/recovery.tsx'
+import { EmailChangeEmail } from '../_shared/email-templates/email-change.tsx'
+import { ReauthenticationEmail } from '../_shared/email-templates/reauthentication.tsx'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
-
-const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
-const FROM_EMAIL = 'Savo <noreply@savo.co.nz>';
-
-function getBrandedHtml(title: string, bodyContent: string) {
-  return `
-<!DOCTYPE html>
-<html lang="en">
-<head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /></head>
-<body style="margin:0;padding:0;background-color:#f5f5f5;font-family:Arial,sans-serif;">
-  <div style="max-width:600px;margin:0 auto;padding:20px;">
-    <div style="background:linear-gradient(135deg,#e8551e,#d44a18);padding:30px;border-radius:12px 12px 0 0;text-align:center;">
-      <h1 style="color:#ffffff;margin:0;font-size:28px;font-weight:700;letter-spacing:-0.5px;">Savo</h1>
-    </div>
-    <div style="background:#ffffff;padding:30px 30px 40px;border:1px solid #e5e5e5;border-top:none;border-radius:0 0 12px 12px;">
-      <h2 style="color:#1a1a1a;margin:0 0 16px;font-size:20px;">${title}</h2>
-      ${bodyContent}
-    </div>
-    <div style="text-align:center;padding:20px 0;">
-      <p style="color:#999;font-size:11px;margin:0;">© ${new Date().getFullYear()} Savo · Vehicle Claims Assistant</p>
-      <p style="color:#bbb;font-size:11px;margin:4px 0 0;">Auckland, New Zealand</p>
-    </div>
-  </div>
-</body>
-</html>`;
+  'Access-Control-Allow-Headers':
+    'authorization, x-client-info, apikey, content-type, x-lovable-signature, x-lovable-timestamp, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 }
 
-function getEmailContent(emailType: string, confirmationUrl: string, otpToken?: string) {
-  switch (emailType) {
-    case 'signup':
-    case 'email':
-      return {
-        subject: 'Confirm your Savo account',
-        html: getBrandedHtml('Confirm your email', `
-          <p style="color:#555;line-height:1.6;margin:0 0 20px;">Welcome to Savo! Please verify your email address to get started.</p>
-          <div style="text-align:center;margin:24px 0;">
-            <a href="${confirmationUrl}" style="display:inline-block;background:linear-gradient(135deg,#e8551e,#d44a18);color:#ffffff;text-decoration:none;padding:14px 32px;border-radius:8px;font-weight:600;font-size:15px;">Verify Email Address</a>
-          </div>
-          <p style="color:#999;font-size:13px;line-height:1.5;">If the button doesn't work, copy and paste this link into your browser:</p>
-          <p style="color:#e8551e;font-size:12px;word-break:break-all;">${confirmationUrl}</p>
-          <p style="color:#999;font-size:12px;margin-top:20px;">If you didn't create a Savo account, you can safely ignore this email.</p>
-        `),
-      };
+const EMAIL_SUBJECTS: Record<string, string> = {
+  signup: 'Confirm your Savo account',
+  invite: "You've been invited to Savo",
+  magiclink: 'Your Savo login link',
+  recovery: 'Reset your Savo password',
+  email_change: 'Confirm your new email – Savo',
+  reauthentication: 'Your Savo verification code',
+}
 
-    case 'recovery':
-      return {
-        subject: 'Reset your Savo password',
-        html: getBrandedHtml('Reset your password', `
-          <p style="color:#555;line-height:1.6;margin:0 0 20px;">We received a request to reset your password. Click the button below to choose a new one.</p>
-          <div style="text-align:center;margin:24px 0;">
-            <a href="${confirmationUrl}" style="display:inline-block;background:linear-gradient(135deg,#e8551e,#d44a18);color:#ffffff;text-decoration:none;padding:14px 32px;border-radius:8px;font-weight:600;font-size:15px;">Reset Password</a>
-          </div>
-          <p style="color:#999;font-size:13px;line-height:1.5;">If the button doesn't work, copy and paste this link:</p>
-          <p style="color:#e8551e;font-size:12px;word-break:break-all;">${confirmationUrl}</p>
-          <p style="color:#999;font-size:12px;margin-top:20px;">If you didn't request this, you can safely ignore this email. Your password won't change.</p>
-        `),
-      };
+// Template mapping
+const EMAIL_TEMPLATES: Record<string, React.ComponentType<any>> = {
+  signup: SignupEmail,
+  invite: InviteEmail,
+  magiclink: MagicLinkEmail,
+  recovery: RecoveryEmail,
+  email_change: EmailChangeEmail,
+  reauthentication: ReauthenticationEmail,
+}
 
-    case 'magiclink':
-      return {
-        subject: 'Your Savo login link',
-        html: getBrandedHtml('Sign in to Savo', `
-          <p style="color:#555;line-height:1.6;margin:0 0 20px;">Click the button below to sign in to your Savo account. This link expires in 10 minutes.</p>
-          <div style="text-align:center;margin:24px 0;">
-            <a href="${confirmationUrl}" style="display:inline-block;background:linear-gradient(135deg,#e8551e,#d44a18);color:#ffffff;text-decoration:none;padding:14px 32px;border-radius:8px;font-weight:600;font-size:15px;">Sign In</a>
-          </div>
-          <p style="color:#999;font-size:13px;">If you didn't request this, please ignore this email.</p>
-        `),
-      };
+// Configuration
+const SITE_NAME = "Savo"
+const SENDER_DOMAIN = "notify.jamesblond.co.nz"
+const ROOT_DOMAIN = "jamesblond.co.nz"
+const FROM_DOMAIN = "notify.jamesblond.co.nz" // Domain shown in From address (may be root or sender subdomain)
 
-    case 'invite':
-      return {
-        subject: "You've been invited to Savo",
-        html: getBrandedHtml("You're invited!", `
-          <p style="color:#555;line-height:1.6;margin:0 0 20px;">You've been invited to join Savo — your vehicle claims assistant. Click below to accept the invitation and set up your account.</p>
-          <div style="text-align:center;margin:24px 0;">
-            <a href="${confirmationUrl}" style="display:inline-block;background:linear-gradient(135deg,#e8551e,#d44a18);color:#ffffff;text-decoration:none;padding:14px 32px;border-radius:8px;font-weight:600;font-size:15px;">Accept Invitation</a>
-          </div>
-        `),
-      };
+// Sample data for preview mode ONLY (not used in actual email sending).
+// URLs are baked in at scaffold time from the project's real data.
+// The sample email uses a fixed placeholder (RFC 6761 .test TLD) so the Go backend
+// can always find-and-replace it with the actual recipient when sending test emails,
+// even if the project's domain has changed since the template was scaffolded.
+const SAMPLE_PROJECT_URL = "https://savonz.lovable.app"
+const SAMPLE_EMAIL = "user@example.test"
+const SAMPLE_DATA: Record<string, object> = {
+  signup: {
+    siteName: SITE_NAME,
+    siteUrl: SAMPLE_PROJECT_URL,
+    recipient: SAMPLE_EMAIL,
+    confirmationUrl: SAMPLE_PROJECT_URL,
+  },
+  magiclink: {
+    siteName: SITE_NAME,
+    confirmationUrl: SAMPLE_PROJECT_URL,
+  },
+  recovery: {
+    siteName: SITE_NAME,
+    confirmationUrl: SAMPLE_PROJECT_URL,
+  },
+  invite: {
+    siteName: SITE_NAME,
+    siteUrl: SAMPLE_PROJECT_URL,
+    confirmationUrl: SAMPLE_PROJECT_URL,
+  },
+  email_change: {
+    siteName: SITE_NAME,
+    email: SAMPLE_EMAIL,
+    newEmail: SAMPLE_EMAIL,
+    confirmationUrl: SAMPLE_PROJECT_URL,
+  },
+  reauthentication: {
+    token: '123456',
+  },
+}
 
-    case 'email_change':
-      return {
-        subject: 'Confirm your new email – Savo',
-        html: getBrandedHtml('Confirm email change', `
-          <p style="color:#555;line-height:1.6;margin:0 0 20px;">You requested to change your email address. Please confirm by clicking the button below.</p>
-          <div style="text-align:center;margin:24px 0;">
-            <a href="${confirmationUrl}" style="display:inline-block;background:linear-gradient(135deg,#e8551e,#d44a18);color:#ffffff;text-decoration:none;padding:14px 32px;border-radius:8px;font-weight:600;font-size:15px;">Confirm New Email</a>
-          </div>
-          <p style="color:#999;font-size:12px;margin-top:20px;">If you didn't request this change, please contact support immediately.</p>
-        `),
-      };
-
-    case 'reauthentication':
-      return {
-        subject: 'Your Savo verification code',
-        html: getBrandedHtml('Verification code', `
-          <p style="color:#555;line-height:1.6;margin:0 0 20px;">Use the code below to verify your identity:</p>
-          <div style="text-align:center;margin:24px 0;">
-            <div style="display:inline-block;background:#f5f5f5;border:2px solid #e5e5e5;border-radius:12px;padding:16px 32px;">
-              <span style="font-size:32px;font-weight:700;letter-spacing:6px;color:#1a1a1a;">${otpToken || ''}</span>
-            </div>
-          </div>
-          <p style="color:#999;font-size:13px;">This code expires in 10 minutes.</p>
-        `),
-      };
-
-    default:
-      return {
-        subject: 'Savo notification',
-        html: getBrandedHtml('Notification', `
-          <p style="color:#555;line-height:1.6;">You have a new notification from Savo.</p>
-          ${confirmationUrl ? `<div style="text-align:center;margin:24px 0;"><a href="${confirmationUrl}" style="display:inline-block;background:linear-gradient(135deg,#e8551e,#d44a18);color:#ffffff;text-decoration:none;padding:14px 32px;border-radius:8px;font-weight:600;font-size:15px;">Take Action</a></div>` : ''}
-        `),
-      };
+// Preview endpoint handler - returns rendered HTML without sending email
+async function handlePreview(req: Request): Promise<Response> {
+  const previewCorsHeaders = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Headers': 'authorization, content-type',
   }
-}
 
-serve(async (req) => {
   if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
+    return new Response(null, { headers: previewCorsHeaders })
   }
 
+  const apiKey = Deno.env.get('LOVABLE_API_KEY')
+  const authHeader = req.headers.get('Authorization')
+
+  if (!apiKey || authHeader !== `Bearer ${apiKey}`) {
+    return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+      status: 401,
+      headers: { ...previewCorsHeaders, 'Content-Type': 'application/json' },
+    })
+  }
+
+  let type: string
   try {
-    if (!RESEND_API_KEY) throw new Error('RESEND_API_KEY is not configured');
+    const body = await req.json()
+    type = body.type
+  } catch (error) {
+    return new Response(JSON.stringify({ error: 'Invalid JSON in request body' }), {
+      status: 400,
+      headers: { ...previewCorsHeaders, 'Content-Type': 'application/json' },
+    })
+  }
 
-    const payload = await req.json();
-    
-    // Supabase auth hook payload structure
-    const { user, email_data } = payload;
-    
-    if (!user?.email || !email_data?.token_hash) {
-      throw new Error('Invalid auth hook payload');
+  const EmailTemplate = EMAIL_TEMPLATES[type]
+
+  if (!EmailTemplate) {
+    return new Response(JSON.stringify({ error: `Unknown email type: ${type}` }), {
+      status: 400,
+      headers: { ...previewCorsHeaders, 'Content-Type': 'application/json' },
+    })
+  }
+
+  const sampleData = SAMPLE_DATA[type] || {}
+  const html = await renderAsync(React.createElement(EmailTemplate, sampleData))
+
+  return new Response(html, {
+    status: 200,
+    headers: { ...previewCorsHeaders, 'Content-Type': 'text/html; charset=utf-8' },
+  })
+}
+
+// Webhook handler - verifies signature and sends email
+async function handleWebhook(req: Request): Promise<Response> {
+  const apiKey = Deno.env.get('LOVABLE_API_KEY')
+
+  if (!apiKey) {
+    console.error('LOVABLE_API_KEY not configured')
+    return new Response(
+      JSON.stringify({ error: 'Server configuration error' }),
+      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    )
+  }
+
+  // Verify signature + timestamp, then parse payload.
+  let payload: any
+  let run_id = ''
+  try {
+    const verified = await verifyWebhookRequest({
+      req,
+      secret: apiKey,
+      parser: parseEmailWebhookPayload,
+    })
+    payload = verified.payload
+    run_id = payload.run_id
+  } catch (error) {
+    if (error instanceof WebhookError) {
+      switch (error.code) {
+        case 'invalid_signature':
+        case 'missing_timestamp':
+        case 'invalid_timestamp':
+        case 'stale_timestamp':
+          console.error('Invalid webhook signature', { error: error.message })
+          return new Response(JSON.stringify({ error: 'Invalid signature' }), {
+            status: 401,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          })
+        case 'invalid_payload':
+        case 'invalid_json':
+          console.error('Invalid webhook payload', { error: error.message })
+          return new Response(
+            JSON.stringify({ error: 'Invalid webhook payload' }),
+            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          )
+      }
     }
 
-    const recipientEmail = email_data.redirect_to
-      ? user.email
-      : user.email;
-    
-    const emailType = email_data.email_action_type || 'signup';
-    
-    // Build confirmation URL
-    const siteUrl = email_data.site_url || 'https://savonz.lovable.app';
-    const redirectTo = email_data.redirect_to || siteUrl;
-    const tokenHash = email_data.token_hash;
-    const type = email_data.email_action_type === 'signup' ? 'signup' : 
-                 email_data.email_action_type === 'recovery' ? 'recovery' :
-                 email_data.email_action_type === 'magiclink' ? 'magiclink' :
-                 email_data.email_action_type === 'invite' ? 'invite' :
-                 email_data.email_action_type === 'email_change' ? 'email_change' :
-                 'signup';
-    
-    const confirmationUrl = `${siteUrl}/auth/v1/verify?token=${tokenHash}&type=${type}&redirect_to=${encodeURIComponent(redirectTo)}`;
-    
-    const otpToken = email_data.token;
-    const { subject, html } = getEmailContent(emailType, confirmationUrl, otpToken);
+    console.error('Webhook verification failed', { error })
+    return new Response(
+      JSON.stringify({ error: 'Invalid webhook payload' }),
+      { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    )
+  }
 
-    // Send via Resend
-    const res = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${RESEND_API_KEY}`,
-      },
-      body: JSON.stringify({
-        from: FROM_EMAIL,
-        to: [user.email],
-        subject,
-        html,
-      }),
-    });
+  if (!run_id) {
+    console.error('Webhook payload missing run_id')
+    return new Response(
+      JSON.stringify({ error: 'Invalid webhook payload' }),
+      {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      }
+    )
+  }
 
-    const result = await res.json();
-    if (!res.ok) {
-      console.error('Resend error:', JSON.stringify(result));
-      throw new Error(`Resend error: ${JSON.stringify(result)}`);
-    }
+  if (payload.version !== '1') {
+    console.error('Unsupported payload version', { version: payload.version, run_id })
+    return new Response(
+      JSON.stringify({ error: `Unsupported payload version: ${payload.version}` }),
+      {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      }
+    )
+  }
 
-    console.log(`Auth email sent: type=${emailType}, to=${user.email}, id=${result.id}`);
+  // The email action type is in payload.data.action_type (e.g., "signup", "recovery")
+  // payload.type is the hook event type ("auth")
+  const emailType = payload.data.action_type
+  console.log('Received auth event', { emailType, email: payload.data.email, run_id })
 
-    return new Response(JSON.stringify({ success: true }), {
-      status: 200,
+  const EmailTemplate = EMAIL_TEMPLATES[emailType]
+  if (!EmailTemplate) {
+    console.error('Unknown email type', { emailType, run_id })
+    return new Response(
+      JSON.stringify({ error: `Unknown email type: ${emailType}` }),
+      { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    )
+  }
+
+  // Build template props from payload.data (HookData structure)
+  const templateProps = {
+    siteName: SITE_NAME,
+    siteUrl: `https://${ROOT_DOMAIN}`,
+    recipient: payload.data.email,
+    confirmationUrl: payload.data.url,
+    token: payload.data.token,
+    email: payload.data.email,
+    newEmail: payload.data.new_email,
+  }
+
+  // Render React Email to HTML and plain text
+  const html = await renderAsync(React.createElement(EmailTemplate, templateProps))
+  const text = await renderAsync(React.createElement(EmailTemplate, templateProps), {
+    plainText: true,
+  })
+
+  // Enqueue email for async processing by the dispatcher (process-email-queue).
+  const supabase = createClient(
+    Deno.env.get('SUPABASE_URL')!,
+    Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+  )
+
+  const messageId = crypto.randomUUID()
+
+  // Log pending BEFORE enqueue so we have a record even if enqueue crashes
+  await supabase.from('email_send_log').insert({
+    message_id: messageId,
+    template_name: emailType,
+    recipient_email: payload.data.email,
+    status: 'pending',
+  })
+
+  const { error: enqueueError } = await supabase.rpc('enqueue_email', {
+    queue_name: 'auth_emails',
+    payload: {
+      run_id,
+      message_id: messageId,
+      to: payload.data.email,
+      from: `${SITE_NAME} <noreply@${FROM_DOMAIN}>`,
+      sender_domain: SENDER_DOMAIN,
+      subject: EMAIL_SUBJECTS[emailType] || 'Notification',
+      html,
+      text,
+      purpose: 'transactional',
+      label: emailType,
+      queued_at: new Date().toISOString(),
+    },
+  })
+
+  if (enqueueError) {
+    console.error('Failed to enqueue auth email', { error: enqueueError, run_id, emailType })
+    await supabase.from('email_send_log').insert({
+      message_id: messageId,
+      template_name: emailType,
+      recipient_email: payload.data.email,
+      status: 'failed',
+      error_message: 'Failed to enqueue email',
+    })
+    return new Response(JSON.stringify({ error: 'Failed to enqueue email' }), {
+      status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
-  } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Unknown error';
-    console.error('Auth email hook error:', message);
+    })
+  }
+
+  console.log('Auth email enqueued', { emailType, email: payload.data.email, run_id })
+
+  return new Response(
+    JSON.stringify({ success: true, queued: true }),
+    { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+  )
+}
+
+Deno.serve(async (req) => {
+  const url = new URL(req.url)
+
+  // Handle CORS preflight for main endpoint
+  if (req.method === 'OPTIONS') {
+    return new Response(null, { headers: corsHeaders })
+  }
+
+  // Route to preview handler for /preview path
+  if (url.pathname.endsWith('/preview')) {
+    return handlePreview(req)
+  }
+
+  // Main webhook handler
+  try {
+    return await handleWebhook(req)
+  } catch (error) {
+    console.error('Webhook handler error:', error)
+    const message = error instanceof Error ? error.message : 'Unknown error'
     return new Response(JSON.stringify({ error: message }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    })
   }
-});
+})
