@@ -57,12 +57,20 @@ serve(async (req) => {
         );
       }
 
+      const e164Phone = normalizePhone(phone);
+      if (!/^\+\d{8,15}$/.test(e164Phone)) {
+        return new Response(
+          JSON.stringify({ error: "Invalid phone number format" }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
       const otpCode = generateOtp();
       const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString();
 
       const { error: dbError } = await supabaseAdmin
         .from("phone_otps")
-        .insert({ phone_number: phone, otp_code: otpCode, expires_at: expiresAt });
+        .insert({ phone_number: e164Phone, otp_code: otpCode, expires_at: expiresAt });
 
       if (dbError) {
         console.error("DB error:", dbError);
