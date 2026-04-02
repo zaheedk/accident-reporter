@@ -58,8 +58,7 @@ export default function ClaimList() {
           const photoMap: Record<string, string> = {};
           photoData.forEach((p: any) => {
             if (!photoMap[p.claim_id]) {
-              const { data: urlData } = supabase.storage.from('claim-photos').getPublicUrl(p.file_path);
-              photoMap[p.claim_id] = urlData?.publicUrl || '';
+              photoMap[p.claim_id] = getThumbnailUrl('claim-photos', p.file_path);
             }
           });
           setClaimPhotos(photoMap);
