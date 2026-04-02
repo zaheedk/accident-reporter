@@ -34,6 +34,11 @@ export default function Auth() {
           options: { data: { full_name: name }, emailRedirectTo: window.location.origin },
         });
         if (error) throw error;
+        setMode('login');
+        setSuccess('Account created! Please check your email to verify, then sign in.');
+        setEmail('');
+        setPassword('');
+        setName('');
         supabase.functions.invoke('send-email', {
           body: { type: 'welcome', to: email },
         }).catch(err => console.error('Welcome email failed:', err));
