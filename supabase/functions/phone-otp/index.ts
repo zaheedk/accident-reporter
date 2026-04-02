@@ -119,11 +119,12 @@ serve(async (req) => {
           { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
+      const e164Phone = normalizePhone(phone);
 
       const { data: otpRecord, error: findError } = await supabaseAdmin
         .from("phone_otps")
         .select("*")
-        .eq("phone_number", phone)
+        .eq("phone_number", e164Phone)
         .eq("otp_code", otp)
         .eq("verified", false)
         .gte("expires_at", new Date().toISOString())
