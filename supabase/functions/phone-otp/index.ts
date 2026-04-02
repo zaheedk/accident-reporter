@@ -174,7 +174,7 @@ serve(async (req) => {
           { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       } else {
-        const fakeEmail = `phone_${phone.replace(/\+/g, "")}@savo.phone.local`;
+        const fakeEmail = `phone_${e164Phone.replace(/\+/g, "")}@savo.phone.local`;
         const tempPassword = crypto.randomUUID();
 
         const { data: newUser, error: createError } = await supabaseAdmin.auth.admin.createUser({
