@@ -195,7 +195,7 @@ serve(async (req) => {
         if (newUser?.user) {
           await supabaseAdmin
             .from("profiles")
-            .update({ phone_number: phone })
+            .update({ phone_number: e164Phone })
             .eq("user_id", newUser.user.id);
         }
 
