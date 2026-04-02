@@ -232,7 +232,7 @@ export default function Auth() {
 
               <p className="text-center text-sm text-muted-foreground mt-5">
                 {mode === 'login' ? 'New to Savo? ' : 'Already have an account? '}
-                <button onClick={() => { setMode(mode === 'login' ? 'signup' : 'login'); setError(''); }} className="text-primary font-bold hover:underline">
+                <button onClick={() => { setMode(mode === 'login' ? 'signup' : 'login'); setError(''); setSuccess(''); }} className="text-primary font-bold hover:underline">
                   {mode === 'login' ? 'Create a free account' : 'Sign in'}
                 </button>
               </p>
