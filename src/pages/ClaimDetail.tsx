@@ -436,7 +436,7 @@ export default function ClaimDetail() {
                   <SubHeading>Damage Photos</SubHeading>
                   <div className="grid grid-cols-3 gap-2">
                     {photos.map(p => (
-                      <button key={p.id} onClick={() => setLightboxUrl(p.url)} className="rounded-xl overflow-hidden aspect-square bg-muted">
+                      <button key={p.id} onClick={() => setLightboxUrl(p.fullUrl)} className="rounded-xl overflow-hidden aspect-square bg-muted">
                         <img src={p.url} alt={p.fileName} className="w-full h-full object-cover" loading="lazy" />
                       </button>
                     ))}
