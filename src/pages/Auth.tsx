@@ -213,6 +213,7 @@ export default function Auth() {
                   </div>
                 )}
 
+                {success && <p className="text-xs text-green-700 font-medium bg-green-50 px-3 py-2 rounded-lg">{success}</p>}
                 {error && <p className="text-xs text-destructive font-medium bg-destructive/5 px-3 py-2 rounded-lg">{error}</p>}
 
                 <button type="submit" disabled={submitting}
