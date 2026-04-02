@@ -27,6 +27,7 @@ export default function Auth() {
     e.preventDefault();
     setError('');
     setSuccess('');
+    setSubmitting(true);
     try {
       if (mode === 'signup') {
         const { error } = await supabase.auth.signUp({
