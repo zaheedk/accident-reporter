@@ -10,6 +10,16 @@ const corsHeaders = {
 const generateOtp = () =>
   String(Math.floor(100000 + Math.random() * 900000));
 
+/** Normalize a phone number to E.164 format. Defaults to NZ (+64) if no country code. */
+function normalizePhone(phone: string): string {
+  let cleaned = phone.replace(/[\s\-()]/g, "");
+  if (cleaned.startsWith("+")) return cleaned;
+  if (cleaned.startsWith("0")) {
+    return "+64" + cleaned.slice(1); // NZ default
+  }
+  return "+" + cleaned;
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
