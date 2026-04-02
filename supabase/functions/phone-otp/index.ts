@@ -147,7 +147,7 @@ serve(async (req) => {
       const { data: existingProfile } = await supabaseAdmin
         .from("profiles")
         .select("user_id")
-        .eq("phone_number", phone)
+        .eq("phone_number", e164Phone)
         .maybeSingle();
 
       if (existingProfile) {
