@@ -149,48 +149,60 @@ export default function ClaimList() {
               const photoUrl = claimPhotos[c.id];
               return (
                 <div key={c.id} className="card-surface overflow-hidden hover:shadow-md transition-all group">
-                  <Link to={href} className="block">
-                    <div className="flex gap-3">
-                      {/* Photo thumbnail */}
-                      <div className="w-24 h-24 flex-shrink-0 bg-muted overflow-hidden rounded-l-xl">
-                        {photoUrl ? (
-                          <img src={photoUrl} alt="Damage" className="w-full h-full object-cover" />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center">
-                            <Car className="w-8 h-8 text-muted-foreground/20" strokeWidth={1.2} />
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Content */}
-                      <div className="flex-1 min-w-0 py-3 pr-3">
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${isDraft ? 'bg-muted text-muted-foreground' : 'bg-primary/10 text-primary'}`}>
-                            {statusLabel}
-                          </span>
-                          {reportNum && (
-                            <span className="text-[10px] font-mono font-medium text-muted-foreground">
-                              {reportNum}
-                            </span>
+                  <div className="flex">
+                    <Link to={href} className="block flex-1 min-w-0">
+                      <div className="flex gap-3">
+                        {/* Photo thumbnail */}
+                        <div className="w-24 h-24 flex-shrink-0 bg-muted overflow-hidden rounded-l-xl">
+                          {photoUrl ? (
+                            <img src={photoUrl} alt="Damage" className="w-full h-full object-cover" />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center">
+                              <Car className="w-8 h-8 text-muted-foreground/20" strokeWidth={1.2} />
+                            </div>
                           )}
-                          <ChevronRight className="w-4 h-4 text-muted-foreground/30 ml-auto group-hover:text-primary transition-colors flex-shrink-0" />
                         </div>
 
-                        {rego && (
-                          <p className="text-lg font-extrabold text-foreground tracking-wide leading-tight">
-                            {rego}
-                          </p>
-                        )}
+                        {/* Content */}
+                        <div className="flex-1 min-w-0 py-3 pr-3">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${isDraft ? 'bg-muted text-muted-foreground' : 'bg-primary/10 text-primary'}`}>
+                              {statusLabel}
+                            </span>
+                            {reportNum && (
+                              <span className="text-[10px] font-mono font-medium text-muted-foreground">
+                                {reportNum}
+                              </span>
+                            )}
+                            <ChevronRight className="w-4 h-4 text-muted-foreground/30 ml-auto group-hover:text-primary transition-colors flex-shrink-0" />
+                          </div>
 
-                        <div className="flex items-center gap-1 mt-0.5">
-                          <Calendar className="w-3.5 h-3.5 text-muted-foreground" />
-                          <span className="text-sm font-bold text-foreground">
-                            {c.incidentDate || t('claims.noDate')}
-                          </span>
+                          {rego && (
+                            <p className="text-lg font-extrabold text-foreground tracking-wide leading-tight">
+                              {rego}
+                            </p>
+                          )}
+
+                          <div className="flex items-center gap-1 mt-0.5">
+                            <Calendar className="w-3.5 h-3.5 text-muted-foreground" />
+                            <span className="text-sm font-bold text-foreground">
+                              {c.incidentDate || t('claims.noDate')}
+                            </span>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </Link>
+                    </Link>
+
+                    {/* Delete button for non-submitted reports */}
+                    {c.status !== 'submitted' && (
+                      <button
+                        onClick={(e) => { e.preventDefault(); setDeleteId(c.id); }}
+                        className="flex items-center justify-center w-12 border-l border-border text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    )}
+                  </div>
                 </div>
               );
             })}
