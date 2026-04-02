@@ -10,6 +10,16 @@ const corsHeaders = {
 const generateOtp = () =>
   String(Math.floor(100000 + Math.random() * 900000));
 
+/** Normalize a phone number to E.164 format. Defaults to NZ (+64) if no country code. */
+function normalizePhone(phone: string): string {
+  let cleaned = phone.replace(/[\s\-()]/g, "");
+  if (cleaned.startsWith("+")) return cleaned;
+  if (cleaned.startsWith("0")) {
+    return "+64" + cleaned.slice(1); // NZ default
+  }
+  return "+" + cleaned;
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -47,12 +57,20 @@ serve(async (req) => {
         );
       }
 
+      const e164Phone = normalizePhone(phone);
+      if (!/^\+\d{8,15}$/.test(e164Phone)) {
+        return new Response(
+          JSON.stringify({ error: "Invalid phone number format" }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
       const otpCode = generateOtp();
       const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString();
 
       const { error: dbError } = await supabaseAdmin
         .from("phone_otps")
-        .insert({ phone_number: phone, otp_code: otpCode, expires_at: expiresAt });
+        .insert({ phone_number: e164Phone, otp_code: otpCode, expires_at: expiresAt });
 
       if (dbError) {
         console.error("DB error:", dbError);
@@ -73,7 +91,7 @@ serve(async (req) => {
           "Content-Type": "application/x-www-form-urlencoded",
         },
         body: new URLSearchParams({
-          To: phone,
+          To: e164Phone,
           From: Deno.env.get("TWILIO_PHONE_NUMBER") || "",
           Body: `Your Savo verification code is: ${otpCode}. It expires in 10 minutes.`,
         }),
