@@ -12,6 +12,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
+import { getMediumUrl, getFullUrl } from '@/lib/image-url';
 
 export default function ClaimDetail() {
   const { id } = useParams();
@@ -19,8 +20,8 @@ export default function ClaimDetail() {
   const { t } = useTranslation();
   const [claim, setClaim] = useState<ClaimReport | null>(null);
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
-  const [photos, setPhotos] = useState<{ id: string; url: string; fileName: string }[]>([]);
-  const [tpPhotos, setTpPhotos] = useState<{ id: string; url: string; type: string; tpIndex: number }[]>([]);
+  const [photos, setPhotos] = useState<{ id: string; url: string; fullUrl: string; fileName: string }[]>([]);
+  const [tpPhotos, setTpPhotos] = useState<{ id: string; url: string; fullUrl: string; type: string; tpIndex: number }[]>([]);
   const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [insurerPhone, setInsurerPhone] = useState('');
@@ -103,17 +104,22 @@ export default function ClaimDetail() {
       }
       
       if (photosRes.data) {
-        setPhotos(photosRes.data.map((p: any) => {
-          const { data } = supabase.storage.from('claim-photos').getPublicUrl(p.file_path);
-          return { id: p.id, url: data.publicUrl, fileName: p.file_name };
-        }));
+        setPhotos(photosRes.data.map((p: any) => ({
+          id: p.id,
+          url: getMediumUrl('claim-photos', p.file_path),
+          fullUrl: getFullUrl('claim-photos', p.file_path),
+          fileName: p.file_name,
+        })));
       }
       
       if (tpRes.data) {
-        setTpPhotos(tpRes.data.map((p: any) => {
-          const { data } = supabase.storage.from('tp-photos').getPublicUrl(p.file_path);
-          return { id: p.id, url: data.publicUrl, type: p.type, tpIndex: p.tp_index };
-        }));
+        setTpPhotos(tpRes.data.map((p: any) => ({
+          id: p.id,
+          url: getMediumUrl('tp-photos', p.file_path),
+          fullUrl: getFullUrl('tp-photos', p.file_path),
+          type: p.type,
+          tpIndex: p.tp_index,
+        })));
       }
       
       if (insurersRes.data) setInsuranceCompanies(insurersRes.data);
@@ -317,7 +323,7 @@ export default function ClaimDetail() {
                             <span className="text-[11px] font-semibold text-muted-foreground">Damage photos</span>
                             <div className="grid grid-cols-4 gap-1.5">
                               {tpDamagePhotos.map(p => (
-                                <button key={p.id} onClick={() => setLightboxUrl(p.url)} className="rounded-lg overflow-hidden aspect-square bg-muted">
+                                <button key={p.id} onClick={() => setLightboxUrl(p.fullUrl)} className="rounded-lg overflow-hidden aspect-square bg-muted">
                                   <img src={p.url} alt="Damage" className="w-full h-full object-cover" loading="lazy" />
                                 </button>
                               ))}
@@ -329,7 +335,7 @@ export default function ClaimDetail() {
                             <span className="text-[11px] font-semibold text-muted-foreground">Rego/plate photos</span>
                             <div className="grid grid-cols-4 gap-1.5">
                               {tpRegoPhotos.map(p => (
-                                <button key={p.id} onClick={() => setLightboxUrl(p.url)} className="rounded-lg overflow-hidden aspect-square bg-muted">
+                                <button key={p.id} onClick={() => setLightboxUrl(p.fullUrl)} className="rounded-lg overflow-hidden aspect-square bg-muted">
                                   <img src={p.url} alt="Rego" className="w-full h-full object-cover" loading="lazy" />
                                 </button>
                               ))}
@@ -341,7 +347,7 @@ export default function ClaimDetail() {
                             <span className="text-[11px] font-semibold text-muted-foreground">Driver's license</span>
                             <div className="grid grid-cols-4 gap-1.5">
                               {tpLicensePhotos.map(p => (
-                                <button key={p.id} onClick={() => setLightboxUrl(p.url)} className="rounded-lg overflow-hidden aspect-square bg-muted">
+                                <button key={p.id} onClick={() => setLightboxUrl(p.fullUrl)} className="rounded-lg overflow-hidden aspect-square bg-muted">
                                   <img src={p.url} alt="License" className="w-full h-full object-cover" loading="lazy" />
                                 </button>
                               ))}
@@ -430,7 +436,7 @@ export default function ClaimDetail() {
                   <SubHeading>Damage Photos</SubHeading>
                   <div className="grid grid-cols-3 gap-2">
                     {photos.map(p => (
-                      <button key={p.id} onClick={() => setLightboxUrl(p.url)} className="rounded-xl overflow-hidden aspect-square bg-muted">
+                      <button key={p.id} onClick={() => setLightboxUrl(p.fullUrl)} className="rounded-xl overflow-hidden aspect-square bg-muted">
                         <img src={p.url} alt={p.fileName} className="w-full h-full object-cover" loading="lazy" />
                       </button>
                     ))}

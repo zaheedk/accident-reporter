@@ -9,6 +9,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { getThumbnailUrl } from '@/lib/image-url';
 
 export default function ClaimList() {
   const [claims, setClaims] = useState<ClaimReport[]>([]);
@@ -57,8 +58,7 @@ export default function ClaimList() {
           const photoMap: Record<string, string> = {};
           photoData.forEach((p: any) => {
             if (!photoMap[p.claim_id]) {
-              const { data: urlData } = supabase.storage.from('claim-photos').getPublicUrl(p.file_path);
-              photoMap[p.claim_id] = urlData?.publicUrl || '';
+              photoMap[p.claim_id] = getThumbnailUrl('claim-photos', p.file_path);
             }
           });
           setClaimPhotos(photoMap);
@@ -155,7 +155,7 @@ export default function ClaimList() {
                         {/* Photo thumbnail */}
                         <div className="w-24 h-24 flex-shrink-0 bg-muted overflow-hidden rounded-l-xl">
                           {photoUrl ? (
-                            <img src={photoUrl} alt="Damage" className="w-full h-full object-cover" />
+                            <img src={photoUrl} alt="Damage" className="w-full h-full object-cover" loading="lazy" />
                           ) : (
                             <div className="w-full h-full flex items-center justify-center">
                               <Car className="w-8 h-8 text-muted-foreground/20" strokeWidth={1.2} />
