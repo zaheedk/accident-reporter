@@ -1,11 +1,14 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { Plus, FileText, ChevronRight, Search, X, Calendar, Car, ArrowLeft } from 'lucide-react';
-import { getClaims, getVehicles } from '@/lib/storage';
+import { Plus, FileText, ChevronRight, Search, X, Calendar, Car, ArrowLeft, Trash2 } from 'lucide-react';
+import { getClaims, getVehicles, deleteClaim } from '@/lib/storage';
 import { ClaimReport, Vehicle } from '@/types';
 import AppLayout from '@/components/AppLayout';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
 
 export default function ClaimList() {
   const [claims, setClaims] = useState<ClaimReport[]>([]);
@@ -13,7 +16,24 @@ export default function ClaimList() {
   const [claimMeta, setClaimMeta] = useState<Record<string, { claimNumber: number | null; reportNumber: string | null }>>({});
   const [claimPhotos, setClaimPhotos] = useState<Record<string, string>>({});
   const [search, setSearch] = useState('');
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
   const { t } = useTranslation();
+
+  const handleDelete = async () => {
+    if (!deleteId) return;
+    setDeleting(true);
+    try {
+      await deleteClaim(deleteId);
+      setClaims(prev => prev.filter(c => c.id !== deleteId));
+      toast.success('Report deleted');
+    } catch {
+      toast.error('Failed to delete report');
+    } finally {
+      setDeleting(false);
+      setDeleteId(null);
+    }
+  };
 
   useEffect(() => {
     const load = async () => {
@@ -129,54 +149,81 @@ export default function ClaimList() {
               const photoUrl = claimPhotos[c.id];
               return (
                 <div key={c.id} className="card-surface overflow-hidden hover:shadow-md transition-all group">
-                  <Link to={href} className="block">
-                    <div className="flex gap-3">
-                      {/* Photo thumbnail */}
-                      <div className="w-24 h-24 flex-shrink-0 bg-muted overflow-hidden rounded-l-xl">
-                        {photoUrl ? (
-                          <img src={photoUrl} alt="Damage" className="w-full h-full object-cover" />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center">
-                            <Car className="w-8 h-8 text-muted-foreground/20" strokeWidth={1.2} />
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Content */}
-                      <div className="flex-1 min-w-0 py-3 pr-3">
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${isDraft ? 'bg-muted text-muted-foreground' : 'bg-primary/10 text-primary'}`}>
-                            {statusLabel}
-                          </span>
-                          {reportNum && (
-                            <span className="text-[10px] font-mono font-medium text-muted-foreground">
-                              {reportNum}
-                            </span>
+                  <div className="flex">
+                    <Link to={href} className="block flex-1 min-w-0">
+                      <div className="flex gap-3">
+                        {/* Photo thumbnail */}
+                        <div className="w-24 h-24 flex-shrink-0 bg-muted overflow-hidden rounded-l-xl">
+                          {photoUrl ? (
+                            <img src={photoUrl} alt="Damage" className="w-full h-full object-cover" />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center">
+                              <Car className="w-8 h-8 text-muted-foreground/20" strokeWidth={1.2} />
+                            </div>
                           )}
-                          <ChevronRight className="w-4 h-4 text-muted-foreground/30 ml-auto group-hover:text-primary transition-colors flex-shrink-0" />
                         </div>
 
-                        {rego && (
-                          <p className="text-lg font-extrabold text-foreground tracking-wide leading-tight">
-                            {rego}
-                          </p>
-                        )}
+                        {/* Content */}
+                        <div className="flex-1 min-w-0 py-3 pr-3">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${isDraft ? 'bg-muted text-muted-foreground' : 'bg-primary/10 text-primary'}`}>
+                              {statusLabel}
+                            </span>
+                            {reportNum && (
+                              <span className="text-[10px] font-mono font-medium text-muted-foreground">
+                                {reportNum}
+                              </span>
+                            )}
+                            <ChevronRight className="w-4 h-4 text-muted-foreground/30 ml-auto group-hover:text-primary transition-colors flex-shrink-0" />
+                          </div>
 
-                        <div className="flex items-center gap-1 mt-0.5">
-                          <Calendar className="w-3.5 h-3.5 text-muted-foreground" />
-                          <span className="text-sm font-bold text-foreground">
-                            {c.incidentDate || t('claims.noDate')}
-                          </span>
+                          {rego && (
+                            <p className="text-lg font-extrabold text-foreground tracking-wide leading-tight">
+                              {rego}
+                            </p>
+                          )}
+
+                          <div className="flex items-center gap-1 mt-0.5">
+                            <Calendar className="w-3.5 h-3.5 text-muted-foreground" />
+                            <span className="text-sm font-bold text-foreground">
+                              {c.incidentDate || t('claims.noDate')}
+                            </span>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </Link>
+                    </Link>
+
+                    {/* Delete button for non-submitted reports */}
+                    {c.status !== 'submitted' && (
+                      <button
+                        onClick={(e) => { e.preventDefault(); setDeleteId(c.id); }}
+                        className="flex items-center justify-center w-12 border-l border-border text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    )}
+                  </div>
                 </div>
               );
             })}
           </div>
         )}
       </div>
+
+      <Dialog open={!!deleteId} onOpenChange={(open) => !open && setDeleteId(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Report</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground">Are you sure you want to delete this incident report? This action cannot be undone.</p>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDeleteId(null)} disabled={deleting}>Cancel</Button>
+            <Button variant="destructive" onClick={handleDelete} disabled={deleting}>
+              {deleting ? 'Deleting…' : 'Delete'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </AppLayout>
   );
 }
