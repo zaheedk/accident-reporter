@@ -323,7 +323,7 @@ export default function ClaimDetail() {
                             <span className="text-[11px] font-semibold text-muted-foreground">Damage photos</span>
                             <div className="grid grid-cols-4 gap-1.5">
                               {tpDamagePhotos.map(p => (
-                                <button key={p.id} onClick={() => setLightboxUrl(p.url)} className="rounded-lg overflow-hidden aspect-square bg-muted">
+                                <button key={p.id} onClick={() => setLightboxUrl(p.fullUrl)} className="rounded-lg overflow-hidden aspect-square bg-muted">
                                   <img src={p.url} alt="Damage" className="w-full h-full object-cover" loading="lazy" />
                                 </button>
                               ))}
