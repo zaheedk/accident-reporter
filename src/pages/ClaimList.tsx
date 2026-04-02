@@ -155,7 +155,7 @@ export default function ClaimList() {
                         {/* Photo thumbnail */}
                         <div className="w-24 h-24 flex-shrink-0 bg-muted overflow-hidden rounded-l-xl">
                           {photoUrl ? (
-                            <img src={photoUrl} alt="Damage" className="w-full h-full object-cover" />
+                            <img src={photoUrl} alt="Damage" className="w-full h-full object-cover" loading="lazy" />
                           ) : (
                             <div className="w-full h-full flex items-center justify-center">
                               <Car className="w-8 h-8 text-muted-foreground/20" strokeWidth={1.2} />
