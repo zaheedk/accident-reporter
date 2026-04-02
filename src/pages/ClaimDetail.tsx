@@ -248,6 +248,11 @@ export default function ClaimDetail() {
           <button onClick={handlePrint} className="p-2 rounded-xl hover:bg-muted transition-colors" title="Print / Save as PDF">
             <Printer className="w-5 h-5 text-muted-foreground" strokeWidth={1.5} />
           </button>
+          {claim.status !== 'submitted' && (
+            <button onClick={() => setDeleteDialogOpen(true)} className="p-2 rounded-xl hover:bg-destructive/10 transition-colors" title="Delete report">
+              <Trash2 className="w-5 h-5 text-destructive" strokeWidth={1.5} />
+            </button>
+          )}
           <span className="text-[11px] font-medium text-primary bg-primary/8 px-2 py-1 rounded-lg">{claim.status === 'draft' ? t('common.draft') : claim.status === 'saved' ? 'Saved' : t('common.submitted')}</span>
         </div>
 
