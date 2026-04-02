@@ -91,7 +91,7 @@ serve(async (req) => {
           "Content-Type": "application/x-www-form-urlencoded",
         },
         body: new URLSearchParams({
-          To: phone,
+          To: e164Phone,
           From: Deno.env.get("TWILIO_PHONE_NUMBER") || "",
           Body: `Your Savo verification code is: ${otpCode}. It expires in 10 minutes.`,
         }),
