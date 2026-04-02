@@ -119,11 +119,12 @@ serve(async (req) => {
           { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
+      const e164Phone = normalizePhone(phone);
 
       const { data: otpRecord, error: findError } = await supabaseAdmin
         .from("phone_otps")
         .select("*")
-        .eq("phone_number", phone)
+        .eq("phone_number", e164Phone)
         .eq("otp_code", otp)
         .eq("verified", false)
         .gte("expires_at", new Date().toISOString())
@@ -146,13 +147,13 @@ serve(async (req) => {
       const { data: existingProfile } = await supabaseAdmin
         .from("profiles")
         .select("user_id")
-        .eq("phone_number", phone)
+        .eq("phone_number", e164Phone)
         .maybeSingle();
 
       if (existingProfile) {
         const { data: signInData, error: signInError } = await supabaseAdmin.auth.admin.generateLink({
           type: "magiclink",
-          email: `phone_${phone.replace(/\+/g, "")}@savo.phone.local`,
+          email: `phone_${e164Phone.replace(/\+/g, "")}@savo.phone.local`,
         });
 
         if (signInError) {
@@ -173,14 +174,14 @@ serve(async (req) => {
           { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       } else {
-        const fakeEmail = `phone_${phone.replace(/\+/g, "")}@savo.phone.local`;
+        const fakeEmail = `phone_${e164Phone.replace(/\+/g, "")}@savo.phone.local`;
         const tempPassword = crypto.randomUUID();
 
         const { data: newUser, error: createError } = await supabaseAdmin.auth.admin.createUser({
           email: fakeEmail,
           password: tempPassword,
           email_confirm: true,
-          user_metadata: { phone_number: phone, full_name: "" },
+          user_metadata: { phone_number: e164Phone, full_name: "" },
         });
 
         if (createError) {
@@ -194,7 +195,7 @@ serve(async (req) => {
         if (newUser?.user) {
           await supabaseAdmin
             .from("profiles")
-            .update({ phone_number: phone })
+            .update({ phone_number: e164Phone })
             .eq("user_id", newUser.user.id);
         }
 
