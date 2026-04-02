@@ -153,7 +153,7 @@ serve(async (req) => {
       if (existingProfile) {
         const { data: signInData, error: signInError } = await supabaseAdmin.auth.admin.generateLink({
           type: "magiclink",
-          email: `phone_${phone.replace(/\+/g, "")}@savo.phone.local`,
+          email: `phone_${e164Phone.replace(/\+/g, "")}@savo.phone.local`,
         });
 
         if (signInError) {
