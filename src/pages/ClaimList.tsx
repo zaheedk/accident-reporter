@@ -9,6 +9,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { getThumbnailUrl } from '@/lib/image-url';
 
 export default function ClaimList() {
   const [claims, setClaims] = useState<ClaimReport[]>([]);
