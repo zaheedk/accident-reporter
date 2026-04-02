@@ -181,7 +181,7 @@ serve(async (req) => {
           email: fakeEmail,
           password: tempPassword,
           email_confirm: true,
-          user_metadata: { phone_number: phone, full_name: "" },
+          user_metadata: { phone_number: e164Phone, full_name: "" },
         });
 
         if (createError) {
