@@ -16,7 +16,24 @@ export default function ClaimList() {
   const [claimMeta, setClaimMeta] = useState<Record<string, { claimNumber: number | null; reportNumber: string | null }>>({});
   const [claimPhotos, setClaimPhotos] = useState<Record<string, string>>({});
   const [search, setSearch] = useState('');
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
   const { t } = useTranslation();
+
+  const handleDelete = async () => {
+    if (!deleteId) return;
+    setDeleting(true);
+    try {
+      await deleteClaim(deleteId);
+      setClaims(prev => prev.filter(c => c.id !== deleteId));
+      toast.success('Report deleted');
+    } catch {
+      toast.error('Failed to delete report');
+    } finally {
+      setDeleting(false);
+      setDeleteId(null);
+    }
+  };
 
   useEffect(() => {
     const load = async () => {
