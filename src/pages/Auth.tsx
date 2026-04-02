@@ -17,6 +17,7 @@ export default function Auth() {
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
   if (loading) return <div className="min-h-screen bg-background flex items-center justify-center"><Loader2 className="w-6 h-6 animate-spin text-primary" /></div>;
@@ -25,6 +26,7 @@ export default function Auth() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setSuccess('');
     setSubmitting(true);
     try {
       if (mode === 'signup') {
@@ -33,6 +35,11 @@ export default function Auth() {
           options: { data: { full_name: name }, emailRedirectTo: window.location.origin },
         });
         if (error) throw error;
+        setMode('login');
+        setSuccess('Account created! Please check your email to verify, then sign in.');
+        setEmail('');
+        setPassword('');
+        setName('');
         supabase.functions.invoke('send-email', {
           body: { type: 'welcome', to: email },
         }).catch(err => console.error('Welcome email failed:', err));
@@ -207,6 +214,7 @@ export default function Auth() {
                   </div>
                 )}
 
+                {success && <p className="text-xs text-green-700 font-medium bg-green-50 px-3 py-2 rounded-lg">{success}</p>}
                 {error && <p className="text-xs text-destructive font-medium bg-destructive/5 px-3 py-2 rounded-lg">{error}</p>}
 
                 <button type="submit" disabled={submitting}
@@ -225,7 +233,7 @@ export default function Auth() {
 
               <p className="text-center text-sm text-muted-foreground mt-5">
                 {mode === 'login' ? 'New to Savo? ' : 'Already have an account? '}
-                <button onClick={() => { setMode(mode === 'login' ? 'signup' : 'login'); setError(''); }} className="text-primary font-bold hover:underline">
+                <button onClick={() => { setMode(mode === 'login' ? 'signup' : 'login'); setError(''); setSuccess(''); }} className="text-primary font-bold hover:underline">
                   {mode === 'login' ? 'Create a free account' : 'Sign in'}
                 </button>
               </p>
