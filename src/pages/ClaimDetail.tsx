@@ -38,6 +38,23 @@ export default function ClaimDetail() {
   const [emailTo, setEmailTo] = useState('');
   const [sendingEmail, setSendingEmail] = useState(false);
   const [claimNumber, setClaimNumber] = useState('');
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
+  const handleDelete = async () => {
+    if (!claim) return;
+    setDeleting(true);
+    try {
+      await deleteClaim(claim.id);
+      toast.success('Report deleted');
+      navigate('/claims');
+    } catch {
+      toast.error('Failed to delete report');
+    } finally {
+      setDeleting(false);
+      setDeleteDialogOpen(false);
+    }
+  };
 
   useEffect(() => {
     if (!id) return;
