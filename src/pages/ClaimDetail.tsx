@@ -267,17 +267,8 @@ export default function ClaimDetail() {
           <p className="text-sm text-muted-foreground">{t('claims.review.date')}: {claim.incidentDate} · Status: {claim.status === 'draft' ? t('common.draft') : t('common.submitted')}</p>
         </div>
 
-        <Tabs defaultValue="report" className="print:hidden">
-          <TabsList className="w-full grid grid-cols-2 h-11 rounded-xl bg-muted/60">
-            <TabsTrigger value="report" className="rounded-lg text-sm font-semibold data-[state=active]:bg-background data-[state=active]:shadow-sm">
-              Report Details
-            </TabsTrigger>
-            <TabsTrigger value="messages" className="rounded-lg text-sm font-semibold data-[state=active]:bg-background data-[state=active]:shadow-sm">
-              Messages
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="report" className="space-y-4 mt-4">
+        <div className="print:hidden">
+          <div className="space-y-4 mt-4">
             {/* ── Section 1: Incident & Vehicle ── */}
             <Section title="Incident & Vehicle" icon={<Car className="w-4 h-4 text-primary" />}>
               <SubHeading>Incident Details</SubHeading>
@@ -444,16 +435,8 @@ export default function ClaimDetail() {
                 </>
               )}
             </Section>
-          </TabsContent>
-
-          <TabsContent value="messages" className="mt-4">
-            <ClaimMessages
-              claimId={claim.id!}
-              insurerEmail={insurerEmail}
-              insurerName={claim.insuranceCompany}
-            />
-          </TabsContent>
-        </Tabs>
+          </div>
+        </div>
 
         {/* Print-only: show report sections */}
         <div className="hidden print:block space-y-4">
