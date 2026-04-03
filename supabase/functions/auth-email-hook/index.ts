@@ -96,20 +96,16 @@ async function handlePreview(req: Request): Promise<Response> {
   })
 }
 
-// --- Send email via Resend gateway ---
+// --- Send email via Resend API directly ---
 async function sendViaResend(to: string, subject: string, html: string, text: string): Promise<void> {
-  const lovableApiKey = Deno.env.get('LOVABLE_API_KEY')
   const resendApiKey = Deno.env.get('RESEND_API_KEY')
-
-  if (!lovableApiKey) throw new Error('LOVABLE_API_KEY not configured')
   if (!resendApiKey) throw new Error('RESEND_API_KEY not configured')
 
-  const res = await fetch(`${GATEWAY_URL}/emails`, {
+  const res = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${lovableApiKey}`,
-      'X-Connection-Api-Key': resendApiKey,
+      'Authorization': `Bearer ${resendApiKey}`,
     },
     body: JSON.stringify({
       from: FROM_ADDRESS,
