@@ -248,10 +248,20 @@ export default function Auth() {
               </form>
 
               <p className="text-center text-sm text-muted-foreground mt-5">
-                {mode === 'login' ? 'New to Savo? ' : 'Already have an account? '}
-                <button onClick={() => { setMode(mode === 'login' ? 'signup' : 'login'); setError(''); setSuccess(''); }} className="text-primary font-bold hover:underline">
-                  {mode === 'login' ? 'Create a free account' : 'Sign in'}
-                </button>
+                {mode === 'forgot' ? (
+                  <>
+                    Remember your password?{' '}
+                    <button onClick={() => { setMode('login'); setError(''); setSuccess(''); }} className="text-primary font-bold hover:underline">Sign in</button>
+                  </>
+                ) : mode === 'login' ? (
+                  <>New to Savo?{' '}
+                    <button onClick={() => { setMode('signup'); setError(''); setSuccess(''); }} className="text-primary font-bold hover:underline">Create a free account</button>
+                  </>
+                ) : (
+                  <>Already have an account?{' '}
+                    <button onClick={() => { setMode('login'); setError(''); setSuccess(''); }} className="text-primary font-bold hover:underline">Sign in</button>
+                  </>
+                )}
               </p>
             </>
           )}
