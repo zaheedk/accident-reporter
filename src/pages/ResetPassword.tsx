@@ -73,14 +73,20 @@ export default function ResetPassword() {
               <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider mb-1.5 block">New Password</label>
               <div className="relative">
                 <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/50" strokeWidth={1.5} />
-                <input type="password" className="form-input pl-10" placeholder="••••••••" value={password} onChange={e => setPassword(e.target.value)} required minLength={6} />
+                <input type={showPassword ? 'text' : 'password'} className="form-input pl-10 pr-10" placeholder="••••••••" value={password} onChange={e => setPassword(e.target.value)} required minLength={6} />
+                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground/50 hover:text-muted-foreground transition-colors">
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
               </div>
             </div>
             <div>
               <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider mb-1.5 block">Confirm Password</label>
               <div className="relative">
                 <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/50" strokeWidth={1.5} />
-                <input type="password" className="form-input pl-10" placeholder="••••••••" value={confirm} onChange={e => setConfirm(e.target.value)} required minLength={6} />
+                <input type={showConfirm ? 'text' : 'password'} className="form-input pl-10 pr-10" placeholder="••••••••" value={confirm} onChange={e => setConfirm(e.target.value)} required minLength={6} />
+                <button type="button" onClick={() => setShowConfirm(!showConfirm)} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground/50 hover:text-muted-foreground transition-colors">
+                  {showConfirm ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
               </div>
             </div>
 
