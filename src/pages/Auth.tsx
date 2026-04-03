@@ -49,6 +49,12 @@ export default function Auth() {
         supabase.functions.invoke('send-email', {
           body: { type: 'welcome', to: email },
         }).catch(err => console.error('Welcome email failed:', err));
+      } else if (mode === 'forgot') {
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: `${window.location.origin}/reset-password`,
+        });
+        if (error) throw error;
+        setSuccess('Password reset link sent! Check your email.');
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
