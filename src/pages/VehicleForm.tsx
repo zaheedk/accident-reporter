@@ -42,12 +42,18 @@ export default function VehicleForm() {
         const existing = vehicles.find(v => v.id === id);
         if (existing) {
           const { id: _, createdAt: __, ...rest } = existing;
+          // Check if insurance company is in the known list
+          const knownNames = insuranceCompanies.map(c => c.name);
+          if (rest.insuranceCompany && knownNames.length > 0 && !knownNames.includes(rest.insuranceCompany)) {
+            setCustomInsurer(rest.insuranceCompany);
+            rest.insuranceCompany = '__other__';
+          }
           setForm(rest);
           if (existing.photoUrl) setPhotoPreview(existing.photoUrl);
         }
       });
     }
-  }, [id]);
+  }, [id, insuranceCompanies]);
 
   const update = (field: string, value: string | boolean) => setForm(prev => ({ ...prev, [field]: value }));
 
