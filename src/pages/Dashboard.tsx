@@ -197,6 +197,39 @@ export default function Dashboard() {
           <ChevronRight className="w-4 h-4 text-muted-foreground/30 group-hover:text-primary transition-colors shrink-0" strokeWidth={1.5} />
         </Link>
 
+        {vehicles.filter(v => v.insuranceCompany).length > 0 && (
+          <div className="space-y-2">
+            <div className="flex items-center gap-2 px-1">
+              <Shield className="w-4 h-4 text-primary" />
+              <span className="text-[13px] font-semibold text-foreground">Your Insurance</span>
+            </div>
+            {vehicles.filter(v => v.insuranceCompany).map(v => (
+              <div key={v.id} className="card-surface-elevated flex items-center gap-3">
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm font-semibold text-foreground">{v.insuranceCompany}</div>
+                  <div className="text-xs text-muted-foreground mt-0.5">
+                    {v.year} {v.make} {v.model} · {v.regoNumber}
+                  </div>
+                  {v.insurancePolicyNumber && (
+                    <div className="text-xs text-muted-foreground mt-0.5">
+                      Policy: <span className="font-mono font-medium text-foreground">{v.insurancePolicyNumber}</span>
+                    </div>
+                  )}
+                </div>
+                {insurerPhones[v.insuranceCompany] && (
+                  <a
+                    href={`tel:${insurerPhones[v.insuranceCompany].replace(/\s/g, '')}`}
+                    className="shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold text-white bg-primary whitespace-nowrap"
+                  >
+                    <Phone className="w-3.5 h-3.5" />
+                    Call
+                  </a>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+
         {recentMessages.length > 0 && (
           <div className="card-surface-elevated space-y-2">
             <div className="flex items-center gap-2 mb-1">
