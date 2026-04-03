@@ -41,8 +41,17 @@ export default function VehicleForm() {
   const update = (field: string, value: string | boolean) => setForm(prev => ({ ...prev, [field]: value }));
 
   const handleSave = async () => {
-    await saveVehicle({ ...form, id: id || undefined });
-    navigate('/vehicles');
+    try {
+      await saveVehicle({ ...form, id: id || undefined });
+      navigate('/vehicles');
+    } catch (err: any) {
+      const msg = err?.message || 'Failed to save vehicle';
+      if (msg.includes('vehicles_rego_number_key') || msg.includes('duplicate key')) {
+        alert('A vehicle with this registration number already exists.');
+      } else {
+        alert(`Error saving vehicle: ${msg}`);
+      }
+    }
   };
 
   const Toggle = ({ active, onToggle, label }: { active: boolean; onToggle: () => void; label: string }) => (
