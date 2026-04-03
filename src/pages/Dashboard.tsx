@@ -10,6 +10,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useTranslation } from 'react-i18next';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { formatDistanceToNow } from 'date-fns';
+import { toast } from 'sonner';
 
 export default function Dashboard() {
   const { user, signOut, isAdmin } = useAuth();
