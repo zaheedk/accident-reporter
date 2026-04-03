@@ -241,7 +241,7 @@ export default function Auth() {
                   ) : (
                     <>
                       <LogIn className="w-4 h-4" />
-                      {mode === 'login' ? 'Sign in to Savo' : 'Create Account'}
+                      {mode === 'forgot' ? 'Send Reset Link' : mode === 'login' ? 'Sign in to Savo' : 'Create Account'}
                     </>
                   )}
                 </button>
