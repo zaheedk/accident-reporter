@@ -533,13 +533,13 @@ export default function ClaimWizard() {
                         <div><label className="form-label">{t('claims.thirdParty.ownerDriver')}</label><input className="form-input" placeholder="Driver's name" value={tp.ownerName} onChange={e => updTP(i, 'ownerName', e.target.value)} /></div>
                         <div><label className="form-label">{t('claims.thirdParty.phone')}</label><input className="form-input" type="tel" placeholder="Phone number" value={tp.phone} onChange={e => updTP(i, 'phone', e.target.value)} /></div>
                       </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div><label className="form-label">Insurer</label><input className="form-input" placeholder="Insurance company" value={tp.insurer} onChange={e => updTP(i, 'insurer', e.target.value)} /></div>
+                        <div><label className="form-label">Policy #</label><input className="form-input" placeholder="Policy number" value={tp.claimNumber} onChange={e => updTP(i, 'claimNumber', e.target.value)} /></div>
+                      </div>
                       {isEdit && (
                         <>
                           <div><label className="form-label">Address</label><input className="form-input" value={tp.address} onChange={e => updTP(i, 'address', e.target.value)} /></div>
-                          <div className="grid grid-cols-2 gap-3">
-                            <div><label className="form-label">Insurer</label><input className="form-input" value={tp.insurer} onChange={e => updTP(i, 'insurer', e.target.value)} /></div>
-                            <div><label className="form-label">Claim #</label><input className="form-input" value={tp.claimNumber} onChange={e => updTP(i, 'claimNumber', e.target.value)} /></div>
-                          </div>
                           <div className="grid grid-cols-2 gap-3">
                             <div><label className="form-label">Make</label><input className="form-input" value={tp.make} onChange={e => updTP(i, 'make', e.target.value)} /></div>
                             <div><label className="form-label">Model</label><input className="form-input" value={tp.model} onChange={e => updTP(i, 'model', e.target.value)} /></div>
