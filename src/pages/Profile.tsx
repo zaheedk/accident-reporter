@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { ArrowLeft, Camera, Loader2, User, Phone, MapPin, Mail, ShieldOff, Trash2, CheckCircle, AlertCircle, Send } from 'lucide-react';
+import { ArrowLeft, Camera, Loader2, User, Phone, MapPin, Mail, ShieldOff, Trash2, CheckCircle, AlertCircle, Send, Lock, Eye, EyeOff } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -35,6 +35,11 @@ export default function Profile() {
   const [showDelete, setShowDelete] = useState(false);
   const [deleteConfirmText, setDeleteConfirmText] = useState('');
   const [actionLoading, setActionLoading] = useState(false);
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showNewPw, setShowNewPw] = useState(false);
+  const [showConfirmPw, setShowConfirmPw] = useState(false);
+  const [changingPassword, setChangingPassword] = useState(false);
   const [profile, setProfile] = useState<ProfileData>({
     display_name: '', phone_number: '', address: '', avatar_url: '', email: '', email_verified: false,
   });
@@ -214,6 +219,63 @@ export default function Profile() {
             {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : t('profile.saveChanges')}
           </button>
         </form>
+
+        {!isPhoneUser && (
+          <div className="card-surface space-y-4">
+            <h2 className="text-sm font-semibold text-foreground flex items-center gap-1.5">
+              <Lock className="w-3.5 h-3.5" strokeWidth={1.5} /> Change password
+            </h2>
+            <div>
+              <label className="form-label">New password</label>
+              <div className="relative">
+                <input
+                  className="form-input pr-10"
+                  type={showNewPw ? 'text' : 'password'}
+                  placeholder="Enter new password"
+                  value={newPassword}
+                  onChange={e => setNewPassword(e.target.value)}
+                />
+                <button type="button" onClick={() => setShowNewPw(!showNewPw)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                  {showNewPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+            </div>
+            <div>
+              <label className="form-label">Confirm password</label>
+              <div className="relative">
+                <input
+                  className="form-input pr-10"
+                  type={showConfirmPw ? 'text' : 'password'}
+                  placeholder="Confirm new password"
+                  value={confirmPassword}
+                  onChange={e => setConfirmPassword(e.target.value)}
+                />
+                <button type="button" onClick={() => setShowConfirmPw(!showConfirmPw)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                  {showConfirmPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+            </div>
+            <button
+              type="button"
+              disabled={!newPassword || newPassword.length < 6 || newPassword !== confirmPassword || changingPassword}
+              onClick={async () => {
+                setChangingPassword(true);
+                const { error } = await supabase.auth.updateUser({ password: newPassword });
+                setChangingPassword(false);
+                if (error) {
+                  toast.error(error.message || 'Failed to update password');
+                } else {
+                  toast.success('Password updated successfully');
+                  setNewPassword('');
+                  setConfirmPassword('');
+                }
+              }}
+              className="btn-primary w-full h-11"
+            >
+              {changingPassword ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Update password'}
+            </button>
+          </div>
+        )}
 
         <div className="pt-4 space-y-3">
           <h2 className="text-[13px] font-semibold text-destructive">{t('profile.dangerZone')}</h2>
