@@ -76,7 +76,11 @@ export default function Dashboard() {
           setUserCity(city);
           setUserRegion(region);
         } catch { /* ignore */ }
-      }, () => { /* permission denied */ });
+      }, (err) => {
+        if (err.code === 1) {
+          toast.error('Location access denied. Please enable location permissions in your browser settings to see nearby tow companies.', { duration: 6000 });
+        }
+      });
     }
   };
 
