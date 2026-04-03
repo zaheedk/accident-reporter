@@ -187,7 +187,15 @@ export default function VehicleForm() {
           <h2 className="text-sm font-semibold text-foreground">{t('vehicles.insuranceDetails')}</h2>
           <div>
             <label className="form-label">{t('vehicles.insuranceCompany')}</label>
-            <Select value={form.insuranceCompany} onValueChange={val => update('insuranceCompany', val)}>
+            <Select value={form.insuranceCompany === '__other__' ? '__other__' : form.insuranceCompany} onValueChange={val => {
+              if (val === '__other__') {
+                update('insuranceCompany', '__other__');
+                setCustomInsurer('');
+              } else {
+                update('insuranceCompany', val);
+                setCustomInsurer('');
+              }
+            }}>
               <SelectTrigger className="form-input">
                 <SelectValue placeholder={t('vehicles.selectInsurance')} />
               </SelectTrigger>
@@ -195,8 +203,17 @@ export default function VehicleForm() {
                 {insuranceCompanies.map(c => (
                   <SelectItem key={c.id} value={c.name}>{c.name}</SelectItem>
                 ))}
+                <SelectItem value="__other__">Other (enter manually)</SelectItem>
               </SelectContent>
             </Select>
+            {form.insuranceCompany === '__other__' && (
+              <input
+                className="form-input mt-2"
+                placeholder="Enter insurance company name"
+                value={customInsurer}
+                onChange={e => setCustomInsurer(e.target.value)}
+              />
+            )}
           </div>
           <div><label className="form-label">{t('vehicles.policyNumber')}</label><input className="form-input tabular-nums" placeholder="POL-123456" value={form.insurancePolicyNumber} onChange={e => update('insurancePolicyNumber', e.target.value)} /></div>
           <div><label className="form-label">{t('vehicles.policyExpiry')}</label><input type="date" className="form-input tabular-nums" value={form.insuranceExpiry} onChange={e => update('insuranceExpiry', e.target.value)} /></div>
