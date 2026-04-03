@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, Check, Camera, X, ImageIcon } from 'lucide-react';
+import { ArrowLeft, Check, Camera, X, ImageIcon, Loader2 } from 'lucide-react';
 import { getVehicles, saveVehicle } from '@/lib/storage';
 import { Vehicle } from '@/types';
 import AppLayout from '@/components/AppLayout';
@@ -23,6 +23,7 @@ export default function VehicleForm() {
   const isEdit = Boolean(id);
   const [form, setForm] = useState(emptyVehicle);
   const [insuranceCompanies, setInsuranceCompanies] = useState<{ id: string; name: string }[]>([]);
+  const [saving, setSaving] = useState(false);
   const [photoPreview, setPhotoPreview] = useState<string>('');
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -92,6 +93,8 @@ export default function VehicleForm() {
   };
 
   const handleSave = async () => {
+    if (saving) return;
+    setSaving(true);
     try {
       await saveVehicle({ ...form, id: id || undefined });
       navigate('/vehicles');
@@ -102,6 +105,7 @@ export default function VehicleForm() {
       } else {
         alert(`Error saving vehicle: ${msg}`);
       }
+      setSaving(false);
     }
   };
 
@@ -209,8 +213,8 @@ export default function VehicleForm() {
           )}
         </div>
 
-        <button onClick={handleSave} disabled={!form.make || !form.model || !form.regoNumber} className="btn-primary w-full h-11">
-          <Check className="w-4 h-4" /> {isEdit ? t('vehicles.updateVehicle') : t('vehicles.saveVehicle')}
+        <button onClick={handleSave} disabled={!form.make || !form.model || !form.regoNumber || saving} className="btn-primary w-full h-11">
+          {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />} {isEdit ? t('vehicles.updateVehicle') : t('vehicles.saveVehicle')}
         </button>
       </div>
     </AppLayout>
