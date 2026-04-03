@@ -173,7 +173,13 @@ export default function ClaimWizard() {
 
   const update = (field: keyof ClaimReport, value: any) => setClaim(prev => ({ ...prev, [field]: value, updatedAt: new Date().toISOString() }));
 
+  const shouldSave = () => {
+    // Only save once the user has filled in date, time, and location
+    return !!(claim.incidentDate && claim.incidentTime && claim.incidentLocation?.trim());
+  };
+
   const autoSave = async () => {
+    if (!shouldSave()) return;
     const savedId = await saveClaim({ ...claim, updatedAt: new Date().toISOString() });
     if (!claim.id && savedId) setClaim(prev => ({ ...prev, id: savedId }));
   };
