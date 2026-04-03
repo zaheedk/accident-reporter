@@ -34,7 +34,7 @@ export default function Auth() {
       if (mode === 'signup') {
         const { data, error } = await supabase.auth.signUp({
           email, password,
-          options: { data: { full_name: name }, emailRedirectTo: window.location.origin },
+          options: { data: { full_name: name }, emailRedirectTo: SITE_URL },
         });
         if (error) throw error;
         // Supabase returns a user with empty identities when the email already exists
