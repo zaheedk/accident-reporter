@@ -208,6 +208,7 @@ export default function Auth() {
                     <input type="email" className="form-input pl-10" placeholder="name@company.com" value={email} onChange={e => setEmail(e.target.value)} required />
                   </div>
                 </div>
+                {mode !== 'forgot' && (
                 <div>
                   <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider mb-1.5 block">Password</label>
                   <div className="relative">
@@ -215,6 +216,7 @@ export default function Auth() {
                     <input type="password" className="form-input pl-10" placeholder="••••••••" value={password} onChange={e => setPassword(e.target.value)} required minLength={6} />
                   </div>
                 </div>
+                )}
 
                 {mode === 'login' && (
                   <div className="flex items-center justify-between">
@@ -222,7 +224,7 @@ export default function Auth() {
                       <input type="checkbox" className="w-4 h-4 rounded border-border text-primary focus:ring-primary/20" />
                       Keep me signed in
                     </label>
-                    <button type="button" className="text-sm text-primary font-semibold hover:underline">
+                    <button type="button" onClick={() => { setMode('forgot'); setError(''); setSuccess(''); }} className="text-sm text-primary font-semibold hover:underline">
                       Forgot password?
                     </button>
                   </div>
