@@ -27,6 +27,7 @@ export default function VehicleForm() {
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [saving, setSaving] = useState(false);
+  const [customInsurer, setCustomInsurer] = useState('');
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -41,12 +42,18 @@ export default function VehicleForm() {
         const existing = vehicles.find(v => v.id === id);
         if (existing) {
           const { id: _, createdAt: __, ...rest } = existing;
+          // Check if insurance company is in the known list
+          const knownNames = insuranceCompanies.map(c => c.name);
+          if (rest.insuranceCompany && knownNames.length > 0 && !knownNames.includes(rest.insuranceCompany)) {
+            setCustomInsurer(rest.insuranceCompany);
+            rest.insuranceCompany = '__other__';
+          }
           setForm(rest);
           if (existing.photoUrl) setPhotoPreview(existing.photoUrl);
         }
       });
     }
-  }, [id]);
+  }, [id, insuranceCompanies]);
 
   const update = (field: string, value: string | boolean) => setForm(prev => ({ ...prev, [field]: value }));
 
@@ -96,7 +103,11 @@ export default function VehicleForm() {
     if (saving) return;
     setSaving(true);
     try {
-      await saveVehicle({ ...form, id: id || undefined });
+      const finalForm = { ...form };
+      if (finalForm.insuranceCompany === '__other__') {
+        finalForm.insuranceCompany = customInsurer.trim();
+      }
+      await saveVehicle({ ...finalForm, id: id || undefined });
       navigate('/vehicles');
     } catch (err: any) {
       const msg = err?.message || 'Failed to save vehicle';
@@ -187,7 +198,15 @@ export default function VehicleForm() {
           <h2 className="text-sm font-semibold text-foreground">{t('vehicles.insuranceDetails')}</h2>
           <div>
             <label className="form-label">{t('vehicles.insuranceCompany')}</label>
-            <Select value={form.insuranceCompany} onValueChange={val => update('insuranceCompany', val)}>
+            <Select value={form.insuranceCompany === '__other__' ? '__other__' : form.insuranceCompany} onValueChange={val => {
+              if (val === '__other__') {
+                update('insuranceCompany', '__other__');
+                setCustomInsurer('');
+              } else {
+                update('insuranceCompany', val);
+                setCustomInsurer('');
+              }
+            }}>
               <SelectTrigger className="form-input">
                 <SelectValue placeholder={t('vehicles.selectInsurance')} />
               </SelectTrigger>
@@ -195,8 +214,17 @@ export default function VehicleForm() {
                 {insuranceCompanies.map(c => (
                   <SelectItem key={c.id} value={c.name}>{c.name}</SelectItem>
                 ))}
+                <SelectItem value="__other__">Other (enter manually)</SelectItem>
               </SelectContent>
             </Select>
+            {form.insuranceCompany === '__other__' && (
+              <input
+                className="form-input mt-2"
+                placeholder="Enter insurance company name"
+                value={customInsurer}
+                onChange={e => setCustomInsurer(e.target.value)}
+              />
+            )}
           </div>
           <div><label className="form-label">{t('vehicles.policyNumber')}</label><input className="form-input tabular-nums" placeholder="POL-123456" value={form.insurancePolicyNumber} onChange={e => update('insurancePolicyNumber', e.target.value)} /></div>
           <div><label className="form-label">{t('vehicles.policyExpiry')}</label><input type="date" className="form-input tabular-nums" value={form.insuranceExpiry} onChange={e => update('insuranceExpiry', e.target.value)} /></div>
