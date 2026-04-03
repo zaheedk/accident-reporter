@@ -35,6 +35,11 @@ export default function Profile() {
   const [showDelete, setShowDelete] = useState(false);
   const [deleteConfirmText, setDeleteConfirmText] = useState('');
   const [actionLoading, setActionLoading] = useState(false);
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showNewPw, setShowNewPw] = useState(false);
+  const [showConfirmPw, setShowConfirmPw] = useState(false);
+  const [changingPassword, setChangingPassword] = useState(false);
   const [profile, setProfile] = useState<ProfileData>({
     display_name: '', phone_number: '', address: '', avatar_url: '', email: '', email_verified: false,
   });
