@@ -94,7 +94,15 @@ export default function ClaimWizard() {
         toast.info('Coordinates set (address lookup unavailable)');
       }
     } catch (err: any) {
-      toast.error(err?.message || 'Could not detect location');
+      if (err?.code === 1) {
+        toast.error('Location access denied. Please enable location permissions in your browser settings and try again.', { duration: 6000 });
+      } else if (err?.code === 2) {
+        toast.error('Location unavailable. Please check your device location settings.');
+      } else if (err?.code === 3) {
+        toast.error('Location request timed out. Please try again.');
+      } else {
+        toast.error(err?.message || 'Could not detect location');
+      }
     } finally {
       setDetectingLocation(false);
     }
