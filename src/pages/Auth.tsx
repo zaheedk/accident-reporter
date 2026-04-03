@@ -132,14 +132,16 @@ export default function Auth() {
           </div>
 
           <h2 className="text-[22px] font-bold text-foreground mb-1" style={{ fontFamily: "'Playfair Display', serif" }}>
-            {mode === 'login' ? (
+            {mode === 'forgot' ? (
+              <>Reset your <span className="italic text-primary">password</span></>
+            ) : mode === 'login' ? (
               <>Welcome back to <span className="italic text-primary">Savo</span></>
             ) : (
               <>Join <span className="italic text-primary">Savo</span> today</>
             )}
           </h2>
           <p className="text-sm text-muted-foreground mb-6">
-            {mode === 'login' ? 'Access your incidents, claims, and reports in one place.' : 'Create your free account to get started.'}
+            {mode === 'forgot' ? "Enter your email and we'll send you a reset link." : mode === 'login' ? 'Access your incidents, claims, and reports in one place.' : 'Create your free account to get started.'}
           </p>
 
           {/* OAuth buttons - side by side */}
