@@ -97,7 +97,11 @@ export default function VehicleForm() {
     if (saving) return;
     setSaving(true);
     try {
-      await saveVehicle({ ...form, id: id || undefined });
+      const finalForm = { ...form };
+      if (finalForm.insuranceCompany === '__other__') {
+        finalForm.insuranceCompany = customInsurer.trim();
+      }
+      await saveVehicle({ ...finalForm, id: id || undefined });
       navigate('/vehicles');
     } catch (err: any) {
       const msg = err?.message || 'Failed to save vehicle';
