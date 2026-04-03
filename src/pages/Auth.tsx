@@ -30,11 +30,17 @@ export default function Auth() {
     setSubmitting(true);
     try {
       if (mode === 'signup') {
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email, password,
           options: { data: { full_name: name }, emailRedirectTo: window.location.origin },
         });
         if (error) throw error;
+        // Supabase returns a user with empty identities when the email already exists
+        if (data.user && data.user.identities && data.user.identities.length === 0) {
+          setError('An account with this email already exists. Please sign in instead.');
+          setSubmitting(false);
+          return;
+        }
         setMode('login');
         setSuccess('Account created! Please check your email to verify, then sign in.');
         setEmail('');
