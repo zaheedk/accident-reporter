@@ -11,7 +11,7 @@ import PhoneAuth from '@/components/PhoneAuth';
 export default function Auth() {
   const { session, loading } = useAuth();
   const { t } = useTranslation();
-  const [mode, setMode] = useState<'login' | 'signup'>('login');
+  const [mode, setMode] = useState<'login' | 'signup' | 'forgot'>('login');
   const [authMethod, setAuthMethod] = useState<'email' | 'phone'>('email');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
