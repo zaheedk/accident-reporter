@@ -93,6 +93,8 @@ export default function VehicleForm() {
   };
 
   const handleSave = async () => {
+    if (saving) return;
+    setSaving(true);
     try {
       await saveVehicle({ ...form, id: id || undefined });
       navigate('/vehicles');
@@ -103,6 +105,7 @@ export default function VehicleForm() {
       } else {
         alert(`Error saving vehicle: ${msg}`);
       }
+      setSaving(false);
     }
   };
 
