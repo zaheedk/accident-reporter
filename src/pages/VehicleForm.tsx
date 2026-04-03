@@ -23,6 +23,7 @@ export default function VehicleForm() {
   const isEdit = Boolean(id);
   const [form, setForm] = useState(emptyVehicle);
   const [insuranceCompanies, setInsuranceCompanies] = useState<{ id: string; name: string }[]>([]);
+  const [saving, setSaving] = useState(false);
   const [photoPreview, setPhotoPreview] = useState<string>('');
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
