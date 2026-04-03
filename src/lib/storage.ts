@@ -64,6 +64,7 @@ function dbVehicleToVehicle(row: any): Vehicle {
     insuranceCompany: row.insurance_company || '',
     insurancePolicyNumber: row.insurance_policy_number || '',
     insuranceExpiry: row.insurance_expiry || '',
+    photoUrl: row.photo_url || '',
     createdAt: row.created_at,
   };
 }

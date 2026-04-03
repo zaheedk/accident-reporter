@@ -14,6 +14,7 @@ export interface Vehicle {
   insuranceCompany: string;
   insurancePolicyNumber: string;
   insuranceExpiry: string;
+  photoUrl: string;
   createdAt: string;
 }
 
