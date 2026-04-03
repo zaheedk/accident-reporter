@@ -192,10 +192,12 @@ export default function ClaimWizard() {
     }
   };
 
-  const next = async () => { await autoSave(); setStep(s => Math.min(s + 1, STEPS.length - 1)); };
-  const prev = async () => { await autoSave(); setStep(s => Math.max(s - 1, 0)); };
+  const next = async () => { if (navigating) return; setNavigating(true); try { await autoSave(); setStep(s => Math.min(s + 1, STEPS.length - 1)); } finally { setNavigating(false); } };
+  const prev = async () => { if (navigating) return; setNavigating(true); try { await autoSave(); setStep(s => Math.max(s - 1, 0)); } finally { setNavigating(false); } };
 
   const submit = async () => {
+    if (submitting) return;
+    setSubmitting(true);
     await saveClaim({ ...claim, status: 'saved' as const, updatedAt: new Date().toISOString() });
     if (user?.email) {
       const vehicle = vehicles.find(v => v.id === claim.vehicleId);

@@ -213,8 +213,8 @@ export default function VehicleForm() {
           )}
         </div>
 
-        <button onClick={handleSave} disabled={!form.make || !form.model || !form.regoNumber} className="btn-primary w-full h-11">
-          <Check className="w-4 h-4" /> {isEdit ? t('vehicles.updateVehicle') : t('vehicles.saveVehicle')}
+        <button onClick={handleSave} disabled={saving || !form.make || !form.model || !form.regoNumber} className="btn-primary w-full h-11">
+          {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />} {isEdit ? t('vehicles.updateVehicle') : t('vehicles.saveVehicle')}
         </button>
       </div>
     </AppLayout>
