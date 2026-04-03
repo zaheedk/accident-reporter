@@ -22,21 +22,23 @@ export async function saveVehicle(vehicle: Omit<Vehicle, 'id' | 'createdAt'> & {
     model: vehicle.model,
     rego_number: vehicle.regoNumber,
     color: vehicle.color,
-    wof_expiry: vehicle.wofExpiry,
-    rego_expiry: vehicle.regoExpiry,
+    wof_expiry: vehicle.wofExpiry || null,
+    rego_expiry: vehicle.regoExpiry || null,
     finance_arrangement: vehicle.financeArrangement,
     finance_details: vehicle.financeDetails || '',
     modified: vehicle.modified,
     modification_details: vehicle.modificationDetails || '',
     insurance_company: vehicle.insuranceCompany || '',
     insurance_policy_number: vehicle.insurancePolicyNumber || '',
-    insurance_expiry: vehicle.insuranceExpiry || '',
+    insurance_expiry: vehicle.insuranceExpiry || null,
   };
 
   if (vehicle.id) {
-    await supabase.from('vehicles').upsert({ ...row, id: vehicle.id });
+    const { error } = await supabase.from('vehicles').upsert({ ...row, id: vehicle.id });
+    if (error) { console.error('saveVehicle upsert', error); throw error; }
   } else {
-    await supabase.from('vehicles').insert(row);
+    const { error } = await supabase.from('vehicles').insert(row);
+    if (error) { console.error('saveVehicle insert', error); throw error; }
   }
 }
 
