@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, Check, Camera, X, ImageIcon } from 'lucide-react';
+import { ArrowLeft, Check, Camera, X, ImageIcon, Loader2 } from 'lucide-react';
 import { getVehicles, saveVehicle } from '@/lib/storage';
 import { Vehicle } from '@/types';
 import AppLayout from '@/components/AppLayout';
