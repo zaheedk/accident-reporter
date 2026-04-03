@@ -28,26 +28,20 @@ export default function Dashboard() {
   const [recentMessages, setRecentMessages] = useState<any[]>([]);
 
   useEffect(() => {
-    getVehicles().then(setVehicles);
-    getClaims().then(setClaims);
-    if (user) {
-      supabase.from('profiles').select('avatar_url, display_name').eq('user_id', user.id).single().then(({ data }) => {
-        if (data) {
-          setAvatarUrl(data.avatar_url || '');
-          setDisplayName(data.display_name || '');
-        }
-      });
-      // Load recent messages across all claims
-      supabase
-        .from('claim_messages')
-        .select('id, direction, subject, body, from_email, created_at, claim_id')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false })
-        .limit(5)
-        .then(({ data }) => {
-          if (data) setRecentMessages(data);
-        });
-    }
+    if (!user) return;
+    // Fetch all dashboard data in parallel
+    Promise.all([
+      getVehicles(),
+      getClaims(),
+      supabase.from('profiles').select('avatar_url, display_name').eq('user_id', user.id).single(),
+    ]).then(([v, c, profileRes]) => {
+      setVehicles(v);
+      setClaims(c);
+      if (profileRes.data) {
+        setAvatarUrl(profileRes.data.avatar_url || '');
+        setDisplayName(profileRes.data.display_name || '');
+      }
+    });
   }, [user]);
 
   const haversineDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
