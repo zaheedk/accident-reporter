@@ -35,69 +35,85 @@ function arrayBufferToBase64(buffer: ArrayBuffer): string {
 function generateClaimPdf(data: Record<string, string>, photoImages: { label: string; base64: string; mime: string }[] = []): string {
   const doc = new jsPDF({ unit: 'mm', format: 'a4' });
   const pageWidth = doc.internal.pageSize.getWidth();
-  const margin = 20;
+  const pageHeight = doc.internal.pageSize.getHeight();
+  const margin = 18;
   const contentWidth = pageWidth - margin * 2;
-  let y = 20;
+  const labelCol = 50;
+  const valueX = margin + labelCol + 2;
+  const valueWidth = contentWidth - labelCol - 2;
+  let y = 0;
 
   const checkPage = (needed: number) => {
-    if (y + needed > 270) { doc.addPage(); y = 20; }
+    if (y + needed > pageHeight - 20) { doc.addPage(); y = 18; }
   };
 
-  // Header bar
+  // ── Header bar ──
   doc.setFillColor(232, 85, 30);
-  doc.rect(0, 0, pageWidth, 28, 'F');
+  doc.rect(0, 0, pageWidth, 26, 'F');
   doc.setTextColor(255, 255, 255);
-  doc.setFontSize(18);
+  doc.setFontSize(16);
   doc.setFont('helvetica', 'bold');
-  doc.text('Savo – Incident Report', margin, 18);
-  y = 38;
+  doc.text('Savo \u2013 Incident Report', margin, 17);
+  y = 34;
 
-  // Claim reference
+  // ── Claim reference ──
   const claimRef = data.claimNumber ? `CLM-${data.claimNumber.padStart(4, '0')}` : '';
   if (claimRef) {
     doc.setTextColor(100, 100, 100);
-    doc.setFontSize(10);
+    doc.setFontSize(9);
     doc.setFont('helvetica', 'normal');
     doc.text(`Reference: ${claimRef}`, margin, y);
     y += 8;
   }
 
+  // ── Section header ──
   const addSection = (title: string) => {
-    checkPage(14);
-    y += 4;
-    doc.setFillColor(245, 245, 245);
-    doc.rect(margin, y - 4, contentWidth, 8, 'F');
-    doc.setTextColor(50, 50, 50);
-    doc.setFontSize(11);
+    checkPage(16);
+    y += 3;
+    doc.setFillColor(240, 240, 240);
+    doc.rect(margin, y - 4.5, contentWidth, 8, 'F');
+    doc.setDrawColor(220, 220, 220);
+    doc.line(margin, y - 4.5, margin + contentWidth, y - 4.5);
+    doc.line(margin, y + 3.5, margin + contentWidth, y + 3.5);
+    doc.setTextColor(40, 40, 40);
+    doc.setFontSize(10);
     doc.setFont('helvetica', 'bold');
     doc.text(title, margin + 3, y + 1);
     y += 10;
   };
 
+  // ── Data row ──
   const addRow = (label: string, value: string) => {
-    if (!value || value === '—') return;
-    checkPage(8);
+    if (!value || value === '\u2014' || value.trim() === '') return;
+    // Pre-calculate wrapped lines to know how much space we need
     doc.setFontSize(9);
+    doc.setFont('helvetica', 'bold');
+    const lines = doc.splitTextToSize(value, valueWidth);
+    const rowHeight = Math.max(lines.length * 4.2, 5.5);
+    checkPage(rowHeight + 1);
+
+    // Label
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(120, 120, 120);
     doc.text(label, margin + 2, y);
-    doc.setTextColor(30, 30, 30);
+
+    // Value
     doc.setFont('helvetica', 'bold');
-    // Wrap long text
-    const lines = doc.splitTextToSize(value, contentWidth - 55);
-    doc.text(lines, margin + 55, y);
-    y += Math.max(lines.length * 4.5, 6);
+    doc.setTextColor(30, 30, 30);
+    doc.text(lines, valueX, y);
+    y += rowHeight + 1;
   };
 
-  // Incident Details
+  // ── Incident Details ──
   addSection('Incident Details');
-  addRow('Date & Time', `${data.date || ''} at ${data.time || ''}`);
+  const dateTime = [data.date, data.time].filter(Boolean).join(' at ');
+  addRow('Date & Time', dateTime);
   addRow('Location', data.location || '');
   addRow('Vehicle Usage', data.vehicleUsage || '');
   addRow('Journey', data.journeyDetails || '');
   addRow('Description', data.description || '');
 
-  // Vehicle
+  // ── Your Vehicle ──
   addSection('Your Vehicle');
   addRow('Vehicle', data.vehicle || '');
   addRow('Registration', data.rego || '');
@@ -106,41 +122,41 @@ function generateClaimPdf(data: Record<string, string>, photoImages: { label: st
   addRow('Vehicle Towed', data.vehicleTowed || '');
   if (data.vehicleTowed === 'Yes') addRow('Towing Company', data.towingCompany || '');
 
-  // Third Parties
+  // ── Third Parties ──
   try {
     const tps = JSON.parse(data.thirdParties || '[]');
     if (tps.length > 0) {
       addSection('Third Parties');
       tps.forEach((tp: Record<string, string>, i: number) => {
-        addRow(`Party ${i + 1} – Owner`, tp.ownerName || '');
-        addRow('Vehicle', `${tp.make || ''} ${tp.model || ''} – ${tp.regoNumber || ''}`);
+        addRow(`Party ${i + 1} \u2013 Owner`, tp.ownerName || '');
+        addRow('Vehicle', `${tp.make || ''} ${tp.model || ''} \u2013 ${tp.regoNumber || ''}`);
         addRow('Phone', tp.phone || '');
         addRow('Insurer', tp.insurer || '');
         addRow('Damage', tp.damageDescription || '');
-        if (i < tps.length - 1) y += 3;
+        if (i < tps.length - 1) y += 2;
       });
     }
-  } catch {}
+  } catch { /* ignore */ }
 
-  // Witnesses
+  // ── Witnesses ──
   try {
     const ws = JSON.parse(data.witnesses || '[]');
     if (ws.length > 0) {
       addSection('Witnesses');
       ws.forEach((w: Record<string, string | boolean>, i: number) => {
-        addRow(`Witness ${i + 1}`, `${w.name || ''} – ${w.phone || ''}${w.isPassenger ? ' (Passenger)' : ''}`);
+        addRow(`Witness ${i + 1}`, `${w.name || ''} \u2013 ${w.phone || ''}${w.isPassenger ? ' (Passenger)' : ''}`);
       });
     }
-  } catch {}
+  } catch { /* ignore */ }
 
-  // Police & Injuries
+  // ── Police & Injuries ──
   addSection('Police & Injuries');
   addRow('Police Attended', data.policeAttended || '');
   if (data.policeAttended === 'Yes') addRow('Officer Details', data.policeOfficerDetails || '');
   addRow('Anyone Hurt', data.anyoneHurt || '');
   if (data.anyoneHurt === 'Yes') addRow('Injury Details', data.injuryDetails || '');
 
-  // Conditions
+  // ── Conditions & Liability ──
   addSection('Conditions & Liability');
   addRow('Weather', data.weatherCondition || '');
   addRow('Road', data.roadCondition || '');
@@ -150,7 +166,7 @@ function generateClaimPdf(data: Record<string, string>, photoImages: { label: st
   addRow('Liability Admitted', data.liabilityAdmitted || '');
   if (data.liabilityAdmitted === 'Yes') addRow('Details', data.liabilityDetails || '');
 
-  // Insurance & Repairer
+  // ── Insurance & Repairer ──
   addSection('Insurance & Repairer');
   addRow('Insurance Company', data.insurer || '');
   addRow('Policy Number', data.policyNumber || '');
@@ -158,15 +174,14 @@ function generateClaimPdf(data: Record<string, string>, photoImages: { label: st
   addRow('Repairer Phone', data.repairerPhone || '');
   addRow('Repairer Address', data.repairerAddress || '');
 
-  // Photos
+  // ── Photos ──
   if (photoImages.length > 0) {
     addSection('Photos');
     const imgWidth = 75;
-    const imgHeight = 56; // 4:3 ratio
+    const imgHeight = 56;
     let currentLabel = '';
 
     for (const photo of photoImages) {
-      // Add label if different from previous
       if (photo.label !== currentLabel) {
         checkPage(imgHeight + 14);
         currentLabel = photo.label;
@@ -189,14 +204,14 @@ function generateClaimPdf(data: Record<string, string>, photoImages: { label: st
     }
   }
 
-  // Footer
+  // ── Footer on each page ──
   const pageCount = doc.getNumberOfPages();
   for (let i = 1; i <= pageCount; i++) {
     doc.setPage(i);
     doc.setFontSize(8);
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(180, 180, 180);
-    doc.text(`Generated by Savo · Page ${i} of ${pageCount}`, pageWidth / 2, 290, { align: 'center' });
+    doc.text(`Generated by Savo \u00B7 Page ${i} of ${pageCount}`, pageWidth / 2, pageHeight - 10, { align: 'center' });
   }
 
   // Return base64
