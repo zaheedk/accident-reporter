@@ -480,7 +480,7 @@ export default function ClaimWizard() {
                       {t('claims.insurance.gallery', 'Gallery')}
                     </button>
                   </div>
-                  <input ref={cameraInputRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={handlePhotoUpload} />
+                  <input ref={cameraInputRef} type="file" accept="image/*" capture="environment" multiple className="hidden" onChange={handlePhotoUpload} />
                   <input ref={photoInputRef} type="file" accept="image/*" multiple className="hidden" onChange={handlePhotoUpload} />
                 </div>
               </div>
