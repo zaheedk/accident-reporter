@@ -8,6 +8,8 @@ import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import PhoneAuth from '@/components/PhoneAuth';
 
+const SITE_URL = import.meta.env.PROD ? 'https://savo.co.nz' : window.location.origin;
+
 export default function Auth() {
   const { session, loading } = useAuth();
   const { t } = useTranslation();
