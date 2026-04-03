@@ -50,9 +50,13 @@ export default function VehicleList() {
             {vehicles.map(v => (
               <div key={v.id} className="card-surface flex items-center justify-between hover:shadow-md transition-shadow">
                 <Link to={`/vehicles/${v.id}/edit`} className="flex items-center gap-3 flex-1 min-w-0">
-                  <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center flex-shrink-0">
-                    <Car className="w-5 h-5 text-muted-foreground" strokeWidth={1.5} />
-                  </div>
+                  {v.photoUrl ? (
+                    <img src={v.photoUrl} alt={`${v.make} ${v.model}`} className="w-10 h-10 rounded-xl object-cover flex-shrink-0" />
+                  ) : (
+                    <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center flex-shrink-0">
+                      <Car className="w-5 h-5 text-muted-foreground" strokeWidth={1.5} />
+                    </div>
+                  )}
                   <div className="min-w-0">
                     <div className="text-sm font-semibold text-foreground truncate">{v.year} {v.make} {v.model}</div>
                     <div className="text-xs text-muted-foreground tabular-nums">{v.regoNumber}</div>
