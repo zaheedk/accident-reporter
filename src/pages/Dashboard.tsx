@@ -241,14 +241,19 @@ export default function Dashboard() {
       </div>
 
       <Sheet open={towSheetOpen} onOpenChange={setTowSheetOpen}>
-        <SheetContent side="bottom" className="h-[85vh] rounded-t-2xl p-0">
-          <SheetHeader className="px-5 pt-5 pb-3">
-            <SheetTitle className="text-left flex items-center gap-2">
-              <Phone className="w-5 h-5" style={{ color: 'hsl(152, 60%, 42%)' }} />
-              Tow Companies Near You
+        <SheetContent side="bottom" className="h-[90vh] rounded-t-2xl p-0 flex flex-col" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
+          <SheetHeader className="px-5 pt-5 pb-3 shrink-0">
+            <SheetTitle className="text-left flex items-center justify-between">
+              <span className="flex items-center gap-2">
+                <Phone className="w-5 h-5" style={{ color: 'hsl(152, 60%, 42%)' }} />
+                Tow Companies Near You
+              </span>
+              <button onClick={() => setTowSheetOpen(false)} className="p-2 -mr-2 rounded-xl hover:bg-muted transition-colors">
+                <X className="w-5 h-5 text-muted-foreground" />
+              </button>
             </SheetTitle>
           </SheetHeader>
-          <div className="px-5 pb-3">
+          <div className="px-5 pb-3 shrink-0">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <input
@@ -271,7 +276,7 @@ export default function Dashboard() {
               </div>
             )}
           </div>
-          <div className="overflow-y-auto flex-1 px-5 pb-5 space-y-2" style={{ maxHeight: 'calc(85vh - 160px)' }}>
+          <div className="overflow-y-auto flex-1 px-5 pb-5 space-y-2">
             {displayedTowCompanies.length === 0 ? (
               <div className="text-center py-8 text-sm text-muted-foreground">No tow companies found</div>
             ) : (
@@ -281,7 +286,7 @@ export default function Dashboard() {
                     <div className="text-sm font-semibold text-foreground">{tc.name}</div>
                     <div className="text-xs text-muted-foreground mt-0.5 flex items-center gap-1">
                       <MapPin className="w-3 h-3 shrink-0" />
-                      {tc.address}
+                      <span className="truncate">{tc.address}</span>
                     </div>
                     <div className="text-xs text-muted-foreground mt-0.5">{tc.phone}</div>
                     {getDistanceLabel(tc) && (
@@ -290,7 +295,7 @@ export default function Dashboard() {
                   </div>
                   <a
                     href={`tel:${tc.phone.replace(/\s/g, '')}`}
-                    className="shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold text-white"
+                    className="shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold text-white whitespace-nowrap"
                     style={{ backgroundColor: 'hsl(152, 60%, 42%)' }}
                   >
                     <Phone className="w-3.5 h-3.5" />
