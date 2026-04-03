@@ -47,7 +47,7 @@ export default function VehicleForm() {
     } catch (err: any) {
       const msg = err?.message || 'Failed to save vehicle';
       if (msg.includes('vehicles_rego_number_key') || msg.includes('duplicate key')) {
-        alert('A vehicle with this registration number already exists.');
+        alert('You already have a vehicle with this registration number.');
       } else {
         alert(`Error saving vehicle: ${msg}`);
       }
