@@ -173,7 +173,13 @@ export default function ClaimWizard() {
 
   const update = (field: keyof ClaimReport, value: any) => setClaim(prev => ({ ...prev, [field]: value, updatedAt: new Date().toISOString() }));
 
+  const shouldSave = () => {
+    // Only save once the user has filled in date, time, and location
+    return !!(claim.incidentDate && claim.incidentTime && claim.incidentLocation?.trim());
+  };
+
   const autoSave = async () => {
+    if (!shouldSave()) return;
     const savedId = await saveClaim({ ...claim, updatedAt: new Date().toISOString() });
     if (!claim.id && savedId) setClaim(prev => ({ ...prev, id: savedId }));
   };
@@ -303,7 +309,7 @@ export default function ClaimWizard() {
     <AppLayout>
       <div className="space-y-4">
         <div className="flex items-center gap-3">
-          <button onClick={async () => { await autoSave(); navigate(-1); }} className="p-2 -ml-2 rounded-xl hover:bg-muted transition-colors">
+          <button onClick={async () => { if (shouldSave()) await autoSave(); navigate(-1); }} className="p-2 -ml-2 rounded-xl hover:bg-muted transition-colors">
             <ArrowLeft className="w-5 h-5 text-foreground" strokeWidth={1.5} />
           </button>
           <div className="flex-1">
