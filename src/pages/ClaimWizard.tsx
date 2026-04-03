@@ -68,6 +68,8 @@ export default function ClaimWizard() {
   const [detectingLocation, setDetectingLocation] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [loadingClaim, setLoadingClaim] = useState(!!id);
+  const [submitting, setSubmitting] = useState(false);
+  const [navigating, setNavigating] = useState(false);
   const photoInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
 
@@ -190,10 +192,12 @@ export default function ClaimWizard() {
     }
   };
 
-  const next = async () => { await autoSave(); setStep(s => Math.min(s + 1, STEPS.length - 1)); };
-  const prev = async () => { await autoSave(); setStep(s => Math.max(s - 1, 0)); };
+  const next = async () => { if (navigating) return; setNavigating(true); try { await autoSave(); setStep(s => Math.min(s + 1, STEPS.length - 1)); } finally { setNavigating(false); } };
+  const prev = async () => { if (navigating) return; setNavigating(true); try { await autoSave(); setStep(s => Math.max(s - 1, 0)); } finally { setNavigating(false); } };
 
   const submit = async () => {
+    if (submitting) return;
+    setSubmitting(true);
     await saveClaim({ ...claim, status: 'saved' as const, updatedAt: new Date().toISOString() });
     if (user?.email) {
       const vehicle = vehicles.find(v => v.id === claim.vehicleId);
@@ -699,11 +703,11 @@ export default function ClaimWizard() {
 
         <div className="flex flex-col gap-3 pb-16 md:pb-0">
           <div className="flex gap-3">
-            {step > 0 && <button onClick={prev} className="btn-secondary flex-1 h-11"><ArrowLeft className="w-4 h-4" strokeWidth={1.5} /> {t('common.back')}</button>}
+            {step > 0 && <button onClick={prev} disabled={navigating} className="btn-secondary flex-1 h-11">{navigating ? <Loader2 className="w-4 h-4 animate-spin" /> : <ArrowLeft className="w-4 h-4" strokeWidth={1.5} />} {t('common.back')}</button>}
             {step < STEPS.length - 1 ? (
-              <button onClick={next} className="btn-primary flex-1 h-11">{t('common.next')} <ArrowRight className="w-4 h-4" /></button>
+              <button onClick={next} disabled={navigating} className="btn-primary flex-1 h-11">{navigating ? <Loader2 className="w-4 h-4 animate-spin" /> : <>{t('common.next')} <ArrowRight className="w-4 h-4" /></>}</button>
             ) : (
-              <button onClick={submit} className="btn-primary flex-1 h-11"><Save className="w-4 h-4" /> {t('common.save')} report</button>
+              <button onClick={submit} disabled={submitting} className="btn-primary flex-1 h-11">{submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} {t('common.save')} report</button>
             )}
           </div>
         </div>
