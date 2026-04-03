@@ -26,20 +26,26 @@ export default function Dashboard() {
   const [userLat, setUserLat] = useState<number | null>(null);
   const [userLng, setUserLng] = useState<number | null>(null);
   const [recentMessages, setRecentMessages] = useState<any[]>([]);
+  const [insurerPhones, setInsurerPhones] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (!user) return;
-    // Fetch all dashboard data in parallel
     Promise.all([
       getVehicles(),
       getClaims(),
       supabase.from('profiles').select('avatar_url, display_name').eq('user_id', user.id).single(),
-    ]).then(([v, c, profileRes]) => {
+      supabase.from('insurance_companies').select('name, phone'),
+    ]).then(([v, c, profileRes, insurerRes]) => {
       setVehicles(v);
       setClaims(c);
       if (profileRes.data) {
         setAvatarUrl(profileRes.data.avatar_url || '');
         setDisplayName(profileRes.data.display_name || '');
+      }
+      if (insurerRes.data) {
+        const map: Record<string, string> = {};
+        insurerRes.data.forEach((ic: any) => { if (ic.phone) map[ic.name] = ic.phone; });
+        setInsurerPhones(map);
       }
     });
   }, [user]);
