@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Lock, Loader2, CheckCircle } from 'lucide-react';
+import { Lock, Loader2, CheckCircle, Eye, EyeOff } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 
 export default function ResetPassword() {
