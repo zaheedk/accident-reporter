@@ -48,7 +48,7 @@ const SAMPLE_DATA: Record<string, object> = {
   reauthentication: { token: '123456' },
 }
 
-const GATEWAY_URL = 'https://connector-gateway.lovable.dev/resend'
+
 
 // --- Preview handler ---
 async function handlePreview(req: Request): Promise<Response> {
