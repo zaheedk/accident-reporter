@@ -11,7 +11,7 @@ import PhoneAuth from '@/components/PhoneAuth';
 export default function Auth() {
   const { session, loading } = useAuth();
   const { t } = useTranslation();
-  const [mode, setMode] = useState<'login' | 'signup'>('login');
+  const [mode, setMode] = useState<'login' | 'signup' | 'forgot'>('login');
   const [authMethod, setAuthMethod] = useState<'email' | 'phone'>('email');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -49,6 +49,12 @@ export default function Auth() {
         supabase.functions.invoke('send-email', {
           body: { type: 'welcome', to: email },
         }).catch(err => console.error('Welcome email failed:', err));
+      } else if (mode === 'forgot') {
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: `${window.location.origin}/reset-password`,
+        });
+        if (error) throw error;
+        setSuccess('Password reset link sent! Check your email.');
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
@@ -126,14 +132,16 @@ export default function Auth() {
           </div>
 
           <h2 className="text-[22px] font-bold text-foreground mb-1" style={{ fontFamily: "'Playfair Display', serif" }}>
-            {mode === 'login' ? (
+            {mode === 'forgot' ? (
+              <>Reset your <span className="italic text-primary">password</span></>
+            ) : mode === 'login' ? (
               <>Welcome back to <span className="italic text-primary">Savo</span></>
             ) : (
               <>Join <span className="italic text-primary">Savo</span> today</>
             )}
           </h2>
           <p className="text-sm text-muted-foreground mb-6">
-            {mode === 'login' ? 'Access your incidents, claims, and reports in one place.' : 'Create your free account to get started.'}
+            {mode === 'forgot' ? "Enter your email and we'll send you a reset link." : mode === 'login' ? 'Access your incidents, claims, and reports in one place.' : 'Create your free account to get started.'}
           </p>
 
           {/* OAuth buttons - side by side */}
@@ -200,6 +208,7 @@ export default function Auth() {
                     <input type="email" className="form-input pl-10" placeholder="name@company.com" value={email} onChange={e => setEmail(e.target.value)} required />
                   </div>
                 </div>
+                {mode !== 'forgot' && (
                 <div>
                   <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider mb-1.5 block">Password</label>
                   <div className="relative">
@@ -207,6 +216,7 @@ export default function Auth() {
                     <input type="password" className="form-input pl-10" placeholder="••••••••" value={password} onChange={e => setPassword(e.target.value)} required minLength={6} />
                   </div>
                 </div>
+                )}
 
                 {mode === 'login' && (
                   <div className="flex items-center justify-between">
@@ -214,7 +224,7 @@ export default function Auth() {
                       <input type="checkbox" className="w-4 h-4 rounded border-border text-primary focus:ring-primary/20" />
                       Keep me signed in
                     </label>
-                    <button type="button" className="text-sm text-primary font-semibold hover:underline">
+                    <button type="button" onClick={() => { setMode('forgot'); setError(''); setSuccess(''); }} className="text-sm text-primary font-semibold hover:underline">
                       Forgot password?
                     </button>
                   </div>
@@ -231,17 +241,27 @@ export default function Auth() {
                   ) : (
                     <>
                       <LogIn className="w-4 h-4" />
-                      {mode === 'login' ? 'Sign in to Savo' : 'Create Account'}
+                      {mode === 'forgot' ? 'Send Reset Link' : mode === 'login' ? 'Sign in to Savo' : 'Create Account'}
                     </>
                   )}
                 </button>
               </form>
 
               <p className="text-center text-sm text-muted-foreground mt-5">
-                {mode === 'login' ? 'New to Savo? ' : 'Already have an account? '}
-                <button onClick={() => { setMode(mode === 'login' ? 'signup' : 'login'); setError(''); setSuccess(''); }} className="text-primary font-bold hover:underline">
-                  {mode === 'login' ? 'Create a free account' : 'Sign in'}
-                </button>
+                {mode === 'forgot' ? (
+                  <>
+                    Remember your password?{' '}
+                    <button onClick={() => { setMode('login'); setError(''); setSuccess(''); }} className="text-primary font-bold hover:underline">Sign in</button>
+                  </>
+                ) : mode === 'login' ? (
+                  <>New to Savo?{' '}
+                    <button onClick={() => { setMode('signup'); setError(''); setSuccess(''); }} className="text-primary font-bold hover:underline">Create a free account</button>
+                  </>
+                ) : (
+                  <>Already have an account?{' '}
+                    <button onClick={() => { setMode('login'); setError(''); setSuccess(''); }} className="text-primary font-bold hover:underline">Sign in</button>
+                  </>
+                )}
               </p>
             </>
           )}

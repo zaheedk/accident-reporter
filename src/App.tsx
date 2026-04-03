@@ -28,6 +28,7 @@ const FAQ = lazy(() => import("./pages/FAQ"));
 const Legal = lazy(() => import("./pages/Legal"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const ExternalLogin = lazy(() => import("./pages/ExternalLogin"));
+const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 
 const PageLoader = () => (
   <div className="min-h-screen bg-background flex items-center justify-center">
@@ -64,6 +65,7 @@ const App = () => (
           <Suspense fallback={<PageLoader />}>
             <Routes>
               <Route path="/auth" element={<Auth />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/external-login" element={<ExternalLogin />} />
               <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
               <Route path="/vehicles" element={<ProtectedRoute><VehicleList /></ProtectedRoute>} />
