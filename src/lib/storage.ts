@@ -30,7 +30,7 @@ export async function saveVehicle(vehicle: Omit<Vehicle, 'id' | 'createdAt'> & {
     modification_details: vehicle.modificationDetails || '',
     insurance_company: vehicle.insuranceCompany || '',
     insurance_policy_number: vehicle.insurancePolicyNumber || '',
-    insurance_expiry: vehicle.insuranceExpiry || null,
+    insurance_expiry: vehicle.insuranceExpiry || '',
     photo_url: vehicle.photoUrl || '',
   };
 
