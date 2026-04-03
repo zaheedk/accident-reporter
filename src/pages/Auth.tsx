@@ -8,6 +8,8 @@ import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import PhoneAuth from '@/components/PhoneAuth';
 
+const SITE_URL = import.meta.env.PROD ? 'https://savo.co.nz' : window.location.origin;
+
 export default function Auth() {
   const { session, loading } = useAuth();
   const { t } = useTranslation();
@@ -32,7 +34,7 @@ export default function Auth() {
       if (mode === 'signup') {
         const { data, error } = await supabase.auth.signUp({
           email, password,
-          options: { data: { full_name: name }, emailRedirectTo: window.location.origin },
+          options: { data: { full_name: name }, emailRedirectTo: SITE_URL },
         });
         if (error) throw error;
         // Supabase returns a user with empty identities when the email already exists
@@ -51,7 +53,7 @@ export default function Auth() {
         }).catch(err => console.error('Welcome email failed:', err));
       } else if (mode === 'forgot') {
         const { error } = await supabase.auth.resetPasswordForEmail(email, {
-          redirectTo: `${window.location.origin}/reset-password`,
+          redirectTo: `${SITE_URL}/reset-password`,
         });
         if (error) throw error;
         setSuccess('Password reset link sent! Check your email.');
@@ -71,7 +73,7 @@ export default function Auth() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: window.location.origin,
+        redirectTo: SITE_URL,
       },
     });
     if (error) setError(error.message || 'OAuth sign-in failed');
