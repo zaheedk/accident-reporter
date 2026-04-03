@@ -68,6 +68,8 @@ export default function ClaimWizard() {
   const [detectingLocation, setDetectingLocation] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [loadingClaim, setLoadingClaim] = useState(!!id);
+  const [submitting, setSubmitting] = useState(false);
+  const [navigating, setNavigating] = useState(false);
   const photoInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
 
