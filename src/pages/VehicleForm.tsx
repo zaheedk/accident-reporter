@@ -26,6 +26,7 @@ export default function VehicleForm() {
   const [photoPreview, setPhotoPreview] = useState<string>('');
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [saving, setSaving] = useState(false);
   const { t } = useTranslation();
 
   useEffect(() => {
