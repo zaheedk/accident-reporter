@@ -701,6 +701,7 @@ export type Database = {
           model: string
           modification_details: string | null
           modified: boolean
+          photo_url: string
           rego_expiry: string
           rego_number: string
           updated_at: string
@@ -721,6 +722,7 @@ export type Database = {
           model?: string
           modification_details?: string | null
           modified?: boolean
+          photo_url?: string
           rego_expiry?: string
           rego_number?: string
           updated_at?: string
@@ -741,6 +743,7 @@ export type Database = {
           model?: string
           modification_details?: string | null
           modified?: boolean
+          photo_url?: string
           rego_expiry?: string
           rego_number?: string
           updated_at?: string

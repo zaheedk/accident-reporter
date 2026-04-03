@@ -1,18 +1,20 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, Check } from 'lucide-react';
+import { ArrowLeft, Check, Camera, X, ImageIcon } from 'lucide-react';
 import { getVehicles, saveVehicle } from '@/lib/storage';
 import { Vehicle } from '@/types';
 import AppLayout from '@/components/AppLayout';
 import { supabase } from '@/integrations/supabase/client';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useTranslation } from 'react-i18next';
+import { compressImage } from '@/lib/image-compress';
 
 const emptyVehicle: Omit<Vehicle, 'id' | 'createdAt'> = {
   year: '', make: '', model: '', regoNumber: '', color: '',
   wofExpiry: '', regoExpiry: '',
   financeArrangement: false, financeDetails: '', modified: false, modificationDetails: '',
   insuranceCompany: '', insurancePolicyNumber: '', insuranceExpiry: '',
+  photoUrl: '',
 };
 
 export default function VehicleForm() {
@@ -21,6 +23,9 @@ export default function VehicleForm() {
   const isEdit = Boolean(id);
   const [form, setForm] = useState(emptyVehicle);
   const [insuranceCompanies, setInsuranceCompanies] = useState<{ id: string; name: string }[]>([]);
+  const [photoPreview, setPhotoPreview] = useState<string>('');
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -33,12 +38,58 @@ export default function VehicleForm() {
     if (id) {
       getVehicles().then(vehicles => {
         const existing = vehicles.find(v => v.id === id);
-        if (existing) { const { id: _, createdAt: __, ...rest } = existing; setForm(rest); }
+        if (existing) {
+          const { id: _, createdAt: __, ...rest } = existing;
+          setForm(rest);
+          if (existing.photoUrl) setPhotoPreview(existing.photoUrl);
+        }
       });
     }
   }, [id]);
 
   const update = (field: string, value: string | boolean) => setForm(prev => ({ ...prev, [field]: value }));
+
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    setUploading(true);
+    try {
+      const compressed = await compressImage(file);
+      const ext = compressed.name.split('.').pop() || 'jpg';
+      const filePath = `${user.id}/${Date.now()}.${ext}`;
+
+      // Remove old photo if exists
+      if (form.photoUrl) {
+        const oldPath = form.photoUrl.split('/vehicle-photos/')[1];
+        if (oldPath) await supabase.storage.from('vehicle-photos').remove([oldPath]);
+      }
+
+      const { error } = await supabase.storage.from('vehicle-photos').upload(filePath, compressed);
+      if (error) throw error;
+
+      const { data: { publicUrl } } = supabase.storage.from('vehicle-photos').getPublicUrl(filePath);
+      setForm(prev => ({ ...prev, photoUrl: publicUrl }));
+      setPhotoPreview(publicUrl);
+    } catch (err: any) {
+      alert('Failed to upload photo: ' + (err?.message || 'Unknown error'));
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
+
+  const handleRemovePhoto = async () => {
+    if (form.photoUrl) {
+      const oldPath = form.photoUrl.split('/vehicle-photos/')[1];
+      if (oldPath) await supabase.storage.from('vehicle-photos').remove([oldPath]);
+    }
+    setForm(prev => ({ ...prev, photoUrl: '' }));
+    setPhotoPreview('');
+  };
 
   const handleSave = async () => {
     try {
@@ -46,7 +97,7 @@ export default function VehicleForm() {
       navigate('/vehicles');
     } catch (err: any) {
       const msg = err?.message || 'Failed to save vehicle';
-      if (msg.includes('vehicles_rego_number_key') || msg.includes('duplicate key')) {
+      if (msg.includes('vehicles_user_rego_unique') || msg.includes('duplicate key')) {
         alert('You already have a vehicle with this registration number.');
       } else {
         alert(`Error saving vehicle: ${msg}`);
@@ -72,6 +123,46 @@ export default function VehicleForm() {
             <ArrowLeft className="w-5 h-5 text-foreground" strokeWidth={1.5} />
           </button>
           <h1 className="text-lg font-bold text-foreground">{isEdit ? t('vehicles.editVehicle') : t('vehicles.addVehicle')}</h1>
+        </div>
+
+        {/* Vehicle Photo */}
+        <div className="card-surface space-y-3">
+          <h2 className="text-sm font-semibold text-foreground">{t('vehicles.vehiclePhoto', 'Vehicle photo')}</h2>
+          {photoPreview ? (
+            <div className="relative">
+              <img src={photoPreview} alt="Vehicle" className="w-full h-48 object-cover rounded-xl" />
+              <button onClick={handleRemovePhoto} className="absolute top-2 right-2 p-1.5 rounded-full bg-foreground/70 text-background hover:bg-foreground transition-colors">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploading}
+              className="w-full h-36 border-2 border-dashed border-border rounded-xl flex flex-col items-center justify-center gap-2 text-muted-foreground hover:border-foreground/30 hover:text-foreground transition-colors"
+            >
+              {uploading ? (
+                <span className="text-sm">{t('common.uploading', 'Uploading...')}</span>
+              ) : (
+                <>
+                  <ImageIcon className="w-8 h-8" strokeWidth={1.2} />
+                  <span className="text-sm">{t('vehicles.addPhoto', 'Add a photo of your vehicle')}</span>
+                </>
+              )}
+            </button>
+          )}
+          {photoPreview && (
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploading}
+              className="text-xs text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
+            >
+              <Camera className="w-3.5 h-3.5" /> {t('vehicles.changePhoto', 'Change photo')}
+            </button>
+          )}
+          <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handlePhotoUpload} />
         </div>
 
         <div className="card-surface space-y-4">
