@@ -703,11 +703,11 @@ export default function ClaimWizard() {
 
         <div className="flex flex-col gap-3 pb-16 md:pb-0">
           <div className="flex gap-3">
-            {step > 0 && <button onClick={prev} className="btn-secondary flex-1 h-11"><ArrowLeft className="w-4 h-4" strokeWidth={1.5} /> {t('common.back')}</button>}
+            {step > 0 && <button onClick={prev} disabled={navigating} className="btn-secondary flex-1 h-11">{navigating ? <Loader2 className="w-4 h-4 animate-spin" /> : <ArrowLeft className="w-4 h-4" strokeWidth={1.5} />} {t('common.back')}</button>}
             {step < STEPS.length - 1 ? (
-              <button onClick={next} className="btn-primary flex-1 h-11">{t('common.next')} <ArrowRight className="w-4 h-4" /></button>
+              <button onClick={next} disabled={navigating} className="btn-primary flex-1 h-11">{navigating ? <Loader2 className="w-4 h-4 animate-spin" /> : <>{t('common.next')} <ArrowRight className="w-4 h-4" /></>}</button>
             ) : (
-              <button onClick={submit} className="btn-primary flex-1 h-11"><Save className="w-4 h-4" /> {t('common.save')} report</button>
+              <button onClick={submit} disabled={submitting} className="btn-primary flex-1 h-11">{submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} {t('common.save')} report</button>
             )}
           </div>
         </div>
