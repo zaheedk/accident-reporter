@@ -31,6 +31,7 @@ export async function saveVehicle(vehicle: Omit<Vehicle, 'id' | 'createdAt'> & {
     insurance_company: vehicle.insuranceCompany || '',
     insurance_policy_number: vehicle.insurancePolicyNumber || '',
     insurance_expiry: vehicle.insuranceExpiry || null,
+    photo_url: vehicle.photoUrl || '',
   };
 
   if (vehicle.id) {
