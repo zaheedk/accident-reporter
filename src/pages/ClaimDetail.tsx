@@ -435,16 +435,8 @@ export default function ClaimDetail() {
                 </>
               )}
             </Section>
-          </TabsContent>
-
-          <TabsContent value="messages" className="mt-4">
-            <ClaimMessages
-              claimId={claim.id!}
-              insurerEmail={insurerEmail}
-              insurerName={claim.insuranceCompany}
-            />
-          </TabsContent>
-        </Tabs>
+          </div>
+        </div>
 
         {/* Print-only: show report sections */}
         <div className="hidden print:block space-y-4">
