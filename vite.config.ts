@@ -62,11 +62,19 @@ export default defineConfig(({ mode }) => ({
   build: {
     rollupOptions: {
       output: {
-        manualChunks: {
-          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
-          'vendor-supabase': ['@supabase/supabase-js'],
-          'vendor-ui': ['framer-motion', 'recharts'],
-          'vendor-i18n': ['i18next', 'react-i18next'],
+        manualChunks(id) {
+          if (id.includes("node_modules/react/") || id.includes("node_modules/react-dom/") || id.includes("node_modules/react-router-dom/")) {
+            return "vendor-react";
+          }
+          if (id.includes("node_modules/@supabase/supabase-js/")) {
+            return "vendor-supabase";
+          }
+          if (id.includes("node_modules/framer-motion/") || id.includes("node_modules/recharts/")) {
+            return "vendor-ui";
+          }
+          if (id.includes("node_modules/i18next/") || id.includes("node_modules/react-i18next/")) {
+            return "vendor-i18n";
+          }
         },
       },
     },
