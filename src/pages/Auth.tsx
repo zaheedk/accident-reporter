@@ -199,7 +199,7 @@ export default function Auth() {
               <form onSubmit={handleSubmit} className="space-y-4">
                 {mode === 'signup' && (
                   <div>
-                    <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider mb-1.5 block">Full Name</label>
+                    <label className="text-[11px] font-bold text-foreground/70 uppercase tracking-wider mb-1.5 block">Full Name</label>
                     <div className="relative">
                       <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/50" strokeWidth={1.5} />
                       <input className="form-input pl-10" placeholder="John Doe" value={name} onChange={e => setName(e.target.value)} required />
@@ -207,7 +207,7 @@ export default function Auth() {
                   </div>
                 )}
                 <div>
-                  <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider mb-1.5 block">Email Address</label>
+                  <label className="text-[11px] font-bold text-foreground/70 uppercase tracking-wider mb-1.5 block">Email Address</label>
                   <div className="relative">
                     <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/50" strokeWidth={1.5} />
                     <input type="email" className="form-input pl-10" placeholder="name@company.com" value={email} onChange={e => setEmail(e.target.value)} required />
@@ -215,7 +215,7 @@ export default function Auth() {
                 </div>
                 {mode !== 'forgot' && (
                 <div>
-                  <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider mb-1.5 block">Password</label>
+                  <label className="text-[11px] font-bold text-foreground/70 uppercase tracking-wider mb-1.5 block">Password</label>
                   <div className="relative">
                     <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/50" strokeWidth={1.5} />
                     <input type={showPassword ? 'text' : 'password'} className="form-input pl-10 pr-10" placeholder="••••••••" value={password} onChange={e => setPassword(e.target.value)} required minLength={6} />
