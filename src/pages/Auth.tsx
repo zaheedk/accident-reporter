@@ -90,13 +90,15 @@ export default function Auth() {
   return (
     <div className="min-h-screen flex flex-col lg:flex-row">
       {/* Dark hero section */}
-      <div className="bg-dark-surface px-6 pt-10 pb-10 relative overflow-hidden lg:w-1/2 lg:min-h-screen lg:flex lg:items-center lg:justify-center">
+      <div className="px-6 pt-10 pb-10 relative overflow-hidden lg:w-1/2 lg:min-h-screen lg:flex lg:items-center lg:justify-center" style={{ background: 'linear-gradient(160deg, hsl(220 30% 10%), hsl(213 52% 18%), hsl(220 25% 14%))' }}>
         {/* Subtle grid/line decoration */}
-        <div className="absolute inset-0 opacity-[0.06]" style={{
-          backgroundImage: `linear-gradient(hsl(var(--primary) / 0.3) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--primary) / 0.3) 1px, transparent 1px)`,
+        <div className="absolute inset-0 opacity-[0.04]" style={{
+          backgroundImage: `linear-gradient(hsl(210 50% 60% / 0.4) 1px, transparent 1px), linear-gradient(90deg, hsl(210 50% 60% / 0.4) 1px, transparent 1px)`,
           backgroundSize: '60px 60px',
         }} />
-        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[hsl(var(--dark-surface))] to-transparent lg:hidden" />
+        {/* Glow accent */}
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[500px] h-[500px] rounded-full opacity-[0.08]" style={{ background: 'radial-gradient(circle, hsl(213 60% 50%), transparent 70%)' }} />
+        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[hsl(220,30%,10%)] to-transparent lg:hidden" />
 
         <div className="relative z-10 lg:text-center lg:max-w-md">
           {/* Logo */}
@@ -106,17 +108,17 @@ export default function Auth() {
 
           {/* Headline */}
           <h1 className="text-[34px] leading-[1.08] tracking-tight mb-4" style={{ textWrap: 'balance' as any }}>
-            <span className="font-semibold text-dark-surface-foreground" style={{ fontFamily: "'Playfair Display', serif" }}>
+            <span className="font-semibold text-slate-100" style={{ fontFamily: "'Playfair Display', serif" }}>
               Capture the scene.
             </span>
             <br />
-            <span className="font-bold italic text-primary" style={{ fontFamily: "'Playfair Display', serif" }}>
+            <span className="font-bold italic" style={{ fontFamily: "'Playfair Display', serif", color: 'hsl(210 60% 70%)' }}>
               Protect your claim.
             </span>
           </h1>
 
           {/* Subtitle */}
-          <p className="text-[15px] leading-relaxed text-dark-surface-muted max-w-xs lg:max-w-sm lg:mx-auto">
+          <p className="text-[15px] leading-relaxed text-slate-400 max-w-xs lg:max-w-sm lg:mx-auto">
             Savo helps you record accident data instantly — photos, GPS, witness info, and reports — so your claim is airtight from minute one.
           </p>
 
@@ -124,12 +126,12 @@ export default function Auth() {
       </div>
 
       {/* Form section */}
-      <div className="flex-1 bg-card px-6 pt-8 pb-8 -mt-3 rounded-t-3xl relative z-10 lg:mt-0 lg:rounded-none lg:flex lg:items-center lg:justify-center" style={{ boxShadow: '0 -4px 24px rgba(0,0,0,0.08)' }}>
+      <div className="flex-1 px-6 pt-8 pb-8 -mt-3 rounded-t-3xl relative z-10 lg:mt-0 lg:rounded-none lg:flex lg:items-center lg:justify-center" style={{ background: 'hsl(220 20% 97%)', boxShadow: '0 -4px 24px rgba(0,0,0,0.08)' }}>
         <div className="max-w-sm mx-auto">
           {/* Secure portal badge */}
           <div className="flex items-center gap-2 mb-4">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-primary/10 text-primary">
-              <span className="w-1.5 h-1.5 rounded-full bg-primary" />
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-primary/8 text-primary border border-primary/15">
+              <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
               Secure Portal
             </span>
           </div>
@@ -149,7 +151,7 @@ export default function Auth() {
 
           {/* OAuth buttons - side by side */}
           <button onClick={() => handleOAuth()}
-            className="w-full h-12 px-4 bg-card border border-border rounded-xl text-sm font-semibold text-foreground transition-all hover:bg-muted active:scale-[0.98] inline-flex items-center justify-center gap-2.5 shadow-sm mb-5">
+            className="w-full h-12 px-4 bg-white border border-border/80 rounded-xl text-sm font-semibold text-foreground transition-all hover:bg-slate-50 hover:border-border active:scale-[0.98] inline-flex items-center justify-center gap-2.5 shadow-sm mb-5">
             <svg className="w-[18px] h-[18px] flex-shrink-0" viewBox="0 0 24 24">
               <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/>
               <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
@@ -160,17 +162,17 @@ export default function Auth() {
           </button>
 
           <div className="flex items-center gap-3 mb-5">
-            <div className="flex-1 h-px bg-border" />
-            <span className="text-xs text-muted-foreground font-medium">or continue with</span>
-            <div className="flex-1 h-px bg-border" />
+            <div className="flex-1 h-px bg-border/60" />
+            <span className="text-xs text-muted-foreground/70 font-medium">or continue with</span>
+            <div className="flex-1 h-px bg-border/60" />
           </div>
 
           {/* Email / Phone toggle */}
-          <div className="flex rounded-xl bg-muted p-1 mb-5">
+          <div className="flex rounded-xl bg-muted/60 p-1 mb-5 border border-border/30">
             <button
               onClick={() => { setAuthMethod('email'); setError(''); }}
               className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-semibold transition-all ${
-                authMethod === 'email' ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'
+                authMethod === 'email' ? 'bg-white text-foreground shadow-sm border border-border/40' : 'text-muted-foreground hover:text-foreground'
               }`}
             >
               <Mail className="w-3.5 h-3.5" />
@@ -179,7 +181,7 @@ export default function Auth() {
             <button
               onClick={() => { setAuthMethod('phone'); setError(''); }}
               className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-semibold transition-all ${
-                authMethod === 'phone' ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'
+                authMethod === 'phone' ? 'bg-white text-foreground shadow-sm border border-border/40' : 'text-muted-foreground hover:text-foreground'
               }`}
             >
               <Phone className="w-3.5 h-3.5" />
@@ -241,7 +243,7 @@ export default function Auth() {
 
                 <button type="submit" disabled={submitting}
                   className="btn-primary w-full h-12 text-[15px] rounded-xl"
-                  style={{ boxShadow: '0 4px 20px hsla(22, 90%, 52%, 0.4)' }}>
+                  style={{ boxShadow: '0 4px 20px hsla(213, 52%, 24%, 0.35)' }}>
                   {submitting ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
                   ) : (
@@ -275,8 +277,8 @@ export default function Auth() {
           {/* Feature chips - hidden on mobile to save space */}
           <div className="hidden lg:flex flex-wrap items-center justify-center gap-2 mt-6">
             {features.map(({ icon: Icon, label }) => (
-              <span key={label} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-muted text-muted-foreground border border-border/50">
-                <Icon className="w-3.5 h-3.5" />
+              <span key={label} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-white text-muted-foreground border border-border/50 shadow-sm">
+                <Icon className="w-3.5 h-3.5 text-primary/70" />
                 {label}
               </span>
             ))}
