@@ -227,7 +227,7 @@ function getEmailContent(type: string, data: Record<string, string> = {}) {
         subject: 'Thanks for contacting Savo',
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-            <div style="background: linear-gradient(135deg, #e8551e, #d44a18); padding: 30px; border-radius: 12px 12px 0 0;">
+            <div style="background: linear-gradient(135deg, #1e3a5f, #162d4a); padding: 30px; border-radius: 12px 12px 0 0;">
               <h1 style="color: white; margin: 0; font-size: 24px;">Savo</h1>
             </div>
             <div style="background: #ffffff; padding: 30px; border: 1px solid #e5e5e5; border-top: none; border-radius: 0 0 12px 12px;">
@@ -248,7 +248,7 @@ function getEmailContent(type: string, data: Record<string, string> = {}) {
       const bodyHtml = isInsurer
         ? `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-            <div style="background: linear-gradient(135deg, #e8551e, #d44a18); padding: 30px; border-radius: 12px 12px 0 0;">
+            <div style="background: linear-gradient(135deg, #1e3a5f, #162d4a); padding: 30px; border-radius: 12px 12px 0 0;">
               <h1 style="color: white; margin: 0; font-size: 24px;">Savo</h1>
             </div>
             <div style="background: #ffffff; padding: 30px; border: 1px solid #e5e5e5; border-top: none; border-radius: 0 0 12px 12px;">
@@ -268,7 +268,7 @@ function getEmailContent(type: string, data: Record<string, string> = {}) {
           </div>`
         : `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-            <div style="background: linear-gradient(135deg, #e8551e, #d44a18); padding: 30px; border-radius: 12px 12px 0 0;">
+            <div style="background: linear-gradient(135deg, #1e3a5f, #162d4a); padding: 30px; border-radius: 12px 12px 0 0;">
               <h1 style="color: white; margin: 0; font-size: 24px;">Savo</h1>
             </div>
             <div style="background: #ffffff; padding: 30px; border: 1px solid #e5e5e5; border-top: none; border-radius: 0 0 12px 12px;">
@@ -292,7 +292,7 @@ function getEmailContent(type: string, data: Record<string, string> = {}) {
         subject: 'Welcome to Savo – Your claims assistant',
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-            <div style="background: linear-gradient(135deg, #e8551e, #d44a18); padding: 30px; border-radius: 12px 12px 0 0;">
+            <div style="background: linear-gradient(135deg, #1e3a5f, #162d4a); padding: 30px; border-radius: 12px 12px 0 0;">
               <h1 style="color: white; margin: 0; font-size: 24px;">Welcome to Savo</h1>
             </div>
             <div style="background: #ffffff; padding: 30px; border: 1px solid #e5e5e5; border-top: none; border-radius: 0 0 12px 12px;">
@@ -315,7 +315,7 @@ function getEmailContent(type: string, data: Record<string, string> = {}) {
         subject: `Rego Expiry Reminder – ${data.vehicle || 'Your Vehicle'}${data.rego ? ` (${data.rego})` : ''}`,
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-            <div style="background: linear-gradient(135deg, #e8551e, #d44a18); padding: 30px; border-radius: 12px 12px 0 0;">
+            <div style="background: linear-gradient(135deg, #1e3a5f, #162d4a); padding: 30px; border-radius: 12px 12px 0 0;">
               <h1 style="color: white; margin: 0; font-size: 24px;">Savo</h1>
             </div>
             <div style="background: #ffffff; padding: 30px; border: 1px solid #e5e5e5; border-top: none; border-radius: 0 0 12px 12px;">
@@ -337,7 +337,7 @@ function getEmailContent(type: string, data: Record<string, string> = {}) {
         subject: `WOF Expiry Reminder – ${data.vehicle || 'Your Vehicle'}${data.rego ? ` (${data.rego})` : ''}`,
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-            <div style="background: linear-gradient(135deg, #e8551e, #d44a18); padding: 30px; border-radius: 12px 12px 0 0;">
+            <div style="background: linear-gradient(135deg, #1e3a5f, #162d4a); padding: 30px; border-radius: 12px 12px 0 0;">
               <h1 style="color: white; margin: 0; font-size: 24px;">Savo</h1>
             </div>
             <div style="background: #ffffff; padding: 30px; border: 1px solid #e5e5e5; border-top: none; border-radius: 0 0 12px 12px;">
@@ -359,7 +359,7 @@ function getEmailContent(type: string, data: Record<string, string> = {}) {
         subject: `Insurance Policy Expiry Reminder – ${data.vehicle || 'Your Vehicle'}${data.rego ? ` (${data.rego})` : ''}`,
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-            <div style="background: linear-gradient(135deg, #e8551e, #d44a18); padding: 30px; border-radius: 12px 12px 0 0;">
+            <div style="background: linear-gradient(135deg, #1e3a5f, #162d4a); padding: 30px; border-radius: 12px 12px 0 0;">
               <h1 style="color: white; margin: 0; font-size: 24px;">Savo</h1>
             </div>
             <div style="background: #ffffff; padding: 30px; border: 1px solid #e5e5e5; border-top: none; border-radius: 0 0 12px 12px;">
