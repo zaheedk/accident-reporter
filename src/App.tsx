@@ -29,6 +29,8 @@ const Legal = lazy(() => import("./pages/Legal"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const ExternalLogin = lazy(() => import("./pages/ExternalLogin"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
+const DeleteAccount = lazy(() => import("./pages/DeleteAccount"));
+const DeleteDataRequest = lazy(() => import("./pages/DeleteDataRequest"));
 
 const PageLoader = () => (
   <div className="min-h-screen bg-background flex items-center justify-center">
@@ -84,6 +86,8 @@ const App = () => (
               <Route path="/how-it-works" element={<HowItWorks />} />
               <Route path="/faq" element={<FAQ />} />
               <Route path="/legal" element={<Legal />} />
+              <Route path="/delete-account" element={<ProtectedRoute><DeleteAccount /></ProtectedRoute>} />
+              <Route path="/delete-data-request" element={<ProtectedRoute><DeleteDataRequest /></ProtectedRoute>} />
               <Route path="*" element={<NotFound />} />
             </Routes>
             <InstallPrompt />
