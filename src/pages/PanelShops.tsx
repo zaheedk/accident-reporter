@@ -32,7 +32,7 @@ export default function PanelShops() {
   const [formOpen, setFormOpen] = useState(false);
   const [editShop, setEditShop] = useState<PanelShop | null>(null);
   const [deleteShop, setDeleteShop] = useState<PanelShop | null>(null);
-  const { nearbyActive, locating, toggleNearby, getDistance, formatDistance, sortByDistance } = useNearbySort();
+  const { nearbyActive, locating, toggleNearby, getDistance, formatDistance, sortByDistance, filterByRadius } = useNearbySort();
 
   const { data: shops = [], isLoading } = useQuery({
     queryKey: ['panel-shops'],
@@ -53,7 +53,7 @@ export default function PanelShops() {
     return matchesSearch && matchesRegion;
   });
 
-  const displayed = nearbyActive ? sortByDistance(filtered) : filtered;
+  const displayed = nearbyActive ? sortByDistance(filterByRadius(filtered, 25)) : filtered;
 
   const handleAdd = async (data: Omit<PanelShop, 'id'>) => {
     const { error } = await supabase.from('panel_shops').insert(data);

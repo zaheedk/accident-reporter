@@ -18,7 +18,7 @@ export default function TowCompanies() {
   const { t } = useTranslation();
   const [search, setSearch] = useState('');
   const [selectedRegion, setSelectedRegion] = useState('All');
-  const { nearbyActive, locating, toggleNearby, getDistance, formatDistance, sortByDistance } = useNearbySort();
+  const { nearbyActive, locating, toggleNearby, getDistance, formatDistance, sortByDistance, filterByRadius } = useNearbySort();
 
   const { data: companies = [], isLoading } = useQuery({
     queryKey: ['tow-companies-public'],
@@ -38,7 +38,7 @@ export default function TowCompanies() {
     return matchesSearch && matchesRegion;
   });
 
-  const displayed = nearbyActive ? sortByDistance(filtered) : filtered;
+  const displayed = nearbyActive ? sortByDistance(filterByRadius(filtered, 25)) : filtered;
 
   return (
     <AppLayout>
