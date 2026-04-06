@@ -168,7 +168,7 @@ export default function ClaimList() {
                         </div>
 
                         {/* Content */}
-                        <div className="flex-1 min-w-0 py-3 pr-3">
+                        <div className="flex-1 min-w-0 py-3">
                           <div className="flex items-center gap-2 mb-1">
                             <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${isDraft ? 'bg-muted text-muted-foreground' : 'bg-primary/10 text-primary'}`}>
                               {statusLabel}
@@ -178,7 +178,6 @@ export default function ClaimList() {
                                 {reportNum}
                               </span>
                             )}
-                            <ChevronRight className="w-4 h-4 text-muted-foreground/30 ml-auto group-hover:text-primary transition-colors flex-shrink-0" />
                           </div>
 
                           {rego && (
@@ -193,6 +192,11 @@ export default function ClaimList() {
                               {c.incidentDate || t('claims.noDate')}
                             </span>
                           </div>
+                        </div>
+
+                        {/* Centered chevron */}
+                        <div className="flex items-center pr-2 flex-shrink-0">
+                          <ChevronRight className="w-4 h-4 text-muted-foreground/30 group-hover:text-primary transition-colors" />
                         </div>
                       </div>
                     </Link>
