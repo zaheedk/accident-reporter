@@ -17,7 +17,8 @@
     "draft": "下書き",
     "submitted": "提出済み",
     "signOut": "ログアウト",
-    "language": "言語"
+    "language": "言語",
+    "deleting": "削除中…"
   },
   "nav": {
     "dashboard": "ダッシュボード",

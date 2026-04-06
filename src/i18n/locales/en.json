@@ -17,7 +17,8 @@
     "draft": "Draft",
     "submitted": "Submitted",
     "signOut": "Sign out",
-    "language": "Language"
+    "language": "Language",
+    "deleting": "Deleting…"
   },
   "nav": {
     "dashboard": "Dashboard",

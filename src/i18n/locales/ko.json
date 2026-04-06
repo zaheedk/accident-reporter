@@ -17,7 +17,8 @@
     "draft": "초안",
     "submitted": "제출됨",
     "signOut": "로그아웃",
-    "language": "언어"
+    "language": "언어",
+    "deleting": "삭제 중…"
   },
   "nav": {
     "dashboard": "대시보드",
