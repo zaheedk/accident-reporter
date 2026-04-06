@@ -58,7 +58,7 @@ export default function ResetPassword() {
           <h1 className="text-2xl font-bold text-foreground" style={{ fontFamily: "'Playfair Display', serif" }}>
             Reset your password
           </h1>
-          <p className="text-sm text-muted-foreground mt-1">Choose a new password for your Savo account.</p>
+          <p className="text-sm text-muted-foreground mt-1">Choose a new password for your SAVO account.</p>
         </div>
 
         {success ? (

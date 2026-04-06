@@ -8,7 +8,7 @@ export default function Blog() {
     <AppLayout>
       <div className="max-w-2xl mx-auto px-4 py-6 pb-24">
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-foreground">Savo Blog</h1>
+          <h1 className="text-2xl font-bold text-foreground">SAVO Blog</h1>
           <p className="text-sm text-muted-foreground mt-1">
             Tips and guides for handling car insurance claims in New Zealand
           </p>
