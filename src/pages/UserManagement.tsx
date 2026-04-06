@@ -64,7 +64,7 @@ export default function UserManagement() {
     enabled: isAdmin,
   });
 
-  if (!isAdmin) return <Navigate to="/" replace />;
+  if (!isAdmin) return <Navigate to="/dashboard" replace />;
 
   const getUserRole = (userId: string) => {
     const userRole = roles.find(r => r.user_id === userId);

@@ -24,7 +24,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const initials = (profile?.display_name || user?.email || '?')
     .split(/[\s@]/).filter(Boolean).slice(0, 2).map(s => s[0].toUpperCase()).join('');
   const navItems = [
-    { to: '/', icon: LayoutDashboard, label: t('nav.dashboard') },
+    { to: '/dashboard', icon: LayoutDashboard, label: t('nav.dashboard') },
     { to: '/vehicles', icon: Car, label: t('nav.vehicles') },
     { to: '/claims', icon: FileText, label: t('nav.claims') },
     { to: '/panel-shops', icon: Wrench, label: t('nav.shops') },
@@ -43,7 +43,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-background">
       <header className="bg-dark-surface px-4 py-3 pt-[max(0.75rem,env(safe-area-inset-top))] flex items-center justify-between border-b border-[hsl(var(--dark-surface))] sticky top-0 z-30">
-        <Link to="/" className="flex items-center gap-2.5">
+        <Link to="/dashboard" className="flex items-center gap-2.5">
           <img src="/savo-logo.svg" alt="Savo" className="h-9" />
         </Link>
         <div className="flex items-center gap-2">
@@ -114,7 +114,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
       <nav className="fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-xl border-t border-border/50 flex justify-around py-2 px-4 md:hidden z-20">
         {navItems.map(({ to, icon: Icon, label }) => {
-          const active = location.pathname === to || (to !== '/' && location.pathname.startsWith(to));
+          const active = location.pathname === to || (to !== '/dashboard' && location.pathname.startsWith(to));
           return (
             <Link key={to} to={to}
               className={`flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-xl text-[11px] font-medium transition-all ${active ? 'text-primary' : 'text-muted-foreground'}`}>

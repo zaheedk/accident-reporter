@@ -41,7 +41,7 @@ export default function AdminDashboard() {
     enabled: isAdmin,
   });
 
-  if (!isAdmin) return <Navigate to="/" replace />;
+  if (!isAdmin) return <Navigate to="/dashboard" replace />;
 
   const getUserName = (userId: string) => {
     const profile = profiles.find(p => p.user_id === userId);
