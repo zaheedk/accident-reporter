@@ -51,17 +51,28 @@ export default function TowCompanies() {
         ) : (
           <div className="space-y-3">
             {filtered.map(company => (
-              <Card key={company.id} className="p-4 space-y-2">
-                <h3 className="text-sm font-semibold text-foreground leading-tight">{company.name}</h3>
-                <div className="space-y-1.5 text-xs text-muted-foreground">
-                  {company.address && (
-                    <div className="flex items-start gap-2"><MapPin className="w-3.5 h-3.5 mt-0.5 shrink-0" /><span>{company.address}</span></div>
-                  )}
-                  {company.phone && (
-                    <div className="flex items-center gap-2">
-                      <Phone className="w-3.5 h-3.5 shrink-0" />
-                      <a href={`tel:${company.phone}`} className="text-foreground underline-offset-2 hover:underline font-medium">{company.phone}</a>
+              <Card key={company.id} className="p-4">
+                <div className="flex items-start gap-3">
+                  <div className="flex-1 space-y-2.5 min-w-0">
+                    <h3 className="text-sm font-semibold text-foreground leading-tight">{company.name}</h3>
+                    <div className="space-y-1.5 text-xs text-muted-foreground">
+                      {company.address && (
+                        <div className="flex items-start gap-2"><MapPin className="w-3.5 h-3.5 mt-0.5 shrink-0" /><span>{company.address}</span></div>
+                      )}
+                      {company.phone && (
+                        <div className="flex items-center gap-2">
+                          <Phone className="w-3.5 h-3.5 shrink-0" />
+                          <a href={`tel:${company.phone}`} className="text-foreground underline-offset-2 hover:underline font-medium">{company.phone}</a>
+                        </div>
+                      )}
                     </div>
+                  </div>
+                  {company.phone && (
+                    <a href={`tel:${company.phone}`} className="shrink-0 self-center">
+                      <Button size="sm" variant="default" className="gap-1.5 rounded-full h-9 w-9 p-0">
+                        <Phone className="w-4 h-4" />
+                      </Button>
+                    </a>
                   )}
                 </div>
               </Card>
