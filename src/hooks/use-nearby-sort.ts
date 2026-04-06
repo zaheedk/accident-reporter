@@ -75,5 +75,5 @@ export function useNearbySort() {
     });
   }, [nearbyActive, userLat, userLng]);
 
-  return { nearbyActive, locating, toggleNearby, getDistance, formatDistance, sortByDistance };
+  return { nearbyActive, locating, toggleNearby, getDistance, formatDistance, sortByDistance, filterByRadius };
 }
