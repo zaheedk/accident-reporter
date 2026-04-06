@@ -178,7 +178,7 @@ export default function ClaimList() {
                                 {reportNum}
                               </span>
                             )}
-                            <ChevronRight className="w-4 h-4 text-muted-foreground/30 ml-auto group-hover:text-primary transition-colors flex-shrink-0" />
+                            <ChevronRight className="w-4 h-4 text-muted-foreground/30 ml-auto group-hover:text-primary transition-colors flex-shrink-0 self-center" />
                           </div>
 
                           {rego && (
