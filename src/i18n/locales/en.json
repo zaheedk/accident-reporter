@@ -17,7 +17,8 @@
     "draft": "Draft",
     "submitted": "Submitted",
     "signOut": "Sign out",
-    "language": "Language"
+    "language": "Language",
+    "deleting": "Deleting…"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -88,7 +89,8 @@
     "modificationDetails": "Modification details",
     "modificationDetailsPlaceholder": "Describe modifications",
     "saveVehicle": "Save vehicle",
-    "updateVehicle": "Update vehicle"
+    "updateVehicle": "Update vehicle",
+    "deleteConfirm": "This vehicle and its data will be permanently removed. This action cannot be undone."
   },
   "claims": {
     "reports": "Reports",

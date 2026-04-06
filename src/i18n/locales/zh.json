@@ -17,7 +17,8 @@
     "draft": "草稿",
     "submitted": "已提交",
     "signOut": "退出登录",
-    "language": "语言"
+    "language": "语言",
+    "deleting": "删除中…"
   },
   "nav": {
     "dashboard": "仪表盘",
