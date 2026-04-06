@@ -1,22 +1,29 @@
 import { supabase } from '@/integrations/supabase/client';
 import { Vehicle, ClaimReport } from '@/types';
 
+// Helper to resolve user id – skips the network call when already known
+async function resolveUserId(userId?: string): Promise<string | null> {
+  if (userId) return userId;
+  const { data: { user } } = await supabase.auth.getUser();
+  return user?.id ?? null;
+}
+
 // ── Vehicle helpers ──
 
-export async function getVehicles(): Promise<Vehicle[]> {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return [];
-  const { data, error } = await supabase.from('vehicles').select('*').eq('user_id', user.id).order('created_at', { ascending: false });
+export async function getVehicles(userId?: string): Promise<Vehicle[]> {
+  const uid = await resolveUserId(userId);
+  if (!uid) return [];
+  const { data, error } = await supabase.from('vehicles').select('*').eq('user_id', uid).order('created_at', { ascending: false });
   if (error) { console.error('getVehicles', error); return []; }
   return (data || []).map(dbVehicleToVehicle);
 }
 
-export async function saveVehicle(vehicle: Omit<Vehicle, 'id' | 'createdAt'> & { id?: string; createdAt?: string }): Promise<void> {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return;
+export async function saveVehicle(vehicle: Omit<Vehicle, 'id' | 'createdAt'> & { id?: string; createdAt?: string }, userId?: string): Promise<void> {
+  const uid = await resolveUserId(userId);
+  if (!uid) return;
 
   const row = {
-    user_id: user.id,
+    user_id: uid,
     year: vehicle.year,
     make: vehicle.make,
     model: vehicle.model,
@@ -71,20 +78,20 @@ function dbVehicleToVehicle(row: any): Vehicle {
 
 // ── Claim helpers ──
 
-export async function getClaims(): Promise<ClaimReport[]> {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return [];
-  const { data, error } = await supabase.from('claims').select('*').eq('user_id', user.id).order('created_at', { ascending: false });
+export async function getClaims(userId?: string): Promise<ClaimReport[]> {
+  const uid = await resolveUserId(userId);
+  if (!uid) return [];
+  const { data, error } = await supabase.from('claims').select('*').eq('user_id', uid).order('created_at', { ascending: false });
   if (error) { console.error('getClaims', error); return []; }
   return (data || []).map(dbClaimToClaim);
 }
 
-export async function saveClaim(claim: ClaimReport): Promise<string> {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return claim.id;
+export async function saveClaim(claim: ClaimReport, userId?: string): Promise<string> {
+  const uid = await resolveUserId(userId);
+  if (!uid) return claim.id;
 
   const row = {
-    user_id: user.id,
+    user_id: uid,
     status: claim.status,
     incident_date: claim.incidentDate,
     incident_time: claim.incidentTime,
