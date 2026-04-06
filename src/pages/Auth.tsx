@@ -288,7 +288,11 @@ export default function Auth() {
             <LanguageSwitcher />
           </div>
 
-          <div className="flex items-center justify-center gap-3 mt-4 text-xs text-muted-foreground">
+          <div className="flex items-center justify-center gap-3 mt-4 text-xs text-muted-foreground flex-wrap">
+            <a href="/panel-shops" className="hover:text-foreground transition-colors">{t('nav.shops')}</a>
+            <span>·</span>
+            <a href="/tow-companies" className="hover:text-foreground transition-colors">{t('nav.towCompanies')}</a>
+            <span>·</span>
             <a href="/about" className="hover:text-foreground transition-colors">{t('auth.about')}</a>
             <span>·</span>
             <a href="/how-it-works" className="hover:text-foreground transition-colors">{t('nav.howItWorks')}</a>

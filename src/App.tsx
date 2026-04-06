@@ -17,6 +17,7 @@ const ClaimList = lazy(() => import("./pages/ClaimList"));
 const ClaimWizard = lazy(() => import("./pages/ClaimWizard"));
 const ClaimDetail = lazy(() => import("./pages/ClaimDetail"));
 const PanelShops = lazy(() => import("./pages/PanelShops"));
+const TowCompanies = lazy(() => import("./pages/TowCompanies"));
 const Profile = lazy(() => import("./pages/Profile"));
 const UserManagement = lazy(() => import("./pages/UserManagement"));
 const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
@@ -77,7 +78,8 @@ const App = () => (
               <Route path="/claims/new" element={<ProtectedRoute><ClaimWizard /></ProtectedRoute>} />
               <Route path="/claims/:id/edit" element={<ProtectedRoute><ClaimWizard /></ProtectedRoute>} />
               <Route path="/claims/:id" element={<ProtectedRoute><ClaimDetail /></ProtectedRoute>} />
-              <Route path="/panel-shops" element={<ProtectedRoute><PanelShops /></ProtectedRoute>} />
+              <Route path="/panel-shops" element={<PanelShops />} />
+              <Route path="/tow-companies" element={<TowCompanies />} />
               <Route path="/users" element={<ProtectedRoute><UserManagement /></ProtectedRoute>} />
               <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
               <Route path="/admin/insurance-companies" element={<ProtectedRoute><InsuranceCompanies /></ProtectedRoute>} />
