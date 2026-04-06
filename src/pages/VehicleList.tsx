@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
 import { Plus, Car, Trash2, ChevronRight, ArrowLeft } from 'lucide-react';
 import { getVehicles, deleteVehicle } from '@/lib/storage';

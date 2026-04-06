@@ -32,8 +32,8 @@ export default function Dashboard() {
   useEffect(() => {
     if (!user) return;
     Promise.all([
-      getVehicles(),
-      getClaims(),
+      getVehicles(user.id),
+      getClaims(user.id),
       supabase.from('profiles').select('avatar_url, display_name').eq('user_id', user.id).single(),
       supabase.from('insurance_companies').select('name, phone'),
     ]).then(([v, c, profileRes, insurerRes]) => {
