@@ -172,8 +172,9 @@ export default function ClaimDetail() {
   };
 
   const handlePrint = () => { window.print(); };
-  const handleEmail = () => {
-    setEmailTo(insurerEmail);
+  const handleEmail = async () => {
+    const user = (await supabase.auth.getUser()).data.user;
+    setEmailTo(user?.email || '');
     setEmailDialogOpen(true);
   };
 
@@ -485,32 +486,22 @@ export default function ClaimDetail() {
       <Dialog open={emailDialogOpen} onOpenChange={setEmailDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Email Report</DialogTitle>
+            <DialogTitle>Email Report to Yourself</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
-            <p className="text-sm text-muted-foreground">Send the full incident report as a PDF attachment.</p>
-            {insurerEmail && (
-              <button
-                onClick={() => setEmailTo(insurerEmail)}
-                className={`w-full text-left px-3 py-2.5 rounded-lg border text-sm transition-colors ${emailTo === insurerEmail ? 'border-primary bg-primary/5 text-primary' : 'border-border hover:bg-muted'}`}
-              >
-                <span className="font-medium">{claim.insuranceCompany}</span>
-                <span className="block text-xs text-muted-foreground mt-0.5">{insurerEmail}</span>
-              </button>
-            )}
+            <p className="text-sm text-muted-foreground">Send the full incident report as a PDF to your email. Use it as a reference when lodging your claim with your insurer.</p>
             <div>
-              <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Recipient email</label>
+              <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Your email</label>
               <input
                 type="email"
-                placeholder="Enter email address"
                 value={emailTo}
-                onChange={e => setEmailTo(e.target.value)}
-                className="w-full px-3 py-2 text-sm rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/20"
+                readOnly
+                className="w-full px-3 py-2 text-sm rounded-lg border border-border bg-muted/50 text-foreground cursor-default"
               />
             </div>
             <Button onClick={sendReportEmail} disabled={sendingEmail || !emailTo.trim()} className="w-full">
               {sendingEmail ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Send className="w-4 h-4 mr-2" />}
-              {sendingEmail ? 'Sending...' : 'Send Report'}
+              {sendingEmail ? 'Sending...' : 'Send to My Email'}
             </Button>
           </div>
         </DialogContent>
