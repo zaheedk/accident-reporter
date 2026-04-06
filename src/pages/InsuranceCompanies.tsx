@@ -113,11 +113,18 @@ export default function InsuranceCompanies() {
             <Input placeholder="Company name" value={newName} onChange={e => setNewName(e.target.value)} />
             <Input placeholder="Email address" type="email" value={newEmail} onChange={e => setNewEmail(e.target.value)} />
             <Input placeholder="Phone (e.g. 0800 123 456)" value={newPhone} onChange={e => setNewPhone(e.target.value)} />
+            <Input placeholder="Claims portal URL" value={newPortalUrl} onChange={e => setNewPortalUrl(e.target.value)} />
+            <select className="form-input text-sm" value={newClaimsMethod} onChange={e => setNewClaimsMethod(e.target.value)}>
+              <option value="phone">Claims by phone</option>
+              <option value="online">Claims online</option>
+              <option value="email">Claims by email</option>
+              <option value="app">Claims via app</option>
+            </select>
             <div className="flex gap-2">
               <Button size="sm" onClick={handleAdd} disabled={!newName.trim()}>
                 <Check className="w-3.5 h-3.5 mr-1" /> Save
               </Button>
-              <Button size="sm" variant="ghost" onClick={() => { setShowAdd(false); setNewName(''); setNewEmail(''); setNewPhone(''); }}>
+              <Button size="sm" variant="ghost" onClick={() => { setShowAdd(false); setNewName(''); setNewEmail(''); setNewPhone(''); setNewPortalUrl(''); setNewClaimsMethod('phone'); }}>
                 <X className="w-3.5 h-3.5 mr-1" /> Cancel
               </Button>
             </div>
@@ -145,6 +152,13 @@ export default function InsuranceCompanies() {
                       <Input value={editName} onChange={e => setEditName(e.target.value)} placeholder="Company name" />
                       <Input value={editEmail} onChange={e => setEditEmail(e.target.value)} placeholder="Email" type="email" />
                       <Input value={editPhone} onChange={e => setEditPhone(e.target.value)} placeholder="Phone" />
+                      <Input value={editPortalUrl} onChange={e => setEditPortalUrl(e.target.value)} placeholder="Claims portal URL" />
+                      <select className="form-input text-sm" value={editClaimsMethod} onChange={e => setEditClaimsMethod(e.target.value)}>
+                        <option value="phone">Claims by phone</option>
+                        <option value="online">Claims online</option>
+                        <option value="email">Claims by email</option>
+                        <option value="app">Claims via app</option>
+                      </select>
                       <div className="flex gap-2">
                         <Button size="sm" onClick={() => handleUpdate(c.id)} disabled={!editName.trim()}>
                           <Check className="w-3.5 h-3.5 mr-1" /> Save
