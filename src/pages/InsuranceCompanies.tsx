@@ -45,7 +45,7 @@ export default function InsuranceCompanies() {
     enabled: isAdmin,
   });
 
-  if (!isAdmin) return <Navigate to="/" replace />;
+  if (!isAdmin) return <Navigate to="/dashboard" replace />;
 
   const handleAdd = async () => {
     if (!newName.trim()) return;

@@ -64,7 +64,7 @@ export default function DeleteDataRequest() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button variant="outline" onClick={() => navigate("/")}>
+            <Button variant="outline" onClick={() => navigate("/dashboard")}>
               Return to Dashboard
             </Button>
           </CardContent>
