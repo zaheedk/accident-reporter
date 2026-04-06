@@ -54,7 +54,7 @@ export default function ResetPassword() {
     <div className="min-h-screen bg-background flex items-center justify-center px-6">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
-          <img src="/savo-logo.svg" alt="Savo" className="h-16 mx-auto mb-4" />
+          <img src="/savo-logo.svg" alt="SAVO" className="h-16 mx-auto mb-4" />
           <h1 className="text-2xl font-bold text-foreground" style={{ fontFamily: "'Playfair Display', serif" }}>
             Reset your password
           </h1>
