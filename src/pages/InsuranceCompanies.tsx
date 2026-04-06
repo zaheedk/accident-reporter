@@ -191,6 +191,12 @@ export default function InsuranceCompanies() {
                         </a>
                       )}
                       {c.email && <div className="text-xs text-muted-foreground truncate mt-0.5">{c.email}</div>}
+                      {c.claims_portal_url && (
+                        <a href={c.claims_portal_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-xs text-primary/70 hover:underline mt-0.5 truncate">
+                          <Globe className="w-3 h-3 flex-shrink-0" strokeWidth={2} />
+                          Portal
+                        </a>
+                      )}
                     </>
                   )}
                 </div>
