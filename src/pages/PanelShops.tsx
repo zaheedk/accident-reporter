@@ -8,17 +8,19 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Search, MapPin, Phone, Mail, Star, ExternalLink, Plus, Pencil, Trash2 } from 'lucide-react';
+import { Search, MapPin, Phone, Mail, Star, ExternalLink, Plus, Pencil, Trash2, Navigation, Loader2 } from 'lucide-react';
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
+import { useNearbySort } from '@/hooks/use-nearby-sort';
 
 type PanelShop = {
   id: string; name: string; address: string; city: string; region: string;
   phone: string; email: string; google_rating: number; website: string;
+  latitude?: number | null; longitude?: number | null;
 };
 
 export default function PanelShops() {
@@ -30,6 +32,7 @@ export default function PanelShops() {
   const [formOpen, setFormOpen] = useState(false);
   const [editShop, setEditShop] = useState<PanelShop | null>(null);
   const [deleteShop, setDeleteShop] = useState<PanelShop | null>(null);
+  const { nearbyActive, locating, toggleNearby, getDistance, formatDistance, sortByDistance } = useNearbySort();
 
   const { data: shops = [], isLoading } = useQuery({
     queryKey: ['panel-shops'],
@@ -49,6 +52,8 @@ export default function PanelShops() {
     const matchesRegion = selectedRegion === t('panelShops.all') || shop.region === selectedRegion;
     return matchesSearch && matchesRegion;
   });
+
+  const displayed = nearbyActive ? sortByDistance(filtered) : filtered;
 
   const handleAdd = async (data: Omit<PanelShop, 'id'>) => {
     const { error } = await supabase.from('panel_shops').insert(data);
@@ -90,9 +95,21 @@ export default function PanelShops() {
           )}
         </div>
 
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-          <Input placeholder={t('panelShops.searchPlaceholder')} value={search} onChange={e => setSearch(e.target.value)} className="pl-9" />
+        <div className="flex gap-2">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Input placeholder={t('panelShops.searchPlaceholder')} value={search} onChange={e => setSearch(e.target.value)} className="pl-9" />
+          </div>
+          <Button
+            variant={nearbyActive ? 'default' : 'outline'}
+            size="sm"
+            onClick={toggleNearby}
+            disabled={locating}
+            className="shrink-0 gap-1.5 h-10"
+          >
+            {locating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Navigation className="w-4 h-4" />}
+            Near me
+          </Button>
         </div>
 
         <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1">
@@ -106,48 +123,58 @@ export default function PanelShops() {
 
         {isLoading ? (
           <div className="text-center py-10 text-muted-foreground text-sm">{t('panelShops.loadingShops')}</div>
-        ) : filtered.length === 0 ? (
+        ) : displayed.length === 0 ? (
           <div className="text-center py-10 text-muted-foreground text-sm">{t('panelShops.noShopsFound')}</div>
         ) : (
           <div className="space-y-3">
-            {filtered.map(shop => (
-              <Card key={shop.id} className="p-4">
-                <div className="flex items-start gap-3">
-                  <div className="flex-1 space-y-2.5 min-w-0">
-                    <div className="flex items-start justify-between gap-2">
-                      <h3 className="text-sm font-semibold text-foreground leading-tight">{shop.name}</h3>
-                      <div className="flex items-center gap-1.5 shrink-0">
-                        <Badge variant="secondary" className="gap-1 text-xs"><Star className="w-3 h-3 fill-current" />{Number(shop.google_rating).toFixed(1)}</Badge>
-                        {isAdmin && (
-                          <>
-                            <button onClick={() => { setEditShop(shop); setFormOpen(true); }} className="p-1 rounded hover:bg-muted transition-colors"><Pencil className="w-3.5 h-3.5 text-muted-foreground" /></button>
-                            <button onClick={() => setDeleteShop(shop)} className="p-1 rounded hover:bg-destructive/10 transition-colors"><Trash2 className="w-3.5 h-3.5 text-destructive" /></button>
-                          </>
+            {displayed.map(shop => {
+              const dist = getDistance(shop.latitude ?? null, shop.longitude ?? null);
+              const distLabel = formatDistance(dist);
+              return (
+                <Card key={shop.id} className="p-4">
+                  <div className="flex items-start gap-3">
+                    <div className="flex-1 space-y-2.5 min-w-0">
+                      <div className="flex items-start justify-between gap-2">
+                        <h3 className="text-sm font-semibold text-foreground leading-tight">{shop.name}</h3>
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          <Badge variant="secondary" className="gap-1 text-xs"><Star className="w-3 h-3 fill-current" />{Number(shop.google_rating).toFixed(1)}</Badge>
+                          {isAdmin && (
+                            <>
+                              <button onClick={() => { setEditShop(shop); setFormOpen(true); }} className="p-1 rounded hover:bg-muted transition-colors"><Pencil className="w-3.5 h-3.5 text-muted-foreground" /></button>
+                              <button onClick={() => setDeleteShop(shop)} className="p-1 rounded hover:bg-destructive/10 transition-colors"><Trash2 className="w-3.5 h-3.5 text-destructive" /></button>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                      <div className="space-y-1.5 text-xs text-muted-foreground">
+                        <div className="flex items-start gap-2"><MapPin className="w-3.5 h-3.5 mt-0.5 shrink-0" /><span>{shop.address}, {shop.city}</span></div>
+                        {shop.phone && <div className="flex items-center gap-2"><Phone className="w-3.5 h-3.5 shrink-0" /><a href={`tel:${shop.phone}`} className="text-foreground underline-offset-2 hover:underline">{shop.phone}</a></div>}
+                        {shop.email && <div className="flex items-center gap-2"><Mail className="w-3.5 h-3.5 shrink-0" /><a href={`mailto:${shop.email}`} className="text-foreground underline-offset-2 hover:underline truncate">{shop.email}</a></div>}
+                        {shop.website && <div className="flex items-center gap-2"><ExternalLink className="w-3.5 h-3.5 shrink-0" /><a href={shop.website} target="_blank" rel="noopener noreferrer" className="text-foreground underline-offset-2 hover:underline truncate">{t('panelShops.website')}</a></div>}
+                        {nearbyActive && distLabel && (
+                          <div className="flex items-center gap-2 font-medium" style={{ color: 'hsl(152, 60%, 42%)' }}>
+                            <Navigation className="w-3.5 h-3.5 shrink-0" />
+                            <span>{distLabel}</span>
+                          </div>
                         )}
                       </div>
                     </div>
-                    <div className="space-y-1.5 text-xs text-muted-foreground">
-                      <div className="flex items-start gap-2"><MapPin className="w-3.5 h-3.5 mt-0.5 shrink-0" /><span>{shop.address}, {shop.city}</span></div>
-                      {shop.phone && <div className="flex items-center gap-2"><Phone className="w-3.5 h-3.5 shrink-0" /><a href={`tel:${shop.phone}`} className="text-foreground underline-offset-2 hover:underline">{shop.phone}</a></div>}
-                      {shop.email && <div className="flex items-center gap-2"><Mail className="w-3.5 h-3.5 shrink-0" /><a href={`mailto:${shop.email}`} className="text-foreground underline-offset-2 hover:underline truncate">{shop.email}</a></div>}
-                      {shop.website && <div className="flex items-center gap-2"><ExternalLink className="w-3.5 h-3.5 shrink-0" /><a href={shop.website} target="_blank" rel="noopener noreferrer" className="text-foreground underline-offset-2 hover:underline truncate">{t('panelShops.website')}</a></div>}
-                    </div>
+                    {shop.phone && (
+                      <a href={`tel:${shop.phone}`} className="shrink-0 self-center">
+                        <Button size="sm" variant="default" className="gap-1.5 rounded-full h-9 w-9 p-0">
+                          <Phone className="w-4 h-4" />
+                        </Button>
+                      </a>
+                    )}
                   </div>
-                  {shop.phone && (
-                    <a href={`tel:${shop.phone}`} className="shrink-0 self-center">
-                      <Button size="sm" variant="default" className="gap-1.5 rounded-full h-9 w-9 p-0">
-                        <Phone className="w-4 h-4" />
-                      </Button>
-                    </a>
-                  )}
-                </div>
-              </Card>
-            ))}
+                </Card>
+              );
+            })}
           </div>
         )}
 
         <p className="text-[10px] text-muted-foreground text-center pt-2">
-          {filtered.length} shop{filtered.length !== 1 ? 's' : ''} found
+          {displayed.length} shop{displayed.length !== 1 ? 's' : ''} found
         </p>
       </div>
 
