@@ -149,7 +149,7 @@ export default function ClaimList() {
               const reportNum = meta?.reportNumber || '';
               const href = c.status === 'draft' ? `/claims/${c.id}/edit` : `/claims/${c.id}`;
               const isDraft = c.status === 'draft';
-              const statusLabel = isDraft ? t('common.draft') : c.status === 'saved' ? 'Saved' : t('common.submitted');
+              const statusLabel = isDraft ? t('common.draft') : 'Saved';
               const photoUrl = claimPhotos[c.id];
               return (
                 <div key={c.id} className="card-surface overflow-hidden hover:shadow-md transition-all group">
@@ -197,15 +197,12 @@ export default function ClaimList() {
                       </div>
                     </Link>
 
-                    {/* Delete button for non-submitted reports */}
-                    {c.status !== 'submitted' && (
-                      <button
-                        onClick={(e) => { e.preventDefault(); setDeleteId(c.id); }}
-                        className="flex items-center justify-center w-12 border-l border-border text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    )}
+                    <button
+                      onClick={(e) => { e.preventDefault(); setDeleteId(c.id); }}
+                      className="flex items-center justify-center w-12 border-l border-border text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
                   </div>
                 </div>
               );

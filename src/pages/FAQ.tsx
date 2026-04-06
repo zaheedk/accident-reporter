@@ -32,8 +32,8 @@ const faqs = [
     a: 'Yes. All your data is stored securely with encryption. Only you can access your incident reports, vehicles, and personal information through your authenticated account.',
   },
   {
-    q: 'Can I edit a submitted incident report?',
-    a: 'Once an incident report is submitted, it cannot be edited to maintain record integrity. You can however view all the details and print or share the report.',
+    q: 'Can I edit a saved incident report?',
+    a: 'Yes! You can edit your incident report at any time. Simply open the report and tap the edit button to make changes.',
   },
   {
     q: 'How do I contact support?',
