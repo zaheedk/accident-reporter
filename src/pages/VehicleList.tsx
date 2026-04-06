@@ -6,18 +6,31 @@ import { getVehicles, deleteVehicle } from '@/lib/storage';
 import AppLayout from '@/components/AppLayout';
 import { Vehicle } from '@/types';
 import { useTranslation } from 'react-i18next';
+import {
+  AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction,
+} from '@/components/ui/alert-dialog';
 
 export default function VehicleList() {
   const navigate = useNavigate();
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const { t } = useTranslation();
   const { user } = useAuth();
+  const [deleteTarget, setDeleteTarget] = useState<Vehicle | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => { if (user) getVehicles(user.id).then(setVehicles); }, [user]);
 
-  const handleDelete = async (id: string) => {
-    await deleteVehicle(id);
-    if (user) setVehicles(await getVehicles(user.id));
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
+    setDeleting(true);
+    try {
+      await deleteVehicle(deleteTarget.id);
+      setVehicles(prev => prev.filter(v => v.id !== deleteTarget.id));
+    } finally {
+      setDeleting(false);
+      setDeleteTarget(null);
+    }
   };
 
   return (
@@ -65,7 +78,7 @@ export default function VehicleList() {
                   </div>
                 </Link>
                 <div className="flex items-center gap-1">
-                  <button onClick={() => handleDelete(v.id)} className="p-2 rounded-lg text-muted-foreground/40 hover:text-destructive hover:bg-destructive/5 transition-colors">
+                  <button onClick={() => setDeleteTarget(v)} className="p-2 rounded-lg text-muted-foreground/40 hover:text-destructive hover:bg-destructive/5 transition-colors">
                     <Trash2 className="w-4 h-4" strokeWidth={1.5} />
                   </button>
                   <ChevronRight className="w-4 h-4 text-muted-foreground/40" strokeWidth={1.5} />
@@ -74,6 +87,21 @@ export default function VehicleList() {
             ))}
           </div>
         )}
+
+        <AlertDialog open={!!deleteTarget} onOpenChange={(open) => { if (!open) setDeleteTarget(null); }}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>{t('common.delete')} {deleteTarget?.year} {deleteTarget?.make} {deleteTarget?.model}?</AlertDialogTitle>
+              <AlertDialogDescription>{t('vehicles.deleteConfirm', 'This vehicle and its data will be permanently removed. This action cannot be undone.')}</AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel disabled={deleting}>{t('common.cancel')}</AlertDialogCancel>
+              <AlertDialogAction onClick={handleDelete} disabled={deleting} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                {deleting ? t('common.deleting', 'Deleting…') : t('common.delete')}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </AppLayout>
   );
