@@ -150,7 +150,7 @@ export default function Home() {
             {[
               { to: '/panel-shops', icon: Wrench, title: 'Panel Shops Directory', desc: 'Top-rated panel beaters across New Zealand', color: 'hsl(213, 52%, 24%)' },
               { to: '/tow-companies', icon: Truck, title: 'Tow Companies Directory', desc: 'Emergency towing services nationwide', color: 'hsl(152, 60%, 42%)' },
-              { to: '/blog', icon: Newspaper, title: 'Insurance Claims Blog', desc: 'Tips and guides for NZ vehicle insurance', color: 'hsl(213, 52%, 24%)' },
+              { to: '/blog', icon: Newspaper, title: 'Blog', desc: 'Tips and guides for NZ vehicle insurance', color: 'hsl(213, 52%, 24%)' },
               { to: '/how-it-works', icon: BookOpen, title: 'How It Works', desc: 'Learn how Savo simplifies the claims process', color: 'hsl(152, 60%, 42%)' },
               { to: '/faq', icon: HelpCircle, title: 'FAQ', desc: 'Common questions about claims and using Savo', color: 'hsl(213, 52%, 24%)' },
               { to: '/about', icon: Shield, title: 'About & Contact', desc: 'Get in touch with the Savo team', color: 'hsl(152, 60%, 42%)' },
