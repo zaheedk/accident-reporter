@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
 import { Link } from 'react-router-dom';
 import { Plus, FileText, ChevronRight, Search, X, Calendar, Car, ArrowLeft, Trash2 } from 'lucide-react';
 import { getClaims, getVehicles, deleteClaim } from '@/lib/storage';
@@ -36,9 +37,12 @@ export default function ClaimList() {
     }
   };
 
+  const { user } = useAuth();
+
   useEffect(() => {
+    if (!user) return;
     const load = async () => {
-      const [c, v] = await Promise.all([getClaims(), getVehicles()]);
+      const [c, v] = await Promise.all([getClaims(user.id), getVehicles(user.id)]);
       setClaims(c);
       setVehicles(v);
 
@@ -67,7 +71,7 @@ export default function ClaimList() {
       setClaimMeta(meta);
     };
     load();
-  }, []);
+  }, [user]);
 
   const vehicleMap = useMemo(() => {
     const m: Record<string, Vehicle> = {};

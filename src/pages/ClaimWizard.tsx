@@ -126,7 +126,7 @@ export default function ClaimWizard() {
   const [autoSkipped, setAutoSkipped] = useState(false);
 
   useEffect(() => {
-    getVehicles().then(v => {
+    getVehicles(user?.id).then(v => {
       setVehicles(v);
       const regoParam = searchParams.get('rego');
       if (!id && regoParam) {

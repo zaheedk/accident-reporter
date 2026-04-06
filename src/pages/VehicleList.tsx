@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
 import { Plus, Car, Trash2, ChevronRight, ArrowLeft } from 'lucide-react';
 import { getVehicles, deleteVehicle } from '@/lib/storage';
@@ -10,12 +11,13 @@ export default function VehicleList() {
   const navigate = useNavigate();
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const { t } = useTranslation();
+  const { user } = useAuth();
 
-  useEffect(() => { getVehicles().then(setVehicles); }, []);
+  useEffect(() => { if (user) getVehicles(user.id).then(setVehicles); }, [user]);
 
   const handleDelete = async (id: string) => {
     await deleteVehicle(id);
-    setVehicles(await getVehicles());
+    if (user) setVehicles(await getVehicles(user.id));
   };
 
   return (
