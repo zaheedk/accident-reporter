@@ -27,16 +27,16 @@ export const InviteEmail = ({
 }: InviteEmailProps) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>You've been invited to join Savo</Preview>
+    <Preview>You've been invited to join SAVO</Preview>
     <Body style={main}>
       <Container style={container}>
         <Section style={header}>
-          <Heading style={logoText}>Savo</Heading>
+          <Heading style={logoText}>SAVO</Heading>
         </Section>
         <Section style={content}>
           <Heading style={h1}>You're invited!</Heading>
           <Text style={text}>
-            You've been invited to join <strong>Savo</strong> — your vehicle claims assistant. Click below to accept and create your account.
+            You've been invited to join <strong>SAVO</strong> — your vehicle claims assistant. Click below to accept and create your account.
           </Text>
           <Button style={button} href={confirmationUrl}>
             Accept Invitation
@@ -45,7 +45,7 @@ export const InviteEmail = ({
             If you weren't expecting this invitation, you can safely ignore this email.
           </Text>
         </Section>
-        <Text style={brand}>© 2025 Savo · Auckland, New Zealand</Text>
+        <Text style={brand}>© 2025 SAVO · Auckland, New Zealand</Text>
       </Container>
     </Body>
   </Html>

@@ -20,11 +20,11 @@ interface ReauthenticationEmailProps {
 export const ReauthenticationEmail = ({ token }: ReauthenticationEmailProps) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>Your Savo verification code</Preview>
+    <Preview>Your SAVO verification code</Preview>
     <Body style={main}>
       <Container style={container}>
         <Section style={header}>
-          <Heading style={logoText}>Savo</Heading>
+          <Heading style={logoText}>SAVO</Heading>
         </Section>
         <Section style={content}>
           <Heading style={h1}>Verification code</Heading>
@@ -34,7 +34,7 @@ export const ReauthenticationEmail = ({ token }: ReauthenticationEmailProps) => 
             This code expires in 10 minutes. If you didn't request this, ignore this email.
           </Text>
         </Section>
-        <Text style={brand}>© 2025 Savo · Auckland, New Zealand</Text>
+        <Text style={brand}>© 2025 SAVO · Auckland, New Zealand</Text>
       </Container>
     </Body>
   </Html>

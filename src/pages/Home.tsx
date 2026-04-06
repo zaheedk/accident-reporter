@@ -48,7 +48,7 @@ export default function Home() {
                 <span className="text-white/80">Protect your claim.</span>
               </h1>
               <p className="mt-4 text-base md:text-lg text-white/70 leading-relaxed max-w-md">
-                Savo helps Kiwis document vehicle accidents properly, report to insurers fast, and get back on the road sooner.
+                SAVO helps Kiwis document vehicle accidents properly, report to insurers fast, and get back on the road sooner.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
                 <Link to="/auth?mode=signup">
@@ -84,7 +84,7 @@ export default function Home() {
           className="max-w-5xl mx-auto px-4 py-16 md:py-20">
           <motion.div variants={fadeUp} className="text-center mb-12">
             <h2 className="text-2xl md:text-3xl font-extrabold text-foreground">Everything you need after an accident</h2>
-            <p className="mt-3 text-muted-foreground max-w-lg mx-auto">From capturing evidence at the scene to submitting your claim — Savo guides you through every step.</p>
+            <p className="mt-3 text-muted-foreground max-w-lg mx-auto">From capturing evidence at the scene to submitting your claim — SAVO guides you through every step.</p>
           </motion.div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {[
@@ -111,7 +111,7 @@ export default function Home() {
           className="bg-card border-y border-border">
           <div className="max-w-5xl mx-auto px-4 py-16 md:py-20">
             <motion.div variants={fadeUp} className="text-center mb-12">
-              <h2 className="text-2xl md:text-3xl font-extrabold text-foreground">How Savo works</h2>
+              <h2 className="text-2xl md:text-3xl font-extrabold text-foreground">How SAVO works</h2>
               <p className="mt-3 text-muted-foreground">Three simple steps to protect your claim</p>
             </motion.div>
             <div className="grid sm:grid-cols-3 gap-8">
@@ -143,7 +143,7 @@ export default function Home() {
         <motion.section variants={stagger} initial="hidden" whileInView="visible" viewport={{ once: true }}
           className="max-w-5xl mx-auto px-4 py-16 md:py-20">
           <motion.div variants={fadeUp} className="text-center mb-10">
-            <h2 className="text-2xl md:text-3xl font-extrabold text-foreground">Explore Savo</h2>
+            <h2 className="text-2xl md:text-3xl font-extrabold text-foreground">Explore SAVO</h2>
             <p className="mt-3 text-muted-foreground">Free resources and directories for NZ drivers</p>
           </motion.div>
           <div className="grid sm:grid-cols-2 gap-4">
@@ -151,9 +151,9 @@ export default function Home() {
               { to: '/panel-shops', icon: Wrench, title: 'Panel Shops Directory', desc: 'Top-rated panel beaters across New Zealand', color: 'hsl(213, 52%, 24%)' },
               { to: '/tow-companies', icon: Truck, title: 'Tow Companies Directory', desc: 'Emergency towing services nationwide', color: 'hsl(152, 60%, 42%)' },
               { to: '/blog', icon: Newspaper, title: 'Blog', desc: 'Tips and guides for NZ vehicle insurance', color: 'hsl(213, 52%, 24%)' },
-              { to: '/how-it-works', icon: BookOpen, title: 'How It Works', desc: 'Learn how Savo simplifies the claims process', color: 'hsl(152, 60%, 42%)' },
-              { to: '/faq', icon: HelpCircle, title: 'FAQ', desc: 'Common questions about claims and using Savo', color: 'hsl(213, 52%, 24%)' },
-              { to: '/about', icon: Shield, title: 'About & Contact', desc: 'Get in touch with the Savo team', color: 'hsl(152, 60%, 42%)' },
+              { to: '/how-it-works', icon: BookOpen, title: 'How It Works', desc: 'Learn how SAVO simplifies the claims process', color: 'hsl(152, 60%, 42%)' },
+              { to: '/faq', icon: HelpCircle, title: 'FAQ', desc: 'Common questions about claims and using SAVO', color: 'hsl(213, 52%, 24%)' },
+              { to: '/about', icon: Shield, title: 'About & Contact', desc: 'Get in touch with the SAVO team', color: 'hsl(152, 60%, 42%)' },
             ].map(({ to, icon: Icon, title, desc, color }) => (
               <motion.div key={to} variants={fadeUp}>
                 <Link to={to} className="card-surface-elevated flex items-center gap-4 group hover:border-primary/20 transition-all">
@@ -178,7 +178,7 @@ export default function Home() {
           <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle at 30% 70%, white 0%, transparent 60%)' }} />
           <div className="max-w-5xl mx-auto px-4 py-16 md:py-20 text-center relative z-10">
             <h2 className="text-2xl md:text-3xl font-extrabold text-white">Ready to protect your next claim?</h2>
-            <p className="mt-3 text-white/70 max-w-md mx-auto">Join thousands of Kiwi drivers who use Savo to handle vehicle incidents with confidence.</p>
+            <p className="mt-3 text-white/70 max-w-md mx-auto">Join thousands of Kiwi drivers who use SAVO to handle vehicle incidents with confidence.</p>
             <div className="mt-8 flex flex-wrap justify-center gap-3">
               <Link to="/auth?mode=signup">
                 <Button size="lg" className="text-sm font-bold gap-2 h-12 px-8 bg-white text-primary hover:bg-white/90">
@@ -214,7 +214,7 @@ export default function Home() {
               </div>
             </div>
             <div className="mt-8 pt-6 border-t border-border/50 text-[11px] text-muted-foreground text-center">
-              © {new Date().getFullYear()} Savo. All rights reserved.
+              © {new Date().getFullYear()} SAVO. All rights reserved.
             </div>
           </div>
         </footer>

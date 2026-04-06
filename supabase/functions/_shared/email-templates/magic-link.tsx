@@ -25,14 +25,14 @@ export const MagicLinkEmail = ({
 }: MagicLinkEmailProps) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>Your Savo login link</Preview>
+    <Preview>Your SAVO login link</Preview>
     <Body style={main}>
       <Container style={container}>
         <Section style={header}>
-          <Heading style={logoText}>Savo</Heading>
+          <Heading style={logoText}>SAVO</Heading>
         </Section>
         <Section style={content}>
-          <Heading style={h1}>Sign in to Savo</Heading>
+          <Heading style={h1}>Sign in to SAVO</Heading>
           <Text style={text}>
             Click the button below to sign in. This link expires in 10 minutes.
           </Text>
@@ -43,7 +43,7 @@ export const MagicLinkEmail = ({
             If you didn't request this, you can safely ignore this email.
           </Text>
         </Section>
-        <Text style={brand}>© 2025 Savo · Auckland, New Zealand</Text>
+        <Text style={brand}>© 2025 SAVO · Auckland, New Zealand</Text>
       </Container>
     </Body>
   </Html>

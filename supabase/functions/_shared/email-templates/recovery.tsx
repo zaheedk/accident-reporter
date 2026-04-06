@@ -25,16 +25,16 @@ export const RecoveryEmail = ({
 }: RecoveryEmailProps) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>Reset your Savo password</Preview>
+    <Preview>Reset your SAVO password</Preview>
     <Body style={main}>
       <Container style={container}>
         <Section style={header}>
-          <Heading style={logoText}>Savo</Heading>
+          <Heading style={logoText}>SAVO</Heading>
         </Section>
         <Section style={content}>
           <Heading style={h1}>Reset your password</Heading>
           <Text style={text}>
-            We received a request to reset your Savo password. Click the button below to choose a new one.
+            We received a request to reset your SAVO password. Click the button below to choose a new one.
           </Text>
           <Button style={button} href={confirmationUrl}>
             Reset Password
@@ -43,7 +43,7 @@ export const RecoveryEmail = ({
             If you didn't request this, you can safely ignore this email. Your password won't change.
           </Text>
         </Section>
-        <Text style={brand}>© 2025 Savo · Auckland, New Zealand</Text>
+        <Text style={brand}>© 2025 SAVO · Auckland, New Zealand</Text>
       </Container>
     </Body>
   </Html>

@@ -29,16 +29,16 @@ export const EmailChangeEmail = ({
 }: EmailChangeEmailProps) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>Confirm your email change for Savo</Preview>
+    <Preview>Confirm your email change for SAVO</Preview>
     <Body style={main}>
       <Container style={container}>
         <Section style={header}>
-          <Heading style={logoText}>Savo</Heading>
+          <Heading style={logoText}>SAVO</Heading>
         </Section>
         <Section style={content}>
           <Heading style={h1}>Confirm email change</Heading>
           <Text style={text}>
-            You requested to change your Savo email from <strong>{email}</strong> to <strong>{newEmail}</strong>.
+            You requested to change your SAVO email from <strong>{email}</strong> to <strong>{newEmail}</strong>.
           </Text>
           <Button style={button} href={confirmationUrl}>
             Confirm New Email
@@ -47,7 +47,7 @@ export const EmailChangeEmail = ({
             If you didn't request this change, please contact support immediately.
           </Text>
         </Section>
-        <Text style={brand}>© 2025 Savo · Auckland, New Zealand</Text>
+        <Text style={brand}>© 2025 SAVO · Auckland, New Zealand</Text>
       </Container>
     </Body>
   </Html>
