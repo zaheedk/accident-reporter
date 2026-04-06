@@ -111,24 +111,35 @@ export default function PanelShops() {
         ) : (
           <div className="space-y-3">
             {filtered.map(shop => (
-              <Card key={shop.id} className="p-4 space-y-2.5">
-                <div className="flex items-start justify-between gap-2">
-                  <h3 className="text-sm font-semibold text-foreground leading-tight">{shop.name}</h3>
-                  <div className="flex items-center gap-1.5 shrink-0">
-                    <Badge variant="secondary" className="gap-1 text-xs"><Star className="w-3 h-3 fill-current" />{Number(shop.google_rating).toFixed(1)}</Badge>
-                    {isAdmin && (
-                      <>
-                        <button onClick={() => { setEditShop(shop); setFormOpen(true); }} className="p-1 rounded hover:bg-muted transition-colors"><Pencil className="w-3.5 h-3.5 text-muted-foreground" /></button>
-                        <button onClick={() => setDeleteShop(shop)} className="p-1 rounded hover:bg-destructive/10 transition-colors"><Trash2 className="w-3.5 h-3.5 text-destructive" /></button>
-                      </>
-                    )}
+              <Card key={shop.id} className="p-4">
+                <div className="flex items-start gap-3">
+                  <div className="flex-1 space-y-2.5 min-w-0">
+                    <div className="flex items-start justify-between gap-2">
+                      <h3 className="text-sm font-semibold text-foreground leading-tight">{shop.name}</h3>
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        <Badge variant="secondary" className="gap-1 text-xs"><Star className="w-3 h-3 fill-current" />{Number(shop.google_rating).toFixed(1)}</Badge>
+                        {isAdmin && (
+                          <>
+                            <button onClick={() => { setEditShop(shop); setFormOpen(true); }} className="p-1 rounded hover:bg-muted transition-colors"><Pencil className="w-3.5 h-3.5 text-muted-foreground" /></button>
+                            <button onClick={() => setDeleteShop(shop)} className="p-1 rounded hover:bg-destructive/10 transition-colors"><Trash2 className="w-3.5 h-3.5 text-destructive" /></button>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                    <div className="space-y-1.5 text-xs text-muted-foreground">
+                      <div className="flex items-start gap-2"><MapPin className="w-3.5 h-3.5 mt-0.5 shrink-0" /><span>{shop.address}, {shop.city}</span></div>
+                      {shop.phone && <div className="flex items-center gap-2"><Phone className="w-3.5 h-3.5 shrink-0" /><a href={`tel:${shop.phone}`} className="text-foreground underline-offset-2 hover:underline">{shop.phone}</a></div>}
+                      {shop.email && <div className="flex items-center gap-2"><Mail className="w-3.5 h-3.5 shrink-0" /><a href={`mailto:${shop.email}`} className="text-foreground underline-offset-2 hover:underline truncate">{shop.email}</a></div>}
+                      {shop.website && <div className="flex items-center gap-2"><ExternalLink className="w-3.5 h-3.5 shrink-0" /><a href={shop.website} target="_blank" rel="noopener noreferrer" className="text-foreground underline-offset-2 hover:underline truncate">{t('panelShops.website')}</a></div>}
+                    </div>
                   </div>
-                </div>
-                <div className="space-y-1.5 text-xs text-muted-foreground">
-                  <div className="flex items-start gap-2"><MapPin className="w-3.5 h-3.5 mt-0.5 shrink-0" /><span>{shop.address}, {shop.city}</span></div>
-                  {shop.phone && <div className="flex items-center gap-2"><Phone className="w-3.5 h-3.5 shrink-0" /><a href={`tel:${shop.phone}`} className="text-foreground underline-offset-2 hover:underline">{shop.phone}</a></div>}
-                  {shop.email && <div className="flex items-center gap-2"><Mail className="w-3.5 h-3.5 shrink-0" /><a href={`mailto:${shop.email}`} className="text-foreground underline-offset-2 hover:underline truncate">{shop.email}</a></div>}
-                  {shop.website && <div className="flex items-center gap-2"><ExternalLink className="w-3.5 h-3.5 shrink-0" /><a href={shop.website} target="_blank" rel="noopener noreferrer" className="text-foreground underline-offset-2 hover:underline truncate">{t('panelShops.website')}</a></div>}
+                  {shop.phone && (
+                    <a href={`tel:${shop.phone}`} className="shrink-0 self-center">
+                      <Button size="sm" variant="default" className="gap-1.5 rounded-full h-9 w-9 p-0">
+                        <Phone className="w-4 h-4" />
+                      </Button>
+                    </a>
+                  )}
                 </div>
               </Card>
             ))}
