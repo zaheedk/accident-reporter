@@ -1,0 +1,1 @@
+ALTER TABLE public.tow_companies ADD COLUMN region text NOT NULL DEFAULT '';
