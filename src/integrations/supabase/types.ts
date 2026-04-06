@@ -610,6 +610,7 @@ export type Database = {
           longitude: number | null
           name: string
           phone: string
+          region: string
         }
         Insert: {
           address?: string
@@ -619,6 +620,7 @@ export type Database = {
           longitude?: number | null
           name: string
           phone?: string
+          region?: string
         }
         Update: {
           address?: string
@@ -628,6 +630,7 @@ export type Database = {
           longitude?: number | null
           name?: string
           phone?: string
+          region?: string
         }
         Relationships: []
       }
