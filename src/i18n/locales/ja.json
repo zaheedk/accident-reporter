@@ -25,6 +25,7 @@
     "vehicles": "車両",
     "claims": "事故",
     "shops": "修理店",
+    "towCompanies": "レッカー",
     "aboutContact": "概要とお問い合わせ",
     "howItWorks": "使い方",
     "faqHelp": "よくある質問",
@@ -295,5 +296,12 @@
     "wet": "濡れ",
     "dry": "乾燥",
     "ice": "凍結"
+  },
+  "towCompanies": {
+    "title": "レッカー会社",
+    "subtitle": "ニュージーランド全域の牽引サービス",
+    "searchPlaceholder": "名前、住所で検索...",
+    "noResults": "レッカー会社が見つかりません",
+    "companiesFound": "{{count}}社見つかりました"
   }
 }
