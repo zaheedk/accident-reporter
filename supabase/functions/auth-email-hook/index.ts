@@ -20,12 +20,12 @@ const SENDER_DOMAIN = 'savo.co.nz'
 const FROM_ADDRESS = `${SITE_NAME} <noreply@${SENDER_DOMAIN}>`
 
 const EMAIL_SUBJECTS: Record<string, string> = {
-  signup: 'Confirm your Savo account',
-  invite: "You've been invited to Savo",
-  magiclink: 'Your Savo login link',
-  recovery: 'Reset your Savo password',
-  email_change: 'Confirm your new email – Savo',
-  reauthentication: 'Your Savo verification code',
+  signup: 'Confirm your SAVO account',
+  invite: "You've been invited to SAVO",
+  magiclink: 'Your SAVO login link',
+  recovery: 'Reset your SAVO password',
+  email_change: 'Confirm your new email – SAVO',
+  reauthentication: 'Your SAVO verification code',
 }
 
 const EMAIL_TEMPLATES: Record<string, React.ComponentType<any>> = {
