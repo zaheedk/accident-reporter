@@ -10,12 +10,13 @@ import { useTranslation } from 'react-i18next';
 
 type TowCompany = {
   id: string; name: string; address: string; phone: string;
-  latitude: number | null; longitude: number | null;
+  latitude: number | null; longitude: number | null; region: string;
 };
 
 export default function TowCompanies() {
   const { t } = useTranslation();
   const [search, setSearch] = useState('');
+  const [selectedRegion, setSelectedRegion] = useState('All');
 
   const { data: companies = [], isLoading } = useQuery({
     queryKey: ['tow-companies-public'],
@@ -26,10 +27,14 @@ export default function TowCompanies() {
     },
   });
 
-  const filtered = companies.filter(c =>
-    c.name.toLowerCase().includes(search.toLowerCase()) ||
-    c.address.toLowerCase().includes(search.toLowerCase())
-  );
+  const regions = ['All', ...Array.from(new Set(companies.map(c => c.region).filter(Boolean))).sort()];
+
+  const filtered = companies.filter(c => {
+    const matchesSearch = c.name.toLowerCase().includes(search.toLowerCase()) ||
+      c.address.toLowerCase().includes(search.toLowerCase());
+    const matchesRegion = selectedRegion === 'All' || c.region === selectedRegion;
+    return matchesSearch && matchesRegion;
+  });
 
   return (
     <AppLayout>
@@ -42,6 +47,15 @@ export default function TowCompanies() {
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input placeholder={t('towCompanies.searchPlaceholder')} value={search} onChange={e => setSearch(e.target.value)} className="pl-9" />
+        </div>
+
+        <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1">
+          {regions.map(region => (
+            <button key={region} onClick={() => setSelectedRegion(region)}
+              className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-colors ${
+                selectedRegion === region ? 'bg-foreground text-background' : 'bg-muted text-muted-foreground hover:bg-muted/80'
+              }`}>{region}</button>
+          ))}
         </div>
 
         {isLoading ? (
