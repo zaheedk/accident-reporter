@@ -78,7 +78,7 @@ export default function VehicleList() {
                   </div>
                 </Link>
                 <div className="flex items-center gap-1">
-                  <button onClick={() => handleDelete(v.id)} className="p-2 rounded-lg text-muted-foreground/40 hover:text-destructive hover:bg-destructive/5 transition-colors">
+                  <button onClick={() => setDeleteTarget(v)} className="p-2 rounded-lg text-muted-foreground/40 hover:text-destructive hover:bg-destructive/5 transition-colors">
                     <Trash2 className="w-4 h-4" strokeWidth={1.5} />
                   </button>
                   <ChevronRight className="w-4 h-4 text-muted-foreground/40" strokeWidth={1.5} />
