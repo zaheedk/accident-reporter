@@ -1,3 +1,9 @@
+import accidentDetailsHero from '@/assets/blog/accident-details-hero.jpg';
+import filingClaimHero from '@/assets/blog/filing-claim-hero.jpg';
+import commonMistakesHero from '@/assets/blog/common-mistakes-hero.jpg';
+import insuranceTypesHero from '@/assets/blog/insurance-types-hero.jpg';
+import afterAccidentHero from '@/assets/blog/after-accident-hero.jpg';
+
 export interface BlogArticle {
   slug: string;
   title: string;
@@ -5,6 +11,7 @@ export interface BlogArticle {
   excerpt: string;
   date: string;
   readTime: string;
+  heroImage: string;
   content: string;
 }
 
@@ -13,6 +20,7 @@ export const blogArticles: BlogArticle[] = [
     slug: "why-capturing-accident-details-matters-nz",
     title: "Why Capturing Every Detail at an Accident Scene Matters in New Zealand",
     metaDescription: "Learn why documenting every detail at the accident scene is critical for fast insurance claim processing in New Zealand. Tips for NZ drivers.",
+    heroImage: accidentDetailsHero,
     excerpt: "The moments after a car accident are stressful, but what you document at the scene can make or break your insurance claim. Here's why every detail counts.",
     date: "2026-04-01",
     readTime: "6 min read",
@@ -80,6 +88,7 @@ This is exactly why we built Savo — to guide you through capturing every criti
     excerpt: "Filing a car insurance claim in New Zealand doesn't have to be overwhelming. Follow this step-by-step guide to navigate the process with confidence.",
     date: "2026-03-28",
     readTime: "8 min read",
+    heroImage: filingClaimHero,
     content: `
 ## Understanding the NZ Insurance Claims Process
 
@@ -176,6 +185,7 @@ Savo guides you through each step with a structured incident report that capture
     excerpt: "From failing to take photos to admitting fault at the scene, these common mistakes can cost NZ drivers time and money on their insurance claims.",
     date: "2026-03-22",
     readTime: "5 min read",
+    heroImage: commonMistakesHero,
     content: `
 ## Costly Errors That NZ Drivers Keep Making
 
@@ -261,6 +271,7 @@ The best time to prepare for an accident is before it happens. Having a tool lik
     excerpt: "Not all car insurance is the same. Understanding what your NZ policy covers — and what it doesn't — is essential before you need to make a claim.",
     date: "2026-03-15",
     readTime: "7 min read",
+    heroImage: insuranceTypesHero,
     content: `
 ## New Zealand Car Insurance Explained
 
@@ -363,6 +374,7 @@ Tools like Savo let you store all your vehicle and insurance details in one plac
     excerpt: "Just been in an accident? Here's your complete checklist for what to do next — from ensuring safety to lodging your insurance claim in New Zealand.",
     date: "2026-03-10",
     readTime: "6 min read",
+    heroImage: afterAccidentHero,
     content: `
 ## Your Post-Accident Action Plan
 

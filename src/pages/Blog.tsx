@@ -19,24 +19,34 @@ export default function Blog() {
             <Link
               key={article.slug}
               to={`/blog/${article.slug}`}
-              className="block rounded-xl border border-border bg-card p-4 hover:border-primary/30 transition-colors group"
+              className="block rounded-xl border border-border bg-card overflow-hidden hover:border-primary/30 transition-colors group"
             >
-              <h2 className="text-base font-semibold text-foreground group-hover:text-primary transition-colors leading-snug">
-                {article.title}
-              </h2>
-              <p className="text-sm text-muted-foreground mt-2 line-clamp-2">
-                {article.excerpt}
-              </p>
-              <div className="flex items-center gap-4 mt-3 text-xs text-muted-foreground">
-                <span className="flex items-center gap-1">
-                  <Calendar className="w-3 h-3" />
-                  {new Date(article.date).toLocaleDateString('en-NZ', { day: 'numeric', month: 'short', year: 'numeric' })}
-                </span>
-                <span className="flex items-center gap-1">
-                  <Clock className="w-3 h-3" />
-                  {article.readTime}
-                </span>
-                <ChevronRight className="w-3.5 h-3.5 ml-auto text-muted-foreground/30 group-hover:text-primary transition-colors" />
+              <img
+                src={article.heroImage}
+                alt={article.title}
+                className="w-full h-40 object-cover"
+                loading="lazy"
+                width={896}
+                height={512}
+              />
+              <div className="p-4">
+                <h2 className="text-base font-semibold text-foreground group-hover:text-primary transition-colors leading-snug">
+                  {article.title}
+                </h2>
+                <p className="text-sm text-muted-foreground mt-2 line-clamp-2">
+                  {article.excerpt}
+                </p>
+                <div className="flex items-center gap-4 mt-3 text-xs text-muted-foreground">
+                  <span className="flex items-center gap-1">
+                    <Calendar className="w-3 h-3" />
+                    {new Date(article.date).toLocaleDateString('en-NZ', { day: 'numeric', month: 'short', year: 'numeric' })}
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Clock className="w-3 h-3" />
+                    {article.readTime}
+                  </span>
+                  <ChevronRight className="w-3.5 h-3.5 ml-auto text-muted-foreground/30 group-hover:text-primary transition-colors" />
+                </div>
               </div>
             </Link>
           ))}
