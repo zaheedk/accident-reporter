@@ -19,6 +19,13 @@ export default function BlogPost() {
         </Link>
 
         <article>
+          <img
+            src={article.heroImage}
+            alt={article.title}
+            className="w-full h-48 object-cover rounded-xl mb-5"
+            width={896}
+            height={512}
+          />
           <h1 className="text-2xl font-bold text-foreground leading-tight">{article.title}</h1>
           <div className="flex items-center gap-4 mt-3 text-xs text-muted-foreground">
             <span className="flex items-center gap-1">
