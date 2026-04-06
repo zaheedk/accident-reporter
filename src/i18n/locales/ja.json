@@ -88,7 +88,8 @@
     "modificationDetails": "改造の詳細",
     "modificationDetailsPlaceholder": "改造内容を説明",
     "saveVehicle": "車両を保存",
-    "updateVehicle": "車両を更新"
+    "updateVehicle": "車両を更新",
+    "deleteConfirm": "この車両とそのデータは完全に削除されます。この操作は元に戻せません。"
   },
   "claims": {
     "reports": "報告",

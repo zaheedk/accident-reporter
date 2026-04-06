@@ -88,7 +88,8 @@
     "modificationDetails": "변경 세부사항",
     "modificationDetailsPlaceholder": "변경 내용 설명",
     "saveVehicle": "차량 저장",
-    "updateVehicle": "차량 업데이트"
+    "updateVehicle": "차량 업데이트",
+    "deleteConfirm": "이 차량과 관련 데이터가 영구적으로 삭제됩니다. 이 작업은 되돌릴 수 없습니다."
   },
   "claims": {
     "reports": "보고서",
