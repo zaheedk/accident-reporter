@@ -15,13 +15,13 @@
 
   <!-- Wheels -->
   <circle cx="148" cy="385" r="52" fill="#111111"/>
-  <circle cx="148" cy="385" r="34" fill="#FF6B1A"/>
+  <circle cx="148" cy="385" r="34" fill="#1e3a5f"/>
   <circle cx="148" cy="385" r="20" fill="#111111"/>
   <circle cx="148" cy="385" r="7" fill="#E8E8E5"/>
   <circle cx="148" cy="385" r="54" fill="none" stroke="#FFFFFF" stroke-width="5"/>
 
   <circle cx="352" cy="385" r="52" fill="#111111"/>
-  <circle cx="352" cy="385" r="34" fill="#FF6B1A"/>
+  <circle cx="352" cy="385" r="34" fill="#1e3a5f"/>
   <circle cx="352" cy="385" r="20" fill="#111111"/>
   <circle cx="352" cy="385" r="7" fill="#E8E8E5"/>
   <circle cx="352" cy="385" r="54" fill="none" stroke="#FFFFFF" stroke-width="5"/>
@@ -35,7 +35,7 @@
   <circle cx="250" cy="218" r="48" fill="#FF6B1A"/>
   <circle cx="250" cy="218" r="37" fill="#111111"/>
   <circle cx="250" cy="218" r="28" fill="#1A1A2E"/>
-  <circle cx="250" cy="218" r="18" fill="#FF6B1A" opacity="0.2"/>
+  <circle cx="250" cy="218" r="18" fill="#1e3a5f" opacity="0.2"/>
   <circle cx="250" cy="218" r="11" fill="#111111"/>
   <circle cx="238" cy="206" r="6" fill="#FFFFFF" opacity="0.7"/>
   <circle cx="256" cy="224" r="3" fill="#FFFFFF" opacity="0.3"/>
