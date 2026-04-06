@@ -38,7 +38,7 @@ export default function VehicleForm() {
 
   useEffect(() => {
     if (id) {
-      getVehicles().then(vehicles => {
+      getVehicles(undefined).then(vehicles => {
         const existing = vehicles.find(v => v.id === id);
         if (existing) {
           const { id: _, createdAt: __, ...rest } = existing;

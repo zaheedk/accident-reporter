@@ -71,7 +71,7 @@ export default function ClaimList() {
       setClaimMeta(meta);
     };
     load();
-  }, []);
+  }, [user]);
 
   const vehicleMap = useMemo(() => {
     const m: Record<string, Vehicle> = {};
