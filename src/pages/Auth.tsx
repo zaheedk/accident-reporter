@@ -100,9 +100,9 @@ export default function Auth() {
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[500px] h-[500px] rounded-full opacity-[0.08]" style={{ background: 'radial-gradient(circle, hsl(213 60% 50%), transparent 70%)' }} />
         <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[hsl(220,30%,10%)] to-transparent lg:hidden" />
 
-        <div className="relative z-10 lg:text-center lg:max-w-md">
+        <div className="relative z-10 text-center lg:max-w-md">
           {/* Logo */}
-          <div className="flex items-center mb-10 lg:justify-center">
+          <div className="flex items-center mb-10 justify-center">
             <img src="/savo-logo.svg" alt="Savo" className="h-20 lg:h-24" />
           </div>
 
@@ -118,7 +118,7 @@ export default function Auth() {
           </h1>
 
           {/* Subtitle */}
-          <p className="text-[15px] leading-relaxed text-slate-400 max-w-xs lg:max-w-sm lg:mx-auto">
+          <p className="text-[15px] leading-relaxed text-slate-400 max-w-xs mx-auto lg:max-w-sm">
             Savo helps you record accident data instantly — photos, GPS, witness info, and reports — so your claim is airtight from minute one.
           </p>
 
