@@ -11,12 +11,13 @@ export default function VehicleList() {
   const navigate = useNavigate();
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const { t } = useTranslation();
+  const { user } = useAuth();
 
-  useEffect(() => { getVehicles().then(setVehicles); }, []);
+  useEffect(() => { if (user) getVehicles(user.id).then(setVehicles); }, [user]);
 
   const handleDelete = async (id: string) => {
     await deleteVehicle(id);
-    setVehicles(await getVehicles());
+    if (user) setVehicles(await getVehicles(user.id));
   };
 
   return (

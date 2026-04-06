@@ -37,9 +37,12 @@ export default function ClaimList() {
     }
   };
 
+  const { user } = useAuth();
+
   useEffect(() => {
+    if (!user) return;
     const load = async () => {
-      const [c, v] = await Promise.all([getClaims(), getVehicles()]);
+      const [c, v] = await Promise.all([getClaims(user.id), getVehicles(user.id)]);
       setClaims(c);
       setVehicles(v);
 
