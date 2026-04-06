@@ -67,5 +67,13 @@ export function useNearbySort() {
     });
   }, [nearbyActive, userLat, userLng]);
 
-  return { nearbyActive, locating, toggleNearby, getDistance, formatDistance, sortByDistance };
+  const filterByRadius = useCallback(<T extends { latitude?: number | null; longitude?: number | null }>(list: T[], radiusKm: number = 25): T[] => {
+    if (!nearbyActive || userLat == null || userLng == null) return list;
+    return list.filter(item => {
+      if (item.latitude == null || item.longitude == null) return false;
+      return haversineDistance(userLat, userLng, item.latitude, item.longitude) <= radiusKm;
+    });
+  }, [nearbyActive, userLat, userLng]);
+
+  return { nearbyActive, locating, toggleNearby, getDistance, formatDistance, sortByDistance, filterByRadius };
 }
