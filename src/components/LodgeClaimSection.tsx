@@ -80,7 +80,7 @@ export default function LodgeClaimSection({ claim, vehicle, insurer, claimNumber
       { label: `${prefix} – Vehicle`, value: `${tp.make} ${tp.model} (${tp.regoNumber})` },
       { label: `${prefix} – Phone`, value: tp.phone },
       { label: `${prefix} – Insurer`, value: tp.insurer },
-      { label: `${prefix} – Policy #`, value: tp.policyNumber || '' },
+      { label: `${prefix} – Claim #`, value: tp.claimNumber || '' },
       { label: `${prefix} – Damage`, value: tp.damageDescription },
     );
   });
