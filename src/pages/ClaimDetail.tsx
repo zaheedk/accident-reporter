@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Printer, Mail, X, Download, Share2, Phone, Pencil, Save, Loader2, Send, Car, Users, Wrench, Trash2 } from 'lucide-react';
+import LodgeClaimSection from '@/components/LodgeClaimSection';
 import { getClaims, getVehicles, deleteClaim } from '@/lib/storage';
 import { supabase } from '@/integrations/supabase/client';
 import AppLayout from '@/components/AppLayout';
@@ -26,6 +27,8 @@ export default function ClaimDetail() {
   const [loading, setLoading] = useState(true);
   const [insurerPhone, setInsurerPhone] = useState('');
   const [insurerEmail, setInsurerEmail] = useState('');
+  const [insurerPortalUrl, setInsurerPortalUrl] = useState('');
+  const [insurerClaimsMethod, setInsurerClaimsMethod] = useState('phone');
   const [insuranceCompanies, setInsuranceCompanies] = useState<{ id: string; name: string }[]>([]);
   const [editingInsurance, setEditingInsurance] = useState(false);
   const [editInsurance, setEditInsurance] = useState('');
@@ -98,9 +101,11 @@ export default function ClaimDetail() {
       ]);
 
       if (foundClaim.insuranceCompany) {
-        const { data: insurer } = await supabase.from('insurance_companies').select('phone, email').eq('name', foundClaim.insuranceCompany).single();
+        const { data: insurer } = await supabase.from('insurance_companies').select('phone, email, claims_portal_url, claims_method').eq('name', foundClaim.insuranceCompany).single();
         if (insurer?.phone) setInsurerPhone(insurer.phone);
         if (insurer?.email) setInsurerEmail(insurer.email);
+        if (insurer?.claims_portal_url) setInsurerPortalUrl(insurer.claims_portal_url);
+        if (insurer?.claims_method) setInsurerClaimsMethod(insurer.claims_method);
       }
       
       if (photosRes.data) {
@@ -156,9 +161,11 @@ export default function ClaimDetail() {
     }).eq('id', claim.id);
     setClaim({ ...claim, insuranceCompany: editInsurance, repairerName: editRepairerName, repairerPhone: editRepairerPhone, repairerAddress: editRepairerAddress });
     if (editInsurance) {
-      const { data: ins } = await supabase.from('insurance_companies').select('phone, email').eq('name', editInsurance).single();
+      const { data: ins } = await supabase.from('insurance_companies').select('phone, email, claims_portal_url, claims_method').eq('name', editInsurance).single();
       setInsurerPhone(ins?.phone || '');
       setInsurerEmail(ins?.email || '');
+      setInsurerPortalUrl(ins?.claims_portal_url || '');
+      setInsurerClaimsMethod(ins?.claims_method || 'phone');
     }
     setEditingInsurance(false);
     setSavingInsurance(false);
@@ -435,6 +442,21 @@ export default function ClaimDetail() {
                 </>
               )}
             </Section>
+
+            {/* ── Section 4: Lodge Your Claim ── */}
+            {claim.insuranceCompany && (
+              <LodgeClaimSection
+                claim={claim}
+                vehicle={vehicle}
+                insurer={{
+                  phone: insurerPhone,
+                  email: insurerEmail,
+                  claims_portal_url: insurerPortalUrl,
+                  claims_method: insurerClaimsMethod,
+                }}
+                claimNumber={claimNumber}
+              />
+            )}
           </div>
         </div>
 
