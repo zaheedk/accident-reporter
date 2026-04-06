@@ -13,7 +13,7 @@ export default function Home() {
       <header className="bg-dark-surface sticky top-0 z-30 border-b border-[hsl(var(--dark-surface))]">
         <div className="max-w-5xl mx-auto px-4 py-3 pt-[max(0.75rem,env(safe-area-inset-top))] flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2.5">
-            <img src="/savo-logo.svg" alt="Savo" className="h-9" />
+            <img src="/savo-logo.svg" alt="SAVO" className="h-9" />
           </Link>
           <div className="flex items-center gap-2">
             <Link to="/auth?mode=login">
@@ -199,7 +199,7 @@ export default function Home() {
           <div className="max-w-5xl mx-auto px-4 py-10">
             <div className="flex flex-col sm:flex-row items-start justify-between gap-8">
               <div>
-                <img src="/savo-logo.svg" alt="Savo" className="h-8 invert" />
+                <img src="/savo-logo.svg" alt="SAVO" className="h-8 invert" />
                 <p className="mt-2 text-xs text-muted-foreground max-w-xs">Vehicle accident reporting made simple for New Zealand drivers.</p>
               </div>
               <div className="grid grid-cols-2 gap-x-12 gap-y-2 text-xs">
@@ -227,7 +227,7 @@ export default function Home() {
           __html: JSON.stringify({
             '@context': 'https://schema.org',
             '@type': 'WebApplication',
-            name: 'Savo',
+            name: 'SAVO',
             url: 'https://savo.co.nz',
             description: 'Vehicle accident reporting and insurance claims management for New Zealand drivers.',
             applicationCategory: 'UtilitiesApplication',
