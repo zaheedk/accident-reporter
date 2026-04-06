@@ -25,6 +25,7 @@
     "vehicles": "车辆",
     "claims": "事故",
     "shops": "维修店",
+    "towCompanies": "拖车",
     "aboutContact": "关于与联系",
     "howItWorks": "使用方式",
     "faqHelp": "常见问题",
@@ -294,5 +295,12 @@
     "wet": "湿滑",
     "dry": "干燥",
     "ice": "结冰"
+  },
+  "towCompanies": {
+    "title": "拖车公司",
+    "subtitle": "新西兰全境拖车服务",
+    "searchPlaceholder": "按名称、地址搜索...",
+    "noResults": "未找到拖车公司",
+    "companiesFound": "找到 {{count}} 家公司"
   }
 }

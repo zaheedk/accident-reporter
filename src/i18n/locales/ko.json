@@ -25,6 +25,7 @@
     "vehicles": "차량",
     "claims": "사고",
     "shops": "수리점",
+    "towCompanies": "견인차",
     "aboutContact": "소개 및 연락처",
     "howItWorks": "이용 방법",
     "faqHelp": "FAQ 및 도움말",
@@ -295,5 +296,12 @@
     "wet": "젖음",
     "dry": "건조",
     "ice": "빙판"
+  },
+  "towCompanies": {
+    "title": "견인 회사",
+    "subtitle": "뉴질랜드 전역 견인 서비스",
+    "searchPlaceholder": "이름, 주소로 검색...",
+    "noResults": "견인 회사를 찾을 수 없습니다",
+    "companiesFound": "{{count}}개 회사 발견"
   }
 }

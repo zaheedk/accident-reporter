@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Car, FileText, Plus, Wrench, Info, HelpCircle, BookOpen, Shield, Menu, X, LogOut } from 'lucide-react';
+import { LayoutDashboard, Car, FileText, Plus, Wrench, Truck, Info, HelpCircle, BookOpen, Shield, Menu, X, LogOut } from 'lucide-react';
 import NotificationBell from '@/components/NotificationBell';
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
@@ -31,6 +31,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   ];
 
   const contentLinks = [
+    { to: '/panel-shops', icon: Wrench, label: t('nav.shops') },
+    { to: '/tow-companies', icon: Truck, label: t('nav.towCompanies') },
     { to: '/about', icon: Info, label: t('nav.aboutContact') },
     { to: '/how-it-works', icon: BookOpen, label: t('nav.howItWorks') },
     { to: '/faq', icon: HelpCircle, label: t('nav.faqHelp') },

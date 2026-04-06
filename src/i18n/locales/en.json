@@ -25,6 +25,7 @@
     "vehicles": "Vehicles",
     "claims": "Incidents",
     "shops": "Shops",
+    "towCompanies": "Tow Trucks",
     "aboutContact": "About & Contact",
     "howItWorks": "How It Works",
     "faqHelp": "FAQ & Help",
@@ -296,5 +297,13 @@
     "wet": "Wet",
     "dry": "Dry",
     "ice": "Ice"
+  },
+  "towCompanies": {
+    "title": "Tow Companies",
+    "subtitle": "Towing services across New Zealand",
+    "searchPlaceholder": "Search by name, address...",
+    "noResults": "No tow companies found",
+    "companiesFound": "{{count}} company found",
+    "companiesFound_plural": "{{count}} companies found"
   }
 }
