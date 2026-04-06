@@ -4,7 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import AppLayout from '@/components/AppLayout';
 import { Navigate } from 'react-router-dom';
-import { Plus, Trash2, Pencil, Building2, ArrowLeft, X, Check, Phone, Search } from 'lucide-react';
+import { Plus, Trash2, Pencil, Building2, ArrowLeft, X, Check, Phone, Search, Globe } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import {
@@ -14,7 +14,7 @@ import {
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 
-type InsuranceCompany = { id: string; name: string; email: string; phone: string };
+type InsuranceCompany = { id: string; name: string; email: string; phone: string; claims_portal_url: string; claims_method: string };
 
 export default function InsuranceCompanies() {
   const { isAdmin } = useAuth();
@@ -24,9 +24,13 @@ export default function InsuranceCompanies() {
   const [editName, setEditName] = useState('');
   const [editEmail, setEditEmail] = useState('');
   const [editPhone, setEditPhone] = useState('');
+  const [editPortalUrl, setEditPortalUrl] = useState('');
+  const [editClaimsMethod, setEditClaimsMethod] = useState('phone');
   const [newName, setNewName] = useState('');
   const [newEmail, setNewEmail] = useState('');
   const [newPhone, setNewPhone] = useState('');
+  const [newPortalUrl, setNewPortalUrl] = useState('');
+  const [newClaimsMethod, setNewClaimsMethod] = useState('phone');
   const [showAdd, setShowAdd] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<InsuranceCompany | null>(null);
   const [search, setSearch] = useState('');
@@ -45,16 +49,16 @@ export default function InsuranceCompanies() {
 
   const handleAdd = async () => {
     if (!newName.trim()) return;
-    const { error } = await supabase.from('insurance_companies').insert({ name: newName.trim(), email: newEmail.trim(), phone: newPhone.trim() });
+    const { error } = await supabase.from('insurance_companies').insert({ name: newName.trim(), email: newEmail.trim(), phone: newPhone.trim(), claims_portal_url: newPortalUrl.trim(), claims_method: newClaimsMethod });
     if (error) { toast.error('Failed to add'); return; }
     toast.success('Insurance company added');
-    setNewName(''); setNewEmail(''); setNewPhone(''); setShowAdd(false);
+    setNewName(''); setNewEmail(''); setNewPhone(''); setNewPortalUrl(''); setNewClaimsMethod('phone'); setShowAdd(false);
     queryClient.invalidateQueries({ queryKey: ['insurance-companies'] });
   };
 
   const handleUpdate = async (id: string) => {
     if (!editName.trim()) return;
-    const { error } = await supabase.from('insurance_companies').update({ name: editName.trim(), email: editEmail.trim(), phone: editPhone.trim() }).eq('id', id);
+    const { error } = await supabase.from('insurance_companies').update({ name: editName.trim(), email: editEmail.trim(), phone: editPhone.trim(), claims_portal_url: editPortalUrl.trim(), claims_method: editClaimsMethod }).eq('id', id);
     if (error) { toast.error('Failed to update'); return; }
     toast.success('Updated');
     setEditingId(null);
@@ -71,7 +75,7 @@ export default function InsuranceCompanies() {
   };
 
   const startEdit = (c: InsuranceCompany) => {
-    setEditingId(c.id); setEditName(c.name); setEditEmail(c.email); setEditPhone(c.phone || '');
+    setEditingId(c.id); setEditName(c.name); setEditEmail(c.email); setEditPhone(c.phone || ''); setEditPortalUrl(c.claims_portal_url || ''); setEditClaimsMethod(c.claims_method || 'phone');
   };
 
   return (
