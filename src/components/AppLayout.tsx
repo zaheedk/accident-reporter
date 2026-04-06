@@ -44,7 +44,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen bg-background">
       <header className="bg-dark-surface px-4 py-3 pt-[max(0.75rem,env(safe-area-inset-top))] flex items-center justify-between border-b border-[hsl(var(--dark-surface))] sticky top-0 z-30">
         <Link to="/dashboard" className="flex items-center gap-2.5">
-          <img src="/savo-logo.svg" alt="Savo" className="h-9" />
+          <img src="/savo-logo.svg" alt="SAVO" className="h-9" />
         </Link>
         <div className="flex items-center gap-2">
           <NotificationBell />

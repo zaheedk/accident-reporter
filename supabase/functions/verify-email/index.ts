@@ -7,7 +7,7 @@ const corsHeaders = {
 };
 
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
-const FROM_EMAIL = "Savo <info@savo.co.nz>";
+const FROM_EMAIL = "SAVO <info@savo.co.nz>";
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -142,18 +142,18 @@ serve(async (req) => {
       body: JSON.stringify({
         from: FROM_EMAIL,
         to: [email],
-        subject: "Verify your email address – Savo",
+        subject: "Verify your email address – SAVO",
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
             <div style="background: linear-gradient(135deg, #1e3a5f, #162d4a); padding: 30px; border-radius: 12px 12px 0 0;">
-              <h1 style="color: white; margin: 0; font-size: 24px;">Savo</h1>
+              <h1 style="color: white; margin: 0; font-size: 24px;">SAVO</h1>
             </div>
             <div style="background: #ffffff; padding: 30px; border: 1px solid #e5e5e5; border-top: none; border-radius: 0 0 12px 12px;">
               <h2 style="color: #1a1a1a; margin-top: 0;">Verify your email address</h2>
               <p style="color: #555; line-height: 1.6;">Please click the button below to verify your email address.</p>
               <a href="${verifyUrl}" style="display: inline-block; background: #1e3a5f; color: white; padding: 12px 30px; border-radius: 8px; text-decoration: none; font-weight: bold; margin: 20px 0;">Verify Email</a>
               <p style="color: #999; font-size: 12px; margin-top: 30px;">This link expires in 24 hours. If you didn't request this, you can ignore this email.</p>
-              <p style="color: #999; font-size: 12px;">— The Savo Team</p>
+              <p style="color: #999; font-size: 12px;">— The SAVO Team</p>
             </div>
           </div>`,
       }),

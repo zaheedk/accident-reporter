@@ -30,16 +30,16 @@ export const SignupEmail = ({
 }: SignupEmailProps) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>Confirm your email for Savo</Preview>
+    <Preview>Confirm your email for SAVO</Preview>
     <Body style={main}>
       <Container style={container}>
         <Section style={header}>
-          <Heading style={logoText}>Savo</Heading>
+          <Heading style={logoText}>SAVO</Heading>
         </Section>
         <Section style={content}>
           <Heading style={h1}>Confirm your email</Heading>
           <Text style={text}>
-            Welcome to <strong>Savo</strong> — your vehicle claims assistant!
+            Welcome to <strong>SAVO</strong> — your vehicle claims assistant!
           </Text>
           <Text style={text}>
             Please verify your email address ({recipient}) by clicking the button below:
@@ -48,10 +48,10 @@ export const SignupEmail = ({
             Verify Email Address
           </Button>
           <Text style={footer}>
-            If you didn't create a Savo account, you can safely ignore this email.
+            If you didn't create a SAVO account, you can safely ignore this email.
           </Text>
         </Section>
-        <Text style={brand}>© 2025 Savo · Auckland, New Zealand</Text>
+        <Text style={brand}>© 2025 SAVO · Auckland, New Zealand</Text>
       </Container>
     </Body>
   </Html>

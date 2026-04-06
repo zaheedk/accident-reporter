@@ -66,9 +66,9 @@ Without adequate documentation, your insurer may need to:
 
 In New Zealand, the average claim processing time can stretch from 2 weeks to 3+ months when documentation is incomplete.
 
-## The Savo Advantage
+## The SAVO Advantage
 
-This is exactly why we built Savo — to guide you through capturing every critical detail at the scene and afterwards. Our step-by-step incident report ensures nothing is missed, and your information is organised exactly how insurers need it.
+This is exactly why we built SAVO — to guide you through capturing every critical detail at the scene and afterwards. Our step-by-step incident report ensures nothing is missed, and your information is organised exactly how insurers need it.
 
 ## Key Takeaways for NZ Drivers
 
@@ -76,9 +76,9 @@ This is exactly why we built Savo — to guide you through capturing every criti
 2. Use your phone to photograph everything
 3. Collect details from all parties and witnesses
 4. Note weather and road conditions
-5. Use a structured tool like Savo to ensure completeness
+5. Use a structured tool like SAVO to ensure completeness
 
-*Being prepared before an accident happens is the best strategy. Add your vehicle details to Savo today so you're ready if the unexpected occurs.*
+*Being prepared before an accident happens is the best strategy. Add your vehicle details to SAVO today so you're ready if the unexpected occurs.*
     `
   },
   {
@@ -171,11 +171,11 @@ Once your claim is approved:
 4. **Not photographing damage** — Relying only on written descriptions
 5. **Admitting fault prematurely** — Let the insurer determine liability
 
-## How Savo Simplifies This Process
+## How SAVO Simplifies This Process
 
-Savo guides you through each step with a structured incident report that captures exactly what insurers need. Your report becomes a comprehensive reference document you can use when lodging your claim through your insurer's portal or claims line.
+SAVO guides you through each step with a structured incident report that captures exactly what insurers need. Your report becomes a comprehensive reference document you can use when lodging your claim through your insurer's portal or claims line.
 
-*Don't wait until you're in an accident. Get organised now with Savo.*
+*Don't wait until you're in an accident. Get organised now with SAVO.*
     `
   },
   {
@@ -247,7 +247,7 @@ Vague descriptions like "the other car hit me" don't help insurers process your 
 - Journey purpose
 - All parties involved
 
-**The fix:** Use a structured incident report tool like Savo to ensure you capture every detail your insurer needs.
+**The fix:** Use a structured incident report tool like SAVO to ensure you capture every detail your insurer needs.
 
 ## The Cost of These Mistakes
 
@@ -259,9 +259,9 @@ In New Zealand, these mistakes can result in:
 
 ## Be Prepared, Not Caught Off Guard
 
-The best time to prepare for an accident is before it happens. Having a tool like Savo on your phone means you'll know exactly what to document when the unexpected occurs.
+The best time to prepare for an accident is before it happens. Having a tool like SAVO on your phone means you'll know exactly what to document when the unexpected occurs.
 
-*Add your vehicle to Savo today and be ready for anything on New Zealand's roads.*
+*Add your vehicle to SAVO today and be ready for anything on New Zealand's roads.*
     `
   },
   {
@@ -362,7 +362,7 @@ Store your insurance details where you can access them quickly:
 - Your cover type and excess amounts
 - Any special conditions
 
-Tools like Savo let you store all your vehicle and insurance details in one place, ready when you need them.
+Tools like SAVO let you store all your vehicle and insurance details in one place, ready when you need them.
 
 *Know your cover, document your incidents, and be prepared. That's the formula for hassle-free insurance claims in New Zealand.*
     `
@@ -488,7 +488,7 @@ The best time to prepare for an accident is before one occurs:
 - Keep your insurance details easily accessible
 - Have your vehicle information saved digitally
 - Know your insurer's claims number
-- Use a tool like Savo to have a structured incident report ready
+- Use a tool like SAVO to have a structured incident report ready
 
 ## Your Pocket Checklist
 
@@ -504,7 +504,7 @@ Save this quick reference:
 9. ✅ See a doctor even if you feel fine
 10. ✅ Organise all documentation
 
-*With Savo on your phone, steps 3-6 are guided and structured. Be ready before the unexpected happens.*
+*With SAVO on your phone, steps 3-6 are guided and structured. Be ready before the unexpected happens.*
     `
   }
 ];

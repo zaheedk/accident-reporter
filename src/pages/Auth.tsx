@@ -103,7 +103,7 @@ export default function Auth() {
         <div className="relative z-10 text-center lg:max-w-md">
           {/* Logo */}
           <div className="flex items-center mb-10 justify-center">
-            <img src="/savo-logo.svg" alt="Savo" className="h-20 lg:h-24" />
+            <img src="/savo-logo.svg" alt="SAVO" className="h-20 lg:h-24" />
           </div>
 
           {/* Headline */}
@@ -119,7 +119,7 @@ export default function Auth() {
 
           {/* Subtitle */}
           <p className="text-[15px] leading-relaxed text-slate-400 max-w-xs mx-auto lg:max-w-sm">
-            Savo helps you record accident data instantly — photos, GPS, witness info, and reports — so your claim is airtight from minute one.
+            SAVO helps you record accident data instantly — photos, GPS, witness info, and reports — so your claim is airtight from minute one.
           </p>
 
         </div>
@@ -140,9 +140,9 @@ export default function Auth() {
             {mode === 'forgot' ? (
               <>Reset your <span className="italic text-primary">password</span></>
             ) : mode === 'login' ? (
-              <>Welcome back to <span className="italic text-primary">Savo</span></>
+              <>Welcome back to <span className="italic text-primary">SAVO</span></>
             ) : (
-              <>Join <span className="italic text-primary">Savo</span> today</>
+              <>Join <span className="italic text-primary">SAVO</span> today</>
             )}
           </h2>
           <p className="text-sm text-muted-foreground mb-6">
@@ -249,7 +249,7 @@ export default function Auth() {
                   ) : (
                     <>
                       <LogIn className="w-4 h-4" />
-                      {mode === 'forgot' ? 'Send Reset Link' : mode === 'login' ? 'Sign in to Savo' : 'Create Account'}
+                      {mode === 'forgot' ? 'Send Reset Link' : mode === 'login' ? 'Sign in to SAVO' : 'Create Account'}
                     </>
                   )}
                 </button>
@@ -262,7 +262,7 @@ export default function Auth() {
                     <button onClick={() => { setMode('login'); setError(''); setSuccess(''); }} className="text-primary font-bold hover:underline">Sign in</button>
                   </>
                 ) : mode === 'login' ? (
-                  <>New to Savo?{' '}
+                  <>New to SAVO?{' '}
                     <button onClick={() => { setMode('signup'); setError(''); setSuccess(''); }} className="text-primary font-bold hover:underline">Create a free account</button>
                   </>
                 ) : (

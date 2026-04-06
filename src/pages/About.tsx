@@ -32,16 +32,16 @@ export default function About() {
     <AppLayout>
       <div className="space-y-8">
         <div>
-          <h1 className="text-2xl font-bold text-foreground mb-2">About Savo</h1>
+          <h1 className="text-2xl font-bold text-foreground mb-2">About SAVO</h1>
           <p className="text-sm text-muted-foreground leading-relaxed">
-            Savo makes vehicle insurance incidents simple, fast, and stress-free. We guide you through every step — from documenting the incident to connecting with trusted panel shops for repairs.
+            SAVO makes vehicle insurance incidents simple, fast, and stress-free. We guide you through every step — from documenting the incident to connecting with trusted panel shops for repairs.
           </p>
         </div>
 
         <div className="card-surface space-y-4">
           <h2 className="text-base font-semibold text-foreground">Our Mission</h2>
           <p className="text-sm text-muted-foreground leading-relaxed">
-            Filing an incident report after a vehicle accident shouldn't be complicated. We built Savo to eliminate the paperwork headaches, keep your records organised, and get you back on the road faster.
+            Filing an incident report after a vehicle accident shouldn't be complicated. We built SAVO to eliminate the paperwork headaches, keep your records organised, and get you back on the road faster.
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
             {[
