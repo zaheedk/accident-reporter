@@ -6,18 +6,31 @@ import { getVehicles, deleteVehicle } from '@/lib/storage';
 import AppLayout from '@/components/AppLayout';
 import { Vehicle } from '@/types';
 import { useTranslation } from 'react-i18next';
+import {
+  AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction,
+} from '@/components/ui/alert-dialog';
 
 export default function VehicleList() {
   const navigate = useNavigate();
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const { t } = useTranslation();
   const { user } = useAuth();
+  const [deleteTarget, setDeleteTarget] = useState<Vehicle | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => { if (user) getVehicles(user.id).then(setVehicles); }, [user]);
 
-  const handleDelete = async (id: string) => {
-    await deleteVehicle(id);
-    if (user) setVehicles(await getVehicles(user.id));
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
+    setDeleting(true);
+    try {
+      await deleteVehicle(deleteTarget.id);
+      setVehicles(prev => prev.filter(v => v.id !== deleteTarget.id));
+    } finally {
+      setDeleting(false);
+      setDeleteTarget(null);
+    }
   };
 
   return (
