@@ -27,6 +27,8 @@ const About = lazy(() => import("./pages/About"));
 const HowItWorks = lazy(() => import("./pages/HowItWorks"));
 const FAQ = lazy(() => import("./pages/FAQ"));
 const Legal = lazy(() => import("./pages/Legal"));
+const Blog = lazy(() => import("./pages/Blog"));
+const BlogPost = lazy(() => import("./pages/BlogPost"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const ExternalLogin = lazy(() => import("./pages/ExternalLogin"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
@@ -88,6 +90,8 @@ const App = () => (
               <Route path="/how-it-works" element={<HowItWorks />} />
               <Route path="/faq" element={<FAQ />} />
               <Route path="/legal" element={<Legal />} />
+              <Route path="/blog" element={<Blog />} />
+              <Route path="/blog/:slug" element={<BlogPost />} />
               <Route path="/delete-account" element={<ProtectedRoute><DeleteAccount /></ProtectedRoute>} />
               <Route path="/delete-data-request" element={<ProtectedRoute><DeleteDataRequest /></ProtectedRoute>} />
               <Route path="*" element={<NotFound />} />
