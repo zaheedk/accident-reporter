@@ -15,7 +15,7 @@ const corsHeaders = {
     'authorization, x-client-info, apikey, content-type, x-lovable-signature, x-lovable-timestamp, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 }
 
-const SITE_NAME = 'Savo'
+const SITE_NAME = 'SAVO'
 const SENDER_DOMAIN = 'savo.co.nz'
 const FROM_ADDRESS = `${SITE_NAME} <noreply@${SENDER_DOMAIN}>`
 

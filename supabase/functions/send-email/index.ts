@@ -8,7 +8,7 @@ const corsHeaders = {
 };
 
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
-const FROM_EMAIL = 'Savo <info@savo.co.nz>';
+const FROM_EMAIL = 'SAVO <info@savo.co.nz>';
 const REPLY_DOMAIN = 'replies.savo.co.nz';
 
 interface EmailRequest {
@@ -406,7 +406,7 @@ serve(async (req) => {
     // Build email payload
     const emailPayload: Record<string, unknown> = {
       from: isInsurer && data?.clientName
-        ? `${data.clientName} via Savo <claims@savo.co.nz>`
+        ? `${data.clientName} via SAVO <claims@savo.co.nz>`
         : FROM_EMAIL,
       to: [to],
       subject,

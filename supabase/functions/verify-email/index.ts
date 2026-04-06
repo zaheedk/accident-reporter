@@ -7,7 +7,7 @@ const corsHeaders = {
 };
 
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
-const FROM_EMAIL = "Savo <info@savo.co.nz>";
+const FROM_EMAIL = "SAVO <info@savo.co.nz>";
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {

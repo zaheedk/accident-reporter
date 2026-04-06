@@ -66,7 +66,7 @@ serve(async (req) => {
         'Authorization': `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: `${senderName} via Savo <claims@savo.co.nz>`,
+        from: `${senderName} via SAVO <claims@savo.co.nz>`,
         to: [insurerEmail],
         reply_to: replyTo,
         subject,
