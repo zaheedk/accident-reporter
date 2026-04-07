@@ -444,7 +444,33 @@ export default function ClaimWizard() {
                   </>
                 )}
 
-                <div className="space-y-3">
+                {/* Fault selection */}
+                <div>
+                  <label className="form-label">Who is at fault?</label>
+                  <select className="form-input" value={claim.atFault} onChange={e => update('atFault', e.target.value)}>
+                    <option value="">Select...</option>
+                    <option value="me">I am at fault</option>
+                    <option value="other_party">The other party is at fault</option>
+                    <option value="shared">Shared fault</option>
+                  </select>
+                </div>
+                {claim.atFault === 'other_party' && (
+                  <div className="p-4 rounded-xl bg-primary/5 border border-primary/20 space-y-3">
+                    <div className="flex items-center gap-3">
+                      <Car className="w-5 h-5 text-primary" />
+                      <div>
+                        <p className="text-sm font-semibold text-foreground">Courtesy car available</p>
+                        <p className="text-xs text-muted-foreground">Since you're not at fault, you may be entitled to a courtesy car while yours is being repaired.</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <input type="checkbox" id="courtesyCar" className="w-4 h-4 rounded border-border text-primary focus:ring-primary/20" checked={claim.courtesyCarRequested} onChange={e => update('courtesyCarRequested', e.target.checked)} />
+                      <label htmlFor="courtesyCar" className="text-sm font-medium text-foreground">I'd like to request a courtesy car</label>
+                    </div>
+                  </div>
+                )}
+
+
                   <label className="form-label flex items-center gap-1.5"><Camera className="w-3.5 h-3.5" /> Your Vehicle Photos</label>
                   <p className="text-xs text-muted-foreground -mt-2">Take photos of the damage to your vehicle</p>
                   {photos.length > 0 && (
