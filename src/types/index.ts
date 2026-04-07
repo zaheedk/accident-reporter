@@ -80,7 +80,11 @@ export interface ClaimReport {
   liabilityAdmitted: boolean;
   liabilityDetails: string;
 
-  // Step 6: Damage & Repairer
+  // Step 6: Fault & Courtesy Car
+  atFault: 'me' | 'other_party' | 'shared' | '';
+  courtesyCarRequested: boolean;
+
+  // Step 7: Damage & Repairer
   damageDescription: string;
   vehicleTowed: boolean;
   towingCompany: string;

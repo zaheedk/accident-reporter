@@ -43,6 +43,7 @@ function emptyClaim(): ClaimReport {
     witnesses: [], policeAttended: false, policeOfficerDetails: '', anyoneHurt: false, injuryDetails: '',
     weatherCondition: '', roadCondition: '', driverConsumedSubstance: false, substanceDetails: '',
     blameDescription: '', liabilityAdmitted: false, liabilityDetails: '',
+    atFault: '', courtesyCarRequested: false,
     damageDescription: '', vehicleTowed: false, towingCompany: '',
     repairerName: '', repairerPhone: '', repairerAddress: '',
     insuranceCompany: '', selectedPanelShopId: '',
@@ -163,7 +164,10 @@ export default function ClaimWizard() {
             weatherCondition: claimRow.weather_condition as any, roadCondition: claimRow.road_condition as any,
             driverConsumedSubstance: claimRow.driver_consumed_substance, substanceDetails: claimRow.substance_details,
             blameDescription: claimRow.blame_description, liabilityAdmitted: claimRow.liability_admitted,
-            liabilityDetails: claimRow.liability_details, damageDescription: claimRow.damage_description,
+            liabilityDetails: claimRow.liability_details,
+            atFault: (claimRow as any).at_fault || '',
+            courtesyCarRequested: (claimRow as any).courtesy_car_requested || false,
+            damageDescription: claimRow.damage_description,
             vehicleTowed: claimRow.vehicle_towed, towingCompany: claimRow.towing_company,
             repairerName: claimRow.repairer_name, repairerPhone: claimRow.repairer_phone,
             repairerAddress: claimRow.repairer_address, insuranceCompany: claimRow.insurance_company || '',
@@ -440,6 +444,31 @@ export default function ClaimWizard() {
                   </>
                 )}
 
+                {/* Fault selection */}
+                <div>
+                  <label className="form-label">Who is at fault?</label>
+                  <select className="form-input" value={claim.atFault} onChange={e => update('atFault', e.target.value)}>
+                    <option value="">Select...</option>
+                    <option value="me">I am at fault</option>
+                    <option value="other_party">The other party is at fault</option>
+                    <option value="shared">Shared fault</option>
+                  </select>
+                </div>
+                {claim.atFault === 'other_party' && (
+                  <div className="p-4 rounded-xl bg-primary/5 border border-primary/20 space-y-3">
+                    <div className="flex items-center gap-3">
+                      <Car className="w-5 h-5 text-primary" />
+                      <div>
+                        <p className="text-sm font-semibold text-foreground">Courtesy car available</p>
+                        <p className="text-xs text-muted-foreground">Since you're not at fault, you may be entitled to a courtesy car while yours is being repaired.</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <input type="checkbox" id="courtesyCar" className="w-4 h-4 rounded border-border text-primary focus:ring-primary/20" checked={claim.courtesyCarRequested} onChange={e => update('courtesyCarRequested', e.target.checked)} />
+                      <label htmlFor="courtesyCar" className="text-sm font-medium text-foreground">I'd like to request a courtesy car</label>
+                    </div>
+                  </div>
+                )}
                 <div className="space-y-3">
                   <label className="form-label flex items-center gap-1.5"><Camera className="w-3.5 h-3.5" /> Your Vehicle Photos</label>
                   <p className="text-xs text-muted-foreground -mt-2">Take photos of the damage to your vehicle</p>
@@ -653,8 +682,32 @@ export default function ClaimWizard() {
                   <div><label className="form-label">Substance details</label><input className="form-input" value={claim.substanceDetails} onChange={e => update('substanceDetails', e.target.value)} /></div>
                 )}
                 <div className="border-t border-border pt-4 mt-2">
-                  <p className="text-xs font-semibold text-muted-foreground mb-3">Liability</p>
+                  <p className="text-xs font-semibold text-muted-foreground mb-3">Fault & Liability</p>
                   <div className="space-y-3">
+                    <div>
+                      <label className="form-label">Who is at fault?</label>
+                      <select className="form-input" value={claim.atFault} onChange={e => update('atFault', e.target.value)}>
+                        <option value="">Select...</option>
+                        <option value="me">I am at fault</option>
+                        <option value="other_party">The other party is at fault</option>
+                        <option value="shared">Shared fault</option>
+                      </select>
+                    </div>
+                    {claim.atFault === 'other_party' && (
+                      <div className="p-4 rounded-xl bg-primary/5 border border-primary/20 space-y-3">
+                        <div className="flex items-center gap-3">
+                          <Car className="w-5 h-5 text-primary" />
+                          <div>
+                            <p className="text-sm font-semibold text-foreground">Courtesy car available</p>
+                            <p className="text-xs text-muted-foreground">Since you're not at fault, you may be entitled to a courtesy car.</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <input type="checkbox" id="courtesyCarEdit" className="w-4 h-4 rounded border-border text-primary focus:ring-primary/20" checked={claim.courtesyCarRequested} onChange={e => update('courtesyCarRequested', e.target.checked)} />
+                          <label htmlFor="courtesyCarEdit" className="text-sm font-medium text-foreground">I'd like to request a courtesy car</label>
+                        </div>
+                      </div>
+                    )}
                     <div><label className="form-label">Who is to blame and why?</label><textarea className="form-input min-h-[80px]" value={claim.blameDescription} onChange={e => update('blameDescription', e.target.value)} /></div>
                     <div className="flex items-center gap-3">
                       <input type="checkbox" id="liabilityAdmitted" className="w-4 h-4 rounded border-border text-primary focus:ring-primary/20" checked={claim.liabilityAdmitted} onChange={e => update('liabilityAdmitted', e.target.checked)} />
@@ -699,6 +752,12 @@ export default function ClaimWizard() {
                     </div>
                   ))}
                 </RSection>
+                {claim.atFault && (
+                  <RSection title="Fault">
+                    <RRow label="At fault" value={claim.atFault === 'me' ? 'I am at fault' : claim.atFault === 'other_party' ? 'Other party at fault' : 'Shared fault'} />
+                    {claim.atFault === 'other_party' && <RRow label="Courtesy car" value={claim.courtesyCarRequested ? 'Requested' : 'Not requested'} />}
+                  </RSection>
+                )}
                 <RSection title={t('claims.review.witnesses')}>
                   {claim.witnesses.length === 0 ? <p className="text-sm text-muted-foreground">{t('common.none')}</p> : claim.witnesses.map((w, i) => <RRow key={i} label={t('claims.witnesses.witnessNumber', { number: i + 1 })} value={`${w.name} – ${w.phone}`} />)}
                 </RSection>
