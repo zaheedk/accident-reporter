@@ -469,8 +469,7 @@ export default function ClaimWizard() {
                     </div>
                   </div>
                 )}
-
-
+                <div className="space-y-3">
                   <label className="form-label flex items-center gap-1.5"><Camera className="w-3.5 h-3.5" /> Your Vehicle Photos</label>
                   <p className="text-xs text-muted-foreground -mt-2">Take photos of the damage to your vehicle</p>
                   {photos.length > 0 && (
