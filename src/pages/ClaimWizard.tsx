@@ -265,10 +265,10 @@ export default function ClaimWizard() {
       supabase.functions.invoke('send-courtesy-car-request', {
         body: { claimId: claim.id },
       }).then(() => {
-        toast.success('Courtesy car request sent to Free2Drive');
+        toast.success('Courtesy car request lodged – someone will be in touch shortly');
       }).catch(err => {
         console.error('Courtesy car email failed:', err);
-        toast.error('Could not send courtesy car request email');
+        toast.error('Could not lodge courtesy car request. Please try again.');
       });
     }
 
