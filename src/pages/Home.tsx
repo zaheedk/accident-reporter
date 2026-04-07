@@ -10,14 +10,14 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-background">
       {/* Nav */}
-      <header className="bg-dark-surface sticky top-0 z-30 border-b border-[hsl(var(--dark-surface))]">
+      <header className="bg-card sticky top-0 z-30 border-b border-border/50">
         <div className="max-w-5xl mx-auto px-4 py-3 pt-[max(0.75rem,env(safe-area-inset-top))] flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2.5">
             <img src="/savo-logo.svg" alt="SAVO" className="h-9" />
           </Link>
           <div className="flex items-center gap-2">
             <Link to="/auth?mode=login">
-              <Button variant="ghost" size="sm" className="text-dark-surface-foreground hover:bg-white/10 text-sm font-medium">
+              <Button variant="ghost" size="sm" className="text-foreground hover:bg-muted text-sm font-medium">
                 Log in
               </Button>
             </Link>
