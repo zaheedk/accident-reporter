@@ -13,7 +13,7 @@ export default function Home() {
       <header className="bg-card sticky top-0 z-30 border-b border-border/50">
         <div className="max-w-5xl mx-auto px-4 py-3 pt-[max(0.75rem,env(safe-area-inset-top))] flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2.5">
-            <img src="/savo-logo.svg" alt="SAVO" className="h-9" />
+            <img src="/savo-logo.svg" alt="SAVO" className="h-11" />
           </Link>
           <div className="flex items-center gap-2">
             <Link to="/auth?mode=login">
