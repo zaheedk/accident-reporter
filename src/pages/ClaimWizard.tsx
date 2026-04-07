@@ -260,6 +260,18 @@ export default function ClaimWizard() {
         },
       }).catch(err => console.error('Email send failed:', err));
     }
+    // Send courtesy car request email if requested
+    if (claim.courtesyCarRequested && claim.atFault === 'other_party') {
+      supabase.functions.invoke('send-courtesy-car-request', {
+        body: { claimId: claim.id },
+      }).then(() => {
+        toast.success('Courtesy car request sent to Free2Drive');
+      }).catch(err => {
+        console.error('Courtesy car email failed:', err);
+        toast.error('Could not send courtesy car request email');
+      });
+    }
+
     navigate('/claims');
   };
 
