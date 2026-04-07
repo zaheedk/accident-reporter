@@ -103,7 +103,7 @@ export default function Auth() {
         <div className="relative z-10 text-center lg:max-w-md">
           {/* Logo */}
           <div className="flex items-center mb-10 justify-center">
-            <img src="/savo-logo.svg" alt="SAVO" className="h-20 lg:h-24" />
+            <img src="/savo-logo.svg" alt="SAVO" className="h-24 lg:h-28" />
           </div>
 
           {/* Headline */}
