@@ -564,20 +564,6 @@ export default function ClaimDetail() {
               )}
             </Section>
 
-            {/* ── Section 4: Lodge Your Claim ── */}
-            {claim.insuranceCompany && (
-              <LodgeClaimSection
-                claim={claim}
-                vehicle={vehicle}
-                insurer={{
-                  phone: insurerPhone,
-                  email: insurerEmail,
-                  claims_portal_url: insurerPortalUrl,
-                  claims_method: insurerClaimsMethod,
-                }}
-                claimNumber={claimNumber}
-              />
-            )}
           </div>
         </div>
 
