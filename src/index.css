@@ -74,7 +74,7 @@
 
 @layer components {
   .form-label {
-    @apply text-[13px] font-medium text-muted-foreground mb-1.5 block;
+    @apply text-[13px] font-medium text-foreground/70 mb-1.5 block;
   }
 
   .form-input {
