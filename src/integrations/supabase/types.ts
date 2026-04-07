@@ -99,8 +99,10 @@ export type Database = {
       claims: {
         Row: {
           anyone_hurt: boolean
+          at_fault: string
           blame_description: string
           claim_number: number | null
+          courtesy_car_requested: boolean
           created_at: string
           damage_description: string
           description: string
@@ -139,8 +141,10 @@ export type Database = {
         }
         Insert: {
           anyone_hurt?: boolean
+          at_fault?: string
           blame_description?: string
           claim_number?: number | null
+          courtesy_car_requested?: boolean
           created_at?: string
           damage_description?: string
           description?: string
@@ -179,8 +183,10 @@ export type Database = {
         }
         Update: {
           anyone_hurt?: boolean
+          at_fault?: string
           blame_description?: string
           claim_number?: number | null
+          courtesy_car_requested?: boolean
           created_at?: string
           damage_description?: string
           description?: string
