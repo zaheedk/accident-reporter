@@ -752,6 +752,12 @@ export default function ClaimWizard() {
                     </div>
                   ))}
                 </RSection>
+                {claim.atFault && (
+                  <RSection title="Fault">
+                    <RRow label="At fault" value={claim.atFault === 'me' ? 'I am at fault' : claim.atFault === 'other_party' ? 'Other party at fault' : 'Shared fault'} />
+                    {claim.atFault === 'other_party' && <RRow label="Courtesy car" value={claim.courtesyCarRequested ? 'Requested' : 'Not requested'} />}
+                  </RSection>
+                )}
                 <RSection title={t('claims.review.witnesses')}>
                   {claim.witnesses.length === 0 ? <p className="text-sm text-muted-foreground">{t('common.none')}</p> : claim.witnesses.map((w, i) => <RRow key={i} label={t('claims.witnesses.witnessNumber', { number: i + 1 })} value={`${w.name} – ${w.phone}`} />)}
                 </RSection>
