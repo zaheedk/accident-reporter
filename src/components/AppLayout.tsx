@@ -54,7 +54,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="bg-dark-surface px-4 py-3 pt-[max(0.75rem,env(safe-area-inset-top))] flex items-center justify-between border-b border-[hsl(var(--dark-surface))] sticky top-0 z-30">
+      <header className="bg-card px-4 py-3 pt-[max(0.75rem,env(safe-area-inset-top))] flex items-center justify-between border-b border-border/50 sticky top-0 z-30">
         <Link to={logoLink} className="flex items-center gap-2.5">
           <img src="/savo-logo.svg" alt="SAVO" className="h-9" />
         </Link>
@@ -62,18 +62,23 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           {user && (
             <>
               <NotificationBell />
-              <Link to="/claims/new" className="h-8 px-3.5 text-xs rounded-lg bg-primary text-primary-foreground font-semibold inline-flex items-center gap-1.5 transition-all active:scale-[0.98]" style={{ boxShadow: '0 2px 8px hsla(22, 90%, 52%, 0.3)' }}>
+              <Link to="/claims/new" className="h-8 px-3.5 text-xs rounded-lg bg-primary text-primary-foreground font-semibold inline-flex items-center gap-1.5 transition-all active:scale-[0.98]" style={{ boxShadow: '0 2px 8px hsla(213, 52%, 24%, 0.3)' }}>
                 <Plus className="w-3.5 h-3.5" />
                 {t('nav.newReport')}
               </Link>
             </>
           )}
           {!user && (
-            <Link to="/auth?mode=login" className="h-8 px-3.5 text-xs rounded-lg bg-primary text-primary-foreground font-semibold inline-flex items-center gap-1.5 transition-all active:scale-[0.98]">
-              Log in
-            </Link>
+            <>
+              <Link to="/auth?mode=login" className="h-8 px-3.5 text-xs rounded-lg text-foreground font-semibold inline-flex items-center gap-1.5 transition-all hover:text-primary">
+                Log in
+              </Link>
+              <Link to="/auth?mode=signup" className="h-8 px-3.5 text-xs rounded-lg bg-primary text-primary-foreground font-semibold inline-flex items-center gap-1.5 transition-all active:scale-[0.98]">
+                Sign up free
+              </Link>
+            </>
           )}
-          <button onClick={() => setMenuOpen(!menuOpen)} className="w-8 h-8 rounded-lg flex items-center justify-center text-dark-surface-muted hover:text-dark-surface-foreground transition-colors">
+          <button onClick={() => setMenuOpen(!menuOpen)} className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors">
             {menuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
         </div>
