@@ -10,6 +10,7 @@ import { Loader2 } from "lucide-react";
 import InstallPrompt from "@/components/InstallPrompt";
 
 // Lazy-loaded pages for code splitting
+const Home = lazy(() => import("./pages/Home"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const VehicleList = lazy(() => import("./pages/VehicleList"));
 const VehicleForm = lazy(() => import("./pages/VehicleForm"));
@@ -17,6 +18,7 @@ const ClaimList = lazy(() => import("./pages/ClaimList"));
 const ClaimWizard = lazy(() => import("./pages/ClaimWizard"));
 const ClaimDetail = lazy(() => import("./pages/ClaimDetail"));
 const PanelShops = lazy(() => import("./pages/PanelShops"));
+const TowCompanies = lazy(() => import("./pages/TowCompanies"));
 const Profile = lazy(() => import("./pages/Profile"));
 const UserManagement = lazy(() => import("./pages/UserManagement"));
 const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
@@ -26,9 +28,13 @@ const About = lazy(() => import("./pages/About"));
 const HowItWorks = lazy(() => import("./pages/HowItWorks"));
 const FAQ = lazy(() => import("./pages/FAQ"));
 const Legal = lazy(() => import("./pages/Legal"));
+const Blog = lazy(() => import("./pages/Blog"));
+const BlogPost = lazy(() => import("./pages/BlogPost"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const ExternalLogin = lazy(() => import("./pages/ExternalLogin"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
+const DeleteAccount = lazy(() => import("./pages/DeleteAccount"));
+const DeleteDataRequest = lazy(() => import("./pages/DeleteDataRequest"));
 
 const PageLoader = () => (
   <div className="min-h-screen bg-background flex items-center justify-center">
@@ -67,7 +73,8 @@ const App = () => (
               <Route path="/auth" element={<Auth />} />
               <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/external-login" element={<ExternalLogin />} />
-              <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+              <Route path="/" element={<Home />} />
+              <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
               <Route path="/vehicles" element={<ProtectedRoute><VehicleList /></ProtectedRoute>} />
               <Route path="/vehicles/new" element={<ProtectedRoute><VehicleForm /></ProtectedRoute>} />
               <Route path="/vehicles/:id/edit" element={<ProtectedRoute><VehicleForm /></ProtectedRoute>} />
@@ -75,7 +82,8 @@ const App = () => (
               <Route path="/claims/new" element={<ProtectedRoute><ClaimWizard /></ProtectedRoute>} />
               <Route path="/claims/:id/edit" element={<ProtectedRoute><ClaimWizard /></ProtectedRoute>} />
               <Route path="/claims/:id" element={<ProtectedRoute><ClaimDetail /></ProtectedRoute>} />
-              <Route path="/panel-shops" element={<ProtectedRoute><PanelShops /></ProtectedRoute>} />
+              <Route path="/panel-shops" element={<PanelShops />} />
+              <Route path="/tow-companies" element={<TowCompanies />} />
               <Route path="/users" element={<ProtectedRoute><UserManagement /></ProtectedRoute>} />
               <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
               <Route path="/admin/insurance-companies" element={<ProtectedRoute><InsuranceCompanies /></ProtectedRoute>} />
@@ -84,6 +92,10 @@ const App = () => (
               <Route path="/how-it-works" element={<HowItWorks />} />
               <Route path="/faq" element={<FAQ />} />
               <Route path="/legal" element={<Legal />} />
+              <Route path="/blog" element={<Blog />} />
+              <Route path="/blog/:slug" element={<BlogPost />} />
+              <Route path="/delete-account" element={<ProtectedRoute><DeleteAccount /></ProtectedRoute>} />
+              <Route path="/delete-data-request" element={<ProtectedRoute><DeleteDataRequest /></ProtectedRoute>} />
               <Route path="*" element={<NotFound />} />
             </Routes>
             <InstallPrompt />

@@ -17,13 +17,15 @@
     "draft": "Draft",
     "submitted": "Submitted",
     "signOut": "Sign out",
-    "language": "Language"
+    "language": "Language",
+    "deleting": "Deleting…"
   },
   "nav": {
     "dashboard": "Dashboard",
     "vehicles": "Vehicles",
     "claims": "Incidents",
     "shops": "Shops",
+    "towCompanies": "Tow Trucks",
     "aboutContact": "About & Contact",
     "howItWorks": "How It Works",
     "faqHelp": "FAQ & Help",
@@ -88,7 +90,8 @@
     "modificationDetails": "Modification details",
     "modificationDetailsPlaceholder": "Describe modifications",
     "saveVehicle": "Save vehicle",
-    "updateVehicle": "Update vehicle"
+    "updateVehicle": "Update vehicle",
+    "deleteConfirm": "This vehicle and its data will be permanently removed. This action cannot be undone."
   },
   "claims": {
     "reports": "Reports",
@@ -294,5 +297,13 @@
     "wet": "Wet",
     "dry": "Dry",
     "ice": "Ice"
+  },
+  "towCompanies": {
+    "title": "Tow Companies",
+    "subtitle": "Towing services across New Zealand",
+    "searchPlaceholder": "Search by name, address...",
+    "noResults": "No tow companies found",
+    "companiesFound": "{{count}} company found",
+    "companiesFound_plural": "{{count}} companies found"
   }
 }

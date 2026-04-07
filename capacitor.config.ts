@@ -2,7 +2,7 @@ import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'nz.co.savo.app',
-  appName: 'Savo',
+  appName: 'SAVO',
   webDir: 'dist',
 };
 

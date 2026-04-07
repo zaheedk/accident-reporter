@@ -316,6 +316,8 @@ export type Database = {
       }
       insurance_companies: {
         Row: {
+          claims_method: string
+          claims_portal_url: string
           created_at: string
           email: string
           id: string
@@ -323,6 +325,8 @@ export type Database = {
           phone: string
         }
         Insert: {
+          claims_method?: string
+          claims_portal_url?: string
           created_at?: string
           email?: string
           id?: string
@@ -330,6 +334,8 @@ export type Database = {
           phone?: string
         }
         Update: {
+          claims_method?: string
+          claims_portal_url?: string
           created_at?: string
           email?: string
           id?: string
@@ -604,6 +610,7 @@ export type Database = {
           longitude: number | null
           name: string
           phone: string
+          region: string
         }
         Insert: {
           address?: string
@@ -613,6 +620,7 @@ export type Database = {
           longitude?: number | null
           name: string
           phone?: string
+          region?: string
         }
         Update: {
           address?: string
@@ -622,6 +630,7 @@ export type Database = {
           longitude?: number | null
           name?: string
           phone?: string
+          region?: string
         }
         Relationships: []
       }

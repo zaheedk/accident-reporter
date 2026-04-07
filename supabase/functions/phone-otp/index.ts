@@ -93,7 +93,7 @@ serve(async (req) => {
         body: new URLSearchParams({
           To: e164Phone,
           From: Deno.env.get("TWILIO_PHONE_NUMBER") || "",
-          Body: `Your Savo verification code is: ${otpCode}. It expires in 10 minutes.`,
+          Body: `Your SAVO verification code is: ${otpCode}. It expires in 10 minutes.`,
         }),
       });
 

@@ -41,7 +41,7 @@ export default function AdminDashboard() {
     enabled: isAdmin,
   });
 
-  if (!isAdmin) return <Navigate to="/" replace />;
+  if (!isAdmin) return <Navigate to="/dashboard" replace />;
 
   const getUserName = (userId: string) => {
     const profile = profiles.find(p => p.user_id === userId);
@@ -159,7 +159,7 @@ export default function AdminDashboard() {
                         <div className="flex items-center gap-2 mt-0.5">
                           <span className="text-xs text-muted-foreground tabular-nums">{c.incident_date || 'No date'}</span>
                           <Badge variant={c.status === 'draft' ? 'secondary' : 'default'} className="text-[10px]">
-                            {c.status === 'draft' ? 'Draft' : 'Submitted'}
+                            {c.status === 'draft' ? 'Draft' : 'Saved'}
                           </Badge>
                         </div>
                         <span className="text-xs text-muted-foreground truncate block mt-0.5">{getUserName(c.user_id)}</span>

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Printer, Mail, X, Download, Share2, Phone, Pencil, Save, Loader2, Send, Car, Users, Wrench, Trash2 } from 'lucide-react';
+import LodgeClaimSection from '@/components/LodgeClaimSection';
 import { getClaims, getVehicles, deleteClaim } from '@/lib/storage';
 import { supabase } from '@/integrations/supabase/client';
 import AppLayout from '@/components/AppLayout';
@@ -26,6 +27,8 @@ export default function ClaimDetail() {
   const [loading, setLoading] = useState(true);
   const [insurerPhone, setInsurerPhone] = useState('');
   const [insurerEmail, setInsurerEmail] = useState('');
+  const [insurerPortalUrl, setInsurerPortalUrl] = useState('');
+  const [insurerClaimsMethod, setInsurerClaimsMethod] = useState('phone');
   const [insuranceCompanies, setInsuranceCompanies] = useState<{ id: string; name: string }[]>([]);
   const [editingInsurance, setEditingInsurance] = useState(false);
   const [editInsurance, setEditInsurance] = useState('');
@@ -62,7 +65,7 @@ export default function ClaimDetail() {
     const load = async () => {
       const [{ data: claimRow }, vehs, { data: claimNumData }] = await Promise.all([
         supabase.from('claims').select('*').eq('id', id).single(),
-        getVehicles(),
+        getVehicles(undefined),
         supabase.from('claims').select('claim_number').eq('id', id).single(),
       ]);
       
@@ -98,9 +101,11 @@ export default function ClaimDetail() {
       ]);
 
       if (foundClaim.insuranceCompany) {
-        const { data: insurer } = await supabase.from('insurance_companies').select('phone, email').eq('name', foundClaim.insuranceCompany).single();
+        const { data: insurer } = await supabase.from('insurance_companies').select('phone, email, claims_portal_url, claims_method').eq('name', foundClaim.insuranceCompany).single();
         if (insurer?.phone) setInsurerPhone(insurer.phone);
         if (insurer?.email) setInsurerEmail(insurer.email);
+        if (insurer?.claims_portal_url) setInsurerPortalUrl(insurer.claims_portal_url);
+        if (insurer?.claims_method) setInsurerClaimsMethod(insurer.claims_method);
       }
       
       if (photosRes.data) {
@@ -156,17 +161,20 @@ export default function ClaimDetail() {
     }).eq('id', claim.id);
     setClaim({ ...claim, insuranceCompany: editInsurance, repairerName: editRepairerName, repairerPhone: editRepairerPhone, repairerAddress: editRepairerAddress });
     if (editInsurance) {
-      const { data: ins } = await supabase.from('insurance_companies').select('phone, email').eq('name', editInsurance).single();
+      const { data: ins } = await supabase.from('insurance_companies').select('phone, email, claims_portal_url, claims_method').eq('name', editInsurance).single();
       setInsurerPhone(ins?.phone || '');
       setInsurerEmail(ins?.email || '');
+      setInsurerPortalUrl(ins?.claims_portal_url || '');
+      setInsurerClaimsMethod(ins?.claims_method || 'phone');
     }
     setEditingInsurance(false);
     setSavingInsurance(false);
   };
 
   const handlePrint = () => { window.print(); };
-  const handleEmail = () => {
-    setEmailTo(insurerEmail);
+  const handleEmail = async () => {
+    const user = (await supabase.auth.getUser()).data.user;
+    setEmailTo(user?.email || '');
     setEmailDialogOpen(true);
   };
 
@@ -254,17 +262,15 @@ export default function ClaimDetail() {
           <button onClick={handlePrint} className="p-2 rounded-xl hover:bg-muted transition-colors" title="Print / Save as PDF">
             <Printer className="w-5 h-5 text-muted-foreground" strokeWidth={1.5} />
           </button>
-          {claim.status !== 'submitted' && (
-            <button onClick={() => setDeleteDialogOpen(true)} className="p-2 rounded-xl hover:bg-destructive/10 transition-colors" title="Delete report">
-              <Trash2 className="w-5 h-5 text-destructive" strokeWidth={1.5} />
-            </button>
-          )}
-          <span className="text-[11px] font-medium text-primary bg-primary/8 px-2 py-1 rounded-lg">{claim.status === 'draft' ? t('common.draft') : claim.status === 'saved' ? 'Saved' : t('common.submitted')}</span>
+          <button onClick={() => setDeleteDialogOpen(true)} className="p-2 rounded-xl hover:bg-destructive/10 transition-colors" title="Delete report">
+            <Trash2 className="w-5 h-5 text-destructive" strokeWidth={1.5} />
+          </button>
+          <span className="text-[11px] font-medium text-primary bg-primary/8 px-2 py-1 rounded-lg">{claim.status === 'draft' ? t('common.draft') : 'Saved'}</span>
         </div>
 
         <div className="hidden print:block mb-6">
           <h1 className="text-xl font-bold text-foreground">{t('claims.detail.incidentReport')}</h1>
-          <p className="text-sm text-muted-foreground">{t('claims.review.date')}: {claim.incidentDate} · Status: {claim.status === 'draft' ? t('common.draft') : t('common.submitted')}</p>
+          <p className="text-sm text-muted-foreground">{t('claims.review.date')}: {claim.incidentDate} · Status: {claim.status === 'draft' ? t('common.draft') : 'Saved'}</p>
         </div>
 
         <div className="print:hidden">
@@ -435,6 +441,21 @@ export default function ClaimDetail() {
                 </>
               )}
             </Section>
+
+            {/* ── Section 4: Lodge Your Claim ── */}
+            {claim.insuranceCompany && (
+              <LodgeClaimSection
+                claim={claim}
+                vehicle={vehicle}
+                insurer={{
+                  phone: insurerPhone,
+                  email: insurerEmail,
+                  claims_portal_url: insurerPortalUrl,
+                  claims_method: insurerClaimsMethod,
+                }}
+                claimNumber={claimNumber}
+              />
+            )}
           </div>
         </div>
 
@@ -463,32 +484,22 @@ export default function ClaimDetail() {
       <Dialog open={emailDialogOpen} onOpenChange={setEmailDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Email Report</DialogTitle>
+            <DialogTitle>Email Report to Yourself</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
-            <p className="text-sm text-muted-foreground">Send the full incident report as a PDF attachment.</p>
-            {insurerEmail && (
-              <button
-                onClick={() => setEmailTo(insurerEmail)}
-                className={`w-full text-left px-3 py-2.5 rounded-lg border text-sm transition-colors ${emailTo === insurerEmail ? 'border-primary bg-primary/5 text-primary' : 'border-border hover:bg-muted'}`}
-              >
-                <span className="font-medium">{claim.insuranceCompany}</span>
-                <span className="block text-xs text-muted-foreground mt-0.5">{insurerEmail}</span>
-              </button>
-            )}
+            <p className="text-sm text-muted-foreground">Send the full incident report as a PDF to your email. Use it as a reference when lodging your claim with your insurer.</p>
             <div>
-              <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Recipient email</label>
+              <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Your email</label>
               <input
                 type="email"
-                placeholder="Enter email address"
                 value={emailTo}
-                onChange={e => setEmailTo(e.target.value)}
-                className="w-full px-3 py-2 text-sm rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/20"
+                readOnly
+                className="w-full px-3 py-2 text-sm rounded-lg border border-border bg-muted/50 text-foreground cursor-default"
               />
             </div>
             <Button onClick={sendReportEmail} disabled={sendingEmail || !emailTo.trim()} className="w-full">
               {sendingEmail ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Send className="w-4 h-4 mr-2" />}
-              {sendingEmail ? 'Sending...' : 'Send Report'}
+              {sendingEmail ? 'Sending...' : 'Send to My Email'}
             </Button>
           </div>
         </DialogContent>

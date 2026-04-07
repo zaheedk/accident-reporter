@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
 import { Link } from 'react-router-dom';
 import { Plus, FileText, ChevronRight, Search, X, Calendar, Car, ArrowLeft, Trash2 } from 'lucide-react';
 import { getClaims, getVehicles, deleteClaim } from '@/lib/storage';
@@ -36,9 +37,12 @@ export default function ClaimList() {
     }
   };
 
+  const { user } = useAuth();
+
   useEffect(() => {
+    if (!user) return;
     const load = async () => {
-      const [c, v] = await Promise.all([getClaims(), getVehicles()]);
+      const [c, v] = await Promise.all([getClaims(user.id), getVehicles(user.id)]);
       setClaims(c);
       setVehicles(v);
 
@@ -67,7 +71,7 @@ export default function ClaimList() {
       setClaimMeta(meta);
     };
     load();
-  }, []);
+  }, [user]);
 
   const vehicleMap = useMemo(() => {
     const m: Record<string, Vehicle> = {};
@@ -145,7 +149,7 @@ export default function ClaimList() {
               const reportNum = meta?.reportNumber || '';
               const href = c.status === 'draft' ? `/claims/${c.id}/edit` : `/claims/${c.id}`;
               const isDraft = c.status === 'draft';
-              const statusLabel = isDraft ? t('common.draft') : c.status === 'saved' ? 'Saved' : t('common.submitted');
+              const statusLabel = isDraft ? t('common.draft') : 'Saved';
               const photoUrl = claimPhotos[c.id];
               return (
                 <div key={c.id} className="card-surface overflow-hidden hover:shadow-md transition-all group">
@@ -164,7 +168,7 @@ export default function ClaimList() {
                         </div>
 
                         {/* Content */}
-                        <div className="flex-1 min-w-0 py-3 pr-3">
+                        <div className="flex-1 min-w-0 py-3">
                           <div className="flex items-center gap-2 mb-1">
                             <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${isDraft ? 'bg-muted text-muted-foreground' : 'bg-primary/10 text-primary'}`}>
                               {statusLabel}
@@ -174,7 +178,6 @@ export default function ClaimList() {
                                 {reportNum}
                               </span>
                             )}
-                            <ChevronRight className="w-4 h-4 text-muted-foreground/30 ml-auto group-hover:text-primary transition-colors flex-shrink-0" />
                           </div>
 
                           {rego && (
@@ -190,18 +193,20 @@ export default function ClaimList() {
                             </span>
                           </div>
                         </div>
+
+                        {/* Centered chevron */}
+                        <div className="flex items-center pr-2 flex-shrink-0">
+                          <ChevronRight className="w-4 h-4 text-muted-foreground/30 group-hover:text-primary transition-colors" />
+                        </div>
                       </div>
                     </Link>
 
-                    {/* Delete button for non-submitted reports */}
-                    {c.status !== 'submitted' && (
-                      <button
-                        onClick={(e) => { e.preventDefault(); setDeleteId(c.id); }}
-                        className="flex items-center justify-center w-12 border-l border-border text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    )}
+                    <button
+                      onClick={(e) => { e.preventDefault(); setDeleteId(c.id); }}
+                      className="flex items-center justify-center w-12 border-l border-border text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
                   </div>
                 </div>
               );

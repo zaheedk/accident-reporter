@@ -17,13 +17,15 @@
     "draft": "초안",
     "submitted": "제출됨",
     "signOut": "로그아웃",
-    "language": "언어"
+    "language": "언어",
+    "deleting": "삭제 중…"
   },
   "nav": {
     "dashboard": "대시보드",
     "vehicles": "차량",
     "claims": "사고",
     "shops": "수리점",
+    "towCompanies": "견인차",
     "aboutContact": "소개 및 연락처",
     "howItWorks": "이용 방법",
     "faqHelp": "FAQ 및 도움말",
@@ -88,7 +90,8 @@
     "modificationDetails": "변경 세부사항",
     "modificationDetailsPlaceholder": "변경 내용 설명",
     "saveVehicle": "차량 저장",
-    "updateVehicle": "차량 업데이트"
+    "updateVehicle": "차량 업데이트",
+    "deleteConfirm": "이 차량과 관련 데이터가 영구적으로 삭제됩니다. 이 작업은 되돌릴 수 없습니다."
   },
   "claims": {
     "reports": "보고서",
@@ -293,5 +296,12 @@
     "wet": "젖음",
     "dry": "건조",
     "ice": "빙판"
+  },
+  "towCompanies": {
+    "title": "견인 회사",
+    "subtitle": "뉴질랜드 전역 견인 서비스",
+    "searchPlaceholder": "이름, 주소로 검색...",
+    "noResults": "견인 회사를 찾을 수 없습니다",
+    "companiesFound": "{{count}}개 회사 발견"
   }
 }

@@ -25,16 +25,16 @@ export const RecoveryEmail = ({
 }: RecoveryEmailProps) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>Reset your Savo password</Preview>
+    <Preview>Reset your SAVO password</Preview>
     <Body style={main}>
       <Container style={container}>
         <Section style={header}>
-          <Heading style={logoText}>Savo</Heading>
+          <Heading style={logoText}>SAVO</Heading>
         </Section>
         <Section style={content}>
           <Heading style={h1}>Reset your password</Heading>
           <Text style={text}>
-            We received a request to reset your Savo password. Click the button below to choose a new one.
+            We received a request to reset your SAVO password. Click the button below to choose a new one.
           </Text>
           <Button style={button} href={confirmationUrl}>
             Reset Password
@@ -43,7 +43,7 @@ export const RecoveryEmail = ({
             If you didn't request this, you can safely ignore this email. Your password won't change.
           </Text>
         </Section>
-        <Text style={brand}>© 2025 Savo · Auckland, New Zealand</Text>
+        <Text style={brand}>© 2025 SAVO · Auckland, New Zealand</Text>
       </Container>
     </Body>
   </Html>
@@ -53,11 +53,11 @@ export default RecoveryEmail
 
 const main = { backgroundColor: '#f5f5f5', fontFamily: "Arial, sans-serif" }
 const container = { maxWidth: '600px', margin: '0 auto', padding: '20px' }
-const header = { backgroundColor: '#e8551e', padding: '30px', borderRadius: '12px 12px 0 0', textAlign: 'center' as const }
+const header = { backgroundColor: '#1e3a5f', padding: '30px', borderRadius: '12px 12px 0 0', textAlign: 'center' as const }
 const logoText = { color: '#ffffff', fontSize: '28px', fontWeight: '700' as const, margin: '0', letterSpacing: '-0.5px' }
 const content = { backgroundColor: '#ffffff', padding: '30px', border: '1px solid #e5e5e5', borderTop: 'none', borderRadius: '0 0 12px 12px' }
 const h1 = { fontSize: '22px', fontWeight: 'bold' as const, color: '#1a1a1a', margin: '0 0 16px' }
 const text = { fontSize: '14px', color: '#555555', lineHeight: '1.6', margin: '0 0 16px' }
-const button = { backgroundColor: '#e8551e', color: '#ffffff', fontSize: '15px', fontWeight: '600' as const, borderRadius: '8px', padding: '14px 28px', textDecoration: 'none' }
+const button = { backgroundColor: '#1e3a5f', color: '#ffffff', fontSize: '15px', fontWeight: '600' as const, borderRadius: '8px', padding: '14px 28px', textDecoration: 'none' }
 const footer = { fontSize: '12px', color: '#999999', margin: '20px 0 0' }
 const brand = { fontSize: '11px', color: '#bbbbbb', textAlign: 'center' as const, margin: '16px 0 0' }

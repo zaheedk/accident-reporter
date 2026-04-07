@@ -4,12 +4,12 @@ import { HelpCircle, MessageSquare } from 'lucide-react';
 
 const faqs = [
   {
-    q: 'What is Savo?',
-    a: 'Savo is a digital tool that helps you document and manage vehicle insurance incidents. It guides you through the entire process — from recording incident details to selecting a trusted panel shop for repairs.',
+    q: 'What is SAVO?',
+    a: 'SAVO is a digital tool that helps you document and manage vehicle insurance incidents. It guides you through the entire process — from recording incident details to selecting a trusted panel shop for repairs.',
   },
   {
-    q: 'Is Savo free to use?',
-    a: 'Yes! Savo is completely free for vehicle owners. We make it easy to document incidents and connect with panel shops at no cost to you.',
+    q: 'Is SAVO free to use?',
+    a: 'Yes! SAVO is completely free for vehicle owners. We make it easy to document incidents and connect with panel shops at no cost to you.',
   },
   {
     q: 'How do I file an incident report?',
@@ -25,15 +25,15 @@ const faqs = [
   },
   {
     q: 'What are panel shops?',
-    a: 'Panel shops are vehicle repair specialists. Savo maintains a curated list of trusted panel shops with ratings, contact details, and locations to help you choose the right repairer.',
+    a: 'Panel shops are vehicle repair specialists. SAVO maintains a curated list of trusted panel shops with ratings, contact details, and locations to help you choose the right repairer.',
   },
   {
     q: 'Is my data secure?',
     a: 'Yes. All your data is stored securely with encryption. Only you can access your incident reports, vehicles, and personal information through your authenticated account.',
   },
   {
-    q: 'Can I edit a submitted incident report?',
-    a: 'Once an incident report is submitted, it cannot be edited to maintain record integrity. You can however view all the details and print or share the report.',
+    q: 'Can I edit a saved incident report?',
+    a: 'Yes! You can edit your incident report at any time. Simply open the report and tap the edit button to make changes.',
   },
   {
     q: 'How do I contact support?',
@@ -48,7 +48,7 @@ export default function FAQ() {
         <div>
           <h1 className="text-2xl font-bold text-foreground mb-2">FAQ & Help Centre</h1>
           <p className="text-sm text-muted-foreground leading-relaxed">
-            Find answers to common questions about using Savo.
+            Find answers to common questions about using SAVO.
           </p>
         </div>
 

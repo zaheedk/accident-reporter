@@ -27,7 +27,7 @@ export default defineConfig(({ mode }) => ({
         name: "Savo — Vehicle Claims Made Simple",
         short_name: "Savo",
         description: "Report vehicle incidents, track claims, and get sorted.",
-        theme_color: "#e8650a",
+        theme_color: "#1e3a5f",
         background_color: "#f3f4f8",
         display: "standalone",
         orientation: "portrait",

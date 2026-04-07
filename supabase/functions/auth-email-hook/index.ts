@@ -15,17 +15,17 @@ const corsHeaders = {
     'authorization, x-client-info, apikey, content-type, x-lovable-signature, x-lovable-timestamp, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 }
 
-const SITE_NAME = 'Savo'
+const SITE_NAME = 'SAVO'
 const SENDER_DOMAIN = 'savo.co.nz'
 const FROM_ADDRESS = `${SITE_NAME} <noreply@${SENDER_DOMAIN}>`
 
 const EMAIL_SUBJECTS: Record<string, string> = {
-  signup: 'Confirm your Savo account',
-  invite: "You've been invited to Savo",
-  magiclink: 'Your Savo login link',
-  recovery: 'Reset your Savo password',
-  email_change: 'Confirm your new email – Savo',
-  reauthentication: 'Your Savo verification code',
+  signup: 'Confirm your SAVO account',
+  invite: "You've been invited to SAVO",
+  magiclink: 'Your SAVO login link',
+  recovery: 'Reset your SAVO password',
+  email_change: 'Confirm your new email – SAVO',
+  reauthentication: 'Your SAVO verification code',
 }
 
 const EMAIL_TEMPLATES: Record<string, React.ComponentType<any>> = {
@@ -37,7 +37,7 @@ const EMAIL_TEMPLATES: Record<string, React.ComponentType<any>> = {
   reauthentication: ReauthenticationEmail,
 }
 
-const SAMPLE_PROJECT_URL = 'https://savonz.lovable.app'
+const SAMPLE_PROJECT_URL = 'https://savo.co.nz'
 const SAMPLE_EMAIL = 'user@example.test'
 const SAMPLE_DATA: Record<string, object> = {
   signup: { siteName: SITE_NAME, siteUrl: SAMPLE_PROJECT_URL, recipient: SAMPLE_EMAIL, confirmationUrl: SAMPLE_PROJECT_URL },

@@ -66,9 +66,9 @@ export default function InstallPrompt() {
         </button>
 
         <div className="flex items-start gap-3">
-          <img src="/savo-icon.svg" alt="Savo" className="w-12 h-12 rounded-xl flex-shrink-0" />
+          <img src="/savo-icon.svg" alt="SAVO" className="w-12 h-12 rounded-xl flex-shrink-0" />
           <div className="flex-1 min-w-0">
-            <h3 className="text-sm font-bold text-foreground">Install Savo</h3>
+            <h3 className="text-sm font-bold text-foreground">Install SAVO</h3>
             <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
               {showIOSPrompt
                 ? <>Tap <Share className="w-3 h-3 inline -mt-0.5" /> then <strong>"Add to Home Screen"</strong></>

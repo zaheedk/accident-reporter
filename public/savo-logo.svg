@@ -1,44 +1,44 @@
-<svg width="500" height="620" viewBox="0 0 500 620" xmlns="http://www.w3.org/2000/svg">
+<svg width="500" height="560" viewBox="0 0 500 560" xmlns="http://www.w3.org/2000/svg">
   <!-- White bg -->
-  <rect x="0" y="0" width="500" height="620" rx="100" fill="#FFFFFF" stroke="#E8E8E5" stroke-width="2"/>
+  <rect x="0" y="0" width="500" height="560" rx="100" fill="#FFFFFF" stroke="#E8E8E5" stroke-width="2"/>
 
   <!-- Car body -->
-  <rect x="50" y="285" width="400" height="100" rx="18" fill="#111111"/>
+  <rect x="50" y="285" width="400" height="100" rx="18" fill="#1e3a5f"/>
   <!-- Cabin -->
-  <path d="M 120 285 L 158 188 L 342 188 L 380 285 Z" fill="#111111"/>
+  <path d="M 120 285 L 158 188 L 342 188 L 380 285 Z" fill="#1e3a5f"/>
   <!-- Windscreen -->
   <path d="M 140 280 L 172 200 L 328 200 L 360 280 Z" fill="#F4F4F2"/>
   <!-- Side window -->
   <rect x="362" y="210" width="14" height="66" rx="5" fill="#E0E0DC"/>
   <!-- Body line -->
-  <rect x="50" y="322" width="400" height="4" rx="2" fill="#2A2A2A"/>
+  <rect x="50" y="322" width="400" height="4" rx="2" fill="#2a4a6f"/>
 
   <!-- Wheels -->
-  <circle cx="148" cy="385" r="52" fill="#111111"/>
-  <circle cx="148" cy="385" r="34" fill="#FF6B1A"/>
-  <circle cx="148" cy="385" r="20" fill="#111111"/>
+  <circle cx="148" cy="385" r="52" fill="#1e3a5f"/>
+  <circle cx="148" cy="385" r="34" fill="#6B7280"/>
+  <circle cx="148" cy="385" r="20" fill="#1e3a5f"/>
   <circle cx="148" cy="385" r="7" fill="#E8E8E5"/>
   <circle cx="148" cy="385" r="54" fill="none" stroke="#FFFFFF" stroke-width="5"/>
 
-  <circle cx="352" cy="385" r="52" fill="#111111"/>
-  <circle cx="352" cy="385" r="34" fill="#FF6B1A"/>
-  <circle cx="352" cy="385" r="20" fill="#111111"/>
+  <circle cx="352" cy="385" r="52" fill="#1e3a5f"/>
+  <circle cx="352" cy="385" r="34" fill="#6B7280"/>
+  <circle cx="352" cy="385" r="20" fill="#1e3a5f"/>
   <circle cx="352" cy="385" r="7" fill="#E8E8E5"/>
   <circle cx="352" cy="385" r="54" fill="none" stroke="#FFFFFF" stroke-width="5"/>
 
   <!-- Camera housing on roof -->
-  <rect x="212" y="165" width="76" height="30" rx="8" fill="#111111"/>
-  <rect x="228" y="155" width="26" height="14" rx="5" fill="#111111"/>
+  <rect x="212" y="165" width="76" height="30" rx="8" fill="#1e3a5f"/>
+  <rect x="228" y="155" width="26" height="14" rx="5" fill="#1e3a5f"/>
 
   <!-- Camera lens -->
-  <circle cx="250" cy="218" r="56" fill="#FF6B1A" opacity="0.12"/>
-  <circle cx="250" cy="218" r="48" fill="#FF6B1A"/>
-  <circle cx="250" cy="218" r="37" fill="#111111"/>
+  <circle cx="250" cy="218" r="56" fill="#6B7280" opacity="0.12"/>
+  <circle cx="250" cy="218" r="48" fill="#6B7280"/>
+  <circle cx="250" cy="218" r="37" fill="#1e3a5f"/>
   <circle cx="250" cy="218" r="28" fill="#1A1A2E"/>
-  <circle cx="250" cy="218" r="18" fill="#FF6B1A" opacity="0.2"/>
-  <circle cx="250" cy="218" r="11" fill="#111111"/>
+  <circle cx="250" cy="218" r="18" fill="#6B7280" opacity="0.2"/>
+  <circle cx="250" cy="218" r="11" fill="#1e3a5f"/>
   <circle cx="238" cy="206" r="6" fill="#FFFFFF" opacity="0.7"/>
   <circle cx="256" cy="224" r="3" fill="#FFFFFF" opacity="0.3"/>
-  <text x="250" y="550" text-anchor="middle" font-family="'Helvetica Neue', Arial, sans-serif" font-size="42" font-weight="700" letter-spacing="16" fill="#111111">SAVO</text>
-  <text x="250" y="585" text-anchor="middle" font-family="'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="400" letter-spacing="5" fill="#999999">PROTECT YOUR CLAIM</text>
+  <text x="250" y="480" text-anchor="middle" font-family="'Helvetica Neue', Arial, sans-serif" font-size="42" font-weight="700" letter-spacing="16" fill="#1e3a5f">SAVO</text>
+  <text x="250" y="515" text-anchor="middle" font-family="'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="400" letter-spacing="5" fill="#6B7280">PROTECT YOUR CLAIM</text>
 </svg>

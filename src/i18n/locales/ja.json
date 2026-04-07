@@ -17,13 +17,15 @@
     "draft": "下書き",
     "submitted": "提出済み",
     "signOut": "ログアウト",
-    "language": "言語"
+    "language": "言語",
+    "deleting": "削除中…"
   },
   "nav": {
     "dashboard": "ダッシュボード",
     "vehicles": "車両",
     "claims": "事故",
     "shops": "修理店",
+    "towCompanies": "レッカー",
     "aboutContact": "概要とお問い合わせ",
     "howItWorks": "使い方",
     "faqHelp": "よくある質問",
@@ -88,7 +90,8 @@
     "modificationDetails": "改造の詳細",
     "modificationDetailsPlaceholder": "改造内容を説明",
     "saveVehicle": "車両を保存",
-    "updateVehicle": "車両を更新"
+    "updateVehicle": "車両を更新",
+    "deleteConfirm": "この車両とそのデータは完全に削除されます。この操作は元に戻せません。"
   },
   "claims": {
     "reports": "報告",
@@ -293,5 +296,12 @@
     "wet": "濡れ",
     "dry": "乾燥",
     "ice": "凍結"
+  },
+  "towCompanies": {
+    "title": "レッカー会社",
+    "subtitle": "ニュージーランド全域の牽引サービス",
+    "searchPlaceholder": "名前、住所で検索...",
+    "noResults": "レッカー会社が見つかりません",
+    "companiesFound": "{{count}}社見つかりました"
   }
 }

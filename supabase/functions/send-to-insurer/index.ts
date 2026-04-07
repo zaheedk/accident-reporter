@@ -56,7 +56,7 @@ serve(async (req) => {
       .eq('user_id', user.id)
       .single();
 
-    const senderName = profile?.display_name || 'Savo User';
+    const senderName = profile?.display_name || 'SAVO User';
 
     // Send via Resend
     const res = await fetch('https://api.resend.com/emails', {
@@ -66,7 +66,7 @@ serve(async (req) => {
         'Authorization': `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: `${senderName} via Savo <claims@savo.co.nz>`,
+        from: `${senderName} via SAVO <claims@savo.co.nz>`,
         to: [insurerEmail],
         reply_to: replyTo,
         subject,
@@ -77,12 +77,12 @@ serve(async (req) => {
             </div>
             <div style="border-top: 1px solid #e5e5e5; padding: 15px 20px; margin-top: 20px;">
               <p style="color: #999; font-size: 12px; margin: 0;">
-                Sent via <strong>Savo</strong> – Vehicle Claims Assistant<br/>
+                Sent via <strong>SAVO</strong> – Vehicle Claims Assistant<br/>
                 Reply to this email and your response will be tracked automatically.
               </p>
             </div>
           </div>`,
-        text: `${body}\n\n---\nSent via Savo – Vehicle Claims Assistant\nReply to this email and your response will be tracked automatically.`,
+        text: `${body}\n\n---\nSent via SAVO – Vehicle Claims Assistant\nReply to this email and your response will be tracked automatically.`,
       }),
     });
 
