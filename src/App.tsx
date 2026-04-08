@@ -7,6 +7,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { Loader2 } from "lucide-react";
+import { Capacitor } from "@capacitor/core";
 import InstallPrompt from "@/components/InstallPrompt";
 
 // Lazy-loaded pages for code splitting
@@ -61,6 +62,15 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
+function NativeHomeRedirect() {
+  const { session, loading } = useAuth();
+  if (loading) return <PageLoader />;
+  if (Capacitor.isNativePlatform()) {
+    return session ? <Navigate to="/dashboard" replace /> : <Navigate to="/auth" replace />;
+  }
+  return session ? <Navigate to="/dashboard" replace /> : <Home />;
+}
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
@@ -73,7 +83,7 @@ const App = () => (
               <Route path="/auth" element={<Auth />} />
               <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/external-login" element={<ExternalLogin />} />
-              <Route path="/" element={<Home />} />
+              <Route path="/" element={<NativeHomeRedirect />} />
               <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
               <Route path="/vehicles" element={<ProtectedRoute><VehicleList /></ProtectedRoute>} />
               <Route path="/vehicles/new" element={<ProtectedRoute><VehicleForm /></ProtectedRoute>} />
