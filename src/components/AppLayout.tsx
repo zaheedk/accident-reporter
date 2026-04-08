@@ -41,12 +41,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const navItems = user ? authedNavItems : publicNavItems;
 
   const contentLinks = [
+    { to: '/dashboard', icon: LayoutDashboard, label: t('nav.dashboard') },
     { to: '/panel-shops', icon: Wrench, label: t('nav.shops') },
     { to: '/tow-companies', icon: Truck, label: t('nav.towCompanies') },
-    { to: '/about', icon: Info, label: t('nav.aboutContact') },
     { to: '/how-it-works', icon: BookOpen, label: t('nav.howItWorks') },
-    { to: '/faq', icon: HelpCircle, label: t('nav.faqHelp') },
-    { to: '/legal', icon: Shield, label: t('nav.termsPrivacy') },
     { to: '/blog', icon: Newspaper, label: 'Blog' },
   ];
 
