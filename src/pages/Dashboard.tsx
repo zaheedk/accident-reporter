@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Car, FileText, Plus, AlertTriangle, ChevronRight, ArrowUpRight, LogOut, User, Shield, Phone, Search, MapPin, X, MessageSquare, ArrowDownRight } from 'lucide-react';
+import { Car, FileText, Plus, AlertTriangle, ChevronRight, ArrowUpRight, LogOut, User, Shield, Phone, Search, MapPin, X, MessageSquare, ArrowDownRight, FolderOpen } from 'lucide-react';
 import { getVehicles, getClaims } from '@/lib/storage';
 import { useAuth } from '@/contexts/AuthContext';
 import AppLayout from '@/components/AppLayout';
@@ -278,7 +278,20 @@ export default function Dashboard() {
           </Link>
         </motion.div>
 
-        {/* Recent messages */}
+        {/* Document vault */}
+        <motion.div variants={fadeUp} whileHover={{ x: 4 }} whileTap={{ scale: 0.98 }}>
+          <Link to="/documents" className="card-surface-elevated flex items-center gap-4 group hover:border-primary/20 transition-all">
+            <div className="w-11 h-11 rounded-xl bg-muted flex items-center justify-center shrink-0 group-hover:bg-primary/10 transition-colors">
+              <FolderOpen className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" strokeWidth={1.5} />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="text-sm font-bold text-foreground">Document Vault</div>
+              <div className="text-xs text-muted-foreground mt-0.5">Store policies, licences & records</div>
+            </div>
+            <ChevronRight className="w-4 h-4 text-muted-foreground/30 group-hover:text-primary group-hover:translate-x-1 transition-all shrink-0" strokeWidth={1.5} />
+          </Link>
+        </motion.div>
+
         {recentMessages.length > 0 && (
           <motion.div variants={fadeUp} className="card-surface-elevated space-y-2">
             <div className="flex items-center gap-2 mb-1">
