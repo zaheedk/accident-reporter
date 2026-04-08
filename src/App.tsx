@@ -62,6 +62,15 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
+function NativeHomeRedirect() {
+  const { session, loading } = useAuth();
+  if (loading) return <PageLoader />;
+  if (Capacitor.isNativePlatform()) {
+    return session ? <Navigate to="/dashboard" replace /> : <Navigate to="/auth" replace />;
+  }
+  return session ? <Navigate to="/dashboard" replace /> : <Home />;
+}
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
