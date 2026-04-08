@@ -7,6 +7,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { Loader2 } from "lucide-react";
+import { Capacitor } from "@capacitor/core";
 import InstallPrompt from "@/components/InstallPrompt";
 
 // Lazy-loaded pages for code splitting
