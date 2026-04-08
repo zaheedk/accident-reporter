@@ -83,7 +83,7 @@ const App = () => (
               <Route path="/auth" element={<Auth />} />
               <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/external-login" element={<ExternalLogin />} />
-              <Route path="/" element={<Home />} />
+              <Route path="/" element={<NativeHomeRedirect />} />
               <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
               <Route path="/vehicles" element={<ProtectedRoute><VehicleList /></ProtectedRoute>} />
               <Route path="/vehicles/new" element={<ProtectedRoute><VehicleForm /></ProtectedRoute>} />
