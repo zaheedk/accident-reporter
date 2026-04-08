@@ -13,6 +13,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { getMediumUrl, getFullUrl } from '@/lib/image-url';
+import DashcamUploader from '@/components/DashcamUploader';
 
 export default function ClaimDetail() {
   const { id } = useParams();
