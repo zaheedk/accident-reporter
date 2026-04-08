@@ -1,5 +1,6 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Shield, Camera, FileText, Clock, Phone, Wrench, Truck, ChevronRight, ArrowRight, CheckCircle2, BookOpen, HelpCircle, Newspaper } from 'lucide-react';
+import { Shield, Camera, FileText, Clock, Phone, Wrench, Truck, ChevronRight, ArrowRight, CheckCircle2, BookOpen, HelpCircle, Newspaper, Menu, X, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 import heroScene from '@/assets/hero-scene.jpg';
@@ -8,6 +9,17 @@ const stagger = { hidden: {}, visible: { transition: { staggerChildren: 0.1 } } 
 const fadeUp = { hidden: { opacity: 0, y: 24 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' as const } } };
 
 export default function Home() {
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const contentLinks = [
+    { to: '/panel-shops', icon: Wrench, label: 'Panel Shops' },
+    { to: '/tow-companies', icon: Truck, label: 'Tow Companies' },
+    { to: '/how-it-works', icon: BookOpen, label: 'How It Works' },
+    { to: '/blog', icon: Newspaper, label: 'Blog' },
+    { to: '/faq', icon: HelpCircle, label: 'FAQ' },
+    { to: '/about', icon: Info, label: 'About & Contact' },
+  ];
+
   return (
     <div className="min-h-screen bg-background">
       {/* Nav */}
@@ -17,12 +29,9 @@ export default function Home() {
             <img src="/savo-logo.svg" alt="SAVO" className="h-11" />
           </Link>
           <nav className="hidden md:flex items-center gap-5 text-sm text-muted-foreground font-medium">
-            <Link to="/panel-shops" className="hover:text-foreground transition-colors">Shops</Link>
-            <Link to="/tow-companies" className="hover:text-foreground transition-colors">Tow</Link>
-            <Link to="/how-it-works" className="hover:text-foreground transition-colors">How It Works</Link>
-            <Link to="/blog" className="hover:text-foreground transition-colors">Blog</Link>
-            <Link to="/faq" className="hover:text-foreground transition-colors">FAQ</Link>
-            <Link to="/about" className="hover:text-foreground transition-colors">Contact</Link>
+            {contentLinks.map(({ to, label }) => (
+              <Link key={to} to={to} className="hover:text-foreground transition-colors">{label.replace('Panel ', '').replace(' Companies', '')}</Link>
+            ))}
           </nav>
           <div className="flex items-center gap-2">
             <Link to="/auth?mode=login">
@@ -35,8 +44,27 @@ export default function Home() {
                 Sign up free
               </Button>
             </Link>
+            <button onClick={() => setMenuOpen(!menuOpen)} className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors md:hidden">
+              {menuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
           </div>
         </div>
+        {menuOpen && (
+          <div className="md:hidden bg-card border-t border-border/50 px-4 py-3 space-y-1 animate-in slide-in-from-top-2 duration-200" style={{ boxShadow: '0 4px 16px rgba(0,0,0,0.06)' }}>
+            {contentLinks.map(({ to, icon: Icon, label }) => (
+              <Link key={to} to={to} onClick={() => setMenuOpen(false)}
+                className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors text-muted-foreground hover:bg-muted/50 hover:text-foreground">
+                <Icon className="w-4 h-4" />
+                {label}
+              </Link>
+            ))}
+            <div className="border-t border-border/50 my-2" />
+            <Link to="/auth?mode=login" onClick={() => setMenuOpen(false)}
+              className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors text-primary hover:bg-primary/10 w-full">
+              Log in / Sign up
+            </Link>
+          </div>
+        )}
       </header>
 
       <main>
