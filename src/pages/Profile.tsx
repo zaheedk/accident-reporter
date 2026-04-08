@@ -14,6 +14,7 @@ import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 import { Switch } from '@/components/ui/switch';
 import { usePushNotifications } from '@/hooks/use-push-notifications';
+import DocumentVault from '@/components/DocumentVault';
 
 interface ProfileData {
   display_name: string;
@@ -305,6 +306,13 @@ export default function Profile() {
             </button>
           </div>
         )}
+
+        <div className="card-surface">
+          <DocumentVault
+            title="My Documents"
+            showCategories={['drivers_license', 'other']}
+          />
+        </div>
 
         <div className="pt-4 space-y-3">
           <h2 className="text-[13px] font-semibold text-destructive">{t('profile.dangerZone')}</h2>

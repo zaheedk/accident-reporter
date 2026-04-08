@@ -708,6 +708,50 @@ export type Database = {
           },
         ]
       }
+      user_documents: {
+        Row: {
+          category: string
+          created_at: string
+          file_name: string
+          file_path: string
+          file_size: number
+          id: string
+          notes: string | null
+          user_id: string
+          vehicle_id: string | null
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          file_name?: string
+          file_path: string
+          file_size?: number
+          id?: string
+          notes?: string | null
+          user_id: string
+          vehicle_id?: string | null
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          file_name?: string
+          file_path?: string
+          file_size?: number
+          id?: string
+          notes?: string | null
+          user_id?: string
+          vehicle_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_documents_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string
