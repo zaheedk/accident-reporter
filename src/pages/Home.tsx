@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { Shield, Camera, FileText, Clock, Phone, Wrench, Truck, ChevronRight, ArrowRight, CheckCircle2, BookOpen, HelpCircle, Newspaper } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
+import heroScene from '@/assets/hero-scene.jpg';
 
 const stagger = { hidden: {}, visible: { transition: { staggerChildren: 0.1 } } };
 const fadeUp = { hidden: { opacity: 0, y: 24 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' as const } } };
@@ -38,8 +39,8 @@ export default function Home() {
           style={{ background: 'linear-gradient(135deg, hsl(213 52% 24%), hsl(213 52% 14%))' }}
         >
           <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle at 70% 30%, white 0%, transparent 60%)' }} />
-          <div className="max-w-5xl mx-auto px-4 py-16 md:py-24 relative z-10">
-            <motion.div variants={fadeUp} className="max-w-xl">
+          <div className="max-w-5xl mx-auto px-4 py-16 md:py-24 relative z-10 flex flex-col md:flex-row items-center gap-10 md:gap-16">
+            <motion.div variants={fadeUp} className="flex-1 max-w-xl">
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-white/15 text-white/90 backdrop-blur-sm mb-5">
                 <Shield className="w-3.5 h-3.5" /> Made for New Zealand drivers
               </span>
@@ -62,6 +63,15 @@ export default function Home() {
                   </Button>
                 </Link>
               </div>
+            </motion.div>
+            <motion.div variants={fadeUp} className="flex-shrink-0 w-64 md:w-80 lg:w-96">
+              <img
+                src={heroScene}
+                alt="Person documenting car accident with smartphone"
+                className="w-full rounded-2xl shadow-2xl border border-white/10"
+                width={800}
+                height={800}
+              />
             </motion.div>
           </div>
         </motion.section>
