@@ -22,6 +22,7 @@ export default defineConfig(({ mode }) => ({
       workbox: {
         globPatterns: ["**/*.{js,css,html,ico,png,svg,jpg,jpeg,woff,woff2}"],
         navigateFallbackDenylist: [/^\/~oauth/],
+        importScripts: ['/sw-push.js'],
       },
       manifest: {
         name: "Savo — Vehicle Claims Made Simple",

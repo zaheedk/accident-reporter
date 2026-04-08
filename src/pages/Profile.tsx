@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { ArrowLeft, Camera, Loader2, User, Phone, MapPin, Mail, ShieldOff, Trash2, CheckCircle, AlertCircle, Send, Lock, Eye, EyeOff } from 'lucide-react';
+import { ArrowLeft, Camera, Loader2, User, Phone, MapPin, Mail, ShieldOff, Trash2, CheckCircle, AlertCircle, Send, Lock, Eye, EyeOff, Bell } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -12,6 +12,8 @@ import {
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
+import { Switch } from '@/components/ui/switch';
+import { usePushNotifications } from '@/hooks/use-push-notifications';
 
 interface ProfileData {
   display_name: string;
@@ -26,6 +28,7 @@ export default function Profile() {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { isSubscribed, isSupported, loading: pushLoading, subscribe, unsubscribe } = usePushNotifications();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -219,6 +222,32 @@ export default function Profile() {
             {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : t('profile.saveChanges')}
           </button>
         </form>
+
+        {isSupported && (
+          <div className="card-surface space-y-3">
+            <h2 className="text-sm font-semibold text-foreground flex items-center gap-1.5">
+              <Bell className="w-3.5 h-3.5" strokeWidth={1.5} /> Push Notifications
+            </h2>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs font-medium text-foreground">Expiry reminders</p>
+                <p className="text-[11px] text-muted-foreground">Get alerts when your rego, WOF or insurance is expiring</p>
+              </div>
+              <Switch
+                checked={isSubscribed}
+                disabled={pushLoading}
+                onCheckedChange={async (checked) => {
+                  const success = checked ? await subscribe() : await unsubscribe();
+                  if (success) {
+                    toast.success(checked ? 'Push notifications enabled' : 'Push notifications disabled');
+                  } else {
+                    toast.error('Failed to update push notification settings');
+                  }
+                }}
+              />
+            </div>
+          </div>
+        )}
 
         {!isPhoneUser && (
           <div className="card-surface space-y-4">
