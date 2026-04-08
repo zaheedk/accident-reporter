@@ -3,6 +3,11 @@ import filingClaimHero from '@/assets/blog/filing-claim-hero.jpg';
 import commonMistakesHero from '@/assets/blog/common-mistakes-hero.jpg';
 import insuranceTypesHero from '@/assets/blog/insurance-types-hero.jpg';
 import afterAccidentHero from '@/assets/blog/after-accident-hero.jpg';
+import winterDrivingHero from '@/assets/blog/winter-driving-nz-hero.jpg';
+import dashcamEvidenceHero from '@/assets/blog/dashcam-evidence-hero.jpg';
+import parkingAccidentsHero from '@/assets/blog/parking-accidents-hero.jpg';
+import insuranceExcessHero from '@/assets/blog/insurance-excess-hero.jpg';
+import courtesyCarHero from '@/assets/blog/courtesy-car-hero.jpg';
 
 export interface BlogArticle {
   slug: string;
