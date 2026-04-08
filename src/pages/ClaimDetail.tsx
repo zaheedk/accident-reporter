@@ -565,6 +565,11 @@ export default function ClaimDetail() {
               )}
             </Section>
 
+            {/* ── Section 4: Dashcam Footage ── */}
+            <Section title="Dashcam Footage" icon={<Video className="w-4 h-4 text-primary" />}>
+              <DashcamUploader claimId={claim.id} />
+            </Section>
+
           </div>
         </div>
 
