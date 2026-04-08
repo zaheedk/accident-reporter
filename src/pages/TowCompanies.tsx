@@ -18,6 +18,7 @@ export default function TowCompanies() {
   const { t } = useTranslation();
   const [search, setSearch] = useState('');
   const [selectedRegion, setSelectedRegion] = useState('All');
+  const [showAll, setShowAll] = useState(false);
   const { nearbyActive, locating, toggleNearby, getDistance, formatDistance, sortByDistance, filterByRadius } = useNearbySort();
 
   const { data: companies = [], isLoading } = useQuery({
@@ -27,6 +28,7 @@ export default function TowCompanies() {
       if (error) throw error;
       return data as TowCompany[];
     },
+    retry: 2,
   });
 
   const regions = ['All', ...Array.from(new Set(companies.map(c => c.region).filter(Boolean))).sort()];
@@ -38,7 +40,10 @@ export default function TowCompanies() {
     return matchesSearch && matchesRegion;
   });
 
-  const displayed = nearbyActive ? sortByDistance(filterByRadius(filtered, 25)) : filtered;
+  const isFiltering = search || selectedRegion !== 'All';
+  const afterNearby = nearbyActive ? sortByDistance(filterByRadius(filtered, 25)) : filtered;
+  const displayed = (!isFiltering && !nearbyActive && !showAll) ? afterNearby.slice(0, 15) : afterNearby;
+  const hasMore = !isFiltering && !nearbyActive && !showAll && afterNearby.length > 15;
 
   return (
     <AppLayout>
@@ -120,8 +125,16 @@ export default function TowCompanies() {
           </div>
         )}
 
+        {hasMore && (
+          <div className="text-center pt-2">
+            <Button variant="outline" size="sm" onClick={() => setShowAll(true)} className="text-xs">
+              Show all {afterNearby.length} companies
+            </Button>
+          </div>
+        )}
+
         <p className="text-[10px] text-muted-foreground text-center pt-2">
-          {displayed.length} {t('towCompanies.companiesFound', { count: displayed.length })}
+          Showing {displayed.length} of {afterNearby.length} {t('towCompanies.companiesFound', { count: afterNearby.length })}
         </p>
       </div>
     </AppLayout>

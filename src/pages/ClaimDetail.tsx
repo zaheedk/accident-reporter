@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Printer, Mail, X, Download, Share2, Phone, Pencil, Save, Loader2, Send, Car, Users, Wrench, Trash2 } from 'lucide-react';
-import LodgeClaimSection from '@/components/LodgeClaimSection';
+import { ArrowLeft, Printer, Mail, X, Download, Share2, Phone, Pencil, Save, Loader2, Send, Car, Users, Wrench, Trash2, Video } from 'lucide-react';
 import { getClaims, getVehicles, deleteClaim } from '@/lib/storage';
 import { supabase } from '@/integrations/supabase/client';
 import AppLayout from '@/components/AppLayout';
@@ -14,6 +13,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { getMediumUrl, getFullUrl } from '@/lib/image-url';
+import DashcamUploader from '@/components/DashcamUploader';
 
 export default function ClaimDetail() {
   const { id } = useParams();
@@ -83,7 +83,10 @@ export default function ClaimDetail() {
         weatherCondition: claimRow.weather_condition as any, roadCondition: claimRow.road_condition as any,
         driverConsumedSubstance: claimRow.driver_consumed_substance, substanceDetails: claimRow.substance_details,
         blameDescription: claimRow.blame_description, liabilityAdmitted: claimRow.liability_admitted,
-        liabilityDetails: claimRow.liability_details, damageDescription: claimRow.damage_description,
+        liabilityDetails: claimRow.liability_details,
+        atFault: (claimRow as any).at_fault || '',
+        courtesyCarRequested: (claimRow as any).courtesy_car_requested || false,
+        damageDescription: claimRow.damage_description,
         vehicleTowed: claimRow.vehicle_towed, towingCompany: claimRow.towing_company,
         repairerName: claimRow.repairer_name, repairerPhone: claimRow.repairer_phone,
         repairerAddress: claimRow.repairer_address, insuranceCompany: claimRow.insurance_company || '',
@@ -171,7 +174,127 @@ export default function ClaimDetail() {
     setSavingInsurance(false);
   };
 
-  const handlePrint = () => { window.print(); };
+  const handlePrint = async () => {
+    const html2pdf = (await import('html2pdf.js')).default;
+    const element = printRef.current;
+    if (!element) return;
+    
+    // Create a clone for PDF generation with all sections visible
+    const clone = element.cloneNode(true) as HTMLElement;
+    // Remove print:hidden elements and show print:block elements
+    clone.querySelectorAll('.print\\:hidden').forEach(el => (el as HTMLElement).style.display = 'none');
+    clone.querySelectorAll('.hidden.print\\:block').forEach(el => (el as HTMLElement).style.display = 'block');
+    // Remove the nav/action buttons
+    const actionBar = clone.querySelector('.print\\:hidden');
+    if (actionBar) actionBar.remove();
+    
+    // Build a clean printable div
+    const printDiv = document.createElement('div');
+    printDiv.style.padding = '20px';
+    printDiv.style.fontFamily = 'system-ui, sans-serif';
+    printDiv.style.color = '#1a1a1a';
+    printDiv.style.maxWidth = '800px';
+    
+    // Header
+    const header = document.createElement('div');
+    header.style.marginBottom = '24px';
+    header.style.borderBottom = '2px solid #e5e7eb';
+    header.style.paddingBottom = '16px';
+    header.innerHTML = `
+      <h1 style="font-size:22px;font-weight:700;margin:0 0 4px 0;">Incident Report</h1>
+      <p style="font-size:13px;color:#6b7280;margin:0;">Date: ${claim.incidentDate} · Time: ${claim.incidentTime} · Status: ${claim.status === 'draft' ? 'Draft' : 'Saved'}${claimNumber ? ` · CLM-${claimNumber.padStart(4, '0')}` : ''}</p>
+    `;
+    printDiv.appendChild(header);
+
+    // Helper to add sections
+    const addSection = (title: string, rows: [string, string][]) => {
+      const section = document.createElement('div');
+      section.style.marginBottom = '20px';
+      section.innerHTML = `<h2 style="font-size:14px;font-weight:700;color:#374151;margin:0 0 8px 0;text-transform:uppercase;letter-spacing:0.05em;">${title}</h2>`;
+      rows.forEach(([label, value]) => {
+        if (!value || value === '—') return;
+        const row = document.createElement('div');
+        row.style.cssText = 'display:flex;justify-content:space-between;gap:16px;padding:6px 0;border-bottom:1px solid #f3f4f6;font-size:13px;';
+        row.innerHTML = `<span style="color:#6b7280;flex-shrink:0;">${label}</span><span style="font-weight:500;text-align:right;">${value}</span>`;
+        section.appendChild(row);
+      });
+      printDiv.appendChild(section);
+    };
+
+    addSection('Incident Details', [
+      ['Date & Time', `${claim.incidentDate} at ${claim.incidentTime}`],
+      ['Location', claim.incidentLocation],
+      ['Vehicle Usage', claim.vehicleUsage],
+      ['Journey', claim.journeyDetails],
+      ['Description', claim.description],
+    ]);
+
+    addSection('Your Vehicle', [
+      ['Vehicle', vehicle ? `${vehicle.year} ${vehicle.make} ${vehicle.model}` : '—'],
+      ['Registration', vehicle?.regoNumber || '—'],
+      ['Speed Before Braking', claim.speedBeforeBraking ? `${claim.speedBeforeBraking} km/h` : '—'],
+      ['Damage', claim.damageDescription],
+      ['Towed', claim.vehicleTowed ? `Yes – ${claim.towingCompany}` : 'No'],
+    ]);
+
+    addSection('Conditions', [
+      ['Weather', weather],
+      ['Road', road],
+      ['Substance Use', claim.driverConsumedSubstance ? claim.substanceDetails : 'No'],
+      ['At Fault', claim.atFault === 'me' ? 'I am at fault' : claim.atFault === 'other_party' ? 'Other party at fault' : claim.atFault === 'shared' ? 'Shared fault' : '—'],
+      ['Courtesy Car', claim.atFault === 'other_party' ? (claim.courtesyCarRequested ? 'Requested' : 'Not requested') : '—'],
+      ['Fault Assessment', claim.blameDescription],
+      ['Liability Admitted', claim.liabilityAdmitted ? claim.liabilityDetails : 'No'],
+    ]);
+
+    if (claim.thirdParties.length > 0) {
+      const tpRows: [string, string][] = [];
+      claim.thirdParties.forEach((tp, i) => {
+        const prefix = claim.thirdParties.length > 1 ? `Party ${i + 1}` : 'Other Party';
+        tpRows.push([`${prefix} – Driver`, tp.ownerName]);
+        tpRows.push([`${prefix} – Vehicle`, `${tp.make} ${tp.model} (${tp.regoNumber})`]);
+        tpRows.push([`${prefix} – Phone`, tp.phone]);
+        tpRows.push([`${prefix} – Insurer`, tp.insurer]);
+        if (tp.damageDescription) tpRows.push([`${prefix} – Damage`, tp.damageDescription]);
+      });
+      addSection('Third Parties', tpRows);
+    }
+
+    if (claim.witnesses.length > 0) {
+      addSection('Witnesses', claim.witnesses.map((w, i) => [`Witness ${i + 1}`, `${w.name} – ${w.phone}${w.isPassenger ? ' (passenger)' : ''}`] as [string, string]));
+    }
+
+    addSection('Police & Injuries', [
+      ['Police Attended', claim.policeAttended ? `Yes – ${claim.policeOfficerDetails}` : 'No'],
+      ['Injuries', claim.anyoneHurt ? claim.injuryDetails : 'No'],
+    ]);
+
+    addSection('Insurance & Repairs', [
+      ['Insurance Company', claim.insuranceCompany],
+      ['Repairer', claim.repairerName],
+      ['Repairer Phone', claim.repairerPhone],
+      ['Repairer Address', claim.repairerAddress],
+    ]);
+
+    // Footer
+    const footer = document.createElement('div');
+    footer.style.cssText = 'margin-top:32px;padding-top:12px;border-top:1px solid #e5e7eb;text-align:center;';
+    footer.innerHTML = `<p style="font-size:11px;color:#9ca3af;">Generated by SAVO · savo.co.nz · ${new Date().toLocaleDateString()}</p>`;
+    printDiv.appendChild(footer);
+
+    document.body.appendChild(printDiv);
+
+    const reportId = claim.id?.slice(0, 8).toUpperCase() || 'report';
+    await html2pdf().set({
+      margin: [10, 10, 10, 10],
+      filename: `SAVO-Incident-${reportId}.pdf`,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+    }).from(printDiv).save();
+
+    document.body.removeChild(printDiv);
+  };
   const handleEmail = async () => {
     const user = (await supabase.auth.getUser()).data.user;
     setEmailTo(user?.email || '');
@@ -259,8 +382,8 @@ export default function ClaimDetail() {
           <button onClick={handleEmail} className="p-2 rounded-xl hover:bg-muted transition-colors" title="Email report">
             <Mail className="w-5 h-5 text-muted-foreground" strokeWidth={1.5} />
           </button>
-          <button onClick={handlePrint} className="p-2 rounded-xl hover:bg-muted transition-colors" title="Print / Save as PDF">
-            <Printer className="w-5 h-5 text-muted-foreground" strokeWidth={1.5} />
+          <button onClick={handlePrint} className="p-2 rounded-xl hover:bg-muted transition-colors" title="Download as PDF">
+            <Download className="w-5 h-5 text-muted-foreground" strokeWidth={1.5} />
           </button>
           <button onClick={() => setDeleteDialogOpen(true)} className="p-2 rounded-xl hover:bg-destructive/10 transition-colors" title="Delete report">
             <Trash2 className="w-5 h-5 text-destructive" strokeWidth={1.5} />
@@ -442,20 +565,11 @@ export default function ClaimDetail() {
               )}
             </Section>
 
-            {/* ── Section 4: Lodge Your Claim ── */}
-            {claim.insuranceCompany && (
-              <LodgeClaimSection
-                claim={claim}
-                vehicle={vehicle}
-                insurer={{
-                  phone: insurerPhone,
-                  email: insurerEmail,
-                  claims_portal_url: insurerPortalUrl,
-                  claims_method: insurerClaimsMethod,
-                }}
-                claimNumber={claimNumber}
-              />
-            )}
+            {/* ── Section 4: Dashcam Footage ── */}
+            <Section title="Dashcam Footage" icon={<Video className="w-4 h-4 text-primary" />}>
+              <DashcamUploader claimId={claim.id} />
+            </Section>
+
           </div>
         </div>
 

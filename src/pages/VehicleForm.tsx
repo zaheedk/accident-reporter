@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Check, Camera, X, ImageIcon, Loader2 } from 'lucide-react';
+import DocumentVault from '@/components/DocumentVault';
 import { getVehicles, saveVehicle } from '@/lib/storage';
 import { Vehicle } from '@/types';
 import AppLayout from '@/components/AppLayout';
@@ -240,6 +241,16 @@ export default function VehicleForm() {
             <div className="pl-14"><label className="form-label">{t('vehicles.modificationDetails')}</label><input className="form-input" placeholder={t('vehicles.modificationDetailsPlaceholder')} value={form.modificationDetails} onChange={e => update('modificationDetails', e.target.value)} /></div>
           )}
         </div>
+
+        {isEdit && id && (
+          <div className="card-surface">
+            <DocumentVault
+              vehicleId={id}
+              title="Vehicle Documents"
+              showCategories={['insurance_policy', 'registration', 'wof_certificate', 'purchase_receipt', 'service_record', 'other']}
+            />
+          </div>
+        )}
 
         <button onClick={handleSave} disabled={saving || !form.make || !form.model || !form.regoNumber} className="btn-primary w-full h-11">
           {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />} {isEdit ? t('vehicles.updateVehicle') : t('vehicles.saveVehicle')}

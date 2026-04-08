@@ -99,8 +99,10 @@ export type Database = {
       claims: {
         Row: {
           anyone_hurt: boolean
+          at_fault: string
           blame_description: string
           claim_number: number | null
+          courtesy_car_requested: boolean
           created_at: string
           damage_description: string
           description: string
@@ -139,8 +141,10 @@ export type Database = {
         }
         Insert: {
           anyone_hurt?: boolean
+          at_fault?: string
           blame_description?: string
           claim_number?: number | null
+          courtesy_car_requested?: boolean
           created_at?: string
           damage_description?: string
           description?: string
@@ -179,8 +183,10 @@ export type Database = {
         }
         Update: {
           anyone_hurt?: boolean
+          at_fault?: string
           blame_description?: string
           claim_number?: number | null
+          courtesy_car_requested?: boolean
           created_at?: string
           damage_description?: string
           description?: string
@@ -223,6 +229,50 @@ export type Database = {
             columns: ["selected_panel_shop_id"]
             isOneToOne: false
             referencedRelation: "panel_shops"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dashcam_videos: {
+        Row: {
+          claim_id: string
+          created_at: string
+          duration_seconds: number | null
+          file_name: string
+          file_path: string
+          file_size: number
+          id: string
+          notes: string | null
+          user_id: string
+        }
+        Insert: {
+          claim_id: string
+          created_at?: string
+          duration_seconds?: number | null
+          file_name?: string
+          file_path: string
+          file_size?: number
+          id?: string
+          notes?: string | null
+          user_id: string
+        }
+        Update: {
+          claim_id?: string
+          created_at?: string
+          duration_seconds?: number | null
+          file_name?: string
+          file_path?: string
+          file_size?: number
+          id?: string
+          notes?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dashcam_videos_claim_id_fkey"
+            columns: ["claim_id"]
+            isOneToOne: false
+            referencedRelation: "claims"
             referencedColumns: ["id"]
           },
         ]
@@ -532,6 +582,33 @@ export type Database = {
         }
         Relationships: []
       }
+      push_subscriptions: {
+        Row: {
+          auth: string
+          created_at: string
+          endpoint: string
+          id: string
+          p256dh: string
+          user_id: string
+        }
+        Insert: {
+          auth: string
+          created_at?: string
+          endpoint: string
+          id?: string
+          p256dh: string
+          user_id: string
+        }
+        Update: {
+          auth?: string
+          created_at?: string
+          endpoint?: string
+          id?: string
+          p256dh?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       repair_requests: {
         Row: {
           claim_id: string
@@ -671,6 +748,50 @@ export type Database = {
             columns: ["claim_id"]
             isOneToOne: false
             referencedRelation: "claims"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_documents: {
+        Row: {
+          category: string
+          created_at: string
+          file_name: string
+          file_path: string
+          file_size: number
+          id: string
+          notes: string | null
+          user_id: string
+          vehicle_id: string | null
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          file_name?: string
+          file_path: string
+          file_size?: number
+          id?: string
+          notes?: string | null
+          user_id: string
+          vehicle_id?: string | null
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          file_name?: string
+          file_path?: string
+          file_size?: number
+          id?: string
+          notes?: string | null
+          user_id?: string
+          vehicle_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_documents_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicles"
             referencedColumns: ["id"]
           },
         ]

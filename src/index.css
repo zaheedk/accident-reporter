@@ -74,7 +74,7 @@
 
 @layer components {
   .form-label {
-    @apply text-[13px] font-medium text-muted-foreground mb-1.5 block;
+    @apply text-[13px] font-medium text-foreground/70 mb-1.5 block;
   }
 
   .form-input {
@@ -185,4 +185,14 @@
     margin: 1.5cm;
     size: A4;
   }
+}
+
+/* Hide native browser clear button on search inputs */
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-decoration,
+input[type="text"]::-webkit-search-cancel-button,
+input::-ms-clear,
+input::-ms-reveal {
+  display: none;
+  -webkit-appearance: none;
 }

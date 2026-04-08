@@ -74,7 +74,7 @@ export default function Auth() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: SITE_URL,
+        redirectTo: `${SITE_URL}/dashboard`,
       },
     });
     if (error) setError(error.message || 'OAuth sign-in failed');
