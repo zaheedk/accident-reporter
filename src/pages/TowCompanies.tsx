@@ -125,8 +125,16 @@ export default function TowCompanies() {
           </div>
         )}
 
+        {hasMore && (
+          <div className="text-center pt-2">
+            <Button variant="outline" size="sm" onClick={() => setShowAll(true)} className="text-xs">
+              Show all {afterNearby.length} companies
+            </Button>
+          </div>
+        )}
+
         <p className="text-[10px] text-muted-foreground text-center pt-2">
-          {displayed.length} {t('towCompanies.companiesFound', { count: displayed.length })}
+          Showing {displayed.length} of {afterNearby.length} {t('towCompanies.companiesFound', { count: afterNearby.length })}
         </p>
       </div>
     </AppLayout>
