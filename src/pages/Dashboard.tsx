@@ -322,14 +322,9 @@ export default function Dashboard() {
       <Sheet open={towSheetOpen} onOpenChange={setTowSheetOpen}>
         <SheetContent side="bottom" className="h-[90vh] rounded-t-2xl p-0 flex flex-col" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
           <SheetHeader className="px-5 pt-5 pb-3 shrink-0">
-            <SheetTitle className="text-left flex items-center justify-between">
-              <span className="flex items-center gap-2">
+            <SheetTitle className="text-left flex items-center gap-2">
                 <Phone className="w-5 h-5" style={{ color: 'hsl(152, 60%, 42%)' }} />
                 Tow Companies Near You
-              </span>
-              <button onClick={() => setTowSheetOpen(false)} className="p-2 -mr-2 rounded-xl hover:bg-muted transition-colors">
-                <X className="w-5 h-5 text-muted-foreground" />
-              </button>
             </SheetTitle>
           </SheetHeader>
           <div className="px-5 pb-3 shrink-0">
