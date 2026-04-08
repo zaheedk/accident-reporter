@@ -16,6 +16,14 @@ export default function Home() {
           <Link to="/" className="flex items-center gap-2.5">
             <img src="/savo-logo.svg" alt="SAVO" className="h-11" />
           </Link>
+          <nav className="hidden md:flex items-center gap-5 text-sm text-muted-foreground font-medium">
+            <Link to="/panel-shops" className="hover:text-foreground transition-colors">Shops</Link>
+            <Link to="/tow-companies" className="hover:text-foreground transition-colors">Tow</Link>
+            <Link to="/how-it-works" className="hover:text-foreground transition-colors">How It Works</Link>
+            <Link to="/blog" className="hover:text-foreground transition-colors">Blog</Link>
+            <Link to="/faq" className="hover:text-foreground transition-colors">FAQ</Link>
+            <Link to="/about" className="hover:text-foreground transition-colors">Contact</Link>
+          </nav>
           <div className="flex items-center gap-2">
             <Link to="/auth?mode=login">
               <Button variant="ghost" size="sm" className="text-foreground hover:bg-muted text-sm font-medium">
@@ -149,37 +157,6 @@ export default function Home() {
           </div>
         </motion.section>
 
-        {/* Quick links / directories */}
-        <motion.section variants={stagger} initial="hidden" whileInView="visible" viewport={{ once: true }}
-          className="max-w-5xl mx-auto px-4 py-16 md:py-20">
-          <motion.div variants={fadeUp} className="text-center mb-10">
-            <h2 className="text-2xl md:text-3xl font-extrabold text-foreground">Explore SAVO</h2>
-            <p className="mt-3 text-muted-foreground">Free resources and directories for NZ drivers</p>
-          </motion.div>
-          <div className="grid sm:grid-cols-2 gap-4">
-            {[
-              { to: '/panel-shops', icon: Wrench, title: 'Panel Shops Directory', desc: 'Top-rated panel beaters across New Zealand', color: 'hsl(213, 52%, 24%)' },
-              { to: '/tow-companies', icon: Truck, title: 'Tow Companies Directory', desc: 'Emergency towing services nationwide', color: 'hsl(152, 60%, 42%)' },
-              { to: '/blog', icon: Newspaper, title: 'Blog', desc: 'Tips and guides for NZ vehicle insurance', color: 'hsl(213, 52%, 24%)' },
-              { to: '/how-it-works', icon: BookOpen, title: 'How It Works', desc: 'Learn how SAVO simplifies the claims process', color: 'hsl(152, 60%, 42%)' },
-              { to: '/faq', icon: HelpCircle, title: 'FAQ', desc: 'Common questions about claims and using SAVO', color: 'hsl(213, 52%, 24%)' },
-              { to: '/about', icon: Shield, title: 'About & Contact', desc: 'Get in touch with the SAVO team', color: 'hsl(152, 60%, 42%)' },
-            ].map(({ to, icon: Icon, title, desc, color }) => (
-              <motion.div key={to} variants={fadeUp}>
-                <Link to={to} className="card-surface-elevated flex items-center gap-4 group hover:border-primary/20 transition-all">
-                  <div className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: `${color}15` }}>
-                    <Icon className="w-5 h-5" style={{ color }} />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="text-sm font-bold text-foreground">{title}</div>
-                    <div className="text-xs text-muted-foreground mt-0.5">{desc}</div>
-                  </div>
-                  <ChevronRight className="w-4 h-4 text-muted-foreground/30 group-hover:text-primary group-hover:translate-x-1 transition-all shrink-0" />
-                </Link>
-              </motion.div>
-            ))}
-          </div>
-        </motion.section>
 
         {/* CTA */}
         <motion.section initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}

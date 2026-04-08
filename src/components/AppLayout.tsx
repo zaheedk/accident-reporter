@@ -45,6 +45,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     { to: '/panel-shops', icon: Wrench, label: t('nav.shops') },
     { to: '/tow-companies', icon: Truck, label: t('nav.towCompanies') },
     { to: '/how-it-works', icon: BookOpen, label: t('nav.howItWorks') },
+    { to: '/blog', icon: Newspaper, label: 'Blog' },
+    { to: '/faq', icon: HelpCircle, label: t('nav.faqHelp') },
+    { to: '/about', icon: Info, label: t('nav.aboutContact') },
   ];
 
   const logoLink = user ? '/dashboard' : '/';
