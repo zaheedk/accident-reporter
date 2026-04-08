@@ -98,7 +98,7 @@ const App = () => (
               <Route path="/delete-data-request" element={<ProtectedRoute><DeleteDataRequest /></ProtectedRoute>} />
               <Route path="*" element={<NotFound />} />
             </Routes>
-            <InstallPrompt />
+            
           </Suspense>
         </BrowserRouter>
       </TooltipProvider>
