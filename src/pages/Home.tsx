@@ -3,7 +3,6 @@ import { Shield, Camera, FileText, Clock, Phone, Wrench, Truck, ChevronRight, Ar
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 import heroScene from '@/assets/hero-scene.jpg';
-import { motion } from 'framer-motion';
 
 const stagger = { hidden: {}, visible: { transition: { staggerChildren: 0.1 } } };
 const fadeUp = { hidden: { opacity: 0, y: 24 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' as const } } };
