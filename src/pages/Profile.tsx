@@ -223,7 +223,32 @@ export default function Profile() {
           </button>
         </form>
 
-        {!isPhoneUser && (
+        {isSupported && (
+          <div className="card-surface space-y-3">
+            <h2 className="text-sm font-semibold text-foreground flex items-center gap-1.5">
+              <Bell className="w-3.5 h-3.5" strokeWidth={1.5} /> Push Notifications
+            </h2>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs font-medium text-foreground">Expiry reminders</p>
+                <p className="text-[11px] text-muted-foreground">Get alerts when your rego, WOF or insurance is expiring</p>
+              </div>
+              <Switch
+                checked={isSubscribed}
+                disabled={pushLoading}
+                onCheckedChange={async (checked) => {
+                  const success = checked ? await subscribe() : await unsubscribe();
+                  if (success) {
+                    toast.success(checked ? 'Push notifications enabled' : 'Push notifications disabled');
+                  } else {
+                    toast.error('Failed to update push notification settings');
+                  }
+                }}
+              />
+            </div>
+          </div>
+        )}
+
           <div className="card-surface space-y-4">
             <h2 className="text-sm font-semibold text-foreground flex items-center gap-1.5">
               <Lock className="w-3.5 h-3.5" strokeWidth={1.5} /> Change password
