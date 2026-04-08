@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { ArrowLeft, Camera, Loader2, User, Phone, MapPin, Mail, ShieldOff, Trash2, CheckCircle, AlertCircle, Send, Lock, Eye, EyeOff } from 'lucide-react';
+import { ArrowLeft, Camera, Loader2, User, Phone, MapPin, Mail, ShieldOff, Trash2, CheckCircle, AlertCircle, Send, Lock, Eye, EyeOff, Bell } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -12,6 +12,8 @@ import {
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
+import { Switch } from '@/components/ui/switch';
+import { usePushNotifications } from '@/hooks/use-push-notifications';
 
 interface ProfileData {
   display_name: string;
