@@ -3,6 +3,11 @@ import filingClaimHero from '@/assets/blog/filing-claim-hero.jpg';
 import commonMistakesHero from '@/assets/blog/common-mistakes-hero.jpg';
 import insuranceTypesHero from '@/assets/blog/insurance-types-hero.jpg';
 import afterAccidentHero from '@/assets/blog/after-accident-hero.jpg';
+import winterDrivingHero from '@/assets/blog/winter-driving-nz-hero.jpg';
+import dashcamEvidenceHero from '@/assets/blog/dashcam-evidence-hero.jpg';
+import parkingAccidentsHero from '@/assets/blog/parking-accidents-hero.jpg';
+import insuranceExcessHero from '@/assets/blog/insurance-excess-hero.jpg';
+import courtesyCarHero from '@/assets/blog/courtesy-car-hero.jpg';
 
 export interface BlogArticle {
   slug: string;
@@ -505,6 +510,552 @@ Save this quick reference:
 10. ✅ Organise all documentation
 
 *With SAVO on your phone, steps 3-6 are guided and structured. Be ready before the unexpected happens.*
+    `
+  },
+  {
+    slug: "winter-driving-accidents-new-zealand",
+    title: "Winter Driving in New Zealand: How to Stay Safe and What to Do If You Crash",
+    metaDescription: "Winter driving tips for New Zealand roads. Learn how to handle icy conditions, black ice, and what to document if you're in a winter accident.",
+    heroImage: winterDrivingHero,
+    excerpt: "New Zealand's winter roads can be treacherous. Here's how to stay safe in icy conditions and what to do if the worst happens.",
+    date: "2026-04-05",
+    readTime: "7 min read",
+    content: `
+## Why Winter Driving Is Different in New Zealand
+
+New Zealand's winter weather is uniquely challenging. Unlike countries with consistent snowfall, NZ conditions can change rapidly — from clear skies to black ice within kilometres, especially on inland and alpine roads.
+
+From the Rimutaka Hill Road to the Crown Range, Canterbury Plains to the Volcanic Plateau, winter hazards catch thousands of Kiwi drivers off guard every year.
+
+## The Most Dangerous Winter Hazards
+
+### Black Ice
+
+The biggest killer on NZ winter roads. Black ice forms when temperatures drop below zero, often on shaded sections of road or bridges. It's nearly invisible and makes braking almost impossible.
+
+**Where it's worst:**
+- Canterbury and Otago inland roads
+- Elevated sections of state highways
+- Bridges and overpasses
+- Shaded corners, especially south-facing
+
+### Frost
+
+Even without ice, heavy frost reduces tyre grip significantly. Morning commuters are most at risk, particularly between 6-9 AM.
+
+### Fog
+
+Dense fog is common in valleys and low-lying areas across Waikato, Canterbury, and Southland during winter. Visibility can drop to under 50 metres without warning.
+
+### Heavy Rain
+
+Winter storms bring intense rainfall that causes surface flooding, especially on poorly drained rural roads.
+
+## Essential Winter Driving Tips
+
+1. **Slow down** — Speed limits are for ideal conditions. Reduce speed by at least 20% in winter
+2. **Increase following distance** — Leave at least 4 seconds between you and the vehicle ahead
+3. **Use headlights** — Even during the day in poor visibility
+4. **Avoid sudden braking** — Gentle, progressive braking prevents skids
+5. **Check your tyres** — Ensure adequate tread depth (minimum 1.5mm legal, but 3mm+ recommended for winter)
+6. **Clear your windscreen fully** — Don't drive with a tiny peephole cleared in frost
+7. **Carry emergency supplies** — Blanket, torch, phone charger, water
+
+## What to Do If You Have a Winter Accident
+
+Winter accidents often involve unique factors that must be documented:
+
+### Document the Conditions
+- **Temperature** — Note if it was below zero
+- **Road surface** — Was there ice, frost, or standing water?
+- **Visibility** — How far could you see?
+- **Time of day** — Early morning frost accidents are common
+
+### Photograph Everything
+Take extra photos of:
+- The road surface showing ice or frost
+- Your dashboard thermometer if it shows below zero
+- Any road signs warning of ice or slippery conditions
+- Tyre tracks or skid patterns on the road
+
+### Note the Specific Location
+Winter accident locations matter for liability:
+- Was the road treated with grit or salt?
+- Were there warning signs about ice?
+- Is the road known to be hazardous in winter?
+- Was there adequate lighting?
+
+## ACC and Winter Injuries
+
+New Zealand's ACC scheme covers personal injuries from motor vehicle accidents regardless of fault. Common winter accident injuries include:
+- **Whiplash** from rear-end collisions on icy roads
+- **Fractures** from higher-impact crashes
+- **Soft tissue injuries** from vehicles sliding into obstacles
+
+Lodge your ACC claim alongside your insurance claim for comprehensive coverage.
+
+## Preparing Your Vehicle for Winter
+
+Before winter hits:
+- ✅ Check tyre condition and pressure
+- ✅ Test your battery (cold weather reduces battery power)
+- ✅ Ensure all lights are working
+- ✅ Top up windscreen washer fluid with a winter-grade solution
+- ✅ Check wiper blades for wear
+- ✅ Keep your fuel tank at least half full
+
+## Key Takeaways
+
+1. Winter conditions in NZ are unpredictable — always be prepared
+2. Black ice is the greatest hazard, especially on inland roads
+3. Document weather and road conditions thoroughly if you have an accident
+4. Use SAVO to create a comprehensive incident report that captures winter-specific details
+
+*Don't let winter catch you unprepared. Add your vehicle to SAVO and have your incident reporting tool ready before the first frost.*
+    `
+  },
+  {
+    slug: "dashcam-phone-evidence-insurance-claims-nz",
+    title: "How Dashcam and Phone Evidence Can Make or Break Your NZ Insurance Claim",
+    metaDescription: "Learn how dashcam footage and smartphone evidence strengthens insurance claims in New Zealand. Tips on what to record and how to preserve digital evidence.",
+    heroImage: dashcamEvidenceHero,
+    excerpt: "Digital evidence is transforming how insurance claims are handled in NZ. Here's how to use your dashcam and phone to protect your claim.",
+    date: "2026-04-03",
+    readTime: "6 min read",
+    content: `
+## The Rise of Digital Evidence in NZ Insurance
+
+Gone are the days when insurance claims relied solely on written statements. Today, dashcam footage and smartphone evidence are becoming the gold standard for proving what happened in a motor vehicle accident.
+
+New Zealand insurers report that claims supported by video or photographic evidence are resolved up to 50% faster than those without — and are far more likely to result in a favourable outcome.
+
+## Dashcam Evidence: Your Silent Witness
+
+### Why Every NZ Driver Should Have a Dashcam
+
+A dashcam provides continuous, objective recording of your driving. In an accident:
+- It captures the exact sequence of events
+- It shows traffic signals, signs, and road conditions
+- It records the time, date, and often GPS location
+- It can prove the other driver's behaviour (running red lights, dangerous overtaking)
+
+### What Makes Dashcam Footage Useful for Insurers
+
+Not all dashcam footage is equally valuable. Insurers need:
+- **Clear, high-resolution video** — 1080p minimum
+- **Correct date and time stamps** — Ensure your dashcam's clock is accurate
+- **Wide-angle coverage** — 140° or wider to capture the full scene
+- **Audio recording** — Can capture sounds of horns, braking, or impacts
+
+### Legal Considerations in New Zealand
+
+Dashcam recordings are generally admissible as evidence in New Zealand. However:
+- You don't need to tell other drivers you have a dashcam
+- Footage recorded in public places (roads) doesn't breach privacy laws
+- If used in a dispute, the footage may be requested by the other party's insurer
+- Don't edit or alter footage — this can undermine its credibility
+
+## Using Your Smartphone Effectively
+
+Even without a dashcam, your smartphone is a powerful evidence-gathering tool.
+
+### Photos to Take at the Scene
+
+Follow the 5-angle rule for each vehicle:
+1. **Front damage** — Head-on shot
+2. **Rear damage** — Directly behind
+3. **Both sides** — Capture any lateral damage
+4. **Wide shot** — Showing the vehicle's position on the road
+5. **Detail shots** — Close-ups of specific damage points
+
+### Beyond Photos
+
+Your phone can also capture:
+- **Video walkthrough** — A 30-second video walking around all vehicles
+- **Voice memo** — Record your account of what happened while it's fresh
+- **GPS location** — Screenshot your maps app showing exact location
+- **Timestamps** — Your photos automatically include date, time, and location metadata
+
+## How to Preserve Digital Evidence
+
+Digital evidence is only useful if it's preserved properly:
+
+1. **Don't delete anything** — Even blurry photos might be useful
+2. **Back up immediately** — Upload to cloud storage or email to yourself
+3. **Don't edit** — Cropping or filtering can raise questions about authenticity
+4. **Save dashcam footage** — Lock the relevant clip so it's not overwritten
+5. **Note the file names** — Keep a record of which files relate to the incident
+
+## Common Mistakes with Digital Evidence
+
+- ❌ **Deleting "bad" photos** — Insurers want to see everything
+- ❌ **Waiting to download dashcam footage** — Most dashcams overwrite after a few days
+- ❌ **Poor quality settings** — Check your dashcam is recording at the highest quality
+- ❌ **Incorrect timestamps** — Regularly check your dashcam's clock
+- ❌ **Not photographing the other vehicle's registration** — Always capture this
+
+## How SAVO Uses Your Digital Evidence
+
+SAVO integrates with your phone's camera to:
+- Guide you through capturing the right photos at the scene
+- Tag photos with GPS location automatically
+- Organise evidence into a structured incident report
+- Store everything securely so it's ready when you contact your insurer
+
+## Key Takeaways
+
+1. Dashcam footage is one of the strongest forms of evidence for NZ insurance claims
+2. Your smartphone photos and videos are equally valuable when captured correctly
+3. Always preserve and back up digital evidence immediately
+4. Use SAVO to ensure you capture exactly what insurers need
+
+*Protect your claim before it happens. Set up SAVO on your phone and consider investing in a quality dashcam.*
+    `
+  },
+  {
+    slug: "parking-lot-accidents-nz-what-to-do",
+    title: "Hit in a Parking Lot? What NZ Drivers Need to Know About Parking Accidents",
+    metaDescription: "Parking lot accidents are the most common type of vehicle damage in NZ. Learn your obligations, how fault is determined, and how to protect your insurance claim.",
+    heroImage: parkingAccidentsHero,
+    excerpt: "Parking lot dings and scrapes are the most common vehicle damage in New Zealand. Here's what you're legally required to do and how to handle your claim.",
+    date: "2026-03-30",
+    readTime: "5 min read",
+    content: `
+## The Most Common Accident You'll Face
+
+Parking lot accidents account for a significant portion of all vehicle damage claims in New Zealand. From supermarket car parks to shopping centre parking buildings, these incidents happen daily — and many drivers don't handle them correctly.
+
+## Your Legal Obligations in NZ
+
+Under the Land Transport Act 1998, if you damage another vehicle — even in a parking lot — you are legally required to:
+
+1. **Try to find the owner** — Check nearby shops or businesses
+2. **Leave your details** — If you can't find the owner, leave a note with your name, phone number, and address
+3. **Report to police within 48 hours** — If you can't identify or locate the owner
+
+**Failing to do this is an offence.** Driving away without leaving details or reporting is considered a hit-and-run, even for a minor scrape.
+
+## How Fault Is Determined
+
+Parking lot fault can be surprisingly complex:
+
+### Reversing Vehicles
+- The driver who was reversing is almost always at fault
+- If both vehicles were reversing, fault is typically shared 50/50
+
+### Opening Doors
+- The person opening the door is at fault for door dings
+- Even if space was tight, the onus is on the door opener
+
+### Right of Way
+- Main lanes in parking lots have right of way over cars exiting spaces
+- T-intersections in car parks follow normal road rules
+
+### Trolley Damage
+- If a shopping trolley damages your car, fault depends on whether someone was pushing it
+- Wind-blown trolleys are generally not covered unless negligence can be proven
+
+## What to Document
+
+Parking lot accidents require specific documentation:
+
+### Photos
+- Damage to all vehicles involved
+- The parking space layout and markings
+- Distance between vehicles
+- Any CCTV cameras visible (note their location)
+- The other vehicle's registration plate
+
+### Information to Gather
+- Other driver's name, phone, and address
+- Their insurance details if they'll share them
+- Names of any witnesses (other shoppers, staff)
+- Time and date
+- Which vehicle was moving and which was stationary
+
+### CCTV Footage
+Many parking lots have CCTV. If you're not at fault:
+- Ask the shopping centre management for footage immediately
+- Note that footage is often deleted after 7-14 days
+- Your insurer can formally request the footage
+
+## When the Other Driver Has Left
+
+If you return to your car and find new damage:
+1. **Photograph the damage immediately** — Note the time
+2. **Check for a note** — Look on your windscreen or under wipers
+3. **Ask nearby businesses** — Someone may have witnessed it
+4. **Check for CCTV** — Ask centre management right away
+5. **Report to police** — Get an event number for your insurer
+6. **Contact your insurer** — Lodge a claim under your own policy
+
+## Common Parking Lot Claim Scenarios
+
+### "I bumped the car next to me while reversing out"
+- You're at fault — leave your details and contact your insurer
+- Your third-party cover will pay for the other vehicle's damage
+- You'll need comprehensive cover for your own damage
+
+### "Someone hit my parked car and left"
+- This is a hit-and-run — report to police
+- Claim under your own comprehensive policy
+- You may need to pay your excess (some insurers waive it for hit-and-run)
+
+### "Two of us reversed into each other"
+- Fault is typically shared 50/50
+- Both insurers will be involved
+- Document from your perspective — don't agree to split fault at the scene
+
+## How SAVO Helps with Parking Incidents
+
+Even minor parking lot incidents should be documented properly. SAVO's incident report captures:
+- Precise location details
+- Photo evidence with GPS tagging
+- Third-party information
+- A structured report ready for your insurer
+
+*Don't let a parking lot incident become a headache. Use SAVO to document it properly from the start.*
+    `
+  },
+  {
+    slug: "understanding-insurance-excess-new-zealand",
+    title: "Insurance Excess in NZ Explained: How It Works and How to Reduce It",
+    metaDescription: "Understand how car insurance excess works in New Zealand. Learn about standard, voluntary, and age excess — and strategies to reduce what you pay.",
+    heroImage: insuranceExcessHero,
+    excerpt: "Your insurance excess can significantly affect what you pay after an accident. Here's everything NZ drivers need to know about excess and how to manage it.",
+    date: "2026-03-25",
+    readTime: "6 min read",
+    content: `
+## What Is Insurance Excess?
+
+Insurance excess is the amount you pay out of your own pocket when you make a claim. It's the first portion of the repair or replacement cost that your insurer doesn't cover.
+
+For example, if your repair costs $5,000 and your excess is $500, your insurer pays $4,500 and you pay $500.
+
+## Types of Excess in New Zealand
+
+### Standard Excess
+This is the base excess on your policy — typically $300 to $500 for most NZ insurers. It applies to every claim unless your policy specifies otherwise.
+
+### Voluntary Excess
+An additional excess you choose to add on top of the standard excess. By accepting a higher excess (say an extra $250), your premiums are reduced.
+
+**The trade-off:** Lower monthly premiums, but more to pay if you claim.
+
+### Age Excess
+Most NZ insurers charge an additional excess for younger drivers:
+- **Under 25:** Typically $300-$750 extra
+- **Under 21:** Can be $500-$1,000 extra
+- This applies if the driver at the time of the accident is under the age threshold — even if they're not the policyholder
+
+### Inexperienced Driver Excess
+Some policies add excess for drivers who:
+- Hold a learner or restricted licence
+- Have held their full licence for less than 2 years
+
+### Windscreen Excess
+Many policies offer reduced or nil excess for windscreen-only claims. This is because:
+- Windscreen damage is extremely common on NZ roads (gravel roads, loose chips)
+- Replacing a windscreen is relatively straightforward
+- Insurers prefer drivers replace damaged windscreens promptly for safety
+
+## How Excess Affects Your Premiums
+
+The relationship is straightforward:
+
+| Excess Level | Monthly Premium | Claim Cost to You |
+|---|---|---|
+| $250 (low) | Higher | $250 |
+| $500 (standard) | Medium | $500 |
+| $1,000 (high) | Lower | $1,000 |
+
+### When High Excess Makes Sense
+- You have an excellent driving record
+- You have savings to cover a higher excess if needed
+- You're an experienced driver with low claim risk
+- The premium savings are significant
+
+### When Low Excess Makes Sense
+- You're a newer driver with higher accident risk
+- You don't have savings to cover a large unexpected cost
+- You drive frequently in high-risk areas
+- Peace of mind is worth the extra premium
+
+## When You Don't Pay Excess
+
+There are situations where you may not need to pay excess:
+
+1. **Not-at-fault claims** — If the other driver is clearly at fault AND identified, many insurers waive your excess
+2. **Windscreen-only claims** — Often nil excess
+3. **Total theft** — Some policies waive excess for stolen vehicles
+4. **Natural disaster excess** — May differ from standard excess (check your policy)
+
+**Important:** Even in not-at-fault situations, you may need to pay excess upfront and be reimbursed later once liability is confirmed.
+
+## Strategies to Manage Your Excess
+
+### 1. Choose Your Voluntary Excess Wisely
+Calculate the annual premium savings against the potential cost. If adding $250 voluntary excess saves you $15/month ($180/year), it takes less than 18 months for the savings to cover the extra excess.
+
+### 2. Maintain a Claims-Free Record
+Some NZ insurers offer:
+- Reducing excess for claims-free years
+- Excess-free first claims after multiple years without claiming
+- No-claims bonuses that offset excess
+
+### 3. Bundle Policies
+Having multiple policies (home, contents, car) with the same insurer often provides:
+- Multi-policy discounts
+- More favourable excess terms
+- Loyalty benefits
+
+### 4. Review Annually
+Your circumstances change. Review your excess at renewal:
+- Have younger drivers been removed from the policy?
+- Has your vehicle's value changed?
+- Can you afford a higher excess now for lower premiums?
+
+## How Documentation Affects Your Excess
+
+Thorough documentation can indirectly save you money on excess:
+
+- **Proving you're not at fault** means the other party's insurer pays — no excess for you
+- **Clear evidence** speeds up liability determination
+- **Comprehensive incident reports** prevent disputes that could leave you paying excess unnecessarily
+
+## Key Takeaways
+
+1. Understand all the excess types on your policy
+2. Choose voluntary excess based on your risk profile and savings
+3. Not-at-fault claims can mean zero excess — but you need evidence
+4. Document every incident thoroughly to protect yourself
+
+*Use SAVO to create detailed incident reports that help prove liability and potentially save you from paying excess.*
+    `
+  },
+  {
+    slug: "courtesy-cars-not-at-fault-accidents-nz",
+    title: "Courtesy Cars in NZ: Your Rights When You're Not at Fault",
+    metaDescription: "Not at fault in a car accident in New Zealand? Learn about your right to a courtesy car, how to arrange one, and what costs are covered.",
+    heroImage: courtesyCarHero,
+    excerpt: "If you're not at fault in an accident, you may be entitled to a courtesy car while yours is being repaired. Here's how it works in New Zealand.",
+    date: "2026-03-18",
+    readTime: "5 min read",
+    content: `
+## When You're Not at Fault, You Shouldn't Be Without a Car
+
+Being involved in a car accident is stressful enough. Being without your vehicle while it's repaired — when the accident wasn't even your fault — adds frustration and inconvenience to an already difficult situation.
+
+In New Zealand, if you're the not-at-fault party, you have options for getting a courtesy or replacement vehicle while yours is being repaired.
+
+## Your Options for a Replacement Vehicle
+
+### 1. Through Your Own Insurance Policy
+
+Some comprehensive insurance policies in NZ include courtesy car provisions:
+- **Included cover** — Some policies provide a courtesy car as standard
+- **Optional add-on** — Available for an additional premium
+- **Through approved repairers** — Some insurers provide cars through their repair network
+
+**Check your policy:** Not all comprehensive policies include courtesy car cover. Review your policy wording or call your insurer to confirm.
+
+### 2. Through the At-Fault Party's Insurer
+
+When you're not at fault:
+- The at-fault party's insurer is typically liable for your reasonable expenses
+- This can include a rental or courtesy car
+- You may need to arrange this yourself and claim the cost back
+
+### 3. Through a Not-at-Fault Accident Service
+
+Specialist services exist in New Zealand that provide:
+- A courtesy car at no cost to you
+- Direct billing to the at-fault party's insurer
+- No excess to pay
+- Vehicles delivered to your door
+- Coverage for the full duration of your repairs
+
+These services handle all the paperwork and liaison with the at-fault insurer, taking the burden off you.
+
+## How to Arrange a Courtesy Car
+
+### Step 1: Establish You're Not at Fault
+
+Before requesting a courtesy car, ensure:
+- The other driver has accepted responsibility, OR
+- The evidence clearly shows you're not at fault
+- You have documentation supporting your position (photos, witness statements, police report)
+
+### Step 2: Contact the Right Provider
+
+Your options in order of ease:
+1. **Your own insurer** — If your policy includes courtesy car cover
+2. **A not-at-fault accident service** — They handle everything for you
+3. **The at-fault party's insurer** — You can contact them directly
+
+### Step 3: Provide Documentation
+
+You'll typically need:
+- Your incident report with all details
+- Photos of the damage
+- The other party's details and insurance information
+- Proof that you're not at fault (witness statements, dashcam footage)
+- Your vehicle's repair timeline from the panel shop
+
+## What's Covered and What's Not
+
+### Typically Covered
+- ✅ A comparable replacement vehicle (similar size and type)
+- ✅ Full duration of repairs
+- ✅ Standard insurance for the courtesy car
+- ✅ Delivery and collection of the courtesy car
+
+### Typically NOT Covered
+- ❌ A vehicle upgrade (sports car when you drive a sedan)
+- ❌ Fuel costs for the courtesy car
+- ❌ Extended use beyond the repair period
+- ❌ Damage you cause to the courtesy car (your responsibility)
+
+## How Proving Fault Matters
+
+The key to accessing a free courtesy car is **proving you're not at fault**. This is where thorough documentation becomes critical:
+
+### Strong Evidence Includes
+- **Photos from the scene** — Showing vehicle positions and damage
+- **Witness statements** — Independent confirmation of what happened
+- **Dashcam footage** — Objective video evidence
+- **Police report** — Official record of the incident
+- **Detailed incident report** — Comprehensive account with all details
+
+### Weak Claims Include
+- "They said it was their fault" — Without written confirmation
+- No photos or evidence
+- Vague or inconsistent accounts
+- Missing third-party details
+
+## Common Questions
+
+### "Do I have to use my own insurance?"
+No. If you're not at fault, you can claim directly against the at-fault party's insurer or use a not-at-fault service. Using your own insurance means you may need to pay an excess.
+
+### "How long can I have the courtesy car?"
+For the reasonable duration of repairs. This is typically determined by the panel shop's repair timeline.
+
+### "What if fault is disputed?"
+If liability is unclear, getting a free courtesy car is more difficult. You may need to use your own policy's courtesy car provision while fault is being determined.
+
+### "Can I choose any rental company?"
+If claiming costs back, you need to demonstrate the costs were "reasonable." Premium or luxury rentals may not be fully reimbursed.
+
+## How SAVO Helps You Get a Courtesy Car
+
+SAVO's structured incident reports make it easy to:
+- Prove you're not at fault with comprehensive documentation
+- Provide all the information a courtesy car provider needs
+- Share your report directly with service providers
+- Request a courtesy car through SAVO when you're not at fault
+
+*If you've been in an accident that wasn't your fault, don't go without a car. Document everything with SAVO and explore your courtesy car options immediately.*
     `
   }
 ];
