@@ -105,9 +105,25 @@ serve(async (req) => {
           await supabase.functions.invoke('send-email', {
             body: { type: check.type, to: userEmail, data: emailData },
           });
-          results.push(`Sent ${check.type} for ${vehicleName} to ${userEmail}`);
+          results.push(`Sent ${check.type} email for ${vehicleName} to ${userEmail}`);
         } else {
           results.push(`Created notification for ${check.type} for ${vehicleName} (no verified email)`);
+        }
+
+        // Send push notification
+        try {
+          await supabase.functions.invoke('send-push', {
+            body: {
+              user_id: v.user_id,
+              title: check.title,
+              body: check.message,
+              url: '/vehicles',
+              tag: `${check.type}-${v.id}`,
+            },
+          });
+          results.push(`Sent ${check.type} push for ${vehicleName}`);
+        } catch (pushErr) {
+          console.error('Push notification error:', pushErr);
         }
       }
     }
