@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { Navigate } from 'react-router-dom';
-import { Mail, Lock, User, Loader2, LogIn, Camera, MapPin, Users, FileText, Phone, Eye, EyeOff } from 'lucide-react';
+import { Navigate, Link } from 'react-router-dom';
+import { Mail, Lock, User, Loader2, LogIn, Camera, MapPin, Users, FileText, Phone, Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 
 import { useAuth } from '@/contexts/AuthContext';
