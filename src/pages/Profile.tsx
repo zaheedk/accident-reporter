@@ -75,6 +75,7 @@ export default function Profile() {
     setSaving(true);
     const updateData: Record<string, any> = {
       display_name: profile.display_name, phone_number: profile.phone_number, address: profile.address,
+      license_number: profile.license_number, license_expiry: profile.license_expiry,
     };
     // For phone users, also save email (but don't change verified status here)
     if (isPhoneUser) {
