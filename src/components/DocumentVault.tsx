@@ -164,7 +164,7 @@ export default function DocumentVault({ vehicleId = null, title = 'Document Vaul
           <select
             value={selectedCategory}
             onChange={e => setSelectedCategory(e.target.value)}
-            className="form-input text-xs h-8 flex-1 min-w-0"
+            className="form-input text-sm h-10 flex-1 min-w-0 truncate rounded-lg px-2.5 py-1"
           >
             {categories.map(c => (
               <option key={c.value} value={c.value}>{c.icon} {c.label}</option>
@@ -173,9 +173,9 @@ export default function DocumentVault({ vehicleId = null, title = 'Document Vaul
           <button
             onClick={() => fileInputRef.current?.click()}
             disabled={uploading}
-            className="btn-primary h-8 px-3 text-xs rounded-lg shrink-0 flex items-center gap-1.5"
+            className="btn-primary h-10 px-4 text-sm rounded-lg shrink-0 flex items-center gap-1.5"
           >
-            {uploading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Upload className="w-3.5 h-3.5" />}
+            {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
             Upload
           </button>
         </div>
