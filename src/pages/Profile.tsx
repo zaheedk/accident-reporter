@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { ArrowLeft, Camera, Loader2, User, Phone, MapPin, Mail, ShieldOff, Trash2, CheckCircle, AlertCircle, Send, Lock, Eye, EyeOff, Bell } from 'lucide-react';
+import { ArrowLeft, Camera, Loader2, User, Phone, MapPin, Mail, ShieldOff, Trash2, CheckCircle, AlertCircle, Send, Lock, Eye, EyeOff, Bell, CreditCard, CalendarDays } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -23,6 +23,8 @@ interface ProfileData {
   avatar_url: string;
   email: string;
   email_verified: boolean;
+  license_number: string;
+  license_expiry: string;
 }
 
 export default function Profile() {
@@ -45,7 +47,7 @@ export default function Profile() {
   const [showConfirmPw, setShowConfirmPw] = useState(false);
   const [changingPassword, setChangingPassword] = useState(false);
   const [profile, setProfile] = useState<ProfileData>({
-    display_name: '', phone_number: '', address: '', avatar_url: '', email: '', email_verified: false,
+    display_name: '', phone_number: '', address: '', avatar_url: '', email: '', email_verified: false, license_number: '', license_expiry: '',
   });
 
   // Detect if user signed in via phone (fake email pattern)
@@ -53,13 +55,14 @@ export default function Profile() {
 
   useEffect(() => {
     if (!user) return;
-    supabase.from('profiles').select('display_name, phone_number, address, avatar_url, email, email_verified')
+    supabase.from('profiles').select('display_name, phone_number, address, avatar_url, email, email_verified, license_number, license_expiry')
       .eq('user_id', user.id).single().then(({ data }) => {
         if (data) {
           setProfile({
             display_name: data.display_name || '', phone_number: data.phone_number || '',
             address: data.address || '', avatar_url: data.avatar_url || '',
             email: (data as any).email || '', email_verified: (data as any).email_verified || false,
+            license_number: (data as any).license_number || '', license_expiry: (data as any).license_expiry || '',
           });
         }
         setLoading(false);
@@ -72,6 +75,7 @@ export default function Profile() {
     setSaving(true);
     const updateData: Record<string, any> = {
       display_name: profile.display_name, phone_number: profile.phone_number, address: profile.address,
+      license_number: profile.license_number, license_expiry: profile.license_expiry,
     };
     // For phone users, also save email (but don't change verified status here)
     if (isPhoneUser) {
@@ -218,6 +222,19 @@ export default function Profile() {
           <div>
             <label className="form-label flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5" strokeWidth={1.5} />{t('profile.address')}</label>
             <textarea className="form-input min-h-[80px] resize-none" placeholder={t('profile.addressPlaceholder')} value={profile.address} onChange={e => setProfile(p => ({ ...p, address: e.target.value }))} />
+          </div>
+          <div className="border-t border-border/50 pt-4 mt-2">
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Driver License</p>
+            <div className="space-y-4">
+              <div>
+                <label className="form-label flex items-center gap-1.5"><CreditCard className="w-3.5 h-3.5" strokeWidth={1.5} />License Number</label>
+                <input className="form-input" placeholder="e.g. AB123456" value={profile.license_number} onChange={e => setProfile(p => ({ ...p, license_number: e.target.value }))} />
+              </div>
+              <div>
+                <label className="form-label flex items-center gap-1.5"><CalendarDays className="w-3.5 h-3.5" strokeWidth={1.5} />License Expiry Date</label>
+                <input className="form-input" type="date" value={profile.license_expiry} onChange={e => setProfile(p => ({ ...p, license_expiry: e.target.value }))} />
+              </div>
+            </div>
           </div>
           <button type="submit" disabled={saving} className="btn-primary w-full h-11">
             {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : t('profile.saveChanges')}
