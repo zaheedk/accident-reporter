@@ -164,7 +164,7 @@ export default function DocumentVault({ vehicleId = null, title = 'Document Vaul
           <select
             value={selectedCategory}
             onChange={e => setSelectedCategory(e.target.value)}
-            className="form-input text-xs h-8 flex-1"
+            className="form-input text-xs h-8 flex-1 min-w-0"
           >
             {categories.map(c => (
               <option key={c.value} value={c.value}>{c.icon} {c.label}</option>
