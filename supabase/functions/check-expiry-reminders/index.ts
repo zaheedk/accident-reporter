@@ -31,31 +31,75 @@ serve(async (req) => {
     const { data: vehicles, error: vErr } = await supabase.from('vehicles').select('*, user_id');
     if (vErr) throw vErr;
 
+    // Get all profiles with license expiry
+    const { data: profiles, error: pErr } = await supabase.from('profiles').select('user_id, license_number, license_expiry, email, email_verified, display_name');
+    if (pErr) throw pErr;
+
     const results: string[] = [];
 
-    for (const v of vehicles || []) {
-      const vehicleName = `${v.year} ${v.make} ${v.model}`;
-      const vehicleData = { vehicle: vehicleName, rego: v.rego_number };
-
-      // Get user email - for phone users, use verified profile email
-      const { data: userData } = await supabase.auth.admin.getUserById(v.user_id);
-      let userEmail = isTest ? testEmail : userData?.user?.email;
-      
-      // If user signed up via phone (fake email), check for verified profile email
-      if (!isTest && userEmail?.endsWith('@savo.phone.local')) {
+    // Helper to resolve user email
+    const resolveEmail = async (userId: string, isTest: boolean, testEmail?: string) => {
+      if (isTest) return testEmail;
+      const { data: userData } = await supabase.auth.admin.getUserById(userId);
+      let userEmail = userData?.user?.email;
+      if (userEmail?.endsWith('@savo.phone.local')) {
         const { data: profileData } = await supabase
           .from('profiles')
           .select('email, email_verified')
-          .eq('user_id', v.user_id)
+          .eq('user_id', userId)
           .single();
         if (profileData?.email && profileData?.email_verified) {
           userEmail = profileData.email;
         } else {
-          // No verified email — skip sending email (still create in-app notification)
           userEmail = null;
         }
       }
+      return userEmail;
+    };
 
+    // Helper to send notification + email + push
+    const sendReminder = async (userId: string, vehicleId: string | null, type: string, title: string, message: string, emailData: Record<string, string>, userEmail: string | null | undefined, pushUrl: string) => {
+      // Check for existing notification (avoid duplicates) — skip for tests
+      if (!isTest) {
+        const { data: existing } = await supabase.from('notifications')
+          .select('id')
+          .eq('user_id', userId)
+          .eq('type', type)
+          .gte('created_at', new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString())
+          .limit(1);
+        if (existing && existing.length > 0) return;
+      }
+
+      // Create in-app notification
+      const notifData: Record<string, any> = { user_id: userId, type, title, message };
+      if (vehicleId) notifData.vehicle_id = vehicleId;
+      await supabase.from('notifications').insert(notifData);
+
+      // Send email
+      if (userEmail) {
+        await supabase.functions.invoke('send-email', {
+          body: { type, to: userEmail, data: emailData },
+        });
+        results.push(`Sent ${type} email to ${userEmail}`);
+      } else {
+        results.push(`Created notification for ${type} (no verified email)`);
+      }
+
+      // Send push
+      try {
+        await supabase.functions.invoke('send-push', {
+          body: { user_id: userId, title, body: message, url: pushUrl, tag: `${type}-${vehicleId || userId}` },
+        });
+        results.push(`Sent ${type} push for user ${userId}`);
+      } catch (pushErr) {
+        console.error('Push notification error:', pushErr);
+      }
+    };
+
+    // --- Vehicle expiry checks ---
+    for (const v of vehicles || []) {
+      const vehicleName = `${v.year} ${v.make} ${v.model}`;
+      const userEmail = await resolveEmail(v.user_id, isTest, testEmail);
 
       const checks = [
         { field: v.rego_expiry, type: 'rego_expiry_reminder', title: 'Registration Expiry Reminder', message: `Your registration for ${vehicleName} (${v.rego_number}) expires on ${v.rego_expiry}. Please renew it soon.` },
@@ -65,67 +109,31 @@ serve(async (req) => {
 
       for (const check of checks) {
         if (!check.field) continue;
-
         const shouldNotify = isTest || check.field === targetDate;
         if (!shouldNotify) continue;
 
-        // Check for existing notification (avoid duplicates) — skip for tests
-        if (!isTest) {
-          const { data: existing } = await supabase.from('notifications')
-            .select('id')
-            .eq('user_id', v.user_id)
-            .eq('type', check.type)
-            .eq('vehicle_id', v.id)
-            .gte('created_at', new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString())
-            .limit(1);
-          if (existing && existing.length > 0) continue;
-        }
-
-        // Create in-app notification
-        await supabase.from('notifications').insert({
-          user_id: v.user_id,
-          type: check.type,
-          title: check.title,
-          message: check.message,
-          vehicle_id: v.id,
-        });
-
-        // Send email via send-email function
-        const emailData: Record<string, string> = {
-          ...vehicleData,
-          expiryDate: check.field,
-        };
+        const emailData: Record<string, string> = { vehicle: vehicleName, rego: v.rego_number, expiryDate: check.field };
         if (check.type === 'insurance_expiry_reminder') {
           emailData.insurer = v.insurance_company || '';
           emailData.policyNumber = v.insurance_policy_number || '';
         }
-
-        // Only send email if user has a valid email address
-        if (userEmail) {
-          await supabase.functions.invoke('send-email', {
-            body: { type: check.type, to: userEmail, data: emailData },
-          });
-          results.push(`Sent ${check.type} email for ${vehicleName} to ${userEmail}`);
-        } else {
-          results.push(`Created notification for ${check.type} for ${vehicleName} (no verified email)`);
-        }
-
-        // Send push notification
-        try {
-          await supabase.functions.invoke('send-push', {
-            body: {
-              user_id: v.user_id,
-              title: check.title,
-              body: check.message,
-              url: '/vehicles',
-              tag: `${check.type}-${v.id}`,
-            },
-          });
-          results.push(`Sent ${check.type} push for ${vehicleName}`);
-        } catch (pushErr) {
-          console.error('Push notification error:', pushErr);
-        }
+        await sendReminder(v.user_id, v.id, check.type, check.title, check.message, emailData, userEmail, '/vehicles');
       }
+    }
+
+    // --- Driver license expiry checks ---
+    for (const p of profiles || []) {
+      if (!p.license_expiry || !p.license_number) continue;
+      const shouldNotify = isTest || p.license_expiry === targetDate;
+      if (!shouldNotify) continue;
+
+      const userEmail = await resolveEmail(p.user_id, isTest, testEmail);
+      const displayName = p.display_name || 'driver';
+      const title = 'Driver License Expiry Reminder';
+      const message = `Your driver license (${p.license_number}) expires on ${p.license_expiry}. Please renew it soon.`;
+      const emailData = { licenseNumber: p.license_number, expiryDate: p.license_expiry, name: displayName };
+
+      await sendReminder(p.user_id, null, 'license_expiry_reminder', title, message, emailData, userEmail, '/profile');
     }
 
     return new Response(JSON.stringify({ success: true, sent: results.length, details: results }), {
