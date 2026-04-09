@@ -546,6 +546,8 @@ export type Database = {
           email_verified: boolean
           id: string
           is_active: boolean
+          license_expiry: string | null
+          license_number: string | null
           phone_number: string | null
           updated_at: string
           user_id: string
@@ -561,6 +563,8 @@ export type Database = {
           email_verified?: boolean
           id?: string
           is_active?: boolean
+          license_expiry?: string | null
+          license_number?: string | null
           phone_number?: string | null
           updated_at?: string
           user_id: string
@@ -576,6 +580,8 @@ export type Database = {
           email_verified?: boolean
           id?: string
           is_active?: boolean
+          license_expiry?: string | null
+          license_number?: string | null
           phone_number?: string | null
           updated_at?: string
           user_id?: string
