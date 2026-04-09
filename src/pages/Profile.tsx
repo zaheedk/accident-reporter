@@ -55,13 +55,14 @@ export default function Profile() {
 
   useEffect(() => {
     if (!user) return;
-    supabase.from('profiles').select('display_name, phone_number, address, avatar_url, email, email_verified')
+    supabase.from('profiles').select('display_name, phone_number, address, avatar_url, email, email_verified, license_number, license_expiry')
       .eq('user_id', user.id).single().then(({ data }) => {
         if (data) {
           setProfile({
             display_name: data.display_name || '', phone_number: data.phone_number || '',
             address: data.address || '', avatar_url: data.avatar_url || '',
             email: (data as any).email || '', email_verified: (data as any).email_verified || false,
+            license_number: (data as any).license_number || '', license_expiry: (data as any).license_expiry || '',
           });
         }
         setLoading(false);
