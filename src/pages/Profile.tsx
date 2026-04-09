@@ -47,7 +47,7 @@ export default function Profile() {
   const [showConfirmPw, setShowConfirmPw] = useState(false);
   const [changingPassword, setChangingPassword] = useState(false);
   const [profile, setProfile] = useState<ProfileData>({
-    display_name: '', phone_number: '', address: '', avatar_url: '', email: '', email_verified: false,
+    display_name: '', phone_number: '', address: '', avatar_url: '', email: '', email_verified: false, license_number: '', license_expiry: '',
   });
 
   // Detect if user signed in via phone (fake email pattern)
