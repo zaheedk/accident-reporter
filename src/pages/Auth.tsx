@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { Navigate } from 'react-router-dom';
-import { Mail, Lock, User, Loader2, LogIn, Camera, MapPin, Users, FileText, Phone, Eye, EyeOff } from 'lucide-react';
+import { Navigate, Link } from 'react-router-dom';
+import { Mail, Lock, User, Loader2, LogIn, Camera, MapPin, Users, FileText, Phone, Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 
 import { useAuth } from '@/contexts/AuthContext';
@@ -91,6 +91,11 @@ export default function Auth() {
     <div className="min-h-screen flex flex-col lg:flex-row">
       {/* Dark hero section */}
       <div className="px-6 pt-10 pb-10 relative overflow-hidden lg:w-1/2 lg:min-h-screen lg:flex lg:items-center lg:justify-center" style={{ background: 'linear-gradient(160deg, hsl(220 30% 10%), hsl(213 52% 18%), hsl(220 25% 14%))' }}>
+        {/* Back to Home */}
+        <Link to="/" className="absolute top-5 left-5 z-20 inline-flex items-center gap-1.5 text-sm text-slate-400 hover:text-slate-200 transition-colors">
+          <ArrowLeft className="w-4 h-4" />
+          Home
+        </Link>
         {/* Subtle grid/line decoration */}
         <div className="absolute inset-0 opacity-[0.04]" style={{
           backgroundImage: `linear-gradient(hsl(210 50% 60% / 0.4) 1px, transparent 1px), linear-gradient(90deg, hsl(210 50% 60% / 0.4) 1px, transparent 1px)`,
