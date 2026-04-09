@@ -23,6 +23,8 @@ interface ProfileData {
   avatar_url: string;
   email: string;
   email_verified: boolean;
+  license_number: string;
+  license_expiry: string;
 }
 
 export default function Profile() {
