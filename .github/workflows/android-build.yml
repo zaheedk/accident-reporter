@@ -37,9 +37,17 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x android/gradlew
 
-      - name: Build Release AAB
+      - name: Decode Keystore
+        run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > android/app/savonz-keystore.jks
+
+      - name: Build Signed Release AAB
         working-directory: android
         run: ./gradlew bundleRelease
+        env:
+          KEYSTORE_FILE: ${{ github.workspace }}/android/app/savonz-keystore.jks
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
 
       - name: Build Debug APK
         working-directory: android
