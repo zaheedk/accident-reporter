@@ -236,7 +236,6 @@ export default function Profile() {
               </div>
             </div>
           </div>
-          </div>
           <button type="submit" disabled={saving} className="btn-primary w-full h-11">
             {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : t('profile.saveChanges')}
           </button>
