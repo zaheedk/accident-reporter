@@ -399,320 +399,365 @@ export default function ClaimWizard() {
           )}
         </div>
 
-        <div className="flex gap-1">
-          {STEPS.map((_, i) => <div key={i} className={`h-1 flex-1 rounded-full transition-colors ${i <= step ? 'bg-foreground' : 'bg-border'}`} />)}
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="step-badge step-badge-active tabular-nums">{step + 1}</span>
-          <span className="text-sm font-semibold text-foreground">{STEPS[step]}</span>
-        </div>
+        {/* ============ NEW CLAIM: Checklist Accordion ============ */}
+        {!isEdit && (
+          <div className="space-y-3 pb-16 md:pb-0">
+            <p className="text-xs text-muted-foreground">Complete each section to build your report. You can add more details later.</p>
 
-        <AnimatePresence mode="wait">
-          <motion.div key={step} variants={stepVariants} initial="initial" animate="animate" exit="exit" transition={{ ease: [0.25, 0.1, 0.25, 1], duration: 0.2 }}>
-
-            {/* Step 0: Vehicle Selection */}
-            {step === 0 && (
-              <div className="card-surface space-y-4">
-                <div>
-                  <label className="form-label">{t('claims.vehicle.selectVehicle')}</label>
-                  {vehicles.length === 0 ? (
-                    <div className="p-5 rounded-xl bg-background text-center">
-                      <p className="text-sm text-muted-foreground">{t('claims.vehicle.noVehicles')}</p>
-                      <button onClick={async () => { await autoSave(); navigate('/vehicles/new'); }} className="text-sm text-primary font-medium mt-2 hover:underline">{t('claims.vehicle.addFirst')}</button>
-                    </div>
-                  ) : (
-                    <select
-                      value={claim.vehicleId}
-                      onChange={e => {
-                        const vid = e.target.value;
-                        if (!vid) return;
-                        const v = vehicles.find(x => x.id === vid);
-                        setClaim(prev => ({ ...prev, vehicleId: vid, insuranceCompany: v?.insuranceCompany || '' }));
-                      }}
-                      className="w-full p-3.5 rounded-xl border border-border bg-background text-sm font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 appearance-none"
-                    >
-                      <option value="">{t('claims.vehicle.selectVehicle')}</option>
-                      {vehicles.map(v => (
-                        <option key={v.id} value={v.id}>
-                          {v.regoNumber} — {v.year} {v.make} {v.model}
-                        </option>
-                      ))}
-                    </select>
-                  )}
-                </div>
+            {/* Progress indicator */}
+            <div className="flex items-center gap-2 px-1">
+              <span className="text-xs font-semibold text-muted-foreground">{visitedSections.size} of {checklistSections.length} completed</span>
+              <div className="flex-1 h-1.5 rounded-full bg-border overflow-hidden">
+                <motion.div
+                  className="h-full rounded-full bg-primary"
+                  initial={{ width: 0 }}
+                  animate={{ width: `${(visitedSections.size / checklistSections.length) * 100}%` }}
+                  transition={{ duration: 0.4, ease: 'easeOut' }}
+                />
               </div>
-            )}
+            </div>
 
-            {/* At the Scene / Incident Details */}
-            {step === 1 && (
-              <div className="card-surface space-y-4">
-                {!isEdit && <p className="text-xs text-muted-foreground -mt-1">Capture the essentials now. You can add more details later.</p>}
+            {checklistSections.map((section) => {
+              const isOpen = openSection === section.key;
+              const isVisited = visitedSections.has(section.key);
+              return (
+                <div key={section.key} className="rounded-2xl border border-border overflow-hidden transition-colors">
+                  {/* Checklist header */}
+                  <button
+                    type="button"
+                    onClick={() => toggleSection(section.key)}
+                    className="w-full flex items-center gap-3 p-4 text-left hover:bg-muted/30 transition-colors"
+                  >
+                    <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 transition-colors ${
+                      isVisited ? 'bg-primary text-primary-foreground' : 'border-2 border-border'
+                    }`}>
+                      {isVisited ? (
+                        <Check className="w-3.5 h-3.5" strokeWidth={2.5} />
+                      ) : (
+                        <span className="text-xs font-bold text-muted-foreground tabular-nums">{section.number}</span>
+                      )}
+                    </div>
+                    <span className={`text-sm font-semibold flex-1 ${isVisited ? 'text-foreground' : 'text-foreground'}`}>{section.label}</span>
+                    <ChevronDown className={`w-4 h-4 text-muted-foreground shrink-0 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+                  </button>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:max-w-[28rem]">
-                  <div className="min-w-0"><label className="form-label">{t('claims.incident.date')}</label><input type="date" className="form-input tabular-nums w-full min-w-0 h-10 px-3 text-sm" value={claim.incidentDate} onChange={e => update('incidentDate', e.target.value)} /></div>
-                  <div className="min-w-0"><label className="form-label">{t('claims.incident.time')}</label><input type="time" className="form-input tabular-nums w-full min-w-0 h-10 px-3 text-sm" value={claim.incidentTime} onChange={e => update('incidentTime', e.target.value)} /></div>
+                  {/* Checklist content */}
+                  <AnimatePresence initial={false}>
+                    {isOpen && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.25, ease: 'easeInOut' }}
+                        className="overflow-hidden"
+                      >
+                        <div className="px-4 pb-4 space-y-4">
+                          {/* Vehicle section */}
+                          {section.key === 'vehicle' && (
+                            <>
+                              <label className="form-label">{t('claims.vehicle.selectVehicle')}</label>
+                              {vehicles.length === 0 ? (
+                                <div className="p-5 rounded-xl bg-background text-center">
+                                  <p className="text-sm text-muted-foreground">{t('claims.vehicle.noVehicles')}</p>
+                                  <button onClick={async () => { await autoSave(); navigate('/vehicles/new'); }} className="text-sm text-primary font-medium mt-2 hover:underline">{t('claims.vehicle.addFirst')}</button>
+                                </div>
+                              ) : (
+                                <select
+                                  value={claim.vehicleId}
+                                  onChange={e => {
+                                    const vid = e.target.value;
+                                    if (!vid) return;
+                                    const v = vehicles.find(x => x.id === vid);
+                                    setClaim(prev => ({ ...prev, vehicleId: vid, insuranceCompany: v?.insuranceCompany || '' }));
+                                  }}
+                                  className="w-full p-3.5 rounded-xl border border-border bg-background text-sm font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 appearance-none"
+                                >
+                                  <option value="">{t('claims.vehicle.selectVehicle')}</option>
+                                  {vehicles.map(v => (
+                                    <option key={v.id} value={v.id}>
+                                      {v.regoNumber} — {v.year} {v.make} {v.model}
+                                    </option>
+                                  ))}
+                                </select>
+                              )}
+                            </>
+                          )}
+
+                          {/* Scene section */}
+                          {section.key === 'scene' && (
+                            <>
+                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:max-w-[28rem]">
+                                <div className="min-w-0"><label className="form-label">{t('claims.incident.date')}</label><input type="date" className="form-input tabular-nums w-full min-w-0 h-10 px-3 text-sm" value={claim.incidentDate} onChange={e => update('incidentDate', e.target.value)} /></div>
+                                <div className="min-w-0"><label className="form-label">{t('claims.incident.time')}</label><input type="time" className="form-input tabular-nums w-full min-w-0 h-10 px-3 text-sm" value={claim.incidentTime} onChange={e => update('incidentTime', e.target.value)} /></div>
+                              </div>
+                              <div>
+                                <label className="form-label">{t('claims.incident.location')}</label>
+                                <div className="flex gap-2">
+                                  <input className="form-input flex-1" placeholder={t('claims.incident.locationPlaceholder')} value={claim.incidentLocation} onChange={e => update('incidentLocation', e.target.value)} />
+                                  <button type="button" onClick={detectLocation} disabled={detectingLocation}
+                                    className="flex-shrink-0 h-10 px-3 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors flex items-center gap-1.5 text-xs font-medium disabled:opacity-50">
+                                    {detectingLocation ? <Loader2 className="w-4 h-4 animate-spin" /> : <MapPin className="w-4 h-4" />}
+                                    <span className="hidden sm:inline">{detectingLocation ? 'Detecting...' : 'Detect'}</span>
+                                  </button>
+                                </div>
+                              </div>
+                              <div>
+                                <label className="form-label">Who is at fault?</label>
+                                <select className="form-input" value={claim.atFault} onChange={e => update('atFault', e.target.value)}>
+                                  <option value="">Select...</option>
+                                  <option value="me">I am at fault</option>
+                                  <option value="other_party">The other party is at fault</option>
+                                  <option value="shared">Shared fault</option>
+                                </select>
+                              </div>
+                              {claim.atFault === 'other_party' && (
+                                <div className="p-4 rounded-xl bg-primary/5 border border-primary/20 space-y-3">
+                                  <div className="flex items-center gap-3">
+                                    <Car className="w-5 h-5 text-primary" />
+                                    <div>
+                                      <p className="text-sm font-semibold text-foreground">Courtesy car available</p>
+                                      <p className="text-xs text-muted-foreground">Since you're not at fault, you may be entitled to a courtesy car while yours is being repaired.</p>
+                                    </div>
+                                  </div>
+                                  <div className="flex items-center gap-3">
+                                    <input type="checkbox" id="courtesyCar" className="w-4 h-4 rounded border-border text-primary focus:ring-primary/20" checked={claim.courtesyCarRequested} onChange={e => update('courtesyCarRequested', e.target.checked)} />
+                                    <label htmlFor="courtesyCar" className="text-sm font-medium text-foreground">I'd like to request a courtesy car</label>
+                                  </div>
+                                </div>
+                              )}
+                              <div className="space-y-3">
+                                <label className="form-label flex items-center gap-1.5"><Camera className="w-3.5 h-3.5" /> Your Vehicle Photos</label>
+                                <p className="text-xs text-muted-foreground -mt-2">Take photos of the damage to your vehicle</p>
+                                {photos.length > 0 && (
+                                  <div className="grid grid-cols-4 gap-2">
+                                    {photos.map(photo => (
+                                      <div key={photo.id} className="relative aspect-square rounded-xl overflow-hidden bg-muted">
+                                        <img src={getPhotoUrl(photo.file_path)} alt={photo.file_name} className="w-full h-full object-cover" />
+                                        <button onClick={() => removePhoto(photo)}
+                                          className="absolute top-1 right-1 w-5 h-5 rounded-full bg-foreground/80 text-card flex items-center justify-center">
+                                          <X className="w-3 h-3" />
+                                        </button>
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
+                                <div className="flex gap-2">
+                                  <button type="button" onClick={async () => {
+                                    if (!claim.id) {
+                                      const savedId = await saveClaim({ ...claim, updatedAt: new Date().toISOString() });
+                                      if (savedId) setClaim(prev => ({ ...prev, id: savedId }));
+                                    }
+                                    cameraInputRef.current?.click();
+                                  }} disabled={uploading}
+                                    className="btn-secondary flex-1 h-9 gap-2 text-xs">
+                                    {uploading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Camera className="w-3.5 h-3.5" />}
+                                    {t('claims.insurance.takePhoto', 'Take photo')}
+                                  </button>
+                                  <button type="button" onClick={async () => {
+                                    if (!claim.id) {
+                                      const savedId = await saveClaim({ ...claim, updatedAt: new Date().toISOString() });
+                                      if (savedId) setClaim(prev => ({ ...prev, id: savedId }));
+                                    }
+                                    photoInputRef.current?.click();
+                                  }} disabled={uploading}
+                                    className="btn-secondary flex-1 h-9 gap-2 text-xs">
+                                    {uploading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <span>📁</span>}
+                                    {t('claims.insurance.gallery', 'Gallery')}
+                                  </button>
+                                </div>
+                                <input ref={cameraInputRef} type="file" accept="image/*" capture="environment" multiple className="hidden" onChange={handlePhotoUpload} />
+                                <input ref={photoInputRef} type="file" accept="image/*" multiple className="hidden" onChange={handlePhotoUpload} />
+                              </div>
+                            </>
+                          )}
+
+                          {/* Parties section */}
+                          {section.key === 'parties' && (
+                            <>
+                              <div className="space-y-3">
+                                <label className="form-label mb-0">{t('claims.thirdParty.otherVehicles')}</label>
+                                {claim.thirdParties.length === 0 && (
+                                  <button onClick={addTP} className="w-full p-4 rounded-xl bg-background text-center cursor-pointer hover:bg-muted/50 transition-colors">
+                                    <p className="text-sm text-muted-foreground">{t('claims.thirdParty.noThirdParties')}</p>
+                                    <span className="text-sm text-primary font-medium mt-2 inline-block hover:underline">+ Add other vehicle</span>
+                                  </button>
+                                )}
+                                {claim.thirdParties.map((tp, i) => (
+                                  <div key={i} className="p-4 rounded-xl bg-background space-y-3">
+                                    <div className="flex items-center justify-between">
+                                      <span className="text-xs font-semibold text-muted-foreground">{t('claims.thirdParty.vehicleNumber', { number: i + 1 })}</span>
+                                      <button onClick={() => rmTP(i)} className="text-xs text-destructive hover:underline font-medium">{t('common.remove')}</button>
+                                    </div>
+                                    <div><label className="form-label">{t('claims.thirdParty.regoNo')}</label><input className="form-input tabular-nums text-base font-bold" placeholder="e.g. ABC123" value={tp.regoNumber} onChange={e => updTP(i, 'regoNumber', e.target.value.toUpperCase())} /></div>
+                                    <div className="grid grid-cols-2 gap-3">
+                                      <div><label className="form-label">{t('claims.thirdParty.ownerDriver')}</label><input className="form-input" placeholder="Driver's name" value={tp.ownerName} onChange={e => updTP(i, 'ownerName', e.target.value)} /></div>
+                                      <div><label className="form-label">{t('claims.thirdParty.phone')}</label><input className="form-input" type="tel" placeholder="Phone number" value={tp.phone} onChange={e => updTP(i, 'phone', e.target.value)} /></div>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-3">
+                                      <div><label className="form-label">Insurer</label><input className="form-input" placeholder="Insurance company" value={tp.insurer} onChange={e => updTP(i, 'insurer', e.target.value)} /></div>
+                                      <div><label className="form-label">Policy #</label><input className="form-input" placeholder="Policy number" value={tp.claimNumber} onChange={e => updTP(i, 'claimNumber', e.target.value)} /></div>
+                                    </div>
+                                    {claim.id && user && (
+                                      <ThirdPartyPhotos
+                                        tpIndex={i}
+                                        claimId={claim.id}
+                                        userId={user.id}
+                                        onRegoDetected={(rego) => updTP(i, 'regoNumber', rego)}
+                                        onLicenseDetected={(data) => {
+                                          if (data.fullName) updTP(i, 'ownerName', data.fullName);
+                                          if (data.address) updTP(i, 'address', data.address);
+                                        }}
+                                        onDamageDescriptionGenerated={(desc) => updTP(i, 'damageDescription', desc)}
+                                      />
+                                    )}
+                                  </div>
+                                ))}
+                                {claim.thirdParties.length > 0 && (
+                                  <button onClick={addTP} className="w-full py-3 rounded-xl border border-dashed border-primary/30 text-sm text-primary font-medium hover:bg-primary/5 transition-colors">
+                                    + Add another vehicle
+                                  </button>
+                                )}
+                              </div>
+
+                              <div className="space-y-3 pt-2">
+                                <label className="form-label mb-0">{t('claims.witnesses.title')}</label>
+                                {claim.witnesses.length === 0 && (
+                                  <button onClick={addW} className="w-full p-4 rounded-xl bg-background text-center cursor-pointer hover:bg-muted/50 transition-colors">
+                                    <p className="text-sm text-muted-foreground">{t('claims.witnesses.noWitnesses')}</p>
+                                    <span className="text-sm text-primary font-medium mt-2 inline-block">+ {t('claims.witnesses.addWitness')}</span>
+                                  </button>
+                                )}
+                                {claim.witnesses.map((w, i) => (
+                                  <div key={i} className="p-4 rounded-xl bg-background space-y-3">
+                                    <div className="flex items-center justify-between">
+                                      <span className="text-xs font-semibold text-muted-foreground">{t('claims.witnesses.witnessNumber', { number: i + 1 })}</span>
+                                      <button onClick={() => rmW(i)} className="text-xs text-destructive hover:underline font-medium">{t('common.remove')}</button>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-3">
+                                      <div><label className="form-label">{t('claims.witnesses.fullName')}</label><input className="form-input" value={w.name} onChange={e => updW(i, 'name', e.target.value)} /></div>
+                                      <div><label className="form-label">{t('claims.witnesses.phone')}</label><input className="form-input" value={w.phone} onChange={e => updW(i, 'phone', e.target.value)} /></div>
+                                    </div>
+                                  </div>
+                                ))}
+                                {claim.witnesses.length > 0 && (
+                                  <button onClick={addW} className="w-full py-3 rounded-xl border border-dashed border-primary/30 text-sm text-primary font-medium hover:bg-primary/5 transition-colors">
+                                    + {t('claims.witnesses.addWitness')}
+                                  </button>
+                                )}
+                              </div>
+                            </>
+                          )}
+
+                          {/* Review section */}
+                          {section.key === 'review' && (
+                            <div className="space-y-3">
+                              <div className="p-3 rounded-xl bg-primary/5 border border-primary/20">
+                                <p className="text-xs text-primary font-medium">💡 You can add more details like insurance, repairer, conditions and liability from the incident detail page later.</p>
+                              </div>
+                              <RSection title={t('claims.review.incident')}>
+                                <RRow label={t('claims.review.date')} value={claim.incidentDate} />
+                                <RRow label={t('claims.review.time')} value={claim.incidentTime} />
+                                <RRow label={t('claims.review.location')} value={claim.incidentLocation} />
+                              </RSection>
+                              <RSection title={t('claims.review.yourVehicle')}>
+                                <RRow label={t('claims.review.vehicle')} value={selV ? `${selV.year} ${selV.make} ${selV.model}` : '—'} />
+                                <RRow label={t('claims.review.rego')} value={selV?.regoNumber || '—'} />
+                                <RRow label={t('claims.review.photos')} value={t('claims.review.uploaded', { count: photos.length })} />
+                              </RSection>
+                              <RSection title={t('claims.review.thirdParties')}>
+                                {claim.thirdParties.length === 0 ? <p className="text-sm text-muted-foreground">{t('common.none')}</p> : claim.thirdParties.map((tp, i) => (
+                                  <div key={i} className="p-3 rounded-xl bg-background space-y-0.5">
+                                    <RRow label="Rego" value={tp.regoNumber} />
+                                    <RRow label="Driver" value={tp.ownerName} />
+                                    {tp.phone && <RRow label="Phone" value={tp.phone} />}
+                                  </div>
+                                ))}
+                              </RSection>
+                              {claim.atFault && (
+                                <RSection title="Fault">
+                                  <RRow label="At fault" value={claim.atFault === 'me' ? 'I am at fault' : claim.atFault === 'other_party' ? 'Other party at fault' : 'Shared fault'} />
+                                  {claim.atFault === 'other_party' && <RRow label="Courtesy car" value={claim.courtesyCarRequested ? 'Requested' : 'Not requested'} />}
+                                </RSection>
+                              )}
+                              <RSection title={t('claims.review.witnesses')}>
+                                {claim.witnesses.length === 0 ? <p className="text-sm text-muted-foreground">{t('common.none')}</p> : claim.witnesses.map((w, i) => <RRow key={i} label={t('claims.witnesses.witnessNumber', { number: i + 1 })} value={`${w.name} – ${w.phone}`} />)}
+                              </RSection>
+                              <button onClick={submit} disabled={submitting} className="btn-primary w-full h-11 mt-2">
+                                {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} {t('common.save')} report
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
+              );
+            })}
+          </div>
+        )}
 
-                <div>
-                  <label className="form-label">{t('claims.incident.location')}</label>
-                  <div className="flex gap-2">
-                    <input className="form-input flex-1" placeholder={t('claims.incident.locationPlaceholder')} value={claim.incidentLocation} onChange={e => update('incidentLocation', e.target.value)} />
-                    <button type="button" onClick={detectLocation} disabled={detectingLocation}
-                      className="flex-shrink-0 h-10 px-3 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors flex items-center gap-1.5 text-xs font-medium disabled:opacity-50">
-                      {detectingLocation ? <Loader2 className="w-4 h-4 animate-spin" /> : <MapPin className="w-4 h-4" />}
-                      <span className="hidden sm:inline">{detectingLocation ? 'Detecting...' : 'Detect'}</span>
-                    </button>
+        {/* ============ EDIT FLOW: Step-based wizard (unchanged) ============ */}
+        {isEdit && (
+          <>
+            <div className="flex gap-1">
+              {STEPS.map((_, i) => <div key={i} className={`h-1 flex-1 rounded-full transition-colors ${i <= step ? 'bg-foreground' : 'bg-border'}`} />)}
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="step-badge step-badge-active tabular-nums">{step + 1}</span>
+              <span className="text-sm font-semibold text-foreground">{STEPS[step]}</span>
+            </div>
+
+            <AnimatePresence mode="wait">
+              <motion.div key={step} variants={stepVariants} initial="initial" animate="animate" exit="exit" transition={{ ease: [0.25, 0.1, 0.25, 1], duration: 0.2 }}>
+
+                {/* Step 0: Vehicle Selection */}
+                {step === 0 && (
+                  <div className="card-surface space-y-4">
+                    <div>
+                      <label className="form-label">{t('claims.vehicle.selectVehicle')}</label>
+                      <select
+                        value={claim.vehicleId}
+                        onChange={e => {
+                          const vid = e.target.value;
+                          if (!vid) return;
+                          const v = vehicles.find(x => x.id === vid);
+                          setClaim(prev => ({ ...prev, vehicleId: vid, insuranceCompany: v?.insuranceCompany || '' }));
+                        }}
+                        className="w-full p-3.5 rounded-xl border border-border bg-background text-sm font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 appearance-none"
+                      >
+                        <option value="">{t('claims.vehicle.selectVehicle')}</option>
+                        {vehicles.map(v => (
+                          <option key={v.id} value={v.id}>
+                            {v.regoNumber} — {v.year} {v.make} {v.model}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
                   </div>
-                </div>
+                )}
 
-                {isEdit && (
-                  <>
+                {/* Step 1: Incident Details */}
+                {step === 1 && (
+                  <div className="card-surface space-y-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:max-w-[28rem]">
+                      <div className="min-w-0"><label className="form-label">{t('claims.incident.date')}</label><input type="date" className="form-input tabular-nums w-full min-w-0 h-10 px-3 text-sm" value={claim.incidentDate} onChange={e => update('incidentDate', e.target.value)} /></div>
+                      <div className="min-w-0"><label className="form-label">{t('claims.incident.time')}</label><input type="time" className="form-input tabular-nums w-full min-w-0 h-10 px-3 text-sm" value={claim.incidentTime} onChange={e => update('incidentTime', e.target.value)} /></div>
+                    </div>
+                    <div>
+                      <label className="form-label">{t('claims.incident.location')}</label>
+                      <div className="flex gap-2">
+                        <input className="form-input flex-1" placeholder={t('claims.incident.locationPlaceholder')} value={claim.incidentLocation} onChange={e => update('incidentLocation', e.target.value)} />
+                        <button type="button" onClick={detectLocation} disabled={detectingLocation}
+                          className="flex-shrink-0 h-10 px-3 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors flex items-center gap-1.5 text-xs font-medium disabled:opacity-50">
+                          {detectingLocation ? <Loader2 className="w-4 h-4 animate-spin" /> : <MapPin className="w-4 h-4" />}
+                          <span className="hidden sm:inline">{detectingLocation ? 'Detecting...' : 'Detect'}</span>
+                        </button>
+                      </div>
+                    </div>
                     <div><label className="form-label">Vehicle usage</label><input className="form-input" placeholder="e.g. Personal, Business" value={claim.vehicleUsage} onChange={e => update('vehicleUsage', e.target.value)} /></div>
                     <div><label className="form-label">Journey details</label><textarea className="form-input min-h-[60px]" placeholder="Where were you going?" value={claim.journeyDetails} onChange={e => update('journeyDetails', e.target.value)} /></div>
                     <div><label className="form-label">Description of incident</label><textarea className="form-input min-h-[80px]" placeholder="Describe what happened" value={claim.description} onChange={e => update('description', e.target.value)} /></div>
-                  </>
-                )}
-
-                {/* Fault selection */}
-                <div>
-                  <label className="form-label">Who is at fault?</label>
-                  <select className="form-input" value={claim.atFault} onChange={e => update('atFault', e.target.value)}>
-                    <option value="">Select...</option>
-                    <option value="me">I am at fault</option>
-                    <option value="other_party">The other party is at fault</option>
-                    <option value="shared">Shared fault</option>
-                  </select>
-                </div>
-                {claim.atFault === 'other_party' && (
-                  <div className="p-4 rounded-xl bg-primary/5 border border-primary/20 space-y-3">
-                    <div className="flex items-center gap-3">
-                      <Car className="w-5 h-5 text-primary" />
-                      <div>
-                        <p className="text-sm font-semibold text-foreground">Courtesy car available</p>
-                        <p className="text-xs text-muted-foreground">Since you're not at fault, you may be entitled to a courtesy car while yours is being repaired.</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <input type="checkbox" id="courtesyCar" className="w-4 h-4 rounded border-border text-primary focus:ring-primary/20" checked={claim.courtesyCarRequested} onChange={e => update('courtesyCarRequested', e.target.checked)} />
-                      <label htmlFor="courtesyCar" className="text-sm font-medium text-foreground">I'd like to request a courtesy car</label>
-                    </div>
-                  </div>
-                )}
-                <div className="space-y-3">
-                  <label className="form-label flex items-center gap-1.5"><Camera className="w-3.5 h-3.5" /> Your Vehicle Photos</label>
-                  <p className="text-xs text-muted-foreground -mt-2">Take photos of the damage to your vehicle</p>
-                  {photos.length > 0 && (
-                    <div className="grid grid-cols-4 gap-2">
-                      {photos.map(photo => (
-                        <div key={photo.id} className="relative aspect-square rounded-xl overflow-hidden bg-muted">
-                          <img src={getPhotoUrl(photo.file_path)} alt={photo.file_name} className="w-full h-full object-cover" />
-                          <button onClick={() => removePhoto(photo)}
-                            className="absolute top-1 right-1 w-5 h-5 rounded-full bg-foreground/80 text-card flex items-center justify-center">
-                            <X className="w-3 h-3" />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                  <div className="flex gap-2">
-                    <button type="button" onClick={async () => {
-                      if (!claim.id) {
-                        const savedId = await saveClaim({ ...claim, updatedAt: new Date().toISOString() });
-                        if (savedId) setClaim(prev => ({ ...prev, id: savedId }));
-                      }
-                      cameraInputRef.current?.click();
-                    }} disabled={uploading}
-                      className="btn-secondary flex-1 h-9 gap-2 text-xs">
-                      {uploading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Camera className="w-3.5 h-3.5" />}
-                      {t('claims.insurance.takePhoto', 'Take photo')}
-                    </button>
-                    <button type="button" onClick={async () => {
-                      if (!claim.id) {
-                        const savedId = await saveClaim({ ...claim, updatedAt: new Date().toISOString() });
-                        if (savedId) setClaim(prev => ({ ...prev, id: savedId }));
-                      }
-                      photoInputRef.current?.click();
-                    }} disabled={uploading}
-                      className="btn-secondary flex-1 h-9 gap-2 text-xs">
-                      {uploading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <span>📁</span>}
-                      {t('claims.insurance.gallery', 'Gallery')}
-                    </button>
-                  </div>
-                  <input ref={cameraInputRef} type="file" accept="image/*" capture="environment" multiple className="hidden" onChange={handlePhotoUpload} />
-                  <input ref={photoInputRef} type="file" accept="image/*" multiple className="hidden" onChange={handlePhotoUpload} />
-                </div>
-              </div>
-            )}
-
-            {/* Edit-only Step 2: Damage & Vehicle */}
-            {isEdit && step === 2 && (
-              <div className="card-surface space-y-4">
-                <div><label className="form-label">Speed before braking (km/h)</label><input className="form-input" type="text" placeholder="e.g. 50" value={claim.speedBeforeBraking} onChange={e => update('speedBeforeBraking', e.target.value)} /></div>
-                <div><label className="form-label">Damage description</label><textarea className="form-input min-h-[80px]" placeholder="Describe the damage to your vehicle" value={claim.damageDescription} onChange={e => update('damageDescription', e.target.value)} /></div>
-                <div className="flex items-center gap-3">
-                  <input type="checkbox" id="vehicleTowed" className="w-4 h-4 rounded border-border text-primary focus:ring-primary/20" checked={claim.vehicleTowed} onChange={e => update('vehicleTowed', e.target.checked)} />
-                  <label htmlFor="vehicleTowed" className="text-sm font-medium text-foreground">Vehicle was towed</label>
-                </div>
-                {claim.vehicleTowed && (
-                  <div><label className="form-label">Towing company</label><input className="form-input" placeholder="Company name" value={claim.towingCompany} onChange={e => update('towingCompany', e.target.value)} /></div>
-                )}
-                <div className="border-t border-border pt-4 mt-2">
-                  <p className="text-xs font-semibold text-muted-foreground mb-3">Repairer details</p>
-                  <div className="space-y-3">
-                    <div><label className="form-label">Repairer name</label><input className="form-input" value={claim.repairerName} onChange={e => update('repairerName', e.target.value)} /></div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <div><label className="form-label">Phone</label><input className="form-input" type="tel" value={claim.repairerPhone} onChange={e => update('repairerPhone', e.target.value)} /></div>
-                    </div>
-                    <div><label className="form-label">Address</label><input className="form-input" value={claim.repairerAddress} onChange={e => update('repairerAddress', e.target.value)} /></div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Other Party & Witnesses (step 2 in create, step 3 in edit) */}
-            {step === (isEdit ? 3 : 2) && (
-              <div className="space-y-4">
-                <div className="card-surface space-y-3">
-                  <label className="form-label mb-0">{t('claims.thirdParty.otherVehicles')}</label>
-                  {claim.thirdParties.length === 0 && (
-                    <button onClick={addTP} className="w-full p-4 rounded-xl bg-background text-center cursor-pointer hover:bg-muted/50 transition-colors">
-                      <p className="text-sm text-muted-foreground">{t('claims.thirdParty.noThirdParties')}</p>
-                      <span className="text-sm text-primary font-medium mt-2 inline-block hover:underline">+ Add other vehicle</span>
-                    </button>
-                  )}
-                  {claim.thirdParties.map((tp, i) => (
-                    <div key={i} className="p-4 rounded-xl bg-background space-y-3">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-semibold text-muted-foreground">{t('claims.thirdParty.vehicleNumber', { number: i + 1 })}</span>
-                        <button onClick={() => rmTP(i)} className="text-xs text-destructive hover:underline font-medium">{t('common.remove')}</button>
-                      </div>
-                      <div><label className="form-label">{t('claims.thirdParty.regoNo')}</label><input className="form-input tabular-nums text-base font-bold" placeholder="e.g. ABC123" value={tp.regoNumber} onChange={e => updTP(i, 'regoNumber', e.target.value.toUpperCase())} /></div>
-                      <div className="grid grid-cols-2 gap-3">
-                        <div><label className="form-label">{t('claims.thirdParty.ownerDriver')}</label><input className="form-input" placeholder="Driver's name" value={tp.ownerName} onChange={e => updTP(i, 'ownerName', e.target.value)} /></div>
-                        <div><label className="form-label">{t('claims.thirdParty.phone')}</label><input className="form-input" type="tel" placeholder="Phone number" value={tp.phone} onChange={e => updTP(i, 'phone', e.target.value)} /></div>
-                      </div>
-                      <div className="grid grid-cols-2 gap-3">
-                        <div><label className="form-label">Insurer</label><input className="form-input" placeholder="Insurance company" value={tp.insurer} onChange={e => updTP(i, 'insurer', e.target.value)} /></div>
-                        <div><label className="form-label">Policy #</label><input className="form-input" placeholder="Policy number" value={tp.claimNumber} onChange={e => updTP(i, 'claimNumber', e.target.value)} /></div>
-                      </div>
-                      {isEdit && (
-                        <>
-                          <div><label className="form-label">Address</label><input className="form-input" value={tp.address} onChange={e => updTP(i, 'address', e.target.value)} /></div>
-                          <div className="grid grid-cols-2 gap-3">
-                            <div><label className="form-label">Make</label><input className="form-input" value={tp.make} onChange={e => updTP(i, 'make', e.target.value)} /></div>
-                            <div><label className="form-label">Model</label><input className="form-input" value={tp.model} onChange={e => updTP(i, 'model', e.target.value)} /></div>
-                          </div>
-                          <div><label className="form-label">Damage description</label><textarea className="form-input min-h-[60px]" value={tp.damageDescription} onChange={e => updTP(i, 'damageDescription', e.target.value)} /></div>
-                        </>
-                      )}
-
-                      {/* Third-party photos: vehicle damage, rego plate, driver license */}
-                      {claim.id && user && (
-                        <ThirdPartyPhotos
-                          tpIndex={i}
-                          claimId={claim.id}
-                          userId={user.id}
-                          onRegoDetected={(rego) => updTP(i, 'regoNumber', rego)}
-                          onLicenseDetected={(data) => {
-                            if (data.fullName) updTP(i, 'ownerName', data.fullName);
-                            if (data.address) updTP(i, 'address', data.address);
-                          }}
-                          onDamageDescriptionGenerated={(desc) => updTP(i, 'damageDescription', desc)}
-                        />
-                      )}
-                    </div>
-                  ))}
-                  {claim.thirdParties.length > 0 && (
-                    <button onClick={addTP} className="w-full py-3 rounded-xl border border-dashed border-primary/30 text-sm text-primary font-medium hover:bg-primary/5 transition-colors">
-                      + Add another vehicle
-                    </button>
-                  )}
-                </div>
-
-                <div className="card-surface space-y-3">
-                  <label className="form-label mb-0">{t('claims.witnesses.title')}</label>
-                  {claim.witnesses.length === 0 && (
-                    <button onClick={addW} className="w-full p-4 rounded-xl bg-background text-center cursor-pointer hover:bg-muted/50 transition-colors">
-                      <p className="text-sm text-muted-foreground">{t('claims.witnesses.noWitnesses')}</p>
-                      <span className="text-sm text-primary font-medium mt-2 inline-block">+ {t('claims.witnesses.addWitness')}</span>
-                    </button>
-                  )}
-                  {claim.witnesses.map((w, i) => (
-                    <div key={i} className="p-4 rounded-xl bg-background space-y-3">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-semibold text-muted-foreground">{t('claims.witnesses.witnessNumber', { number: i + 1 })}</span>
-                        <button onClick={() => rmW(i)} className="text-xs text-destructive hover:underline font-medium">{t('common.remove')}</button>
-                      </div>
-                      <div className="grid grid-cols-2 gap-3">
-                        <div><label className="form-label">{t('claims.witnesses.fullName')}</label><input className="form-input" value={w.name} onChange={e => updW(i, 'name', e.target.value)} /></div>
-                        <div><label className="form-label">{t('claims.witnesses.phone')}</label><input className="form-input" value={w.phone} onChange={e => updW(i, 'phone', e.target.value)} /></div>
-                      </div>
-                      {isEdit && (
-                        <>
-                          <div><label className="form-label">Address</label><input className="form-input" value={w.address} onChange={e => updW(i, 'address', e.target.value)} /></div>
-                          <div className="flex items-center gap-3">
-                            <input type="checkbox" id={`passenger-${i}`} className="w-4 h-4 rounded border-border text-primary focus:ring-primary/20" checked={w.isPassenger} onChange={e => updW(i, 'isPassenger', e.target.checked)} />
-                            <label htmlFor={`passenger-${i}`} className="text-sm text-foreground">Was a passenger</label>
-                          </div>
-                        </>
-                      )}
-                    </div>
-                  ))}
-                  {claim.witnesses.length > 0 && (
-                    <button onClick={addW} className="w-full py-3 rounded-xl border border-dashed border-primary/30 text-sm text-primary font-medium hover:bg-primary/5 transition-colors">
-                      + {t('claims.witnesses.addWitness')}
-                    </button>
-                  )}
-                </div>
-
-                {isEdit && (
-                  <div className="card-surface space-y-3">
-                    <div className="flex items-center gap-3">
-                      <input type="checkbox" id="policeAttended" className="w-4 h-4 rounded border-border text-primary focus:ring-primary/20" checked={claim.policeAttended} onChange={e => update('policeAttended', e.target.checked)} />
-                      <label htmlFor="policeAttended" className="text-sm font-medium text-foreground">Police attended</label>
-                    </div>
-                    {claim.policeAttended && (
-                      <div><label className="form-label">Officer details</label><input className="form-input" placeholder="Officer name / badge number" value={claim.policeOfficerDetails} onChange={e => update('policeOfficerDetails', e.target.value)} /></div>
-                    )}
-                    <div className="flex items-center gap-3">
-                      <input type="checkbox" id="anyoneHurt" className="w-4 h-4 rounded border-border text-primary focus:ring-primary/20" checked={claim.anyoneHurt} onChange={e => update('anyoneHurt', e.target.checked)} />
-                      <label htmlFor="anyoneHurt" className="text-sm font-medium text-foreground">Anyone injured</label>
-                    </div>
-                    {claim.anyoneHurt && (
-                      <div><label className="form-label">Injury details</label><textarea className="form-input min-h-[60px]" value={claim.injuryDetails} onChange={e => update('injuryDetails', e.target.value)} /></div>
-                    )}
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Edit-only Step 4: Conditions & Liability */}
-            {isEdit && step === 4 && (
-              <div className="card-surface space-y-4">
-                <div>
-                  <label className="form-label">Weather condition</label>
-                  <select className="form-input" value={claim.weatherCondition} onChange={e => update('weatherCondition', e.target.value)}>
-                    <option value="">Select...</option>
-                    {WEATHER_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-                  </select>
-                </div>
-                <div>
-                  <label className="form-label">Road condition</label>
-                  <select className="form-input" value={claim.roadCondition} onChange={e => update('roadCondition', e.target.value)}>
-                    <option value="">Select...</option>
-                    {ROAD_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-                  </select>
-                </div>
-                <div className="flex items-center gap-3">
-                  <input type="checkbox" id="substance" className="w-4 h-4 rounded border-border text-primary focus:ring-primary/20" checked={claim.driverConsumedSubstance} onChange={e => update('driverConsumedSubstance', e.target.checked)} />
-                  <label htmlFor="substance" className="text-sm font-medium text-foreground">Driver consumed alcohol or drugs</label>
-                </div>
-                {claim.driverConsumedSubstance && (
-                  <div><label className="form-label">Substance details</label><input className="form-input" value={claim.substanceDetails} onChange={e => update('substanceDetails', e.target.value)} /></div>
-                )}
-                <div className="border-t border-border pt-4 mt-2">
-                  <p className="text-xs font-semibold text-muted-foreground mb-3">Fault & Liability</p>
-                  <div className="space-y-3">
                     <div>
                       <label className="form-label">Who is at fault?</label>
                       <select className="form-input" value={claim.atFault} onChange={e => update('atFault', e.target.value)}>
@@ -737,82 +782,306 @@ export default function ClaimWizard() {
                         </div>
                       </div>
                     )}
-                    <div><label className="form-label">Who is to blame and why?</label><textarea className="form-input min-h-[80px]" value={claim.blameDescription} onChange={e => update('blameDescription', e.target.value)} /></div>
-                    <div className="flex items-center gap-3">
-                      <input type="checkbox" id="liabilityAdmitted" className="w-4 h-4 rounded border-border text-primary focus:ring-primary/20" checked={claim.liabilityAdmitted} onChange={e => update('liabilityAdmitted', e.target.checked)} />
-                      <label htmlFor="liabilityAdmitted" className="text-sm font-medium text-foreground">Liability admitted</label>
+                    <div className="space-y-3">
+                      <label className="form-label flex items-center gap-1.5"><Camera className="w-3.5 h-3.5" /> Your Vehicle Photos</label>
+                      <p className="text-xs text-muted-foreground -mt-2">Take photos of the damage to your vehicle</p>
+                      {photos.length > 0 && (
+                        <div className="grid grid-cols-4 gap-2">
+                          {photos.map(photo => (
+                            <div key={photo.id} className="relative aspect-square rounded-xl overflow-hidden bg-muted">
+                              <img src={getPhotoUrl(photo.file_path)} alt={photo.file_name} className="w-full h-full object-cover" />
+                              <button onClick={() => removePhoto(photo)}
+                                className="absolute top-1 right-1 w-5 h-5 rounded-full bg-foreground/80 text-card flex items-center justify-center">
+                                <X className="w-3 h-3" />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      <div className="flex gap-2">
+                        <button type="button" onClick={async () => {
+                          if (!claim.id) {
+                            const savedId = await saveClaim({ ...claim, updatedAt: new Date().toISOString() });
+                            if (savedId) setClaim(prev => ({ ...prev, id: savedId }));
+                          }
+                          cameraInputRef.current?.click();
+                        }} disabled={uploading}
+                          className="btn-secondary flex-1 h-9 gap-2 text-xs">
+                          {uploading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Camera className="w-3.5 h-3.5" />}
+                          {t('claims.insurance.takePhoto', 'Take photo')}
+                        </button>
+                        <button type="button" onClick={async () => {
+                          if (!claim.id) {
+                            const savedId = await saveClaim({ ...claim, updatedAt: new Date().toISOString() });
+                            if (savedId) setClaim(prev => ({ ...prev, id: savedId }));
+                          }
+                          photoInputRef.current?.click();
+                        }} disabled={uploading}
+                          className="btn-secondary flex-1 h-9 gap-2 text-xs">
+                          {uploading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <span>📁</span>}
+                          {t('claims.insurance.gallery', 'Gallery')}
+                        </button>
+                      </div>
+                      <input ref={cameraInputRef} type="file" accept="image/*" capture="environment" multiple className="hidden" onChange={handlePhotoUpload} />
+                      <input ref={photoInputRef} type="file" accept="image/*" multiple className="hidden" onChange={handlePhotoUpload} />
                     </div>
-                    {claim.liabilityAdmitted && (
-                      <div><label className="form-label">Details</label><textarea className="form-input min-h-[60px]" value={claim.liabilityDetails} onChange={e => update('liabilityDetails', e.target.value)} /></div>
+                  </div>
+                )}
+
+                {/* Step 2: Damage & Vehicle */}
+                {step === 2 && (
+                  <div className="card-surface space-y-4">
+                    <div><label className="form-label">Speed before braking (km/h)</label><input className="form-input" type="text" placeholder="e.g. 50" value={claim.speedBeforeBraking} onChange={e => update('speedBeforeBraking', e.target.value)} /></div>
+                    <div><label className="form-label">Damage description</label><textarea className="form-input min-h-[80px]" placeholder="Describe the damage to your vehicle" value={claim.damageDescription} onChange={e => update('damageDescription', e.target.value)} /></div>
+                    <div className="flex items-center gap-3">
+                      <input type="checkbox" id="vehicleTowed" className="w-4 h-4 rounded border-border text-primary focus:ring-primary/20" checked={claim.vehicleTowed} onChange={e => update('vehicleTowed', e.target.checked)} />
+                      <label htmlFor="vehicleTowed" className="text-sm font-medium text-foreground">Vehicle was towed</label>
+                    </div>
+                    {claim.vehicleTowed && (
+                      <div><label className="form-label">Towing company</label><input className="form-input" placeholder="Company name" value={claim.towingCompany} onChange={e => update('towingCompany', e.target.value)} /></div>
+                    )}
+                    <div className="border-t border-border pt-4 mt-2">
+                      <p className="text-xs font-semibold text-muted-foreground mb-3">Repairer details</p>
+                      <div className="space-y-3">
+                        <div><label className="form-label">Repairer name</label><input className="form-input" value={claim.repairerName} onChange={e => update('repairerName', e.target.value)} /></div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <div><label className="form-label">Phone</label><input className="form-input" type="tel" value={claim.repairerPhone} onChange={e => update('repairerPhone', e.target.value)} /></div>
+                        </div>
+                        <div><label className="form-label">Address</label><input className="form-input" value={claim.repairerAddress} onChange={e => update('repairerAddress', e.target.value)} /></div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Step 3: Other Party & Witnesses */}
+                {step === 3 && (
+                  <div className="space-y-4">
+                    <div className="card-surface space-y-3">
+                      <label className="form-label mb-0">{t('claims.thirdParty.otherVehicles')}</label>
+                      {claim.thirdParties.length === 0 && (
+                        <button onClick={addTP} className="w-full p-4 rounded-xl bg-background text-center cursor-pointer hover:bg-muted/50 transition-colors">
+                          <p className="text-sm text-muted-foreground">{t('claims.thirdParty.noThirdParties')}</p>
+                          <span className="text-sm text-primary font-medium mt-2 inline-block hover:underline">+ Add other vehicle</span>
+                        </button>
+                      )}
+                      {claim.thirdParties.map((tp, i) => (
+                        <div key={i} className="p-4 rounded-xl bg-background space-y-3">
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-semibold text-muted-foreground">{t('claims.thirdParty.vehicleNumber', { number: i + 1 })}</span>
+                            <button onClick={() => rmTP(i)} className="text-xs text-destructive hover:underline font-medium">{t('common.remove')}</button>
+                          </div>
+                          <div><label className="form-label">{t('claims.thirdParty.regoNo')}</label><input className="form-input tabular-nums text-base font-bold" placeholder="e.g. ABC123" value={tp.regoNumber} onChange={e => updTP(i, 'regoNumber', e.target.value.toUpperCase())} /></div>
+                          <div className="grid grid-cols-2 gap-3">
+                            <div><label className="form-label">{t('claims.thirdParty.ownerDriver')}</label><input className="form-input" placeholder="Driver's name" value={tp.ownerName} onChange={e => updTP(i, 'ownerName', e.target.value)} /></div>
+                            <div><label className="form-label">{t('claims.thirdParty.phone')}</label><input className="form-input" type="tel" placeholder="Phone number" value={tp.phone} onChange={e => updTP(i, 'phone', e.target.value)} /></div>
+                          </div>
+                          <div className="grid grid-cols-2 gap-3">
+                            <div><label className="form-label">Insurer</label><input className="form-input" placeholder="Insurance company" value={tp.insurer} onChange={e => updTP(i, 'insurer', e.target.value)} /></div>
+                            <div><label className="form-label">Policy #</label><input className="form-input" placeholder="Policy number" value={tp.claimNumber} onChange={e => updTP(i, 'claimNumber', e.target.value)} /></div>
+                          </div>
+                          <div><label className="form-label">Address</label><input className="form-input" value={tp.address} onChange={e => updTP(i, 'address', e.target.value)} /></div>
+                          <div className="grid grid-cols-2 gap-3">
+                            <div><label className="form-label">Make</label><input className="form-input" value={tp.make} onChange={e => updTP(i, 'make', e.target.value)} /></div>
+                            <div><label className="form-label">Model</label><input className="form-input" value={tp.model} onChange={e => updTP(i, 'model', e.target.value)} /></div>
+                          </div>
+                          <div><label className="form-label">Damage description</label><textarea className="form-input min-h-[60px]" value={tp.damageDescription} onChange={e => updTP(i, 'damageDescription', e.target.value)} /></div>
+                          {claim.id && user && (
+                            <ThirdPartyPhotos
+                              tpIndex={i}
+                              claimId={claim.id}
+                              userId={user.id}
+                              onRegoDetected={(rego) => updTP(i, 'regoNumber', rego)}
+                              onLicenseDetected={(data) => {
+                                if (data.fullName) updTP(i, 'ownerName', data.fullName);
+                                if (data.address) updTP(i, 'address', data.address);
+                              }}
+                              onDamageDescriptionGenerated={(desc) => updTP(i, 'damageDescription', desc)}
+                            />
+                          )}
+                        </div>
+                      ))}
+                      {claim.thirdParties.length > 0 && (
+                        <button onClick={addTP} className="w-full py-3 rounded-xl border border-dashed border-primary/30 text-sm text-primary font-medium hover:bg-primary/5 transition-colors">
+                          + Add another vehicle
+                        </button>
+                      )}
+                    </div>
+
+                    <div className="card-surface space-y-3">
+                      <label className="form-label mb-0">{t('claims.witnesses.title')}</label>
+                      {claim.witnesses.length === 0 && (
+                        <button onClick={addW} className="w-full p-4 rounded-xl bg-background text-center cursor-pointer hover:bg-muted/50 transition-colors">
+                          <p className="text-sm text-muted-foreground">{t('claims.witnesses.noWitnesses')}</p>
+                          <span className="text-sm text-primary font-medium mt-2 inline-block">+ {t('claims.witnesses.addWitness')}</span>
+                        </button>
+                      )}
+                      {claim.witnesses.map((w, i) => (
+                        <div key={i} className="p-4 rounded-xl bg-background space-y-3">
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-semibold text-muted-foreground">{t('claims.witnesses.witnessNumber', { number: i + 1 })}</span>
+                            <button onClick={() => rmW(i)} className="text-xs text-destructive hover:underline font-medium">{t('common.remove')}</button>
+                          </div>
+                          <div className="grid grid-cols-2 gap-3">
+                            <div><label className="form-label">{t('claims.witnesses.fullName')}</label><input className="form-input" value={w.name} onChange={e => updW(i, 'name', e.target.value)} /></div>
+                            <div><label className="form-label">{t('claims.witnesses.phone')}</label><input className="form-input" value={w.phone} onChange={e => updW(i, 'phone', e.target.value)} /></div>
+                          </div>
+                          <div><label className="form-label">Address</label><input className="form-input" value={w.address} onChange={e => updW(i, 'address', e.target.value)} /></div>
+                          <div className="flex items-center gap-3">
+                            <input type="checkbox" id={`passenger-${i}`} className="w-4 h-4 rounded border-border text-primary focus:ring-primary/20" checked={w.isPassenger} onChange={e => updW(i, 'isPassenger', e.target.checked)} />
+                            <label htmlFor={`passenger-${i}`} className="text-sm text-foreground">Was a passenger</label>
+                          </div>
+                        </div>
+                      ))}
+                      {claim.witnesses.length > 0 && (
+                        <button onClick={addW} className="w-full py-3 rounded-xl border border-dashed border-primary/30 text-sm text-primary font-medium hover:bg-primary/5 transition-colors">
+                          + {t('claims.witnesses.addWitness')}
+                        </button>
+                      )}
+                    </div>
+
+                    <div className="card-surface space-y-3">
+                      <div className="flex items-center gap-3">
+                        <input type="checkbox" id="policeAttended" className="w-4 h-4 rounded border-border text-primary focus:ring-primary/20" checked={claim.policeAttended} onChange={e => update('policeAttended', e.target.checked)} />
+                        <label htmlFor="policeAttended" className="text-sm font-medium text-foreground">Police attended</label>
+                      </div>
+                      {claim.policeAttended && (
+                        <div><label className="form-label">Officer details</label><input className="form-input" placeholder="Officer name / badge number" value={claim.policeOfficerDetails} onChange={e => update('policeOfficerDetails', e.target.value)} /></div>
+                      )}
+                      <div className="flex items-center gap-3">
+                        <input type="checkbox" id="anyoneHurt" className="w-4 h-4 rounded border-border text-primary focus:ring-primary/20" checked={claim.anyoneHurt} onChange={e => update('anyoneHurt', e.target.checked)} />
+                        <label htmlFor="anyoneHurt" className="text-sm font-medium text-foreground">Anyone injured</label>
+                      </div>
+                      {claim.anyoneHurt && (
+                        <div><label className="form-label">Injury details</label><textarea className="form-input min-h-[60px]" value={claim.injuryDetails} onChange={e => update('injuryDetails', e.target.value)} /></div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Step 4: Conditions & Liability */}
+                {step === 4 && (
+                  <div className="card-surface space-y-4">
+                    <div>
+                      <label className="form-label">Weather condition</label>
+                      <select className="form-input" value={claim.weatherCondition} onChange={e => update('weatherCondition', e.target.value)}>
+                        <option value="">Select...</option>
+                        {WEATHER_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="form-label">Road condition</label>
+                      <select className="form-input" value={claim.roadCondition} onChange={e => update('roadCondition', e.target.value)}>
+                        <option value="">Select...</option>
+                        {ROAD_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+                      </select>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <input type="checkbox" id="substance" className="w-4 h-4 rounded border-border text-primary focus:ring-primary/20" checked={claim.driverConsumedSubstance} onChange={e => update('driverConsumedSubstance', e.target.checked)} />
+                      <label htmlFor="substance" className="text-sm font-medium text-foreground">Driver consumed alcohol or drugs</label>
+                    </div>
+                    {claim.driverConsumedSubstance && (
+                      <div><label className="form-label">Substance details</label><input className="form-input" value={claim.substanceDetails} onChange={e => update('substanceDetails', e.target.value)} /></div>
+                    )}
+                    <div className="border-t border-border pt-4 mt-2">
+                      <p className="text-xs font-semibold text-muted-foreground mb-3">Fault & Liability</p>
+                      <div className="space-y-3">
+                        <div>
+                          <label className="form-label">Who is at fault?</label>
+                          <select className="form-input" value={claim.atFault} onChange={e => update('atFault', e.target.value)}>
+                            <option value="">Select...</option>
+                            <option value="me">I am at fault</option>
+                            <option value="other_party">The other party is at fault</option>
+                            <option value="shared">Shared fault</option>
+                          </select>
+                        </div>
+                        {claim.atFault === 'other_party' && (
+                          <div className="p-4 rounded-xl bg-primary/5 border border-primary/20 space-y-3">
+                            <div className="flex items-center gap-3">
+                              <Car className="w-5 h-5 text-primary" />
+                              <div>
+                                <p className="text-sm font-semibold text-foreground">Courtesy car available</p>
+                                <p className="text-xs text-muted-foreground">Since you're not at fault, you may be entitled to a courtesy car.</p>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <input type="checkbox" id="courtesyCarEdit2" className="w-4 h-4 rounded border-border text-primary focus:ring-primary/20" checked={claim.courtesyCarRequested} onChange={e => update('courtesyCarRequested', e.target.checked)} />
+                              <label htmlFor="courtesyCarEdit2" className="text-sm font-medium text-foreground">I'd like to request a courtesy car</label>
+                            </div>
+                          </div>
+                        )}
+                        <div><label className="form-label">Who is to blame and why?</label><textarea className="form-input min-h-[80px]" value={claim.blameDescription} onChange={e => update('blameDescription', e.target.value)} /></div>
+                        <div className="flex items-center gap-3">
+                          <input type="checkbox" id="liabilityAdmitted" className="w-4 h-4 rounded border-border text-primary focus:ring-primary/20" checked={claim.liabilityAdmitted} onChange={e => update('liabilityAdmitted', e.target.checked)} />
+                          <label htmlFor="liabilityAdmitted" className="text-sm font-medium text-foreground">Liability admitted</label>
+                        </div>
+                        {claim.liabilityAdmitted && (
+                          <div><label className="form-label">Details</label><textarea className="form-input min-h-[60px]" value={claim.liabilityDetails} onChange={e => update('liabilityDetails', e.target.value)} /></div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Step 5: Review */}
+                {step === STEPS.length - 1 && (
+                  <div className="space-y-3">
+                    <RSection title={t('claims.review.incident')}>
+                      <RRow label={t('claims.review.date')} value={claim.incidentDate} />
+                      <RRow label={t('claims.review.time')} value={claim.incidentTime} />
+                      <RRow label={t('claims.review.location')} value={claim.incidentLocation} />
+                      {claim.vehicleUsage && <RRow label="Usage" value={claim.vehicleUsage} />}
+                      {claim.description && <RRow label="Description" value={claim.description} />}
+                    </RSection>
+                    <RSection title={t('claims.review.yourVehicle')}>
+                      <RRow label={t('claims.review.vehicle')} value={selV ? `${selV.year} ${selV.make} ${selV.model}` : '—'} />
+                      <RRow label={t('claims.review.rego')} value={selV?.regoNumber || '—'} />
+                      <RRow label={t('claims.review.photos')} value={t('claims.review.uploaded', { count: photos.length })} />
+                      {claim.damageDescription && <RRow label={t('claims.review.damage')} value={claim.damageDescription} />}
+                      {claim.speedBeforeBraking && <RRow label="Speed" value={`${claim.speedBeforeBraking} km/h`} />}
+                    </RSection>
+                    <RSection title={t('claims.review.thirdParties')}>
+                      {claim.thirdParties.length === 0 ? <p className="text-sm text-muted-foreground">{t('common.none')}</p> : claim.thirdParties.map((tp, i) => (
+                        <div key={i} className="p-3 rounded-xl bg-background space-y-0.5">
+                          <RRow label="Rego" value={tp.regoNumber} />
+                          <RRow label="Driver" value={tp.ownerName} />
+                          {tp.phone && <RRow label="Phone" value={tp.phone} />}
+                        </div>
+                      ))}
+                    </RSection>
+                    {claim.atFault && (
+                      <RSection title="Fault">
+                        <RRow label="At fault" value={claim.atFault === 'me' ? 'I am at fault' : claim.atFault === 'other_party' ? 'Other party at fault' : 'Shared fault'} />
+                        {claim.atFault === 'other_party' && <RRow label="Courtesy car" value={claim.courtesyCarRequested ? 'Requested' : 'Not requested'} />}
+                      </RSection>
+                    )}
+                    <RSection title={t('claims.review.witnesses')}>
+                      {claim.witnesses.length === 0 ? <p className="text-sm text-muted-foreground">{t('common.none')}</p> : claim.witnesses.map((w, i) => <RRow key={i} label={t('claims.witnesses.witnessNumber', { number: i + 1 })} value={`${w.name} – ${w.phone}`} />)}
+                    </RSection>
+                    {(claim.weatherCondition || claim.roadCondition || claim.blameDescription) && (
+                      <RSection title="Conditions & Liability">
+                        {claim.weatherCondition && <RRow label="Weather" value={WEATHER_OPTIONS.find(o => o.value === claim.weatherCondition)?.label || claim.weatherCondition} />}
+                        {claim.roadCondition && <RRow label="Road" value={ROAD_OPTIONS.find(o => o.value === claim.roadCondition)?.label || claim.roadCondition} />}
+                        {claim.blameDescription && <RRow label="Blame" value={claim.blameDescription} />}
+                      </RSection>
                     )}
                   </div>
-                </div>
-              </div>
-            )}
+                )}
 
-            {/* Review (step 3 in create, step 5 in edit) */}
-            {step === STEPS.length - 1 && (
-              <div className="space-y-3">
-                {!isEdit && (
-                  <div className="p-3 rounded-xl bg-primary/5 border border-primary/20">
-                    <p className="text-xs text-primary font-medium">💡 You can add more details like insurance, repairer, conditions and liability from the incident detail page later.</p>
-                  </div>
-                )}
-                <RSection title={t('claims.review.incident')}>
-                  <RRow label={t('claims.review.date')} value={claim.incidentDate} />
-                  <RRow label={t('claims.review.time')} value={claim.incidentTime} />
-                  <RRow label={t('claims.review.location')} value={claim.incidentLocation} />
-                  {isEdit && claim.vehicleUsage && <RRow label="Usage" value={claim.vehicleUsage} />}
-                  {isEdit && claim.description && <RRow label="Description" value={claim.description} />}
-                </RSection>
-                <RSection title={t('claims.review.yourVehicle')}>
-                  <RRow label={t('claims.review.vehicle')} value={selV ? `${selV.year} ${selV.make} ${selV.model}` : '—'} />
-                  <RRow label={t('claims.review.rego')} value={selV?.regoNumber || '—'} />
-                  <RRow label={t('claims.review.photos')} value={t('claims.review.uploaded', { count: photos.length })} />
-                  {claim.damageDescription && <RRow label={t('claims.review.damage')} value={claim.damageDescription} />}
-                  {isEdit && claim.speedBeforeBraking && <RRow label="Speed" value={`${claim.speedBeforeBraking} km/h`} />}
-                </RSection>
-                <RSection title={t('claims.review.thirdParties')}>
-                  {claim.thirdParties.length === 0 ? <p className="text-sm text-muted-foreground">{t('common.none')}</p> : claim.thirdParties.map((tp, i) => (
-                    <div key={i} className="p-3 rounded-xl bg-background space-y-0.5">
-                      <RRow label="Rego" value={tp.regoNumber} />
-                      <RRow label="Driver" value={tp.ownerName} />
-                      {tp.phone && <RRow label="Phone" value={tp.phone} />}
-                    </div>
-                  ))}
-                </RSection>
-                {claim.atFault && (
-                  <RSection title="Fault">
-                    <RRow label="At fault" value={claim.atFault === 'me' ? 'I am at fault' : claim.atFault === 'other_party' ? 'Other party at fault' : 'Shared fault'} />
-                    {claim.atFault === 'other_party' && <RRow label="Courtesy car" value={claim.courtesyCarRequested ? 'Requested' : 'Not requested'} />}
-                  </RSection>
-                )}
-                <RSection title={t('claims.review.witnesses')}>
-                  {claim.witnesses.length === 0 ? <p className="text-sm text-muted-foreground">{t('common.none')}</p> : claim.witnesses.map((w, i) => <RRow key={i} label={t('claims.witnesses.witnessNumber', { number: i + 1 })} value={`${w.name} – ${w.phone}`} />)}
-                </RSection>
-                {isEdit && (claim.weatherCondition || claim.roadCondition || claim.blameDescription) && (
-                  <RSection title="Conditions & Liability">
-                    {claim.weatherCondition && <RRow label="Weather" value={WEATHER_OPTIONS.find(o => o.value === claim.weatherCondition)?.label || claim.weatherCondition} />}
-                    {claim.roadCondition && <RRow label="Road" value={ROAD_OPTIONS.find(o => o.value === claim.roadCondition)?.label || claim.roadCondition} />}
-                    {claim.blameDescription && <RRow label="Blame" value={claim.blameDescription} />}
-                  </RSection>
+              </motion.div>
+            </AnimatePresence>
+
+            <div className="flex flex-col gap-3 pb-16 md:pb-0">
+              <div className="flex gap-3">
+                {step > 0 && <button onClick={prev} disabled={navigating} className="btn-secondary flex-1 h-11">{navigating ? <Loader2 className="w-4 h-4 animate-spin" /> : <ArrowLeft className="w-4 h-4" strokeWidth={1.5} />} {t('common.back')}</button>}
+                {step < STEPS.length - 1 ? (
+                  <button onClick={next} disabled={navigating} className="btn-primary flex-1 h-11">{navigating ? <Loader2 className="w-4 h-4 animate-spin" /> : <>{t('common.next')} <ArrowRight className="w-4 h-4" /></>}</button>
+                ) : (
+                  <button onClick={submit} disabled={submitting} className="btn-primary flex-1 h-11">{submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} {t('common.save')} report</button>
                 )}
               </div>
-            )}
-
-          </motion.div>
-        </AnimatePresence>
-
-        <div className="flex flex-col gap-3 pb-16 md:pb-0">
-          <div className="flex gap-3">
-            {step > 0 && <button onClick={prev} disabled={navigating} className="btn-secondary flex-1 h-11">{navigating ? <Loader2 className="w-4 h-4 animate-spin" /> : <ArrowLeft className="w-4 h-4" strokeWidth={1.5} />} {t('common.back')}</button>}
-            {step < STEPS.length - 1 ? (
-              <button onClick={next} disabled={navigating} className="btn-primary flex-1 h-11">{navigating ? <Loader2 className="w-4 h-4 animate-spin" /> : <>{t('common.next')} <ArrowRight className="w-4 h-4" /></>}</button>
-            ) : (
-              <button onClick={submit} disabled={submitting} className="btn-primary flex-1 h-11">{submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} {t('common.save')} report</button>
-            )}
-          </div>
-        </div>
+            </div>
+          </>
+        )}
       </div>
     </AppLayout>
   );
