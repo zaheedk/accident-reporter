@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Car, FileText, Plus, Wrench, Truck, Info, HelpCircle, BookOpen, Shield, Menu, X, LogOut, Newspaper, Home, Phone } from 'lucide-react';
+import { LayoutDashboard, Car, FileText, Plus, Wrench, Truck, Info, HelpCircle, BookOpen, Shield, Menu, X, LogOut, Newspaper, Home, Phone, FolderOpen } from 'lucide-react';
 import NotificationBell from '@/components/NotificationBell';
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
@@ -28,6 +28,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     { to: '/dashboard', icon: LayoutDashboard, label: t('nav.dashboard') },
     { to: '/vehicles', icon: Car, label: t('nav.vehicles') },
     { to: '/claims', icon: FileText, label: t('nav.claims') },
+    { to: '/documents', icon: FolderOpen, label: 'Documents' },
     { to: '/panel-shops', icon: Wrench, label: t('nav.shops') },
   ];
 
