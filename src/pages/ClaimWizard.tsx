@@ -323,6 +323,19 @@ export default function ClaimWizard() {
   const rmW = (i: number) => update('witnesses', claim.witnesses.filter((_, idx) => idx !== i));
   const selV = vehicles.find(v => v.id === claim.vehicleId);
 
+  const toggleSection = (section: string) => {
+    setVisitedSections(prev => new Set(prev).add(section));
+    setOpenSection(prev => prev === section ? null : section);
+    autoSave();
+  };
+
+  const checklistSections = [
+    { key: 'vehicle', label: t('claims.steps.yourVehicle'), number: 1 },
+    { key: 'scene', label: 'At the Scene', number: 2 },
+    { key: 'parties', label: 'Other Party & Witnesses', number: 3 },
+    { key: 'review', label: t('claims.steps.review'), number: 4 },
+  ];
+
   if (loadingClaim) {
     return (
       <AppLayout>
