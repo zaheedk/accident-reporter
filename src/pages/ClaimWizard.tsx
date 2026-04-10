@@ -135,17 +135,20 @@ export default function ClaimWizard() {
       setVehicles(v);
       const regoParam = searchParams.get('rego');
       if (!id && regoParam) {
-        // Auto-select vehicle by rego from external link
         const match = v.find(veh => veh.regoNumber?.toLowerCase() === regoParam.toLowerCase());
         if (match) {
           setClaim(prev => ({ ...prev, vehicleId: match.id, insuranceCompany: match.insuranceCompany || '' }));
           setStep(1);
           setAutoSkipped(true);
+          setVisitedSections(prev => new Set(prev).add('vehicle'));
+          setOpenSection('scene');
         }
       } else if (!id && v.length === 1 && !autoSkipped) {
         setClaim(prev => ({ ...prev, vehicleId: v[0].id, insuranceCompany: v[0].insuranceCompany || '' }));
         setStep(1);
         setAutoSkipped(true);
+        setVisitedSections(prev => new Set(prev).add('vehicle'));
+        setOpenSection('scene');
       }
     });
     if (id) {
