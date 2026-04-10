@@ -74,6 +74,10 @@ export default function ClaimWizard() {
   const photoInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
 
+  // Checklist state for new claims
+  const [openSection, setOpenSection] = useState<string | null>('vehicle');
+  const [visitedSections, setVisitedSections] = useState<Set<string>>(new Set());
+
   const detectLocation = useCallback(async () => {
     if (!navigator.geolocation) {
       toast.error('Geolocation is not supported by your browser');
