@@ -28,6 +28,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     { to: '/dashboard', icon: LayoutDashboard, label: t('nav.dashboard') },
     { to: '/vehicles', icon: Car, label: t('nav.vehicles') },
     { to: '/claims', icon: FileText, label: t('nav.claims') },
+    { to: '/documents', icon: FolderOpen, label: 'Documents' },
     { to: '/panel-shops', icon: Wrench, label: t('nav.shops') },
   ];
 
