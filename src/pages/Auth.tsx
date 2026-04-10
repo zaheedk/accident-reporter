@@ -131,7 +131,7 @@ export default function Auth() {
       </div>
 
       {/* Form section */}
-      <div className="flex-1 px-6 pt-8 pb-8 -mt-3 rounded-t-3xl relative z-10 lg:mt-0 lg:rounded-none lg:flex lg:items-center lg:justify-center" style={{ background: 'hsl(220 20% 97%)', boxShadow: '0 -4px 24px rgba(0,0,0,0.08)' }}>
+      <div className="flex-1 px-6 pt-6 pb-6 lg:pt-8 lg:pb-8 -mt-3 rounded-t-3xl relative z-10 lg:mt-0 lg:rounded-none lg:flex lg:items-center lg:justify-center" style={{ background: 'hsl(220 20% 97%)', boxShadow: '0 -4px 24px rgba(0,0,0,0.08)' }}>
         <div className="max-w-sm mx-auto">
           {/* Secure portal badge */}
           <div className="flex items-center gap-2 mb-4">
@@ -289,11 +289,11 @@ export default function Auth() {
             ))}
           </div>
 
-          <div className="mt-5">
+          <div className="hidden lg:block mt-5">
             <LanguageSwitcher />
           </div>
 
-          <div className="flex items-center justify-center gap-3 mt-4 text-xs text-muted-foreground flex-wrap">
+          <div className="hidden lg:flex items-center justify-center gap-3 mt-4 text-xs text-muted-foreground flex-wrap">
             <a href="/panel-shops" className="hover:text-foreground transition-colors">{t('nav.shops')}</a>
             <span>·</span>
             <a href="/tow-companies" className="hover:text-foreground transition-colors">{t('nav.towCompanies')}</a>
