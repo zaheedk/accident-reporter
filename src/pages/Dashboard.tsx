@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Car, FileText, Plus, AlertTriangle, ChevronRight, ArrowUpRight, LogOut, User, Shield, Phone, Search, MapPin, X, MessageSquare, ArrowDownRight, FolderOpen } from 'lucide-react';
+import crashIcon from '@/assets/crash-icon.png';
 import { getVehicles, getClaims } from '@/lib/storage';
 import { useAuth } from '@/contexts/AuthContext';
 import AppLayout from '@/components/AppLayout';
@@ -235,31 +236,25 @@ export default function Dashboard() {
           <motion.div whileHover={{ y: -3, boxShadow: '0 8px 24px rgba(0,0,0,0.08)' }} whileTap={{ scale: 0.97 }}>
             <Link to="/vehicles" className="card-surface-elevated group hover:border-primary/20 transition-all block relative overflow-hidden">
               <div className="absolute -top-6 -right-6 w-20 h-20 rounded-full bg-primary/5 blur-xl" />
-              <div className="relative z-10">
-                <div className="flex items-center justify-between mb-3">
-                  <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center">
-                    <Car className="w-4.5 h-4.5 text-primary" strokeWidth={1.8} />
-                  </div>
-                  <ArrowUpRight className="w-4 h-4 text-muted-foreground/30 group-hover:text-primary group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+              <div className="relative z-10 flex flex-col items-center text-center py-2">
+                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-3">
+                  <Car className="w-7 h-7 text-primary" strokeWidth={1.8} />
                 </div>
                 <div className="text-3xl font-extrabold tabular-nums text-foreground">{vehicles.length}</div>
-                <div className="text-[13px] text-muted-foreground mt-0.5">{t('dashboard.vehicles')}</div>
               </div>
+              <ArrowUpRight className="absolute top-3 right-3 w-4 h-4 text-muted-foreground/30 group-hover:text-primary group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
             </Link>
           </motion.div>
           <motion.div whileHover={{ y: -3, boxShadow: '0 8px 24px rgba(0,0,0,0.08)' }} whileTap={{ scale: 0.97 }}>
             <Link to="/claims" className="card-surface-elevated group hover:border-primary/20 transition-all block relative overflow-hidden">
               <div className="absolute -top-6 -right-6 w-20 h-20 rounded-full bg-primary/5 blur-xl" />
-              <div className="relative z-10">
-                <div className="flex items-center justify-between mb-3">
-                  <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center">
-                    <FileText className="w-4.5 h-4.5 text-primary" strokeWidth={1.8} />
-                  </div>
-                  <ArrowUpRight className="w-4 h-4 text-muted-foreground/30 group-hover:text-primary group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+              <div className="relative z-10 flex flex-col items-center text-center py-2">
+                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-3">
+                  <img src={crashIcon} alt="Claims" className="w-7 h-7" />
                 </div>
                 <div className="text-3xl font-extrabold tabular-nums text-foreground">{claims.length}</div>
-                <div className="text-[13px] text-muted-foreground mt-0.5">{t('dashboard.reports')}</div>
               </div>
+              <ArrowUpRight className="absolute top-3 right-3 w-4 h-4 text-muted-foreground/30 group-hover:text-primary group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
             </Link>
           </motion.div>
         </motion.div>
