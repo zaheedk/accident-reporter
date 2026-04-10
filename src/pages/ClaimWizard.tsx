@@ -336,7 +336,6 @@ export default function ClaimWizard() {
     { key: 'vehicle', label: t('claims.steps.yourVehicle'), number: 1 },
     { key: 'scene', label: 'At the Scene', number: 2 },
     { key: 'parties', label: 'Other Party & Witnesses', number: 3 },
-    { key: 'review', label: t('claims.steps.review'), number: 4 },
   ];
 
   if (loadingClaim) {
