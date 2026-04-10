@@ -52,42 +52,46 @@ export default function VehicleList() {
         </div>
 
         {vehicles.length === 0 ? (
-          <div className="card-surface text-center py-14">
-            <Car className="w-12 h-12 text-muted-foreground/30 mx-auto mb-3" strokeWidth={1.2} />
-            <p className="text-sm font-semibold text-foreground">{t('vehicles.noVehicles')}</p>
-            <p className="text-xs text-muted-foreground mt-1 mb-4">{t('vehicles.noVehiclesHint')}</p>
-            <Link to="/vehicles/new" className="btn-primary h-8 px-3.5 text-xs rounded-lg">
-              <Plus className="w-3.5 h-3.5" /> {t('vehicles.addVehicle')}
+          <div className="text-center py-16 px-6">
+            <div className="w-16 h-16 rounded-2xl bg-muted/60 flex items-center justify-center mx-auto mb-4">
+              <Car className="w-8 h-8 text-muted-foreground/40" strokeWidth={1.5} />
+            </div>
+            <p className="text-base font-semibold text-foreground">{t('vehicles.noVehicles')}</p>
+            <p className="text-sm text-muted-foreground mt-1.5 mb-5 max-w-[240px] mx-auto">{t('vehicles.noVehiclesHint')}</p>
+            <Link to="/vehicles/new" className="btn-primary h-10 px-5 text-sm rounded-xl inline-flex items-center gap-2">
+              <Plus className="w-4 h-4" /> {t('vehicles.addVehicle')}
             </Link>
           </div>
         ) : (
-          <div className="space-y-2">
+          <div className="space-y-3">
             {vehicles.map(v => (
-              <div key={v.id} className="card-surface flex items-center justify-between hover:shadow-md transition-shadow">
-                <Link to={`/vehicles/${v.id}/edit`} className="flex items-center gap-3 flex-1 min-w-0">
+              <div key={v.id} className="bg-card rounded-2xl border border-border/40 overflow-hidden hover:border-primary/20 hover:shadow-md transition-all duration-200 group">
+                <Link to={`/vehicles/${v.id}/edit`} className="flex items-center gap-4 p-4 min-w-0">
                   {v.photoUrl ? (
-                    <img src={v.photoUrl} alt={`${v.make} ${v.model}`} className="w-10 h-10 rounded-xl object-cover flex-shrink-0" />
+                    <img src={v.photoUrl} alt={`${v.make} ${v.model}`} className="w-12 h-12 rounded-xl object-cover flex-shrink-0 ring-1 ring-border/30" />
                   ) : (
-                    <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center flex-shrink-0">
-                      <Car className="w-5 h-5 text-muted-foreground" strokeWidth={1.5} />
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-muted to-muted/60 flex items-center justify-center flex-shrink-0">
+                      <Car className="w-6 h-6 text-muted-foreground/50" strokeWidth={1.5} />
                     </div>
                   )}
-                  <div className="min-w-0">
-                    <div className="text-sm font-bold text-foreground tabular-nums">{v.regoNumber}</div>
-                    <div className="text-xs text-muted-foreground truncate">{v.year} {v.make} {v.model}</div>
+                  <div className="min-w-0 flex-1">
+                    <div className="text-[15px] font-bold text-foreground tracking-wide tabular-nums">{v.regoNumber}</div>
+                    <div className="text-xs text-muted-foreground truncate mt-0.5">{v.year} {v.make} {v.model}</div>
+                  </div>
+                  <div className="flex items-center gap-1.5 flex-shrink-0">
+                    <button
+                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); setDeleteTarget(v); }}
+                      className="p-2 rounded-xl text-muted-foreground/30 hover:text-destructive hover:bg-destructive/5 transition-colors"
+                    >
+                      <Trash2 className="w-4 h-4" strokeWidth={1.5} />
+                    </button>
+                    <ChevronRight className="w-4 h-4 text-muted-foreground/30 group-hover:text-primary/50 transition-colors" strokeWidth={1.5} />
                   </div>
                 </Link>
-                <div className="flex items-center gap-1">
-                  <button onClick={() => setDeleteTarget(v)} className="p-2 rounded-lg text-muted-foreground/40 hover:text-destructive hover:bg-destructive/5 transition-colors">
-                    <Trash2 className="w-4 h-4" strokeWidth={1.5} />
-                  </button>
-                  <ChevronRight className="w-4 h-4 text-muted-foreground/40" strokeWidth={1.5} />
-                </div>
               </div>
             ))}
           </div>
         )}
-
         <AlertDialog open={!!deleteTarget} onOpenChange={(open) => { if (!open) setDeleteTarget(null); }}>
           <AlertDialogContent>
             <AlertDialogHeader>
