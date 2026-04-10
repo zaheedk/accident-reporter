@@ -66,7 +66,7 @@ serve(async (req) => {
       }
 
       const otpCode = generateOtp();
-      const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString();
+      const expiresAt = new Date(Date.now() + 15 * 60 * 1000).toISOString();
 
       const { error: dbError } = await supabaseAdmin
         .from("phone_otps")
