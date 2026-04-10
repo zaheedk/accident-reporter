@@ -121,23 +121,32 @@ serve(async (req) => {
       }
       const e164Phone = normalizePhone(phone);
 
-      const { data: otpRecord, error: findError } = await supabaseAdmin
+      // First check if the code matches at all (regardless of expiry)
+      const { data: anyMatch } = await supabaseAdmin
         .from("phone_otps")
         .select("*")
         .eq("phone_number", e164Phone)
         .eq("otp_code", otp)
         .eq("verified", false)
-        .gte("expires_at", new Date().toISOString())
         .order("created_at", { ascending: false })
         .limit(1)
         .maybeSingle();
 
-      if (findError || !otpRecord) {
+      if (!anyMatch) {
         return new Response(
-          JSON.stringify({ error: "Invalid or expired OTP" }),
+          JSON.stringify({ error: "Invalid verification code. Please check and try again." }),
           { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
+
+      if (new Date(anyMatch.expires_at) < new Date()) {
+        return new Response(
+          JSON.stringify({ error: "Your verification code has expired. Please request a new one." }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      const otpRecord = anyMatch;
 
       await supabaseAdmin
         .from("phone_otps")
