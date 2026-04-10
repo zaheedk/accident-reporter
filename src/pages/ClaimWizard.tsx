@@ -336,7 +336,6 @@ export default function ClaimWizard() {
     { key: 'vehicle', label: t('claims.steps.yourVehicle'), number: 1 },
     { key: 'scene', label: 'At the Scene', number: 2 },
     { key: 'parties', label: 'Other Party & Witnesses', number: 3 },
-    { key: 'review', label: t('claims.steps.review'), number: 4 },
   ];
 
   if (loadingClaim) {
@@ -650,46 +649,6 @@ export default function ClaimWizard() {
                               </div>
                             </>
                           )}
-
-                          {/* Review section */}
-                          {section.key === 'review' && (
-                            <div className="space-y-3">
-                              <div className="p-3 rounded-xl bg-primary/5 border border-primary/20">
-                                <p className="text-xs text-primary font-medium">💡 You can add more details like insurance, repairer, conditions and liability from the incident detail page later.</p>
-                              </div>
-                              <RSection title={t('claims.review.incident')}>
-                                <RRow label={t('claims.review.date')} value={claim.incidentDate} />
-                                <RRow label={t('claims.review.time')} value={claim.incidentTime} />
-                                <RRow label={t('claims.review.location')} value={claim.incidentLocation} />
-                              </RSection>
-                              <RSection title={t('claims.review.yourVehicle')}>
-                                <RRow label={t('claims.review.vehicle')} value={selV ? `${selV.year} ${selV.make} ${selV.model}` : '—'} />
-                                <RRow label={t('claims.review.rego')} value={selV?.regoNumber || '—'} />
-                                <RRow label={t('claims.review.photos')} value={t('claims.review.uploaded', { count: photos.length })} />
-                              </RSection>
-                              <RSection title={t('claims.review.thirdParties')}>
-                                {claim.thirdParties.length === 0 ? <p className="text-sm text-muted-foreground">{t('common.none')}</p> : claim.thirdParties.map((tp, i) => (
-                                  <div key={i} className="p-3 rounded-xl bg-background space-y-0.5">
-                                    <RRow label="Rego" value={tp.regoNumber} />
-                                    <RRow label="Driver" value={tp.ownerName} />
-                                    {tp.phone && <RRow label="Phone" value={tp.phone} />}
-                                  </div>
-                                ))}
-                              </RSection>
-                              {claim.atFault && (
-                                <RSection title="Fault">
-                                  <RRow label="At fault" value={claim.atFault === 'me' ? 'I am at fault' : claim.atFault === 'other_party' ? 'Other party at fault' : 'Shared fault'} />
-                                  {claim.atFault === 'other_party' && <RRow label="Courtesy car" value={claim.courtesyCarRequested ? 'Requested' : 'Not requested'} />}
-                                </RSection>
-                              )}
-                              <RSection title={t('claims.review.witnesses')}>
-                                {claim.witnesses.length === 0 ? <p className="text-sm text-muted-foreground">{t('common.none')}</p> : claim.witnesses.map((w, i) => <RRow key={i} label={t('claims.witnesses.witnessNumber', { number: i + 1 })} value={`${w.name} – ${w.phone}`} />)}
-                              </RSection>
-                              <button onClick={submit} disabled={submitting} className="btn-primary w-full h-11 mt-2">
-                                {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} {t('common.save')} report
-                              </button>
-                            </div>
-                          )}
                         </div>
                       </motion.div>
                     )}
@@ -697,6 +656,14 @@ export default function ClaimWizard() {
                 </div>
               );
             })}
+
+            <div className="p-3 rounded-xl bg-primary/5 border border-primary/20">
+              <p className="text-xs text-primary font-medium">💡 You can add more details like insurance, repairer, conditions and liability from the incident detail page later.</p>
+            </div>
+
+            <button onClick={submit} disabled={submitting} className="btn-primary w-full h-11">
+              {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} {t('common.save')} report
+            </button>
           </div>
         )}
 
