@@ -78,7 +78,7 @@ export default function VehicleList() {
                 whileTap={{ scale: 0.97 }}
                 className="card-surface-elevated group hover:border-primary/20 transition-all relative overflow-hidden"
               >
-                <Link to={`/vehicles/${v.id}/edit`} className="flex items-center gap-3 h-[46px]">
+                <Link to={`/vehicles/${v.id}/edit`} className="flex flex-col h-[92px] justify-between">
                   {v.photoUrl ? (
                     <img src={v.photoUrl} alt={`${v.make} ${v.model}`} className="w-10 h-10 rounded-xl object-cover ring-1 ring-border/30" />
                   ) : (
