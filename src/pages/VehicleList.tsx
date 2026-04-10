@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
-import { Plus, Car, Trash2, ChevronRight, ArrowLeft } from 'lucide-react';
+import { Plus, Car, Trash2, ChevronRight, ArrowLeft, ArrowUpRight } from 'lucide-react';
 import { getVehicles, deleteVehicle } from '@/lib/storage';
 import AppLayout from '@/components/AppLayout';
 import { Vehicle } from '@/types';
 import { useTranslation } from 'react-i18next';
+import { motion } from 'framer-motion';
 import {
   AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle,
   AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction,
@@ -33,10 +34,13 @@ export default function VehicleList() {
     }
   };
 
+  const stagger = { hidden: {}, visible: { transition: { staggerChildren: 0.08 } } };
+  const fadeUp = { hidden: { opacity: 0, y: 16 }, visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: 'easeOut' as const } } };
+
   return (
     <AppLayout>
-      <div className="space-y-5">
-        <div className="flex items-center justify-between">
+      <motion.div className="space-y-5" variants={stagger} initial="hidden" animate="visible">
+        <motion.div variants={fadeUp} className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <button onClick={() => navigate('/dashboard')} className="p-2 -ml-2 rounded-xl hover:bg-muted transition-colors">
               <ArrowLeft className="w-5 h-5 text-foreground" strokeWidth={1.5} />
@@ -49,10 +53,10 @@ export default function VehicleList() {
           <Link to="/vehicles/new" className="btn-primary h-8 px-3.5 text-xs rounded-lg">
             <Plus className="w-3.5 h-3.5" /> {t('common.add')}
           </Link>
-        </div>
+        </motion.div>
 
         {vehicles.length === 0 ? (
-          <div className="text-center py-16 px-6">
+          <motion.div variants={fadeUp} className="text-center py-16 px-6">
             <div className="w-16 h-16 rounded-2xl bg-muted/60 flex items-center justify-center mx-auto mb-4">
               <Car className="w-8 h-8 text-muted-foreground/40" strokeWidth={1.5} />
             </div>
@@ -61,37 +65,44 @@ export default function VehicleList() {
             <Link to="/vehicles/new" className="btn-primary h-10 px-5 text-sm rounded-xl inline-flex items-center gap-2">
               <Plus className="w-4 h-4" /> {t('vehicles.addVehicle')}
             </Link>
-          </div>
+          </motion.div>
         ) : (
-          <div className="space-y-3">
-            {vehicles.map(v => (
-              <div key={v.id} className="bg-card rounded-2xl border border-border/40 overflow-hidden hover:border-primary/20 hover:shadow-md transition-all duration-200 group">
-                <Link to={`/vehicles/${v.id}/edit`} className="flex items-center gap-4 p-4 min-w-0">
+          <motion.div variants={fadeUp} className="grid grid-cols-2 gap-3">
+            {vehicles.map((v, i) => (
+              <motion.div
+                key={v.id}
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 + i * 0.06, duration: 0.35 }}
+                whileHover={{ y: -2, boxShadow: '0 8px 24px rgba(0,0,0,0.08)' }}
+                whileTap={{ scale: 0.97 }}
+                className="card-surface-elevated group hover:border-primary/20 transition-all relative overflow-hidden"
+              >
+                <Link to={`/vehicles/${v.id}/edit`} className="flex flex-col h-[140px] justify-between">
                   {v.photoUrl ? (
-                    <img src={v.photoUrl} alt={`${v.make} ${v.model}`} className="w-12 h-12 rounded-xl object-cover flex-shrink-0 ring-1 ring-border/30" />
+                    <img src={v.photoUrl} alt={`${v.make} ${v.model}`} className="w-10 h-10 rounded-xl object-cover ring-1 ring-border/30" />
                   ) : (
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-muted to-muted/60 flex items-center justify-center flex-shrink-0">
-                      <Car className="w-6 h-6 text-muted-foreground/50" strokeWidth={1.5} />
+                    <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                      <Car className="w-5 h-5 text-primary" strokeWidth={1.8} />
                     </div>
                   )}
-                  <div className="min-w-0 flex-1">
-                    <div className="text-[15px] font-bold text-foreground tracking-wide tabular-nums">{v.regoNumber}</div>
+                  <div className="min-w-0">
+                    <div className="text-sm font-bold text-foreground tabular-nums tracking-wide">{v.regoNumber}</div>
                     <div className="text-xs text-muted-foreground truncate mt-0.5">{v.year} {v.make} {v.model}</div>
                   </div>
-                  <div className="flex items-center gap-1.5 flex-shrink-0">
-                    <button
-                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); setDeleteTarget(v); }}
-                      className="p-2 rounded-xl text-muted-foreground/30 hover:text-destructive hover:bg-destructive/5 transition-colors"
-                    >
-                      <Trash2 className="w-4 h-4" strokeWidth={1.5} />
-                    </button>
-                    <ChevronRight className="w-4 h-4 text-muted-foreground/30 group-hover:text-primary/50 transition-colors" strokeWidth={1.5} />
-                  </div>
                 </Link>
-              </div>
+                <button
+                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); setDeleteTarget(v); }}
+                  className="absolute top-3 right-3 p-1.5 rounded-lg text-muted-foreground/20 hover:text-destructive hover:bg-destructive/5 transition-colors"
+                >
+                  <Trash2 className="w-3.5 h-3.5" strokeWidth={1.5} />
+                </button>
+                <ArrowUpRight className="absolute bottom-3 right-3 w-4 h-4 text-muted-foreground/20 group-hover:text-primary group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         )}
+
         <AlertDialog open={!!deleteTarget} onOpenChange={(open) => { if (!open) setDeleteTarget(null); }}>
           <AlertDialogContent>
             <AlertDialogHeader>
@@ -106,7 +117,7 @@ export default function VehicleList() {
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
-      </div>
+      </motion.div>
     </AppLayout>
   );
 }
