@@ -90,9 +90,9 @@ export default function Auth() {
   return (
     <div className="min-h-screen flex flex-col lg:flex-row">
       {/* Dark hero section */}
-      <div className="px-6 pt-10 pb-10 relative overflow-hidden lg:w-1/2 lg:min-h-screen lg:flex lg:items-center lg:justify-center" style={{ background: 'linear-gradient(160deg, hsl(220 30% 10%), hsl(213 52% 18%), hsl(220 25% 14%))' }}>
-        {/* Back to Home */}
-        <Link to="/" className="absolute top-5 left-5 z-20 inline-flex items-center gap-1.5 text-sm text-slate-400 hover:text-slate-200 transition-colors">
+      <div className="px-6 pt-6 pb-6 lg:pt-10 lg:pb-10 relative overflow-hidden lg:w-1/2 lg:min-h-screen lg:flex lg:items-center lg:justify-center" style={{ background: 'linear-gradient(160deg, hsl(220 30% 10%), hsl(213 52% 18%), hsl(220 25% 14%))' }}>
+        {/* Back to Home - hidden on mobile */}
+        <Link to="/" className="hidden lg:inline-flex absolute top-5 left-5 z-20 items-center gap-1.5 text-sm text-slate-400 hover:text-slate-200 transition-colors">
           <ArrowLeft className="w-4 h-4" />
           Home
         </Link>
@@ -106,13 +106,13 @@ export default function Auth() {
         <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[hsl(220,30%,10%)] to-transparent lg:hidden" />
 
         <div className="relative z-10 text-center lg:max-w-md">
-          {/* Logo */}
-          <div className="flex items-center mb-10 justify-center">
-            <img src="/savo-logo.svg" alt="SAVO" className="h-24 lg:h-28" />
+          {/* Logo - smaller on mobile */}
+          <div className="flex items-center mb-4 lg:mb-10 justify-center">
+            <img src="/savo-logo.svg" alt="SAVO" className="h-16 lg:h-28" />
           </div>
 
-          {/* Headline */}
-          <h1 className="text-[34px] leading-[1.08] tracking-tight mb-4" style={{ textWrap: 'balance' as any }}>
+          {/* Headline - compact on mobile */}
+          <h1 className="text-[26px] lg:text-[34px] leading-[1.08] tracking-tight mb-2 lg:mb-4" style={{ textWrap: 'balance' as any }}>
             <span className="font-semibold text-slate-100" style={{ fontFamily: "'Playfair Display', serif" }}>
               Capture the scene.
             </span>
@@ -122,8 +122,8 @@ export default function Auth() {
             </span>
           </h1>
 
-          {/* Subtitle */}
-          <p className="text-[15px] leading-relaxed text-slate-400 max-w-xs mx-auto lg:max-w-sm">
+          {/* Subtitle - hidden on mobile */}
+          <p className="hidden lg:block text-[15px] leading-relaxed text-slate-400 max-w-xs mx-auto lg:max-w-sm">
             SAVO helps you record accident data instantly — photos, GPS, witness info, and reports — so your claim is airtight from minute one.
           </p>
 
@@ -131,10 +131,10 @@ export default function Auth() {
       </div>
 
       {/* Form section */}
-      <div className="flex-1 px-6 pt-8 pb-8 -mt-3 rounded-t-3xl relative z-10 lg:mt-0 lg:rounded-none lg:flex lg:items-center lg:justify-center" style={{ background: 'hsl(220 20% 97%)', boxShadow: '0 -4px 24px rgba(0,0,0,0.08)' }}>
+      <div className="flex-1 px-6 pt-6 pb-6 lg:pt-8 lg:pb-8 -mt-3 rounded-t-3xl relative z-10 lg:mt-0 lg:rounded-none lg:flex lg:items-center lg:justify-center" style={{ background: 'hsl(220 20% 97%)', boxShadow: '0 -4px 24px rgba(0,0,0,0.08)' }}>
         <div className="max-w-sm mx-auto">
           {/* Secure portal badge */}
-          <div className="flex items-center gap-2 mb-4">
+          <div className="hidden lg:flex items-center gap-2 mb-4">
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-primary/8 text-primary border border-primary/15">
               <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
               Secure Portal
@@ -289,11 +289,11 @@ export default function Auth() {
             ))}
           </div>
 
-          <div className="mt-5">
+          <div className="hidden lg:block mt-5">
             <LanguageSwitcher />
           </div>
 
-          <div className="flex items-center justify-center gap-3 mt-4 text-xs text-muted-foreground flex-wrap">
+          <div className="hidden lg:flex items-center justify-center gap-3 mt-4 text-xs text-muted-foreground flex-wrap">
             <a href="/panel-shops" className="hover:text-foreground transition-colors">{t('nav.shops')}</a>
             <span>·</span>
             <a href="/tow-companies" className="hover:text-foreground transition-colors">{t('nav.towCompanies')}</a>
