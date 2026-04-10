@@ -656,6 +656,14 @@ export default function ClaimWizard() {
                 </div>
               );
             })}
+
+            <div className="p-3 rounded-xl bg-primary/5 border border-primary/20">
+              <p className="text-xs text-primary font-medium">💡 You can add more details like insurance, repairer, conditions and liability from the incident detail page later.</p>
+            </div>
+
+            <button onClick={submit} disabled={submitting} className="btn-primary w-full h-11">
+              {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} {t('common.save')} report
+            </button>
           </div>
         )}
 
