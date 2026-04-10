@@ -134,7 +134,7 @@ export default function Auth() {
       <div className="flex-1 px-6 pt-6 pb-6 lg:pt-8 lg:pb-8 -mt-3 rounded-t-3xl relative z-10 lg:mt-0 lg:rounded-none lg:flex lg:items-center lg:justify-center" style={{ background: 'hsl(220 20% 97%)', boxShadow: '0 -4px 24px rgba(0,0,0,0.08)' }}>
         <div className="max-w-sm mx-auto">
           {/* Secure portal badge */}
-          <div className="flex items-center gap-2 mb-4">
+          <div className="hidden lg:flex items-center gap-2 mb-4">
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-primary/8 text-primary border border-primary/15">
               <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
               Secure Portal
