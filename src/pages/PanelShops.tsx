@@ -56,7 +56,8 @@ export default function PanelShops() {
   const displayed = nearbyActive ? sortByDistance(filterByRadius(filtered, 25)) : filtered;
 
   const handleAdd = async (data: Omit<PanelShop, 'id'>) => {
-    const { error } = await supabase.from('panel_shops').insert(data);
+    const { latitude, longitude, ...insertData } = data;
+    const { error } = await supabase.from('panel_shops').insert(insertData);
     if (error) { toast.error('Failed to add shop'); throw error; }
     toast.success('Shop added');
     queryClient.invalidateQueries({ queryKey: ['panel-shops'] });
@@ -64,7 +65,8 @@ export default function PanelShops() {
 
   const handleEdit = async (data: Omit<PanelShop, 'id'>) => {
     if (!editShop) return;
-    const { error } = await supabase.from('panel_shops').update(data).eq('id', editShop.id);
+    const { latitude, longitude, ...updateData } = data;
+    const { error } = await supabase.from('panel_shops').update(updateData).eq('id', editShop.id);
     if (error) { toast.error('Failed to update shop'); throw error; }
     toast.success('Shop updated');
     setEditShop(null);

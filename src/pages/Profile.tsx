@@ -81,7 +81,7 @@ export default function Profile() {
     if (isPhoneUser) {
       updateData.email = profile.email;
     }
-    const { error } = await supabase.from('profiles').update(updateData).eq('user_id', user.id);
+    const { error } = await supabase.from('profiles').update(updateData as any).eq('user_id', user.id);
     setSaving(false);
     if (error) { toast.error(t('profile.profileFailed')); } else { toast.success(t('profile.profileUpdated')); }
   };
