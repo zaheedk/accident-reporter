@@ -264,19 +264,6 @@ export default function Dashboard() {
           </motion.div>
         </motion.div>
 
-        {/* Add vehicle */}
-        <motion.div variants={fadeUp} whileHover={{ x: 4 }} whileTap={{ scale: 0.98 }}>
-          <Link to="/vehicles/new" className="card-surface-elevated flex items-center gap-4 group hover:border-primary/20 transition-all">
-            <div className="w-11 h-11 rounded-xl bg-muted flex items-center justify-center shrink-0 group-hover:bg-primary/10 transition-colors">
-              <Plus className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="text-sm font-bold text-foreground">{t('dashboard.addVehicle')}</div>
-              <div className="text-xs text-muted-foreground mt-0.5">{t('dashboard.registerGarage')}</div>
-            </div>
-            <ChevronRight className="w-4 h-4 text-muted-foreground/30 group-hover:text-primary group-hover:translate-x-1 transition-all shrink-0" strokeWidth={1.5} />
-          </Link>
-        </motion.div>
 
         {/* Document vault */}
         <motion.div variants={fadeUp} whileHover={{ x: 4 }} whileTap={{ scale: 0.98 }}>
