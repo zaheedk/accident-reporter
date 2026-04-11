@@ -105,6 +105,16 @@ export default function VehicleList() {
                       <div className="text-xs text-muted-foreground truncate mt-0.5">{v.year} {v.make} {v.model}</div>
                     </div>
                   </Link>
+                  {v.insuranceCompany && insurerPhones[v.insuranceCompany] && (
+                    <a
+                      href={`tel:${insurerPhones[v.insuranceCompany].replace(/\s/g, '')}`}
+                      onClick={(e) => e.stopPropagation()}
+                      className="flex items-center gap-1.5 mt-2 px-2.5 py-1.5 rounded-lg text-[11px] font-semibold text-white bg-primary whitespace-nowrap transition-transform hover:scale-105 active:scale-95 w-fit"
+                    >
+                      <Phone className="w-3 h-3" />
+                      Call insurer
+                    </a>
+                  )}
                   <button
                     onClick={(e) => { e.preventDefault(); e.stopPropagation(); setDeleteTarget(v); }}
                     className="absolute top-3 right-3 p-1.5 rounded-lg text-muted-foreground/20 hover:text-destructive hover:bg-destructive/5 transition-colors"
