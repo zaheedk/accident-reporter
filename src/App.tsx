@@ -43,7 +43,26 @@ const PageLoader = () => (
   </div>
 );
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000,
+      gcTime: 10 * 60 * 1000,
+      retry: 1,
+      networkMode: 'offlineFirst',
+    },
+    mutations: {
+      networkMode: 'offlineFirst',
+    },
+  },
+});
+
+// Re-fetch all queries when the device comes back online
+if (typeof window !== 'undefined') {
+  window.addEventListener('online', () => {
+    queryClient.invalidateQueries();
+  });
+}
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { session, loading, isDeactivated, signOut } = useAuth();
