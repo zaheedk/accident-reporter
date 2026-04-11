@@ -81,11 +81,11 @@ export default function Home() {
                 <Shield className="w-3.5 h-3.5" /> Made for New Zealand drivers
               </span>
               <h1 className="text-3xl md:text-5xl font-extrabold text-white leading-tight tracking-tight">
-                Capture the scene.<br />
-                <span className="text-white/80">Protect your claim.</span>
+                Car accident?<br />
+                <span className="text-white/80">We've got you covered.</span>
               </h1>
               <p className="mt-4 text-base md:text-lg text-white/70 leading-relaxed max-w-md">
-                SAVO helps Kiwis document vehicle accidents properly, report to insurers fast, and get back on the road sooner.
+                SAVO helps New Zealand drivers document accidents, lodge insurance claims, request courtesy cars, and find panel beaters — all in one free app.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
                 <Link to="/auth?mode=signup">
@@ -118,7 +118,7 @@ export default function Home() {
         <motion.section variants={stagger} initial="hidden" whileInView="visible" viewport={{ once: true }}
           className="border-b border-border bg-card">
           <div className="max-w-5xl mx-auto px-4 py-6 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-xs text-muted-foreground font-medium">
-            {['100% Free', 'NZ Insurance Compatible', 'Works on Any Phone', 'No App Download Needed'].map(item => (
+            {['100% Free', 'Courtesy Car Requests', 'All NZ Insurers', 'Works on Any Phone'].map(item => (
               <motion.div key={item} variants={fadeUp} className="flex items-center gap-1.5">
                 <CheckCircle2 className="w-3.5 h-3.5 text-primary" />
                 {item}
@@ -131,15 +131,15 @@ export default function Home() {
         <motion.section variants={stagger} initial="hidden" whileInView="visible" viewport={{ once: true }}
           className="max-w-5xl mx-auto px-4 py-16 md:py-20">
           <motion.div variants={fadeUp} className="text-center mb-12">
-            <h2 className="text-2xl md:text-3xl font-extrabold text-foreground">Everything you need after an accident</h2>
-            <p className="mt-3 text-muted-foreground max-w-lg mx-auto">From capturing evidence at the scene to submitting your claim — SAVO guides you through every step.</p>
+            <h2 className="text-2xl md:text-3xl font-extrabold text-foreground">Everything you need after a car accident</h2>
+            <p className="mt-3 text-muted-foreground max-w-lg mx-auto">From capturing evidence to lodging your insurance claim and arranging a courtesy car — SAVO handles it all.</p>
           </motion.div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {[
               { icon: Camera, title: 'Photo Documentation', desc: 'Capture and organise damage photos, licence plates, and scene evidence with guided prompts.' },
               { icon: FileText, title: 'Smart Claim Reports', desc: 'Generate comprehensive incident reports that match what NZ insurers actually need.' },
-              { icon: Clock, title: 'Fast Submissions', desc: 'Send your completed report directly to your insurance company in minutes, not days.' },
-              { icon: Shield, title: 'Vehicle Vault', desc: 'Store all your vehicle details, policy numbers, and WOF/rego dates in one secure place.' },
+              { icon: Clock, title: 'Fast Insurance Claims', desc: 'Lodge your insurance claim directly with any NZ insurer in minutes, not days.' },
+              { icon: Phone, title: 'Courtesy Car Requests', desc: 'Request a courtesy car through your insurer or our partners so you stay mobile while repairs happen.' },
               { icon: Wrench, title: 'Find Panel Beaters', desc: 'Browse top-rated panel shops near you with ratings, distance, and one-tap calling.' },
               { icon: Truck, title: 'Emergency Towing', desc: 'Find and call the nearest tow company instantly when you need help on the road.' },
             ].map(({ icon: Icon, title, desc }) => (
@@ -195,7 +195,7 @@ export default function Home() {
           <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle at 30% 70%, white 0%, transparent 60%)' }} />
           <div className="max-w-5xl mx-auto px-4 py-16 md:py-20 text-center relative z-10">
             <h2 className="text-2xl md:text-3xl font-extrabold text-white">Ready to protect your next claim?</h2>
-            <p className="mt-3 text-white/70 max-w-md mx-auto">Join thousands of Kiwi drivers who use SAVO to handle vehicle incidents with confidence.</p>
+            <p className="mt-3 text-white/70 max-w-md mx-auto">Join Kiwi drivers who use SAVO to document accidents, lodge insurance claims, and arrange courtesy cars with confidence.</p>
             <div className="mt-8 flex flex-wrap justify-center gap-3">
               <Link to="/auth?mode=signup">
                 <Button size="lg" className="text-sm font-bold gap-2 h-12 px-8 bg-white text-primary hover:bg-white/90">
@@ -217,7 +217,7 @@ export default function Home() {
             <div className="flex flex-col sm:flex-row items-start justify-between gap-8">
               <div>
                 <img src="/savo-logo.svg" alt="SAVO" className="h-8 invert" width="80" height="32" loading="lazy" />
-                <p className="mt-2 text-xs text-muted-foreground max-w-xs">Vehicle accident reporting made simple for New Zealand drivers.</p>
+                <p className="mt-2 text-xs text-muted-foreground max-w-xs">Car accident claims, courtesy cars, and insurance help — free for all New Zealand drivers.</p>
               </div>
               <div className="grid grid-cols-2 gap-x-12 gap-y-2 text-xs">
                 <Link to="/about" className="text-muted-foreground hover:text-foreground transition-colors">About</Link>
@@ -246,7 +246,7 @@ export default function Home() {
             ')@type': 'WebApplication',
             name: 'SAVO',
             url: 'https://savo.co.nz(',
-            description: ')Vehicle accident reporting and insurance claims management for New Zealand drivers.',
+            description: ')Car accident documentation, insurance claims, courtesy car requests, and panel beater finder for New Zealand drivers.',
             applicationCategory: 'UtilitiesApplication',
             operatingSystem: 'Web',
             offers: { '@type': 'Offer', price: '0', priceCurrency: 'NZD' },
