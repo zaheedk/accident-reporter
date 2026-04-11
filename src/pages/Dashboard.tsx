@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Car, FileText, Plus, AlertTriangle, ChevronRight, ArrowUpRight, LogOut, User, Shield, Phone, Search, MapPin, X, MessageSquare, ArrowDownRight, FolderOpen } from 'lucide-react';
 import crashIcon from '@/assets/crash-icon.png';
@@ -13,14 +13,13 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sh
 import { formatDistanceToNow } from 'date-fns';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
+import { useOfflineQuery } from '@/hooks/use-offline-query';
+import { Loader2 } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function Dashboard() {
   const { user, signOut, isAdmin } = useAuth();
   
-  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
-  const [claims, setClaims] = useState<ClaimReport[]>([]);
-  const [avatarUrl, setAvatarUrl] = useState('');
-  const [displayName, setDisplayName] = useState('');
   const [towSheetOpen, setTowSheetOpen] = useState(false);
   const [towCompanies, setTowCompanies] = useState<any[]>([]);
   const [towSearch, setTowSearch] = useState('');
@@ -28,30 +27,41 @@ export default function Dashboard() {
   const [userRegion, setUserRegion] = useState('');
   const [userLat, setUserLat] = useState<number | null>(null);
   const [userLng, setUserLng] = useState<number | null>(null);
-  const [recentMessages, setRecentMessages] = useState<any[]>([]);
-  const [insurerPhones, setInsurerPhones] = useState<Record<string, string>>({});
 
-  useEffect(() => {
-    if (!user) return;
-    Promise.all([
-      getVehicles(user.id),
-      getClaims(user.id),
-      supabase.from('profiles').select('avatar_url, display_name').eq('user_id', user.id).single(),
-      supabase.from('insurance_companies').select('name, phone'),
-    ]).then(([v, c, profileRes, insurerRes]) => {
-      setVehicles(v);
-      setClaims(c);
-      if (profileRes.data) {
-        setAvatarUrl(profileRes.data.avatar_url || '');
-        setDisplayName(profileRes.data.display_name || '');
-      }
-      if (insurerRes.data) {
-        const map: Record<string, string> = {};
-        insurerRes.data.forEach((ic: any) => { if (ic.phone) map[ic.name] = ic.phone; });
-        setInsurerPhones(map);
-      }
-    });
-  }, [user]);
+  const { data: vehicles = [], isLoading: vehiclesLoading } = useOfflineQuery<Vehicle[]>(
+    ['vehicles', user?.id ?? ''],
+    () => getVehicles(user!.id),
+    { enabled: !!user }
+  );
+
+  const { data: claims = [], isLoading: claimsLoading } = useOfflineQuery<ClaimReport[]>(
+    ['claims', user?.id ?? ''],
+    () => getClaims(user!.id),
+    { enabled: !!user }
+  );
+
+  const { data: profile } = useOfflineQuery(
+    ['profile', user?.id ?? ''],
+    async () => {
+      const { data } = await supabase.from('profiles').select('avatar_url, display_name').eq('user_id', user!.id).single();
+      return data;
+    },
+    { enabled: !!user }
+  );
+
+  const { data: insurerPhones = {} } = useOfflineQuery<Record<string, string>>(
+    ['insurer-phones'],
+    async () => {
+      const { data } = await supabase.from('insurance_companies').select('name, phone');
+      const map: Record<string, string> = {};
+      data?.forEach((ic: any) => { if (ic.phone) map[ic.name] = ic.phone; });
+      return map;
+    },
+    { enabled: !!user }
+  );
+
+  const avatarUrl = profile?.avatar_url || '';
+  const displayName = profile?.display_name || '';
 
   const haversineDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
     const R = 6371;
@@ -102,7 +112,6 @@ export default function Dashboard() {
     return d < 1 ? `${Math.round(d * 1000)}m away` : `${Math.round(d)}km away`;
   };
 
-  // Filter by search term; if search is empty, try to match by detected region/city
   const getDisplayedTowCompanies = () => {
     if (towSearch) {
       const filtered = towCompanies.filter(tc =>
@@ -111,7 +120,6 @@ export default function Dashboard() {
       );
       return sortByDistance(filtered.length > 0 ? filtered : towCompanies);
     }
-    // Auto-filter by detected location
     if (userCity || userRegion) {
       const byCity = towCompanies.filter(tc =>
         tc.address.toLowerCase().includes(userCity.toLowerCase())
@@ -131,6 +139,8 @@ export default function Dashboard() {
 
   const stagger = { hidden: {}, visible: { transition: { staggerChildren: 0.08 } } };
   const fadeUp = { hidden: { opacity: 0, y: 16 }, visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: 'easeOut' as const } } };
+
+  const recentMessages: any[] = [];
 
   return (
     <AppLayout>
@@ -203,7 +213,11 @@ export default function Dashboard() {
                   </div>
                   <span className="text-sm font-bold text-foreground">Vehicles</span>
                 </div>
-                <div className="text-3xl font-extrabold tabular-nums text-foreground">{vehicles.length}</div>
+                {vehiclesLoading ? (
+                  <Skeleton className="h-9 w-8" />
+                ) : (
+                  <div className="text-3xl font-extrabold tabular-nums text-foreground">{vehicles.length}</div>
+                )}
               </div>
               <ArrowUpRight className="absolute top-3 right-3 w-4 h-4 text-muted-foreground/30 group-hover:text-primary group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
             </Link>
@@ -218,7 +232,11 @@ export default function Dashboard() {
                   </div>
                   <span className="text-sm font-bold text-foreground">Accidents</span>
                 </div>
-                <div className="text-3xl font-extrabold tabular-nums text-foreground">{claims.length}</div>
+                {claimsLoading ? (
+                  <Skeleton className="h-9 w-8" />
+                ) : (
+                  <div className="text-3xl font-extrabold tabular-nums text-foreground">{claims.length}</div>
+                )}
               </div>
               <ArrowUpRight className="absolute top-3 right-3 w-4 h-4 text-muted-foreground/30 group-hover:text-primary group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
             </Link>
@@ -264,9 +282,6 @@ export default function Dashboard() {
             ))}
           </motion.div>
         )}
-
-
-
 
         {recentMessages.length > 0 && (
           <motion.div variants={fadeUp} className="card-surface-elevated space-y-2">

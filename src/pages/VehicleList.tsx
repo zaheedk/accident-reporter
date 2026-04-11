@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
 import { Plus, Car, Trash2, ChevronRight, ArrowLeft, ArrowUpRight, Phone } from 'lucide-react';
@@ -11,33 +11,40 @@ import {
   AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle,
   AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction,
 } from '@/components/ui/alert-dialog';
+import { useOfflineQuery } from '@/hooks/use-offline-query';
+import { useQueryClient } from '@tanstack/react-query';
 
 export default function VehicleList() {
   const navigate = useNavigate();
-  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const { user } = useAuth();
   const [deleteTarget, setDeleteTarget] = useState<Vehicle | null>(null);
   const [deleting, setDeleting] = useState(false);
-  const [insurerPhones, setInsurerPhones] = useState<Record<string, string>>({});
+  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    if (!user) return;
-    getVehicles(user.id).then(setVehicles);
-    supabase.from('insurance_companies').select('name, phone').then(({ data }) => {
-      if (data) {
-        const map: Record<string, string> = {};
-        data.forEach((ic: any) => { if (ic.phone) map[ic.name] = ic.phone; });
-        setInsurerPhones(map);
-      }
-    });
-  }, [user]);
+  const { data: vehicles = [] } = useOfflineQuery<Vehicle[]>(
+    ['vehicles', user?.id ?? ''],
+    () => getVehicles(user!.id),
+    { enabled: !!user }
+  );
+
+  const { data: insurerPhones = {} } = useOfflineQuery<Record<string, string>>(
+    ['insurer-phones'],
+    async () => {
+      const { data } = await supabase.from('insurance_companies').select('name, phone');
+      const map: Record<string, string> = {};
+      data?.forEach((ic: any) => { if (ic.phone) map[ic.name] = ic.phone; });
+      return map;
+    },
+    { enabled: !!user }
+  );
 
   const handleDelete = async () => {
     if (!deleteTarget) return;
     setDeleting(true);
     try {
       await deleteVehicle(deleteTarget.id);
-      setVehicles(prev => prev.filter(v => v.id !== deleteTarget.id));
+      // Invalidate cache so Dashboard + VehicleList refresh
+      queryClient.invalidateQueries({ queryKey: ['vehicles'] });
     } finally {
       setDeleting(false);
       setDeleteTarget(null);
