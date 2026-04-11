@@ -207,7 +207,7 @@ export default function VehicleForm() {
               }
             }}>
               <SelectTrigger className="form-input">
-                <SelectValue placeholder=Select insurance company />
+                <SelectValue placeholder="Select insurance company" />
               </SelectTrigger>
               <SelectContent>
                 {insuranceCompanies.map(c => (
