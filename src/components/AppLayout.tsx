@@ -54,7 +54,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen bg-background">
       <header className="bg-card px-4 py-3 pt-[max(0.75rem,env(safe-area-inset-top))] flex items-center justify-between border-b border-border/50 sticky top-0 z-30">
         <Link to={logoLink} className="flex items-center gap-2.5">
-          <img src="/savo-logo.svg" alt="SAVO" className="h-11" />
+          <img src="/savo-logo.svg" alt="SAVO" className="h-11" width="110" height="44" />
         </Link>
         <div className="flex items-center gap-2">
           {user && (
@@ -76,7 +76,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               </Link>
             </>
           )}
-          <button onClick={() => setMenuOpen(!menuOpen)} className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors">
+          <button onClick={() => setMenuOpen(!menuOpen)} aria-label={menuOpen ? 'Close menu' : 'Open menu'} className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors">
             {menuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
         </div>

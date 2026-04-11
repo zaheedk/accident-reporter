@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Shield, Camera, FileText, Clock, Phone, Wrench, Truck, ChevronRight, ArrowRight, CheckCircle2, BookOpen, HelpCircle, Newspaper, Menu, X, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
-import heroScene from '@/assets/hero-scene.jpg';
+const heroScene = '/hero-scene.jpg';
 
 const stagger = { hidden: {}, visible: { transition: { staggerChildren: 0.1 } } };
 const fadeUp = { hidden: { opacity: 0, y: 24 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' as const } } };
@@ -26,7 +26,7 @@ export default function Home() {
       <header className="bg-card sticky top-0 z-30 border-b border-border/50">
         <div className="max-w-5xl mx-auto px-4 py-3 pt-[max(0.75rem,env(safe-area-inset-top))] flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2.5">
-            <img src="/savo-logo.svg" alt="SAVO" className="h-11" />
+            <img src="/savo-logo.svg" alt="SAVO" className="h-11" width="110" height="44" />
           </Link>
           <nav className="hidden md:flex items-center gap-5 text-sm text-muted-foreground font-medium">
             {contentLinks.map(({ to, label }) => (
@@ -44,7 +44,7 @@ export default function Home() {
                 Sign up free
               </Button>
             </Link>
-            <button onClick={() => setMenuOpen(!menuOpen)} className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors md:hidden">
+            <button onClick={() => setMenuOpen(!menuOpen)} aria-label={menuOpen ? 'Close menu' : 'Open menu'} className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors md:hidden">
               {menuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
           </div>
@@ -107,6 +107,8 @@ export default function Home() {
                 className="w-full rounded-2xl shadow-2xl border border-white/10"
                 width={800}
                 height={800}
+                loading="eager"
+                fetchPriority="high"
               />
             </motion.div>
           </div>
@@ -214,7 +216,7 @@ export default function Home() {
           <div className="max-w-5xl mx-auto px-4 py-10">
             <div className="flex flex-col sm:flex-row items-start justify-between gap-8">
               <div>
-                <img src="/savo-logo.svg" alt="SAVO" className="h-8 invert" />
+                <img src="/savo-logo.svg" alt="SAVO" className="h-8 invert" width="80" height="32" loading="lazy" />
                 <p className="mt-2 text-xs text-muted-foreground max-w-xs">Vehicle accident reporting made simple for New Zealand drivers.</p>
               </div>
               <div className="grid grid-cols-2 gap-x-12 gap-y-2 text-xs">
