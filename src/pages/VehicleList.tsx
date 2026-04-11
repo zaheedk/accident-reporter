@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
-import { Plus, Car, Trash2, ChevronRight, ArrowLeft, ArrowUpRight } from 'lucide-react';
+import { Plus, Car, Trash2, ChevronRight, ArrowLeft, ArrowUpRight, Phone } from 'lucide-react';
 import { getVehicles, deleteVehicle } from '@/lib/storage';
+import { supabase } from '@/integrations/supabase/client';
 import AppLayout from '@/components/AppLayout';
 import { Vehicle } from '@/types';
 import { motion } from 'framer-motion';
