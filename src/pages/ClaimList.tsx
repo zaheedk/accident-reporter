@@ -5,7 +5,6 @@ import { Plus, FileText, ChevronRight, Search, X, Calendar, Car, ArrowLeft, Tras
 import { getClaims, getVehicles, deleteClaim } from '@/lib/storage';
 import { ClaimReport, Vehicle } from '@/types';
 import AppLayout from '@/components/AppLayout';
-import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
@@ -20,7 +19,6 @@ export default function ClaimList() {
   const [search, setSearch] = useState('');
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
-  const { t } = useTranslation();
 
   const handleDelete = async () => {
     if (!deleteId) return;
@@ -51,13 +49,13 @@ export default function ClaimList() {
       const claimIds = c.map(cl => cl.id).filter(Boolean);
 
       if (claimIds.length > 0) {
-        const { data: metaData } = await supabase.from('claims').select('id, claim_number, report_number').in('id', claimIds);
+        const { data: metaData } = await supabase.from('claims').selec'id, claim_number, report_number'.in('id', claimIds);
         if (metaData) {
           metaData.forEach((m: any) => { meta[m.id] = { claimNumber: m.claim_number, reportNumber: m.report_number }; });
         }
 
         // Fetch first photo per claim (only for user's claims)
-        const { data: photoData } = await supabase.from('claim_photos').select('claim_id, file_path').in('claim_id', claimIds).order('created_at', { ascending: true });
+        const { data: photoData } = await supabase.from('claim_photos').selec'claim_id, file_path'.in('claim_id', claimIds).order('created_at', { ascending: true });
         if (photoData && photoData.length > 0) {
           const photoMap: Record<string, string> = {};
           photoData.forEach((p: any) => {
@@ -104,12 +102,12 @@ export default function ClaimList() {
               <ArrowLeft className="w-5 h-5" />
             </button>
             <div>
-              <p className="text-sm text-muted-foreground">{t('claims.reports')}</p>
-              <h1 className="text-[22px] font-extrabold text-foreground tracking-tight -mt-0.5">{t('claims.accidentReports')}</h1>
+              <p className="text-sm text-muted-foreground">Reports</p>
+              <h1 className="text-[22px] font-extrabold text-foreground tracking-tight -mt-0.5">Accident reports</h1>
             </div>
           </div>
           <Link to="/claims/new" className="btn-primary h-8 px-3.5 text-xs rounded-lg">
-            <Plus className="w-3.5 h-3.5" /> {t('common.new')}
+            <Plus className="w-3.5 h-3.5" /> New
           </Link>
         </div>
 
@@ -134,8 +132,8 @@ export default function ClaimList() {
         {claims.length === 0 ? (
           <div className="card-surface text-center py-14">
             <FileText className="w-12 h-12 text-muted-foreground/30 mx-auto mb-3" strokeWidth={1.2} />
-            <p className="text-sm font-semibold text-foreground">{t('claims.noReports')}</p>
-            <p className="text-xs text-muted-foreground mt-1">{t('claims.noReportsHint')}</p>
+            <p className="text-sm font-semibold text-foreground">No reports yet</p>
+            <p className="text-xs text-muted-foreground mt-1">File a report when you need to document an incident.</p>
           </div>
         ) : filteredClaims.length === 0 ? (
           <div className="card-surface text-center py-10">
@@ -149,7 +147,7 @@ export default function ClaimList() {
               const reportNum = meta?.reportNumber || '';
               const href = c.status === 'draft' ? `/claims/${c.id}/edit` : `/claims/${c.id}`;
               const isDraft = c.status === 'draft';
-              const statusLabel = isDraft ? t('common.draft') : 'Saved';
+              const statusLabel = isDraft ? 'Draft' : 'Saved';
               const photoUrl = claimPhotos[c.id];
               return (
                 <div key={c.id} className="card-surface overflow-hidden hover:shadow-md transition-all group">
@@ -189,7 +187,7 @@ export default function ClaimList() {
                           <div className="flex items-center gap-1 mt-0.5">
                             <Calendar className="w-3.5 h-3.5 text-muted-foreground" />
                             <span className="text-sm font-bold text-foreground">
-                              {c.incidentDate || t('claims.noDate')}
+                              {c.incidentDate || 'No date'}
                             </span>
                           </div>
                         </div>

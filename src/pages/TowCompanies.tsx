@@ -6,7 +6,6 @@ import AppLayout from '@/components/AppLayout';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { Search, MapPin, Phone, Navigation, Loader2 } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
 import { useNearbySort } from '@/hooks/use-nearby-sort';
 
 type TowCompany = {
@@ -15,7 +14,6 @@ type TowCompany = {
 };
 
 export default function TowCompanies() {
-  const { t } = useTranslation();
   const [search, setSearch] = useState('');
   const [selectedRegion, setSelectedRegion] = useState('All');
   const [showAll, setShowAll] = useState(false);
@@ -24,7 +22,7 @@ export default function TowCompanies() {
   const { data: companies = [], isLoading } = useQuery({
     queryKey: ['tow-companies-public'],
     queryFn: async () => {
-      const { data, error } = await supabase.from('tow_companies').select('*').order('name');
+      const { data, error } = await supabase.from('tow_companies').selec'*'.order('name');
       if (error) throw error;
       return data as TowCompany[];
     },
@@ -49,14 +47,14 @@ export default function TowCompanies() {
     <AppLayout>
       <div className="space-y-5">
         <div>
-          <h1 className="text-xl font-bold text-foreground">{t('towCompanies.title')}</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">{t('towCompanies.subtitle')}</p>
+          <h1 className="text-xl font-bold text-foreground">Tow Companies</h1>
+          <p className="text-sm text-muted-foreground mt-0.5">Towing services across New Zealand</p>
         </div>
 
         <div className="flex gap-2">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <Input placeholder={t('towCompanies.searchPlaceholder')} value={search} onChange={e => setSearch(e.target.value)} className="pl-9" />
+            <Input placeholder=Search by name, address... value={search} onChange={e => setSearch(e.target.value)} className="pl-9" />
           </div>
           <Button
             variant={nearbyActive ? 'default' : 'outline'}
@@ -80,9 +78,9 @@ export default function TowCompanies() {
         </div>
 
         {isLoading ? (
-          <div className="text-center py-10 text-muted-foreground text-sm">{t('common.loading')}</div>
+          <div className="text-center py-10 text-muted-foreground text-sm">Loading...</div>
         ) : displayed.length === 0 ? (
-          <div className="text-center py-10 text-muted-foreground text-sm">{t('towCompanies.noResults')}</div>
+          <div className="text-center py-10 text-muted-foreground text-sm">No tow companies found</div>
         ) : (
           <div className="space-y-3">
             {displayed.map(company => {
@@ -134,7 +132,7 @@ export default function TowCompanies() {
         )}
 
         <p className="text-[10px] text-muted-foreground text-center pt-2">
-          Showing {displayed.length} of {afterNearby.length} {t('towCompanies.companiesFound', { count: afterNearby.length })}
+          Showing {displayed.length} of {afterNearby.length} {`${\1} companies found`}
         </p>
       </div>
     </AppLayout>

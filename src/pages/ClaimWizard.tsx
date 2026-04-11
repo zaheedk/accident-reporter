@@ -10,7 +10,6 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import AppLayout from '@/components/AppLayout';
 import { toast } from 'sonner';
-import { useTranslation } from 'react-i18next';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -59,7 +58,6 @@ export default function ClaimWizard() {
   const [searchParams] = useSearchParams();
   const { user } = useAuth();
   const navigate = useNavigate();
-  const { t } = useTranslation();
   const [step, setStep] = useState(0);
   const [claim, setClaim] = useState<ClaimReport>(emptyClaim);
   const [claimNumber, setClaimNumber] = useState<number | null>(null);
@@ -115,17 +113,17 @@ export default function ClaimWizard() {
 
   const isEdit = !!id;
   const STEPS = isEdit ? [
-    t('claims.steps.yourVehicle'),
+    'Your vehicle',
     'Incident Details',
     'Damage & Vehicle',
     'Other Party & Witnesses',
     'Conditions & Liability',
-    t('claims.steps.review'),
+    'Review',
   ] : [
-    t('claims.steps.yourVehicle'),
+    'Your vehicle',
     'At the Scene',
     'Other Party & Witnesses',
-    t('claims.steps.review'),
+    'Review',
   ];
 
   const [autoSkipped, setAutoSkipped] = useState(false);
@@ -133,7 +131,7 @@ export default function ClaimWizard() {
   useEffect(() => {
     getVehicles(user?.id).then(v => {
       setVehicles(v);
-      const regoParam = searchParams.get('rego');
+      const regoParam = searchParams.ge'rego';
       if (!id && regoParam) {
         const match = v.find(veh => veh.regoNumber?.toLowerCase() === regoParam.toLowerCase());
         if (match) {
@@ -154,9 +152,9 @@ export default function ClaimWizard() {
     if (id) {
       const loadClaim = async () => {
         const [{ data: claimRow }, { data: claimNumData }, { data: photosData }] = await Promise.all([
-          supabase.from('claims').select('*').eq('id', id).single(),
-          supabase.from('claims').select('claim_number').eq('id', id).single(),
-          supabase.from('claim_photos').select('id, file_path, file_name').eq('claim_id', id),
+          supabase.from('claims').selec'*'.eq('id', id).single(),
+          supabase.from('claims').selec'claim_number'.eq('id', id).single(),
+          supabase.from('claim_photos').selec'id, file_path, file_name'.eq('claim_id', id),
         ]);
         if (claimRow) {
           const loaded: ClaimReport = {
@@ -293,13 +291,13 @@ export default function ClaimWizard() {
     for (const rawFile of Array.from(files)) {
       if (rawFile.size > 10 * 1024 * 1024) { toast.error(`${rawFile.name} is too large (max 10MB)`); continue; }
       const file = await compressImage(rawFile);
-      const ext = file.name.split('.').pop();
+      const ext = file.name.spli'.'.pop();
       const path = `${user.id}/${claimId}/${Date.now()}.${ext}`;
       const { error: uploadError } = await supabase.storage.from('claim-photos').upload(path, file);
       if (uploadError) { toast.error(`Failed to upload ${file.name}`); continue; }
       const { data } = await supabase.from('claim_photos')
         .insert({ claim_id: claimId, user_id: user.id, file_path: path, file_name: file.name })
-        .select('id, file_path, file_name').single();
+        .selec'id, file_path, file_name'.single();
       if (data) setPhotos(prev => [...prev, data as ClaimPhoto]);
     }
     setUploading(false);
@@ -333,7 +331,7 @@ export default function ClaimWizard() {
   };
 
   const checklistSections = [
-    { key: 'vehicle', label: t('claims.steps.yourVehicle'), number: 1 },
+    { key: 'vehicle', label: 'Your vehicle', number: 1 },
     { key: 'scene', label: 'At the Scene', number: 2 },
     { key: 'parties', label: 'Other Party & Witnesses', number: 3 },
   ];
@@ -356,9 +354,9 @@ export default function ClaimWizard() {
             <ArrowLeft className="w-5 h-5 text-foreground" strokeWidth={1.5} />
           </button>
           <div className="flex-1">
-            <h1 className="text-lg font-bold text-foreground">{t('claims.reportIncident')}</h1>
+            <h1 className="text-lg font-bold text-foreground">Report an incident</h1>
             <div className="flex items-center gap-2">
-              <p className="text-xs text-muted-foreground flex items-center gap-1"><Save className="w-3 h-3" /> {t('claims.autoSaved')}</p>
+              <p className="text-xs text-muted-foreground flex items-center gap-1"><Save className="w-3 h-3" /> Auto-saved as draft</p>
               {(claim.id || claimNumber) && (
                 <span className="text-xs text-muted-foreground">
                   {claimNumber ? `CLM-${String(claimNumber).padStart(4, '0')}` : ''}{claim.id ? ` · ${claim.id.slice(0, 8).toUpperCase()}` : ''}
@@ -457,11 +455,11 @@ export default function ClaimWizard() {
                           {/* Vehicle section */}
                           {section.key === 'vehicle' && (
                             <>
-                              <label className="form-label">{t('claims.vehicle.selectVehicle')}</label>
+                              <label className="form-label">Select your vehicle</label>
                               {vehicles.length === 0 ? (
                                 <div className="p-5 rounded-xl bg-background text-center">
-                                  <p className="text-sm text-muted-foreground">{t('claims.vehicle.noVehicles')}</p>
-                                  <button onClick={async () => { await autoSave(); navigate('/vehicles/new'); }} className="text-sm text-primary font-medium mt-2 hover:underline">{t('claims.vehicle.addFirst')}</button>
+                                  <p className="text-sm text-muted-foreground">No vehicles in your garage.</p>
+                                  <button onClick={async () => { await autoSave(); navigate('/vehicles/new'); }} className="text-sm text-primary font-medium mt-2 hover:underline">Add a vehicle first</button>
                                 </div>
                               ) : (
                                 <select
@@ -474,7 +472,7 @@ export default function ClaimWizard() {
                                   }}
                                   className="w-full p-3.5 rounded-xl border border-border bg-background text-sm font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 appearance-none"
                                 >
-                                  <option value="">{t('claims.vehicle.selectVehicle')}</option>
+                                  <option value="">Select your vehicle</option>
                                   {vehicles.map(v => (
                                     <option key={v.id} value={v.id}>
                                       {v.regoNumber} — {v.year} {v.make} {v.model}
@@ -489,13 +487,13 @@ export default function ClaimWizard() {
                           {section.key === 'scene' && (
                             <>
                               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:max-w-[28rem]">
-                                <div className="min-w-0"><label className="form-label">{t('claims.incident.date')}</label><input type="date" className="form-input tabular-nums w-full min-w-0 h-10 px-3 text-sm" value={claim.incidentDate} onChange={e => update('incidentDate', e.target.value)} /></div>
-                                <div className="min-w-0"><label className="form-label">{t('claims.incident.time')}</label><input type="time" className="form-input tabular-nums w-full min-w-0 h-10 px-3 text-sm" value={claim.incidentTime} onChange={e => update('incidentTime', e.target.value)} /></div>
+                                <div className="min-w-0"><label className="form-label">Date of incident</label><input type="date" className="form-input tabular-nums w-full min-w-0 h-10 px-3 text-sm" value={claim.incidentDate} onChange={e => update('incidentDate', e.target.value)} /></div>
+                                <div className="min-w-0"><label className="form-label">Time</label><input type="time" className="form-input tabular-nums w-full min-w-0 h-10 px-3 text-sm" value={claim.incidentTime} onChange={e => update('incidentTime', e.target.value)} /></div>
                               </div>
                               <div>
-                                <label className="form-label">{t('claims.incident.location')}</label>
+                                <label className="form-label">Location (street and town)</label>
                                 <div className="flex gap-2">
-                                  <input className="form-input flex-1" placeholder={t('claims.incident.locationPlaceholder')} value={claim.incidentLocation} onChange={e => update('incidentLocation', e.target.value)} />
+                                  <input className="form-input flex-1" placeholder=e.g. 42 Queen St, Auckland CBD value={claim.incidentLocation} onChange={e => update('incidentLocation', e.target.value)} />
                                   <button type="button" onClick={detectLocation} disabled={detectingLocation}
                                     className="flex-shrink-0 h-10 px-3 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors flex items-center gap-1.5 text-xs font-medium disabled:opacity-50">
                                     {detectingLocation ? <Loader2 className="w-4 h-4 animate-spin" /> : <MapPin className="w-4 h-4" />}
@@ -553,7 +551,7 @@ export default function ClaimWizard() {
                                   }} disabled={uploading}
                                     className="btn-secondary flex-1 h-9 gap-2 text-xs">
                                     {uploading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Camera className="w-3.5 h-3.5" />}
-                                    {t('claims.insurance.takePhoto', 'Take photo')}
+                                    {Take photo}
                                   </button>
                                   <button type="button" onClick={async () => {
                                     if (!claim.id) {
@@ -564,7 +562,7 @@ export default function ClaimWizard() {
                                   }} disabled={uploading}
                                     className="btn-secondary flex-1 h-9 gap-2 text-xs">
                                     {uploading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <span>📁</span>}
-                                    {t('claims.insurance.gallery', 'Gallery')}
+                                    {Gallery}
                                   </button>
                                 </div>
                                 <input ref={cameraInputRef} type="file" accept="image/*" capture="environment" multiple className="hidden" onChange={handlePhotoUpload} />
@@ -577,23 +575,23 @@ export default function ClaimWizard() {
                           {section.key === 'parties' && (
                             <>
                               <div className="space-y-3">
-                                <label className="form-label mb-0">{t('claims.thirdParty.otherVehicles')}</label>
+                                <label className="form-label mb-0">Other vehicles involved</label>
                                 {claim.thirdParties.length === 0 && (
                                   <button onClick={addTP} className="w-full p-4 rounded-xl bg-background text-center cursor-pointer hover:bg-muted/50 transition-colors">
-                                    <p className="text-sm text-muted-foreground">{t('claims.thirdParty.noThirdParties')}</p>
+                                    <p className="text-sm text-muted-foreground">No third-party vehicles added.</p>
                                     <span className="text-sm text-primary font-medium mt-2 inline-block hover:underline">+ Add other vehicle</span>
                                   </button>
                                 )}
                                 {claim.thirdParties.map((tp, i) => (
                                   <div key={i} className="p-4 rounded-xl bg-background space-y-3">
                                     <div className="flex items-center justify-between">
-                                      <span className="text-xs font-semibold text-muted-foreground">{t('claims.thirdParty.vehicleNumber', { number: i + 1 })}</span>
-                                      <button onClick={() => rmTP(i)} className="text-xs text-destructive hover:underline font-medium">{t('common.remove')}</button>
+                                      <span className="text-xs font-semibold text-muted-foreground">{`Vehicle ${\1}`}</span>
+                                      <button onClick={() => rmTP(i)} className="text-xs text-destructive hover:underline font-medium">Remove</button>
                                     </div>
-                                    <div><label className="form-label">{t('claims.thirdParty.regoNo')}</label><input className="form-input tabular-nums text-base font-bold" placeholder="e.g. ABC123" value={tp.regoNumber} onChange={e => updTP(i, 'regoNumber', e.target.value.toUpperCase())} /></div>
+                                    <div><label className="form-label">Rego no.</label><input className="form-input tabular-nums text-base font-bold" placeholder="e.g. ABC123" value={tp.regoNumber} onChange={e => updTP(i, 'regoNumber', e.target.value.toUpperCase())} /></div>
                                     <div className="grid grid-cols-2 gap-3">
-                                      <div><label className="form-label">{t('claims.thirdParty.ownerDriver')}</label><input className="form-input" placeholder="Driver's name" value={tp.ownerName} onChange={e => updTP(i, 'ownerName', e.target.value)} /></div>
-                                      <div><label className="form-label">{t('claims.thirdParty.phone')}</label><input className="form-input" type="tel" placeholder="Phone number" value={tp.phone} onChange={e => updTP(i, 'phone', e.target.value)} /></div>
+                                      <div><label className="form-label">Owner / driver</label><input className="form-input" placeholder="Driver's name" value={tp.ownerName} onChange={e => updTP(i, 'ownerName', e.target.value)} /></div>
+                                      <div><label className="form-label">Phone</label><input className="form-input" type="tel" placeholder="Phone number" value={tp.phone} onChange={e => updTP(i, 'phone', e.target.value)} /></div>
                                     </div>
                                     <div className="grid grid-cols-2 gap-3">
                                       <div><label className="form-label">Insurer</label><input className="form-input" placeholder="Insurance company" value={tp.insurer} onChange={e => updTP(i, 'insurer', e.target.value)} /></div>
@@ -622,28 +620,28 @@ export default function ClaimWizard() {
                               </div>
 
                               <div className="space-y-3 pt-2">
-                                <label className="form-label mb-0">{t('claims.witnesses.title')}</label>
+                                <label className="form-label mb-0">Witnesses</label>
                                 {claim.witnesses.length === 0 && (
                                   <button onClick={addW} className="w-full p-4 rounded-xl bg-background text-center cursor-pointer hover:bg-muted/50 transition-colors">
-                                    <p className="text-sm text-muted-foreground">{t('claims.witnesses.noWitnesses')}</p>
-                                    <span className="text-sm text-primary font-medium mt-2 inline-block">+ {t('claims.witnesses.addWitness')}</span>
+                                    <p className="text-sm text-muted-foreground">No witnesses added.</p>
+                                    <span className="text-sm text-primary font-medium mt-2 inline-block">+ Add witness</span>
                                   </button>
                                 )}
                                 {claim.witnesses.map((w, i) => (
                                   <div key={i} className="p-4 rounded-xl bg-background space-y-3">
                                     <div className="flex items-center justify-between">
-                                      <span className="text-xs font-semibold text-muted-foreground">{t('claims.witnesses.witnessNumber', { number: i + 1 })}</span>
-                                      <button onClick={() => rmW(i)} className="text-xs text-destructive hover:underline font-medium">{t('common.remove')}</button>
+                                      <span className="text-xs font-semibold text-muted-foreground">{`Witness ${\1}`}</span>
+                                      <button onClick={() => rmW(i)} className="text-xs text-destructive hover:underline font-medium">Remove</button>
                                     </div>
                                     <div className="grid grid-cols-2 gap-3">
-                                      <div><label className="form-label">{t('claims.witnesses.fullName')}</label><input className="form-input" value={w.name} onChange={e => updW(i, 'name', e.target.value)} /></div>
-                                      <div><label className="form-label">{t('claims.witnesses.phone')}</label><input className="form-input" value={w.phone} onChange={e => updW(i, 'phone', e.target.value)} /></div>
+                                      <div><label className="form-label">Full name</label><input className="form-input" value={w.name} onChange={e => updW(i, 'name', e.target.value)} /></div>
+                                      <div><label className="form-label">Phone</label><input className="form-input" value={w.phone} onChange={e => updW(i, 'phone', e.target.value)} /></div>
                                     </div>
                                   </div>
                                 ))}
                                 {claim.witnesses.length > 0 && (
                                   <button onClick={addW} className="w-full py-3 rounded-xl border border-dashed border-primary/30 text-sm text-primary font-medium hover:bg-primary/5 transition-colors">
-                                    + {t('claims.witnesses.addWitness')}
+                                    + Add witness
                                   </button>
                                 )}
                               </div>
@@ -662,7 +660,7 @@ export default function ClaimWizard() {
             </div>
 
             <button onClick={submit} disabled={submitting} className="btn-primary w-full h-11">
-              {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} {t('common.save')} report
+              {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} Save report
             </button>
           </div>
         )}
@@ -685,7 +683,7 @@ export default function ClaimWizard() {
                 {step === 0 && (
                   <div className="card-surface space-y-4">
                     <div>
-                      <label className="form-label">{t('claims.vehicle.selectVehicle')}</label>
+                      <label className="form-label">Select your vehicle</label>
                       <select
                         value={claim.vehicleId}
                         onChange={e => {
@@ -696,7 +694,7 @@ export default function ClaimWizard() {
                         }}
                         className="w-full p-3.5 rounded-xl border border-border bg-background text-sm font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 appearance-none"
                       >
-                        <option value="">{t('claims.vehicle.selectVehicle')}</option>
+                        <option value="">Select your vehicle</option>
                         {vehicles.map(v => (
                           <option key={v.id} value={v.id}>
                             {v.regoNumber} — {v.year} {v.make} {v.model}
@@ -711,13 +709,13 @@ export default function ClaimWizard() {
                 {step === 1 && (
                   <div className="card-surface space-y-4">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:max-w-[28rem]">
-                      <div className="min-w-0"><label className="form-label">{t('claims.incident.date')}</label><input type="date" className="form-input tabular-nums w-full min-w-0 h-10 px-3 text-sm" value={claim.incidentDate} onChange={e => update('incidentDate', e.target.value)} /></div>
-                      <div className="min-w-0"><label className="form-label">{t('claims.incident.time')}</label><input type="time" className="form-input tabular-nums w-full min-w-0 h-10 px-3 text-sm" value={claim.incidentTime} onChange={e => update('incidentTime', e.target.value)} /></div>
+                      <div className="min-w-0"><label className="form-label">Date of incident</label><input type="date" className="form-input tabular-nums w-full min-w-0 h-10 px-3 text-sm" value={claim.incidentDate} onChange={e => update('incidentDate', e.target.value)} /></div>
+                      <div className="min-w-0"><label className="form-label">Time</label><input type="time" className="form-input tabular-nums w-full min-w-0 h-10 px-3 text-sm" value={claim.incidentTime} onChange={e => update('incidentTime', e.target.value)} /></div>
                     </div>
                     <div>
-                      <label className="form-label">{t('claims.incident.location')}</label>
+                      <label className="form-label">Location (street and town)</label>
                       <div className="flex gap-2">
-                        <input className="form-input flex-1" placeholder={t('claims.incident.locationPlaceholder')} value={claim.incidentLocation} onChange={e => update('incidentLocation', e.target.value)} />
+                        <input className="form-input flex-1" placeholder=e.g. 42 Queen St, Auckland CBD value={claim.incidentLocation} onChange={e => update('incidentLocation', e.target.value)} />
                         <button type="button" onClick={detectLocation} disabled={detectingLocation}
                           className="flex-shrink-0 h-10 px-3 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors flex items-center gap-1.5 text-xs font-medium disabled:opacity-50">
                           {detectingLocation ? <Loader2 className="w-4 h-4 animate-spin" /> : <MapPin className="w-4 h-4" />}
@@ -778,7 +776,7 @@ export default function ClaimWizard() {
                         }} disabled={uploading}
                           className="btn-secondary flex-1 h-9 gap-2 text-xs">
                           {uploading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Camera className="w-3.5 h-3.5" />}
-                          {t('claims.insurance.takePhoto', 'Take photo')}
+                          {Take photo}
                         </button>
                         <button type="button" onClick={async () => {
                           if (!claim.id) {
@@ -789,7 +787,7 @@ export default function ClaimWizard() {
                         }} disabled={uploading}
                           className="btn-secondary flex-1 h-9 gap-2 text-xs">
                           {uploading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <span>📁</span>}
-                          {t('claims.insurance.gallery', 'Gallery')}
+                          {Gallery}
                         </button>
                       </div>
                       <input ref={cameraInputRef} type="file" accept="image/*" capture="environment" multiple className="hidden" onChange={handlePhotoUpload} />
@@ -827,23 +825,23 @@ export default function ClaimWizard() {
                 {step === 3 && (
                   <div className="space-y-4">
                     <div className="card-surface space-y-3">
-                      <label className="form-label mb-0">{t('claims.thirdParty.otherVehicles')}</label>
+                      <label className="form-label mb-0">Other vehicles involved</label>
                       {claim.thirdParties.length === 0 && (
                         <button onClick={addTP} className="w-full p-4 rounded-xl bg-background text-center cursor-pointer hover:bg-muted/50 transition-colors">
-                          <p className="text-sm text-muted-foreground">{t('claims.thirdParty.noThirdParties')}</p>
+                          <p className="text-sm text-muted-foreground">No third-party vehicles added.</p>
                           <span className="text-sm text-primary font-medium mt-2 inline-block hover:underline">+ Add other vehicle</span>
                         </button>
                       )}
                       {claim.thirdParties.map((tp, i) => (
                         <div key={i} className="p-4 rounded-xl bg-background space-y-3">
                           <div className="flex items-center justify-between">
-                            <span className="text-xs font-semibold text-muted-foreground">{t('claims.thirdParty.vehicleNumber', { number: i + 1 })}</span>
-                            <button onClick={() => rmTP(i)} className="text-xs text-destructive hover:underline font-medium">{t('common.remove')}</button>
+                            <span className="text-xs font-semibold text-muted-foreground">{`Vehicle ${\1}`}</span>
+                            <button onClick={() => rmTP(i)} className="text-xs text-destructive hover:underline font-medium">Remove</button>
                           </div>
-                          <div><label className="form-label">{t('claims.thirdParty.regoNo')}</label><input className="form-input tabular-nums text-base font-bold" placeholder="e.g. ABC123" value={tp.regoNumber} onChange={e => updTP(i, 'regoNumber', e.target.value.toUpperCase())} /></div>
+                          <div><label className="form-label">Rego no.</label><input className="form-input tabular-nums text-base font-bold" placeholder="e.g. ABC123" value={tp.regoNumber} onChange={e => updTP(i, 'regoNumber', e.target.value.toUpperCase())} /></div>
                           <div className="grid grid-cols-2 gap-3">
-                            <div><label className="form-label">{t('claims.thirdParty.ownerDriver')}</label><input className="form-input" placeholder="Driver's name" value={tp.ownerName} onChange={e => updTP(i, 'ownerName', e.target.value)} /></div>
-                            <div><label className="form-label">{t('claims.thirdParty.phone')}</label><input className="form-input" type="tel" placeholder="Phone number" value={tp.phone} onChange={e => updTP(i, 'phone', e.target.value)} /></div>
+                            <div><label className="form-label">Owner / driver</label><input className="form-input" placeholder="Driver's name" value={tp.ownerName} onChange={e => updTP(i, 'ownerName', e.target.value)} /></div>
+                            <div><label className="form-label">Phone</label><input className="form-input" type="tel" placeholder="Phone number" value={tp.phone} onChange={e => updTP(i, 'phone', e.target.value)} /></div>
                           </div>
                           <div className="grid grid-cols-2 gap-3">
                             <div><label className="form-label">Insurer</label><input className="form-input" placeholder="Insurance company" value={tp.insurer} onChange={e => updTP(i, 'insurer', e.target.value)} /></div>
@@ -878,22 +876,22 @@ export default function ClaimWizard() {
                     </div>
 
                     <div className="card-surface space-y-3">
-                      <label className="form-label mb-0">{t('claims.witnesses.title')}</label>
+                      <label className="form-label mb-0">Witnesses</label>
                       {claim.witnesses.length === 0 && (
                         <button onClick={addW} className="w-full p-4 rounded-xl bg-background text-center cursor-pointer hover:bg-muted/50 transition-colors">
-                          <p className="text-sm text-muted-foreground">{t('claims.witnesses.noWitnesses')}</p>
-                          <span className="text-sm text-primary font-medium mt-2 inline-block">+ {t('claims.witnesses.addWitness')}</span>
+                          <p className="text-sm text-muted-foreground">No witnesses added.</p>
+                          <span className="text-sm text-primary font-medium mt-2 inline-block">+ Add witness</span>
                         </button>
                       )}
                       {claim.witnesses.map((w, i) => (
                         <div key={i} className="p-4 rounded-xl bg-background space-y-3">
                           <div className="flex items-center justify-between">
-                            <span className="text-xs font-semibold text-muted-foreground">{t('claims.witnesses.witnessNumber', { number: i + 1 })}</span>
-                            <button onClick={() => rmW(i)} className="text-xs text-destructive hover:underline font-medium">{t('common.remove')}</button>
+                            <span className="text-xs font-semibold text-muted-foreground">{`Witness ${\1}`}</span>
+                            <button onClick={() => rmW(i)} className="text-xs text-destructive hover:underline font-medium">Remove</button>
                           </div>
                           <div className="grid grid-cols-2 gap-3">
-                            <div><label className="form-label">{t('claims.witnesses.fullName')}</label><input className="form-input" value={w.name} onChange={e => updW(i, 'name', e.target.value)} /></div>
-                            <div><label className="form-label">{t('claims.witnesses.phone')}</label><input className="form-input" value={w.phone} onChange={e => updW(i, 'phone', e.target.value)} /></div>
+                            <div><label className="form-label">Full name</label><input className="form-input" value={w.name} onChange={e => updW(i, 'name', e.target.value)} /></div>
+                            <div><label className="form-label">Phone</label><input className="form-input" value={w.phone} onChange={e => updW(i, 'phone', e.target.value)} /></div>
                           </div>
                           <div><label className="form-label">Address</label><input className="form-input" value={w.address} onChange={e => updW(i, 'address', e.target.value)} /></div>
                           <div className="flex items-center gap-3">
@@ -904,7 +902,7 @@ export default function ClaimWizard() {
                       ))}
                       {claim.witnesses.length > 0 && (
                         <button onClick={addW} className="w-full py-3 rounded-xl border border-dashed border-primary/30 text-sm text-primary font-medium hover:bg-primary/5 transition-colors">
-                          + {t('claims.witnesses.addWitness')}
+                          + Add witness
                         </button>
                       )}
                     </div>
@@ -995,22 +993,22 @@ export default function ClaimWizard() {
                 {/* Step 5: Review */}
                 {step === STEPS.length - 1 && (
                   <div className="space-y-3">
-                    <RSection title={t('claims.review.incident')}>
-                      <RRow label={t('claims.review.date')} value={claim.incidentDate} />
-                      <RRow label={t('claims.review.time')} value={claim.incidentTime} />
-                      <RRow label={t('claims.review.location')} value={claim.incidentLocation} />
+                    <RSection title=Incident>
+                      <RRow label=Date value={claim.incidentDate} />
+                      <RRow label=Time value={claim.incidentTime} />
+                      <RRow label=Location value={claim.incidentLocation} />
                       {claim.vehicleUsage && <RRow label="Usage" value={claim.vehicleUsage} />}
                       {claim.description && <RRow label="Description" value={claim.description} />}
                     </RSection>
-                    <RSection title={t('claims.review.yourVehicle')}>
-                      <RRow label={t('claims.review.vehicle')} value={selV ? `${selV.year} ${selV.make} ${selV.model}` : '—'} />
-                      <RRow label={t('claims.review.rego')} value={selV?.regoNumber || '—'} />
-                      <RRow label={t('claims.review.photos')} value={t('claims.review.uploaded', { count: photos.length })} />
-                      {claim.damageDescription && <RRow label={t('claims.review.damage')} value={claim.damageDescription} />}
+                    <RSection title=Your vehicle>
+                      <RRow label=Vehicle value={selV ? `${selV.year} ${selV.make} ${selV.model}` : '—'} />
+                      <RRow label=Rego value={selV?.regoNumber || '—'} />
+                      <RRow label=Photos value={`${\1} uploaded`} />
+                      {claim.damageDescription && <RRow label=Damage value={claim.damageDescription} />}
                       {claim.speedBeforeBraking && <RRow label="Speed" value={`${claim.speedBeforeBraking} km/h`} />}
                     </RSection>
-                    <RSection title={t('claims.review.thirdParties')}>
-                      {claim.thirdParties.length === 0 ? <p className="text-sm text-muted-foreground">{t('common.none')}</p> : claim.thirdParties.map((tp, i) => (
+                    <RSection title=Third parties>
+                      {claim.thirdParties.length === 0 ? <p className="text-sm text-muted-foreground">None</p> : claim.thirdParties.map((tp, i) => (
                         <div key={i} className="p-3 rounded-xl bg-background space-y-0.5">
                           <RRow label="Rego" value={tp.regoNumber} />
                           <RRow label="Driver" value={tp.ownerName} />
@@ -1024,8 +1022,8 @@ export default function ClaimWizard() {
                         {claim.atFault === 'other_party' && <RRow label="Courtesy car" value={claim.courtesyCarRequested ? 'Requested' : 'Not requested'} />}
                       </RSection>
                     )}
-                    <RSection title={t('claims.review.witnesses')}>
-                      {claim.witnesses.length === 0 ? <p className="text-sm text-muted-foreground">{t('common.none')}</p> : claim.witnesses.map((w, i) => <RRow key={i} label={t('claims.witnesses.witnessNumber', { number: i + 1 })} value={`${w.name} – ${w.phone}`} />)}
+                    <RSection title=Witnesses>
+                      {claim.witnesses.length === 0 ? <p className="text-sm text-muted-foreground">None</p> : claim.witnesses.map((w, i) => <RRow key={i} label={`Witness ${\1}`} value={`${w.name} – ${w.phone}`} />)}
                     </RSection>
                     {(claim.weatherCondition || claim.roadCondition || claim.blameDescription) && (
                       <RSection title="Conditions & Liability">
@@ -1042,11 +1040,11 @@ export default function ClaimWizard() {
 
             <div className="flex flex-col gap-3 pb-16 md:pb-0">
               <div className="flex gap-3">
-                {step > 0 && <button onClick={prev} disabled={navigating} className="btn-secondary flex-1 h-11">{navigating ? <Loader2 className="w-4 h-4 animate-spin" /> : <ArrowLeft className="w-4 h-4" strokeWidth={1.5} />} {t('common.back')}</button>}
+                {step > 0 && <button onClick={prev} disabled={navigating} className="btn-secondary flex-1 h-11">{navigating ? <Loader2 className="w-4 h-4 animate-spin" /> : <ArrowLeft className="w-4 h-4" strokeWidth={1.5} />} Back</button>}
                 {step < STEPS.length - 1 ? (
-                  <button onClick={next} disabled={navigating} className="btn-primary flex-1 h-11">{navigating ? <Loader2 className="w-4 h-4 animate-spin" /> : <>{t('common.next')} <ArrowRight className="w-4 h-4" /></>}</button>
+                  <button onClick={next} disabled={navigating} className="btn-primary flex-1 h-11">{navigating ? <Loader2 className="w-4 h-4 animate-spin" /> : <>Next <ArrowRight className="w-4 h-4" /></>}</button>
                 ) : (
-                  <button onClick={submit} disabled={submitting} className="btn-primary flex-1 h-11">{submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} {t('common.save')} report</button>
+                  <button onClick={submit} disabled={submitting} className="btn-primary flex-1 h-11">{submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} Save report</button>
                 )}
               </div>
             </div>

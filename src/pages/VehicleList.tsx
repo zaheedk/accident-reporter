@@ -5,7 +5,6 @@ import { Plus, Car, Trash2, ChevronRight, ArrowLeft, ArrowUpRight } from 'lucide
 import { getVehicles, deleteVehicle } from '@/lib/storage';
 import AppLayout from '@/components/AppLayout';
 import { Vehicle } from '@/types';
-import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import {
   AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle,
@@ -15,7 +14,6 @@ import {
 export default function VehicleList() {
   const navigate = useNavigate();
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
-  const { t } = useTranslation();
   const { user } = useAuth();
   const [deleteTarget, setDeleteTarget] = useState<Vehicle | null>(null);
   const [deleting, setDeleting] = useState(false);
@@ -46,12 +44,12 @@ export default function VehicleList() {
               <ArrowLeft className="w-5 h-5 text-foreground" strokeWidth={1.5} />
             </button>
             <div>
-              <p className="text-sm text-muted-foreground">{t('vehicles.garage')}</p>
-              <h1 className="text-[22px] font-extrabold text-foreground tracking-tight -mt-0.5">{t('vehicles.myVehicles')}</h1>
+              <p className="text-sm text-muted-foreground">Garage</p>
+              <h1 className="text-[22px] font-extrabold text-foreground tracking-tight -mt-0.5">My vehicles</h1>
             </div>
           </div>
           <Link to="/vehicles/new" className="btn-primary h-8 px-3.5 text-xs rounded-lg">
-            <Plus className="w-3.5 h-3.5" /> {t('common.add')}
+            <Plus className="w-3.5 h-3.5" /> Add
           </Link>
         </motion.div>
 
@@ -60,10 +58,10 @@ export default function VehicleList() {
             <div className="w-16 h-16 rounded-2xl bg-muted/60 flex items-center justify-center mx-auto mb-4">
               <Car className="w-8 h-8 text-muted-foreground/40" strokeWidth={1.5} />
             </div>
-            <p className="text-base font-semibold text-foreground">{t('vehicles.noVehicles')}</p>
-            <p className="text-sm text-muted-foreground mt-1.5 mb-5 max-w-[240px] mx-auto">{t('vehicles.noVehiclesHint')}</p>
+            <p className="text-base font-semibold text-foreground">No vehicles added yet</p>
+            <p className="text-sm text-muted-foreground mt-1.5 mb-5 max-w-[240px] mx-auto">Add your vehicles to speed up claim filing.</p>
             <Link to="/vehicles/new" className="btn-primary h-10 px-5 text-sm rounded-xl inline-flex items-center gap-2">
-              <Plus className="w-4 h-4" /> {t('vehicles.addVehicle')}
+              <Plus className="w-4 h-4" /> Add vehicle
             </Link>
           </motion.div>
         ) : (
@@ -106,13 +104,13 @@ export default function VehicleList() {
         <AlertDialog open={!!deleteTarget} onOpenChange={(open) => { if (!open) setDeleteTarget(null); }}>
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>{t('common.delete')} {deleteTarget?.year} {deleteTarget?.make} {deleteTarget?.model}?</AlertDialogTitle>
-              <AlertDialogDescription>{t('vehicles.deleteConfirm', 'This vehicle and its data will be permanently removed. This action cannot be undone.')}</AlertDialogDescription>
+              <AlertDialogTitle>Delete {deleteTarget?.year} {deleteTarget?.make} {deleteTarget?.model}?</AlertDialogTitle>
+              <AlertDialogDescription>This vehicle and its data will be permanently removed. This action cannot be undone.</AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel disabled={deleting}>{t('common.cancel')}</AlertDialogCancel>
+              <AlertDialogCancel disabled={deleting}>Cancel</AlertDialogCancel>
               <AlertDialogAction onClick={handleDelete} disabled={deleting} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-                {deleting ? t('common.deleting', 'Deleting…') : t('common.delete')}
+                {deleting ? 'Deleting…' : 'Delete'}
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>

@@ -8,7 +8,7 @@ import AppLayout from '@/components/AppLayout';
 import { Vehicle, ClaimReport } from '@/types';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { supabase } from '@/integrations/supabase/client';
-import { useTranslation } from 'react-i18next';
+
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { formatDistanceToNow } from 'date-fns';
 import { toast } from 'sonner';
@@ -16,7 +16,7 @@ import { motion } from 'framer-motion';
 
 export default function Dashboard() {
   const { user, signOut, isAdmin } = useAuth();
-  const { t } = useTranslation();
+  
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [claims, setClaims] = useState<ClaimReport[]>([]);
   const [avatarUrl, setAvatarUrl] = useState('');
@@ -138,7 +138,7 @@ export default function Dashboard() {
         {/* Header */}
         <motion.div variants={fadeUp} className="flex items-center justify-between">
           <div>
-            <p className="text-sm text-muted-foreground">{t('dashboard.welcomeBack')}</p>
+            <p className="text-sm text-muted-foreground">Welcome back</p>
             <h1 className="text-[22px] font-extrabold text-foreground tracking-tight -mt-0.5">{firstName} 👋</h1>
           </div>
           <div className="flex items-center gap-2">
@@ -150,7 +150,7 @@ export default function Dashboard() {
                 </AvatarFallback>
               </Avatar>
             </Link>
-            <button onClick={signOut} className="p-2 rounded-xl hover:bg-muted transition-colors" title={t('common.signOut')}>
+            <button onClick={signOut} className="p-2 rounded-xl hover:bg-muted transition-colors" title="Sign out">
               <LogOut className="w-5 h-5 text-muted-foreground" strokeWidth={1.5} />
             </button>
           </div>
@@ -183,8 +183,8 @@ export default function Dashboard() {
                   <AlertTriangle className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <div className="text-sm font-bold text-white">{t('dashboard.reportIncident')}</div>
-                  <p className="text-xs text-white/70 mt-0.5">{t('dashboard.reportSubtitle')}</p>
+                  <div className="text-sm font-bold text-white">Report an incident</div>
+                  <p className="text-xs text-white/70 mt-0.5">File a new claim report in minutes</p>
                 </div>
               </div>
             </Link>
@@ -299,8 +299,8 @@ export default function Dashboard() {
                 <Shield className="w-5 h-5" style={{ color: 'hsl(152, 60%, 42%)' }} />
               </div>
               <div className="flex-1 min-w-0">
-                <div className="text-sm font-bold text-foreground">{t('dashboard.adminOverview')}</div>
-                <div className="text-xs text-muted-foreground mt-0.5">{t('dashboard.adminSubtitle')}</div>
+                <div className="text-sm font-bold text-foreground">Admin Overview</div>
+                <div className="text-xs text-muted-foreground mt-0.5">Manage users, vehicles & reports</div>
               </div>
               <ChevronRight className="w-4 h-4 text-muted-foreground/30 group-hover:text-primary group-hover:translate-x-1 transition-all shrink-0" strokeWidth={1.5} />
             </Link>

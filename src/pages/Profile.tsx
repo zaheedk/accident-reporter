@@ -11,7 +11,6 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
-import { useTranslation } from 'react-i18next';
 import { Switch } from '@/components/ui/switch';
 import { usePushNotifications } from '@/hooks/use-push-notifications';
 import DocumentVault from '@/components/DocumentVault';
@@ -30,7 +29,6 @@ interface ProfileData {
 export default function Profile() {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
-  const { t } = useTranslation();
   const { isSubscribed, isSupported, loading: pushLoading, subscribe, unsubscribe } = usePushNotifications();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(true);
@@ -55,7 +53,7 @@ export default function Profile() {
 
   useEffect(() => {
     if (!user) return;
-    supabase.from('profiles').select('display_name, phone_number, address, avatar_url, email, email_verified, license_number, license_expiry')
+    supabase.from('profiles').selec'display_name, phone_number, address, avatar_url, email, email_verified, license_number, license_expiry'
       .eq('user_id', user.id).single().then(({ data }) => {
         if (data) {
           setProfile({
@@ -83,7 +81,7 @@ export default function Profile() {
     }
     const { error } = await supabase.from('profiles').update(updateData as any).eq('user_id', user.id);
     setSaving(false);
-    if (error) { toast.error(t('profile.profileFailed')); } else { toast.success(t('profile.profileUpdated')); }
+    if (error) { toast.error('Failed to save profile'); } else { toast.success('Profile updated'); }
   };
 
   const handleSendVerification = async () => {
@@ -109,22 +107,22 @@ export default function Profile() {
   const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !user) return;
-    if (file.size > 2 * 1024 * 1024) { toast.error(t('profile.imageTooLarge')); return; }
+    if (file.size > 2 * 1024 * 1024) { toast.error('Image must be under 2MB'); return; }
     setUploading(true);
-    const ext = file.name.split('.').pop();
+    const ext = file.name.spli'.'.pop();
     const path = `${user.id}/avatar.${ext}`;
     const { error: uploadError } = await supabase.storage.from('avatars').upload(path, file, { upsert: true });
-    if (uploadError) { toast.error(t('profile.uploadFailed')); setUploading(false); return; }
+    if (uploadError) { toast.error('Upload failed'); setUploading(false); return; }
     const { data: urlData } = supabase.storage.from('avatars').getPublicUrl(path);
     const avatarUrl = `${urlData.publicUrl}?t=${Date.now()}`;
     await supabase.from('profiles').update({ avatar_url: avatarUrl }).eq('user_id', user.id);
     setProfile(prev => ({ ...prev, avatar_url: avatarUrl }));
     setUploading(false);
-    toast.success(t('profile.photoUpdated'));
+    toast.success('Photo updated');
   };
 
   const initials = profile.display_name
-    ? profile.display_name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : '?';
+    ? profile.display_name.spli' '.map(n => n[0]).join('').toUpperCase().slice(0, 2) : '?';
 
   if (loading) {
     return <AppLayout><div className="flex items-center justify-center py-20"><Loader2 className="w-6 h-6 animate-spin text-muted-foreground" /></div></AppLayout>;
@@ -138,8 +136,8 @@ export default function Profile() {
             <ArrowLeft className="w-5 h-5 text-foreground" strokeWidth={1.5} />
           </Link>
           <div>
-            <p className="text-sm text-muted-foreground">{t('profile.settings')}</p>
-            <h1 className="text-[22px] font-extrabold text-foreground tracking-tight -mt-0.5">{t('profile.title')}</h1>
+            <p className="text-sm text-muted-foreground">Settings</p>
+            <h1 className="text-[22px] font-extrabold text-foreground tracking-tight -mt-0.5">Profile</h1>
           </div>
         </div>
 
@@ -156,22 +154,22 @@ export default function Profile() {
             <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarUpload} />
           </div>
           <div className="text-center">
-            <p className="text-sm font-semibold text-foreground">{profile.display_name || t('profile.noNameSet')}</p>
+            <p className="text-sm font-semibold text-foreground">{profile.display_name || 'No name set'}</p>
             <p className="text-xs text-muted-foreground">{isPhoneUser ? profile.phone_number : user?.email}</p>
           </div>
         </div>
 
         <form onSubmit={handleSave} className="card-surface space-y-4">
           <div>
-            <label className="form-label flex items-center gap-1.5"><User className="w-3.5 h-3.5" strokeWidth={1.5} />{t('profile.fullName')}</label>
-            <input className="form-input" placeholder={t('profile.fullNamePlaceholder')} value={profile.display_name} onChange={e => setProfile(p => ({ ...p, display_name: e.target.value }))} />
+            <label className="form-label flex items-center gap-1.5"><User className="w-3.5 h-3.5" strokeWidth={1.5} />Full name</label>
+            <input className="form-input" placeholder=Your full name value={profile.display_name} onChange={e => setProfile(p => ({ ...p, display_name: e.target.value }))} />
           </div>
 
           {isPhoneUser ? (
             <div>
               <label className="form-label flex items-center gap-1.5">
                 <Mail className="w-3.5 h-3.5" strokeWidth={1.5} />
-                {t('profile.email')}
+                Email
                 {profile.email && (
                   profile.email_verified ? (
                     <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-primary bg-primary/10 px-1.5 py-0.5 rounded-full ml-1">
@@ -210,18 +208,18 @@ export default function Profile() {
             </div>
           ) : (
             <div>
-              <label className="form-label flex items-center gap-1.5"><Mail className="w-3.5 h-3.5" strokeWidth={1.5} />{t('profile.email')}</label>
+              <label className="form-label flex items-center gap-1.5"><Mail className="w-3.5 h-3.5" strokeWidth={1.5} />Email</label>
               <input className="form-input opacity-60" value={user?.email || ''} disabled />
             </div>
           )}
 
           <div>
-            <label className="form-label flex items-center gap-1.5"><Phone className="w-3.5 h-3.5" strokeWidth={1.5} />{t('profile.phoneNumber')}</label>
-            <input className="form-input" type="tel" placeholder={t('profile.phonePlaceholder')} value={profile.phone_number} onChange={e => setProfile(p => ({ ...p, phone_number: e.target.value }))} />
+            <label className="form-label flex items-center gap-1.5"><Phone className="w-3.5 h-3.5" strokeWidth={1.5} />Phone number</label>
+            <input className="form-input" type="tel" placeholder=e.g. 021 123 4567 value={profile.phone_number} onChange={e => setProfile(p => ({ ...p, phone_number: e.target.value }))} />
           </div>
           <div>
-            <label className="form-label flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5" strokeWidth={1.5} />{t('profile.address')}</label>
-            <textarea className="form-input min-h-[80px] resize-none" placeholder={t('profile.addressPlaceholder')} value={profile.address} onChange={e => setProfile(p => ({ ...p, address: e.target.value }))} />
+            <label className="form-label flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5" strokeWidth={1.5} />Address</label>
+            <textarea className="form-input min-h-[80px] resize-none" placeholder=Your home or postal address value={profile.address} onChange={e => setProfile(p => ({ ...p, address: e.target.value }))} />
           </div>
           <div className="border-t border-border/50 pt-4 mt-2">
             <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Driver License</p>
@@ -237,7 +235,7 @@ export default function Profile() {
             </div>
           </div>
           <button type="submit" disabled={saving} className="btn-primary w-full h-11">
-            {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : t('profile.saveChanges')}
+            {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Save changes'}
           </button>
         </form>
 
@@ -332,19 +330,19 @@ export default function Profile() {
         </div>
 
         <div className="pt-4 space-y-3">
-          <h2 className="text-[13px] font-semibold text-destructive">{t('profile.dangerZone')}</h2>
+          <h2 className="text-[13px] font-semibold text-destructive">Danger Zone</h2>
           <button onClick={() => setShowDeactivate(true)} className="w-full card-surface flex items-center gap-3 text-left hover:shadow-md transition-shadow">
             <div className="w-9 h-9 rounded-xl bg-muted flex items-center justify-center shrink-0"><ShieldOff className="w-4 h-4 text-muted-foreground" /></div>
             <div>
-              <div className="text-sm font-semibold text-foreground">{t('profile.deactivateAccount')}</div>
-              <div className="text-xs text-muted-foreground">{t('profile.deactivateHint')}</div>
+              <div className="text-sm font-semibold text-foreground">Deactivate Account</div>
+              <div className="text-xs text-muted-foreground">Temporarily disable your account</div>
             </div>
           </button>
           <button onClick={() => setShowDelete(true)} className="w-full card-surface flex items-center gap-3 text-left hover:shadow-md transition-shadow border border-destructive/20">
             <div className="w-9 h-9 rounded-xl bg-destructive/10 flex items-center justify-center shrink-0"><Trash2 className="w-4 h-4 text-destructive" /></div>
             <div>
-              <div className="text-sm font-semibold text-destructive">{t('profile.deleteAccount')}</div>
-              <div className="text-xs text-muted-foreground">{t('profile.deleteHint')}</div>
+              <div className="text-sm font-semibold text-destructive">Delete Account</div>
+              <div className="text-xs text-muted-foreground">Permanently remove all your data</div>
             </div>
           </button>
         </div>
@@ -353,23 +351,23 @@ export default function Profile() {
       <AlertDialog open={showDeactivate} onOpenChange={setShowDeactivate}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{t('profile.deactivateConfirm')}</AlertDialogTitle>
-            <AlertDialogDescription>{t('profile.deactivateDescription')}</AlertDialogDescription>
+            <AlertDialogTitle>Deactivate your account?</AlertDialogTitle>
+            <AlertDialogDescription>Your account will be deactivated and you won't be able to access the app until an administrator reactivates it.</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={actionLoading}>{t('common.cancel')}</AlertDialogCancel>
+            <AlertDialogCancel disabled={actionLoading}>Cancel</AlertDialogCancel>
             <AlertDialogAction disabled={actionLoading} className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               onClick={async (e) => {
                 e.preventDefault();
                 setActionLoading(true);
                 const { error } = await supabase.functions.invoke('account-actions', { body: { action: 'deactivate' } });
                 setActionLoading(false);
-                if (error) { toast.error(t('profile.deactivateFailed')); return; }
-                toast.success(t('profile.deactivated'));
+                if (error) { toast.error('Failed to deactivate account'); return; }
+                toast.success('Account deactivated');
                 setShowDeactivate(false);
                 await signOut();
               }}>
-              {actionLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : t('profile.deactivate')}
+              {actionLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Deactivate'}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -378,15 +376,15 @@ export default function Profile() {
       <AlertDialog open={showDelete} onOpenChange={(open) => { setShowDelete(open); if (!open) setDeleteConfirmText(''); }}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{t('profile.deleteConfirm')}</AlertDialogTitle>
+            <AlertDialogTitle>Delete your account permanently?</AlertDialogTitle>
             <AlertDialogDescription className="space-y-3">
-              <span className="block">{t('profile.deleteDescription')}</span>
-              <span className="block text-sm font-medium text-foreground">{t('profile.typeDelete')}</span>
-              <Input value={deleteConfirmText} onChange={e => setDeleteConfirmText(e.target.value)} placeholder={t('profile.typeDeletePlaceholder')} className="mt-1" />
+              <span className="block">This will permanently delete your account and all associated data including vehicles, claims, and profile information. This action cannot be undone.</span>
+              <span className="block text-sm font-medium text-foreground">Type DELETE to confirm:</span>
+              <Input value={deleteConfirmText} onChange={e => setDeleteConfirmText(e.target.value)} placeholder=Type DELETE className="mt-1" />
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={actionLoading}>{t('common.cancel')}</AlertDialogCancel>
+            <AlertDialogCancel disabled={actionLoading}>Cancel</AlertDialogCancel>
             <AlertDialogAction disabled={actionLoading || deleteConfirmText !== 'DELETE'} className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               onClick={async (e) => {
                 e.preventDefault();
@@ -394,13 +392,13 @@ export default function Profile() {
                 setActionLoading(true);
                 const { error } = await supabase.functions.invoke('account-actions', { body: { action: 'delete' } });
                 setActionLoading(false);
-                if (error) { toast.error(t('profile.deleteFailed')); return; }
-                toast.success(t('profile.deleted'));
+                if (error) { toast.error('Failed to delete account'); return; }
+                toast.success('Account deleted');
                 setShowDelete(false);
                 await signOut();
                 navigate('/auth');
               }}>
-              {actionLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : t('profile.deleteForever')}
+              {actionLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Delete Forever'}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
