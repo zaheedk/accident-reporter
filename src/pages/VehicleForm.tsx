@@ -8,6 +8,7 @@ import AppLayout from '@/components/AppLayout';
 import { supabase } from '@/integrations/supabase/client';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { compressImage } from '@/lib/image-compress';
+import { useQueryClient } from '@tanstack/react-query';
 
 const emptyVehicle: Omit<Vehicle, 'id' | 'createdAt'> = {
   year: '', make: '', model: '', regoNumber: '', color: '',
@@ -20,6 +21,7 @@ const emptyVehicle: Omit<Vehicle, 'id' | 'createdAt'> = {
 export default function VehicleForm() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const isEdit = Boolean(id);
   const [form, setForm] = useState(emptyVehicle);
   const [insuranceCompanies, setInsuranceCompanies] = useState<{ id: string; name: string }[]>([]);
@@ -107,6 +109,7 @@ export default function VehicleForm() {
         finalForm.insuranceCompany = customInsurer.trim();
       }
       await saveVehicle({ ...finalForm, id: id || undefined });
+      queryClient.invalidateQueries({ queryKey: ['vehicles'] });
       navigate('/vehicles');
     } catch (err: any) {
       const msg = err?.message || 'Failed to save vehicle';

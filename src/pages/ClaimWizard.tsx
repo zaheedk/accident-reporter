@@ -10,6 +10,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import AppLayout from '@/components/AppLayout';
 import { toast } from 'sonner';
+import { useQueryClient } from '@tanstack/react-query';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -58,6 +59,7 @@ export default function ClaimWizard() {
   const [searchParams] = useSearchParams();
   const { user } = useAuth();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [step, setStep] = useState(0);
   const [claim, setClaim] = useState<ClaimReport>(emptyClaim);
   const [claimNumber, setClaimNumber] = useState<number | null>(null);
@@ -206,6 +208,7 @@ export default function ClaimWizard() {
     setDeleting(true);
     try {
       await deleteClaim(claim.id);
+      queryClient.invalidateQueries({ queryKey: ['claims'] });
       toast.success('Report deleted');
       navigate('/claims');
     } catch (err: any) {
@@ -293,6 +296,7 @@ export default function ClaimWizard() {
       });
     }
 
+    queryClient.invalidateQueries({ queryKey: ['claims'] });
     navigate('/claims');
   };
 

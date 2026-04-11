@@ -13,10 +13,12 @@ import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { getMediumUrl, getFullUrl } from '@/lib/image-url';
 import DashcamUploader from '@/components/DashcamUploader';
+import { useQueryClient } from '@tanstack/react-query';
 
 export default function ClaimDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [claim, setClaim] = useState<ClaimReport | null>(null);
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [photos, setPhotos] = useState<{ id: string; url: string; fullUrl: string; fileName: string }[]>([]);
@@ -48,6 +50,7 @@ export default function ClaimDetail() {
     setDeleting(true);
     try {
       await deleteClaim(claim.id);
+      queryClient.invalidateQueries({ queryKey: ['claims'] });
       toast.success('Report deleted');
       navigate('/claims');
     } catch {
