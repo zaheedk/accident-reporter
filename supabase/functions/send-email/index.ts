@@ -426,7 +426,7 @@ serve(async (req) => {
 
     const { subject, html } = getEmailContent(type, data);
 
-    const isInsurer = data?.isInsurerEmail === 'true';
+    // isInsurer already resolved above
 
     // Build email payload
     const emailPayload: Record<string, unknown> = {
