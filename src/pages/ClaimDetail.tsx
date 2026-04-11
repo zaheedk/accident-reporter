@@ -62,9 +62,9 @@ export default function ClaimDetail() {
     if (!id) return;
     const load = async () => {
       const [{ data: claimRow }, vehs, { data: claimNumData }] = await Promise.all([
-        supabase.from('claims').selec'*'.eq('id', id).single(),
+        supabase.from('claims').select('*'.eq('id', id).single(),
         getVehicles(undefined),
-        supabase.from('claims').selec'claim_number'.eq('id', id).single(),
+        supabase.from('claims').select('claim_number'.eq('id', id).single(),
       ]);
       
       if (!claimRow) { setLoading(false); return; }
@@ -95,14 +95,14 @@ export default function ClaimDetail() {
       if (claimNumData?.claim_number) setClaimNumber(String(claimNumData.claim_number));
 
       const [photosRes, tpRes, insurersRes, shopsRes] = await Promise.all([
-        supabase.from('claim_photos').selec'*'.eq('claim_id', id),
-        supabase.from('tp_photos').selec'*'.eq('claim_id', id),
-        supabase.from('insurance_companies').selec'id, name'.order('name'),
-        supabase.from('panel_shops').selec'id, name, phone, address'.order('name'),
+        supabase.from('claim_photos').select('*'.eq('claim_id', id),
+        supabase.from('tp_photos').select('*'.eq('claim_id', id),
+        supabase.from('insurance_companies').select('id, name'.order('name'),
+        supabase.from('panel_shops').select('id, name, phone, address'.order('name'),
       ]);
 
       if (foundClaim.insuranceCompany) {
-        const { data: insurer } = await supabase.from('insurance_companies').selec'phone, email, claims_portal_url, claims_method'.eq('name', foundClaim.insuranceCompany).single();
+        const { data: insurer } = await supabase.from('insurance_companies').select('phone, email, claims_portal_url, claims_method'.eq('name', foundClaim.insuranceCompany).single();
         if (insurer?.phone) setInsurerPhone(insurer.phone);
         if (insurer?.email) setInsurerEmail(insurer.email);
         if (insurer?.claims_portal_url) setInsurerPortalUrl(insurer.claims_portal_url);
@@ -162,7 +162,7 @@ export default function ClaimDetail() {
     }).eq('id', claim.id);
     setClaim({ ...claim, insuranceCompany: editInsurance, repairerName: editRepairerName, repairerPhone: editRepairerPhone, repairerAddress: editRepairerAddress });
     if (editInsurance) {
-      const { data: ins } = await supabase.from('insurance_companies').selec'phone, email, claims_portal_url, claims_method'.eq('name', editInsurance).single();
+      const { data: ins } = await supabase.from('insurance_companies').select('phone, email, claims_portal_url, claims_method'.eq('name', editInsurance).single();
       setInsurerPhone(ins?.phone || '');
       setInsurerEmail(ins?.email || '');
       setInsurerPortalUrl(ins?.claims_portal_url || '');
@@ -306,7 +306,7 @@ export default function ClaimDetail() {
       const veh = vehicles.find(v => v.id === claim.vehicleId);
       const isInsurer = emailTo === insurerEmail && !!insurerEmail;
       const user = (await supabase.auth.getUser()).data.user;
-      const { data: profile } = await supabase.from('profiles').selec'display_name'.eq('user_id', user?.id || '').single();
+      const { data: profile } = await supabase.from('profiles').select('display_name'.eq('user_id', user?.id || '').single();
       
       const { error } = await supabase.functions.invoke('send-email', {
         body: {

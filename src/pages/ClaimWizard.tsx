@@ -152,9 +152,9 @@ export default function ClaimWizard() {
     if (id) {
       const loadClaim = async () => {
         const [{ data: claimRow }, { data: claimNumData }, { data: photosData }] = await Promise.all([
-          supabase.from('claims').selec'*'.eq('id', id).single(),
-          supabase.from('claims').selec'claim_number'.eq('id', id).single(),
-          supabase.from('claim_photos').selec'id, file_path, file_name'.eq('claim_id', id),
+          supabase.from('claims').select('*'.eq('id', id).single(),
+          supabase.from('claims').select('claim_number'.eq('id', id).single(),
+          supabase.from('claim_photos').select('id, file_path, file_name'.eq('claim_id', id),
         ]);
         if (claimRow) {
           const loaded: ClaimReport = {
@@ -297,7 +297,7 @@ export default function ClaimWizard() {
       if (uploadError) { toast.error(`Failed to upload ${file.name}`); continue; }
       const { data } = await supabase.from('claim_photos')
         .insert({ claim_id: claimId, user_id: user.id, file_path: path, file_name: file.name })
-        .selec'id, file_path, file_name'.single();
+        .select('id, file_path, file_name'.single();
       if (data) setPhotos(prev => [...prev, data as ClaimPhoto]);
     }
     setUploading(false);

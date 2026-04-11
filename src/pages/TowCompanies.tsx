@@ -22,7 +22,7 @@ export default function TowCompanies() {
   const { data: companies = [], isLoading } = useQuery({
     queryKey: ['tow-companies-public'],
     queryFn: async () => {
-      const { data, error } = await supabase.from('tow_companies').selec'*'.order('name');
+      const { data, error } = await supabase.from('tow_companies').select('*'.order('name');
       if (error) throw error;
       return data as TowCompany[];
     },

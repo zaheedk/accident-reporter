@@ -30,7 +30,7 @@ export default function VehicleForm() {
   const [customInsurer, setCustomInsurer] = useState('');
 
   useEffect(() => {
-    supabase.from('insurance_companies').selec'id, name'.order('name').then(({ data }) => {
+    supabase.from('insurance_companies').select('id, name'.order('name').then(({ data }) => {
       if (data) setInsuranceCompanies(data);
     });
   }, []);

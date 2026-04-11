@@ -26,7 +26,7 @@ export default function DashcamUploader({ claimId }: { claimId: string }) {
   const loadVideos = async () => {
     const { data } = await supabase
       .from('dashcam_videos')
-      .selec'*'
+      .select('*'
       .eq('claim_id', claimId)
       .order('created_at', { ascending: false });
 
@@ -114,7 +114,7 @@ export default function DashcamUploader({ claimId }: { claimId: string }) {
     try {
       const { data: row } = await supabase
         .from('dashcam_videos')
-        .selec'file_path'
+        .select('file_path'
         .eq('id', video.id)
         .single();
 
