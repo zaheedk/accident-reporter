@@ -20,7 +20,7 @@ export default function DeleteDataRequest() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [selected, setSelected] = useState<string[]>([]);
-  const [reason, setReason] = useState(""));
+  const [reason, setReason] = useState("");
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 

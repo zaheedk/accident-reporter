@@ -11,7 +11,7 @@ import { toast } from "sonner";
 export default function DeleteAccount() {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
-  const [confirmation, setConfirmation] = useState(""));
+  const [confirmation, setConfirmation] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleDelete = async () => {
