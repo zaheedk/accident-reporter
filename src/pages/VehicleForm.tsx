@@ -141,7 +141,7 @@ export default function VehicleForm() {
 
         {/* Vehicle Photo */}
         <div className="card-surface space-y-3">
-          <h2 className="text-sm font-semibold text-foreground">{Vehicle photo}</h2>
+          <h2 className="text-sm font-semibold text-foreground">Vehicle photo</h2>
           {photoPreview ? (
             <div className="relative">
               <img src={photoPreview} alt="Vehicle" className="w-full h-48 object-cover rounded-xl" />
@@ -157,11 +157,11 @@ export default function VehicleForm() {
               className="w-full h-36 border-2 border-dashed border-border rounded-xl flex flex-col items-center justify-center gap-2 text-muted-foreground hover:border-foreground/30 hover:text-foreground transition-colors"
             >
               {uploading ? (
-                <span className="text-sm">{Uploading...}</span>
+                <span className="text-sm">Uploading...</span>
               ) : (
                 <>
                   <ImageIcon className="w-8 h-8" strokeWidth={1.2} />
-                  <span className="text-sm">{Add a photo of your vehicle}</span>
+                  <span className="text-sm">Add a photo of your vehicle</span>
                 </>
               )}
             </button>
@@ -173,7 +173,7 @@ export default function VehicleForm() {
               disabled={uploading}
               className="text-xs text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
             >
-              <Camera className="w-3.5 h-3.5" /> {Change photo}
+              <Camera className="w-3.5 h-3.5" /> Change photo
             </button>
           )}
           <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handlePhotoUpload} />
