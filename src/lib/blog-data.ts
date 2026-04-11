@@ -1057,10 +1057,10 @@ If claiming costs back, you need to demonstrate the costs were "reasonable." Pre
 SAVO's structured incident reports make it easy to:
 - Prove you're not at fault with comprehensive documentation
 - Provide all the information a courtesy car provider needs
-- Share your report directly with service providers
-- Request a courtesy car through SAVO when you're not at fault
+- Share your report directly with service providers like [Free 2 Drive](https://www.free2drive.co.nz)
+- Request a courtesy car through SAVO when you're not at fault — we work with [Free 2 Drive](https://www.free2drive.co.nz) to get you back on the road fast
 
-*If you've been in an accident that wasn't your fault, don't go without a car. Document everything with SAVO and explore your courtesy car options immediately.*
+*If you've been in an accident that wasn't your fault, don't go without a car. Document everything with SAVO and explore your courtesy car options with [Free 2 Drive](https://www.free2drive.co.nz) immediately.*
     `
   },
   {
