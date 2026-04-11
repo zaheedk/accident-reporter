@@ -66,38 +66,43 @@ export default function VehicleList() {
           </motion.div>
         ) : (
           <motion.div variants={fadeUp} className="grid grid-cols-2 gap-3">
-            {vehicles.map((v, i) => (
-              <motion.div
-                key={v.id}
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 + i * 0.06, duration: 0.35 }}
-                whileHover={{ y: -2, boxShadow: '0 8px 24px rgba(0,0,0,0.08)' }}
-                whileTap={{ scale: 0.97 }}
-                className="card-surface-elevated group hover:border-primary/20 transition-all relative overflow-hidden"
-              >
-                <Link to={`/vehicles/${v.id}/edit`} className="flex flex-col h-[92px] justify-between">
-                  {v.photoUrl ? (
-                    <img src={v.photoUrl} alt={`${v.make} ${v.model}`} className="w-10 h-10 rounded-xl object-cover ring-1 ring-border/30" />
-                  ) : (
-                    <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                      <Car className="w-5 h-5 text-primary" strokeWidth={1.8} />
-                    </div>
-                  )}
-                  <div className="min-w-0">
-                    <div className="text-sm font-bold text-foreground tabular-nums tracking-wide">{v.regoNumber}</div>
-                    <div className="text-xs text-muted-foreground truncate mt-0.5">{v.year} {v.make} {v.model}</div>
-                  </div>
-                </Link>
-                <button
-                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); setDeleteTarget(v); }}
-                  className="absolute top-3 right-3 p-1.5 rounded-lg text-muted-foreground/20 hover:text-destructive hover:bg-destructive/5 transition-colors"
+            {vehicles.map((v, i) => {
+              const today = new Date().toISOString().slice(0, 10);
+              const isExpired = (v.wofExpiry && v.wofExpiry < today) || (v.regoExpiry && v.regoExpiry < today) || (v.insuranceExpiry && v.insuranceExpiry < today);
+
+              return (
+                <motion.div
+                  key={v.id}
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 + i * 0.06, duration: 0.35 }}
+                  whileHover={{ y: -2, boxShadow: '0 8px 24px rgba(0,0,0,0.08)' }}
+                  whileTap={{ scale: 0.97 }}
+                  className={`group transition-all relative overflow-hidden ${isExpired ? 'card-surface-elevated border-destructive/40 bg-destructive/5 hover:border-destructive/60' : 'card-surface-elevated hover:border-primary/20'}`}
                 >
-                  <Trash2 className="w-3.5 h-3.5" strokeWidth={1.5} />
-                </button>
-                <ArrowUpRight className="absolute bottom-3 right-3 w-4 h-4 text-muted-foreground/20 group-hover:text-primary group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
-              </motion.div>
-            ))}
+                  <Link to={`/vehicles/${v.id}/edit`} className="flex flex-col h-[92px] justify-between">
+                    {v.photoUrl ? (
+                      <img src={v.photoUrl} alt={`${v.make} ${v.model}`} className="w-10 h-10 rounded-xl object-cover ring-1 ring-border/30" />
+                    ) : (
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isExpired ? 'bg-destructive/10' : 'bg-primary/10'}`}>
+                        <Car className={`w-5 h-5 ${isExpired ? 'text-destructive' : 'text-primary'}`} strokeWidth={1.8} />
+                      </div>
+                    )}
+                    <div className="min-w-0">
+                      <div className="text-sm font-bold text-foreground tabular-nums tracking-wide">{v.regoNumber}</div>
+                      <div className="text-xs text-muted-foreground truncate mt-0.5">{v.year} {v.make} {v.model}</div>
+                    </div>
+                  </Link>
+                  <button
+                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); setDeleteTarget(v); }}
+                    className="absolute top-3 right-3 p-1.5 rounded-lg text-muted-foreground/20 hover:text-destructive hover:bg-destructive/5 transition-colors"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" strokeWidth={1.5} />
+                  </button>
+                  <ArrowUpRight className={`absolute bottom-3 right-3 w-4 h-4 transition-all ${isExpired ? 'text-destructive/30 group-hover:text-destructive group-hover:translate-x-0.5 group-hover:-translate-y-0.5' : 'text-muted-foreground/20 group-hover:text-primary group-hover:translate-x-0.5 group-hover:-translate-y-0.5'}`} />
+                </motion.div>
+              );
+            })}
           </motion.div>
         )}
 
