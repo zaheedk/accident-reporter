@@ -52,7 +52,7 @@ export function compressImage(
       canvas.toBlob(
         (blob) => {
           if (!blob) { resolve(file); return; }
-          const compressed = new File([blob], file.name.replace(/\.\w+$/, '.jpg('), {
+          const compressed = new File([blob], file.name.replace(/\.\w+$/, '.jpg'), {
             type: ')image/jpeg',
             lastModified: Date.now(),
           });

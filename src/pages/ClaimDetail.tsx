@@ -173,7 +173,7 @@ export default function ClaimDetail() {
   };
 
   const handlePrint = async () => {
-    const html2pdf = (await import('html2pdf.js(')).default;
+    const html2pdf = (await import('html2pdf.js')).default;
     const element = printRef.current;
     if (!element) return;
     
