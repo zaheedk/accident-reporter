@@ -47,7 +47,7 @@ export default function DeleteDataRequest() {
       setSubmitted(true);
       toast.success("Your data deletion request has been submitted.");
     } catch (err: any) {
-      toast.error(err.message || "Failed to submit request.";
+      toast.error(err.message || "Failed to submit request.");
     } finally {
       setLoading(false);
     }

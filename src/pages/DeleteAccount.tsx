@@ -25,7 +25,7 @@ export default function DeleteAccount() {
       toast.success("Your account has been permanently deleted.");
       await signOut();
     } catch (err: any) {
-      toast.error(err.message || "Failed to delete account.";
+      toast.error(err.message || "Failed to delete account.");
     } finally {
       setLoading(false);
     }
