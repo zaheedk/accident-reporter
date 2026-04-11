@@ -32,14 +32,14 @@ serve(async (req) => {
         });
       }
 
-      const { data: profile, error } = await supabase
-        .from("profiles")
-        .select("user_id, email")
-        .eq("email_verification_token", token)
-        .gte("email_verification_expires_at", new Date().toISOString())
+      const { data: tokenRow, error } = await supabase
+        .from("email_verification_tokens")
+        .select("user_id, token, expires_at")
+        .eq("token", token)
+        .gte("expires_at", new Date().toISOString())
         .maybeSingle();
 
-      if (error || !profile) {
+      if (error || !tokenRow) {
         return new Response(
           `<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"></head><body style="font-family:Arial,sans-serif;display:flex;justify-content:center;align-items:center;min-height:100vh;margin:0;background:#f5f5f5">
             <div style="text-align:center;padding:40px;background:white;border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,0.1)">
@@ -51,20 +51,30 @@ serve(async (req) => {
         );
       }
 
+      // Get profile email for display
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("email")
+        .eq("user_id", tokenRow.user_id)
+        .maybeSingle();
+
+      // Mark email as verified
       await supabase
         .from("profiles")
-        .update({
-          email_verified: true,
-          email_verification_token: null,
-          email_verification_expires_at: null,
-        })
-        .eq("user_id", profile.user_id);
+        .update({ email_verified: true })
+        .eq("user_id", tokenRow.user_id);
+
+      // Delete used token
+      await supabase
+        .from("email_verification_tokens")
+        .delete()
+        .eq("token", token);
 
       return new Response(
         `<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"></head><body style="font-family:Arial,sans-serif;display:flex;justify-content:center;align-items:center;min-height:100vh;margin:0;background:#f5f5f5">
           <div style="text-align:center;padding:40px;background:white;border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,0.1)">
             <h2 style="color:#22c55e">✅ Email Verified!</h2>
-            <p style="color:#555">Your email <strong>${profile.email}</strong> has been verified successfully.</p>
+            <p style="color:#555">Your email <strong>${profile?.email || ''}</strong> has been verified successfully.</p>
             <p style="color:#555">You can close this tab and return to the app.</p>
           </div>
         </body></html>`,
@@ -102,22 +112,35 @@ serve(async (req) => {
 
     // Generate verification token
     const token = crypto.randomUUID();
-    const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(); // 24 hours
+    const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
 
-    // Save email and token to profile
+    // Update email on profile
     const { error: updateError } = await supabase
       .from("profiles")
-      .update({
-        email,
-        email_verified: false,
-        email_verification_token: token,
-        email_verification_expires_at: expiresAt,
-      })
+      .update({ email, email_verified: false })
       .eq("user_id", user.id);
 
     if (updateError) {
       console.error("Update error:", updateError);
       return new Response(JSON.stringify({ error: "Failed to save email" }), {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // Delete any existing tokens for this user, then insert new one
+    await supabase
+      .from("email_verification_tokens")
+      .delete()
+      .eq("user_id", user.id);
+
+    const { error: tokenError } = await supabase
+      .from("email_verification_tokens")
+      .insert({ user_id: user.id, token, expires_at: expiresAt });
+
+    if (tokenError) {
+      console.error("Token insert error:", tokenError);
+      return new Response(JSON.stringify({ error: "Failed to create verification token" }), {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
