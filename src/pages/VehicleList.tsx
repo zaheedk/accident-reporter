@@ -18,8 +18,19 @@ export default function VehicleList() {
   const { user } = useAuth();
   const [deleteTarget, setDeleteTarget] = useState<Vehicle | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [insurerPhones, setInsurerPhones] = useState<Record<string, string>>({});
 
-  useEffect(() => { if (user) getVehicles(user.id).then(setVehicles); }, [user]);
+  useEffect(() => {
+    if (!user) return;
+    getVehicles(user.id).then(setVehicles);
+    supabase.from('insurance_companies').select('name, phone').then(({ data }) => {
+      if (data) {
+        const map: Record<string, string> = {};
+        data.forEach((ic: any) => { if (ic.phone) map[ic.name] = ic.phone; });
+        setInsurerPhones(map);
+      }
+    });
+  }, [user]);
 
   const handleDelete = async () => {
     if (!deleteTarget) return;
