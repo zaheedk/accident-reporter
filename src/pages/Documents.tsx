@@ -39,8 +39,8 @@ export default function Documents() {
           <SelectContent>
             <SelectItem value="personal">Personal Documents</SelectItem>
             {vehicles.map(v => (
-              <SelectItem key={v.id} value={v.id}>
-                {v.year} {v.make} {v.model} — {v.regoNumber}
+            <SelectItem key={v.id} value={v.id}>
+                {v.regoNumber}
               </SelectItem>
             ))}
           </SelectContent>
