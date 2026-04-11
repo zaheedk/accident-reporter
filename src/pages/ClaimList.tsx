@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { getThumbnailUrl } from '@/lib/image-url';
+import { useQueryClient } from '@tanstack/react-query';
 
 export default function ClaimList() {
   const [claims, setClaims] = useState<ClaimReport[]>([]);
@@ -19,6 +20,7 @@ export default function ClaimList() {
   const [search, setSearch] = useState('');
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const queryClient = useQueryClient();
 
   const handleDelete = async () => {
     if (!deleteId) return;
@@ -26,6 +28,7 @@ export default function ClaimList() {
     try {
       await deleteClaim(deleteId);
       setClaims(prev => prev.filter(c => c.id !== deleteId));
+      queryClient.invalidateQueries({ queryKey: ['claims'] });
       toast.success('Report deleted');
     } catch {
       toast.error('Failed to delete report');
