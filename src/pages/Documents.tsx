@@ -6,15 +6,18 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useState, useEffect } from 'react';
 import { getVehicles } from '@/lib/storage';
 import { Vehicle } from '@/types';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 export default function Documents() {
   const { user } = useAuth();
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+  const [selected, setSelected] = useState('personal');
 
   useEffect(() => {
     if (user) getVehicles(user.id).then(setVehicles);
   }, [user]);
+
+  const selectedVehicle = vehicles.find(v => v.id === selected);
 
   return (
     <AppLayout>
@@ -29,34 +32,31 @@ export default function Documents() {
           </div>
         </div>
 
-        <Tabs defaultValue="personal" className="w-full">
-          <TabsList className="w-full">
-            <TabsTrigger value="personal" className="flex-1 text-xs">Personal</TabsTrigger>
+        <Select value={selected} onValueChange={setSelected}>
+          <SelectTrigger className="w-full">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="personal">Personal Documents</SelectItem>
             {vehicles.map(v => (
-              <TabsTrigger key={v.id} value={v.id} className="flex-1 text-xs truncate">
-                {v.make} {v.model}
-              </TabsTrigger>
+              <SelectItem key={v.id} value={v.id}>
+                {v.year} {v.make} {v.model} — {v.regoNumber}
+              </SelectItem>
             ))}
-          </TabsList>
+          </SelectContent>
+        </Select>
 
-          <TabsContent value="personal" className="mt-3">
-            <div className="card-surface">
-              <DocumentVault title="Personal Documents" showCategories={['drivers_license', 'other']} />
-            </div>
-          </TabsContent>
-
-          {vehicles.map(v => (
-            <TabsContent key={v.id} value={v.id} className="mt-3">
-              <div className="card-surface">
-                <DocumentVault
-                  vehicleId={v.id}
-                  title={`${v.year} ${v.make} ${v.model}`}
-                  showCategories={['insurance_policy', 'registration', 'wof_certificate', 'purchase_receipt', 'service_record', 'other']}
-                />
-              </div>
-            </TabsContent>
-          ))}
-        </Tabs>
+        <div className="card-surface">
+          {selected === 'personal' ? (
+            <DocumentVault title="Personal Documents" showCategories={['drivers_license', 'other']} />
+          ) : selectedVehicle ? (
+            <DocumentVault
+              vehicleId={selectedVehicle.id}
+              title={`${selectedVehicle.year} ${selectedVehicle.make} ${selectedVehicle.model}`}
+              showCategories={['insurance_policy', 'registration', 'wof_certificate', 'purchase_receipt', 'service_record', 'other']}
+            />
+          ) : null}
+        </div>
       </div>
     </AppLayout>
   );
