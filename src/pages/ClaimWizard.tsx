@@ -350,7 +350,7 @@ export default function ClaimWizard() {
     <AppLayout>
       <div className="space-y-4">
         <div className="flex items-center gap-3">
-          <button onClick={async () => { if (shouldSave()) await autoSave(); navigate(-1)); }} className="p-2 -ml-2 rounded-xl hover:bg-muted transition-colors">
+          <button onClick={async () => { if (shouldSave()) await autoSave(); navigate(-1); }} className="p-2 -ml-2 rounded-xl hover:bg-muted transition-colors">
             <ArrowLeft className="w-5 h-5 text-foreground" strokeWidth={1.5} />
           </button>
           <div className="flex-1">
