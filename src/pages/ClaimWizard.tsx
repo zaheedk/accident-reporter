@@ -562,7 +562,7 @@ export default function ClaimWizard() {
                                   }} disabled={uploading}
                                     className="btn-secondary flex-1 h-9 gap-2 text-xs">
                                     {uploading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <span>📁</span>}
-                                    {Gallery}
+                                    Gallery
                                   </button>
                                 </div>
                                 <input ref={cameraInputRef} type="file" accept="image/*" capture="environment" multiple className="hidden" onChange={handlePhotoUpload} />
@@ -787,7 +787,7 @@ export default function ClaimWizard() {
                         }} disabled={uploading}
                           className="btn-secondary flex-1 h-9 gap-2 text-xs">
                           {uploading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <span>📁</span>}
-                          {Gallery}
+                          Gallery
                         </button>
                       </div>
                       <input ref={cameraInputRef} type="file" accept="image/*" capture="environment" multiple className="hidden" onChange={handlePhotoUpload} />
