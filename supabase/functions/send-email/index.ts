@@ -399,6 +399,31 @@ serve(async (req) => {
       throw new Error('Missing required fields: type, to');
     }
 
+    // Block emails to unverified phone-user addresses (skip for insurer-bound emails)
+    const isInsurer = data?.isInsurerEmail === 'true';
+    if (!isInsurer && to.endsWith('@savo.phone.local')) {
+      console.log(`Skipping email to internal phone address: ${to}`);
+      return new Response(JSON.stringify({ success: false, skipped: true, reason: 'phone_user_no_verified_email' }), {
+        status: 200,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // For non-insurer emails, verify the recipient has a verified email if they're a phone user
+    if (!isInsurer && data?.userId) {
+      const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+      const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+      const sb = createClient(supabaseUrl, supabaseKey);
+      const { data: profile } = await sb.from('profiles').select('email, email_verified').eq('user_id', data.userId).single();
+      if (profile && profile.email === to && !profile.email_verified) {
+        console.log(`Skipping email to unverified profile email: ${to}`);
+        return new Response(JSON.stringify({ success: false, skipped: true, reason: 'email_not_verified' }), {
+          status: 200,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+    }
+
     const { subject, html } = getEmailContent(type, data);
 
     const isInsurer = data?.isInsurerEmail === 'true';
