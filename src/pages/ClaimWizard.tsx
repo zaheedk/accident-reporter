@@ -493,7 +493,7 @@ export default function ClaimWizard() {
                               <div>
                                 <label className="form-label">Location (street and town)</label>
                                 <div className="flex gap-2">
-                                  <input className="form-input flex-1" placeholder=e.g. 42 Queen St, Auckland CBD value={claim.incidentLocation} onChange={e => update('incidentLocation', e.target.value)} />
+                                  <input className="form-input flex-1" placeholder="e.g. 42 Queen St, Auckland CBD" value={claim.incidentLocation} onChange={e => update('incidentLocation', e.target.value)} />
                                   <button type="button" onClick={detectLocation} disabled={detectingLocation}
                                     className="flex-shrink-0 h-10 px-3 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors flex items-center gap-1.5 text-xs font-medium disabled:opacity-50">
                                     {detectingLocation ? <Loader2 className="w-4 h-4 animate-spin" /> : <MapPin className="w-4 h-4" />}
@@ -551,7 +551,7 @@ export default function ClaimWizard() {
                                   }} disabled={uploading}
                                     className="btn-secondary flex-1 h-9 gap-2 text-xs">
                                     {uploading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Camera className="w-3.5 h-3.5" />}
-                                    {Take photo}
+                                    Take photo
                                   </button>
                                   <button type="button" onClick={async () => {
                                     if (!claim.id) {
@@ -715,7 +715,7 @@ export default function ClaimWizard() {
                     <div>
                       <label className="form-label">Location (street and town)</label>
                       <div className="flex gap-2">
-                        <input className="form-input flex-1" placeholder=e.g. 42 Queen St, Auckland CBD value={claim.incidentLocation} onChange={e => update('incidentLocation', e.target.value)} />
+                        <input className="form-input flex-1" placeholder="e.g. 42 Queen St, Auckland CBD" value={claim.incidentLocation} onChange={e => update('incidentLocation', e.target.value)} />
                         <button type="button" onClick={detectLocation} disabled={detectingLocation}
                           className="flex-shrink-0 h-10 px-3 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors flex items-center gap-1.5 text-xs font-medium disabled:opacity-50">
                           {detectingLocation ? <Loader2 className="w-4 h-4 animate-spin" /> : <MapPin className="w-4 h-4" />}
@@ -776,7 +776,7 @@ export default function ClaimWizard() {
                         }} disabled={uploading}
                           className="btn-secondary flex-1 h-9 gap-2 text-xs">
                           {uploading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Camera className="w-3.5 h-3.5" />}
-                          {Take photo}
+                          Take photo
                         </button>
                         <button type="button" onClick={async () => {
                           if (!claim.id) {
@@ -993,21 +993,21 @@ export default function ClaimWizard() {
                 {/* Step 5: Review */}
                 {step === STEPS.length - 1 && (
                   <div className="space-y-3">
-                    <RSection title=Incident>
+                    <RSection title="Incident">
                       <RRow label="Date" value={claim.incidentDate} />
                       <RRow label="Time" value={claim.incidentTime} />
                       <RRow label="Location" value={claim.incidentLocation} />
                       {claim.vehicleUsage && <RRow label="Usage" value={claim.vehicleUsage} />}
                       {claim.description && <RRow label="Description" value={claim.description} />}
                     </RSection>
-                    <RSection title=Your vehicle>
+                    <RSection title="Your vehicle">
                       <RRow label="Vehicle" value={selV ? `${selV.year} ${selV.make} ${selV.model}` : '—'} />
                       <RRow label="Rego" value={selV?.regoNumber || '—'} />
                       <RRow label="Photos" value={`${photos.length} uploaded`} />
                       {claim.damageDescription && <RRow label="Damage" value={claim.damageDescription} />}
                       {claim.speedBeforeBraking && <RRow label="Speed" value={`${claim.speedBeforeBraking} km/h`} />}
                     </RSection>
-                    <RSection title=Third parties>
+                    <RSection title="Third parties">
                       {claim.thirdParties.length === 0 ? <p className="text-sm text-muted-foreground">None</p> : claim.thirdParties.map((tp, i) => (
                         <div key={i} className="p-3 rounded-xl bg-background space-y-0.5">
                           <RRow label="Rego" value={tp.regoNumber} />
@@ -1022,7 +1022,7 @@ export default function ClaimWizard() {
                         {claim.atFault === 'other_party' && <RRow label="Courtesy car" value={claim.courtesyCarRequested ? 'Requested' : 'Not requested'} />}
                       </RSection>
                     )}
-                    <RSection title=Witnesses>
+                    <RSection title="Witnesses">
                       {claim.witnesses.length === 0 ? <p className="text-sm text-muted-foreground">None</p> : claim.witnesses.map((w, i) => <RRow key={i} label={`Witness ${i + 1}`} value={`${w.name} – ${w.phone}`} />)}
                     </RSection>
                     {(claim.weatherCondition || claim.roadCondition || claim.blameDescription) && (

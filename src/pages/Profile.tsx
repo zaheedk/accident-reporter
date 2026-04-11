@@ -215,7 +215,7 @@ export default function Profile() {
 
           <div>
             <label className="form-label flex items-center gap-1.5"><Phone className="w-3.5 h-3.5" strokeWidth={1.5} />Phone number</label>
-            <input className="form-input" type="tel" placeholder=e.g. 021 123 4567 value={profile.phone_number} onChange={e => setProfile(p => ({ ...p, phone_number: e.target.value }))} />
+            <input className="form-input" type="tel" placeholder="e.g. 021 123 4567" value={profile.phone_number} onChange={e => setProfile(p => ({ ...p, phone_number: e.target.value }))} />
           </div>
           <div>
             <label className="form-label flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5" strokeWidth={1.5} />Address</label>
