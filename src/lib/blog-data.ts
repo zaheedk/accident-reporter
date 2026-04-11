@@ -8,6 +8,11 @@ import dashcamEvidenceHero from '@/assets/blog/dashcam-evidence-hero.jpg';
 import parkingAccidentsHero from '@/assets/blog/parking-accidents-hero.jpg';
 import insuranceExcessHero from '@/assets/blog/insurance-excess-hero.jpg';
 import courtesyCarHero from '@/assets/blog/courtesy-car-hero.jpg';
+import roadsideAssistanceHero from '@/assets/blog/roadside-assistance-hero.jpg';
+import insuranceRenewalHero from '@/assets/blog/insurance-renewal-hero.jpg';
+import rightOfWayHero from '@/assets/blog/right-of-way-hero.jpg';
+import youngDriverHero from '@/assets/blog/young-driver-hero.jpg';
+import talkingToInsurerHero from '@/assets/blog/talking-to-insurer-hero.jpg';
 
 export interface BlogArticle {
   slug: string;
