@@ -71,7 +71,7 @@ export default function DashcamUploader({ claimId }: { claimId: string }) {
     setUploadProgress(0);
 
     try {
-      const ext = file.name.spli'.'.pop() || 'mp4';
+      const ext = file.name.split('.').pop() || 'mp4';
       const filePath = `${user.id}/${claimId}/${Date.now()}.${ext}`;
 
       // Simulate progress for UX

@@ -66,12 +66,12 @@ export default function VehicleForm() {
     setUploading(true);
     try {
       const compressed = await compressImage(file);
-      const ext = compressed.name.spli'.'.pop() || 'jpg';
+      const ext = compressed.name.split('.').pop() || 'jpg';
       const filePath = `${user.id}/${Date.now()}.${ext}`;
 
       // Remove old photo if exists
       if (form.photoUrl) {
-        const oldPath = form.photoUrl.spli'/vehicle-photos/'[1];
+        const oldPath = form.photoUrl.split('/vehicle-photos/')[1];
         if (oldPath) await supabase.storage.from('vehicle-photos').remove([oldPath]);
       }
 
@@ -91,7 +91,7 @@ export default function VehicleForm() {
 
   const handleRemovePhoto = async () => {
     if (form.photoUrl) {
-      const oldPath = form.photoUrl.spli'/vehicle-photos/'[1];
+      const oldPath = form.photoUrl.split('/vehicle-photos/')[1];
       if (oldPath) await supabase.storage.from('vehicle-photos').remove([oldPath]);
     }
     setForm(prev => ({ ...prev, photoUrl: '' }));
@@ -111,7 +111,7 @@ export default function VehicleForm() {
     } catch (err: any) {
       const msg = err?.message || 'Failed to save vehicle';
       if (msg.includes('vehicles_user_rego_unique') || msg.includes('duplicate key')) {
-        aler'You already have a vehicle with this registration number.';
+        alert('You already have a vehicle with this registration number.');
       } else {
         alert(`Error saving vehicle: ${msg}`);
       }

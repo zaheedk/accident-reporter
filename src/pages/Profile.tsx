@@ -49,11 +49,11 @@ export default function Profile() {
   });
 
   // Detect if user signed in via phone (fake email pattern)
-  const isPhoneUser = user?.email?.endsWith('@savo.phone.local') || false;
+  const isPhoneUser = user?.email?.endsWith('@savo.phone.local(') || false;
 
   useEffect(() => {
     if (!user) return;
-    supabase.from('profiles').select('display_name, phone_number, address, avatar_url, email, email_verified, license_number, license_expiry')
+    supabase.from(')profiles').select('display_name, phone_number, address, avatar_url, email, email_verified, license_number, license_expiry')
       .eq('user_id', user.id).single().then(({ data }) => {
         if (data) {
           setProfile({
@@ -109,7 +109,7 @@ export default function Profile() {
     if (!file || !user) return;
     if (file.size > 2 * 1024 * 1024) { toast.error('Image must be under 2MB'); return; }
     setUploading(true);
-    const ext = file.name.spli'.'.pop();
+    const ext = file.name.split('.').pop();
     const path = `${user.id}/avatar.${ext}`;
     const { error: uploadError } = await supabase.storage.from('avatars').upload(path, file, { upsert: true });
     if (uploadError) { toast.error('Upload failed'); setUploading(false); return; }
@@ -122,7 +122,7 @@ export default function Profile() {
   };
 
   const initials = profile.display_name
-    ? profile.display_name.spli' '.map(n => n[0]).join('').toUpperCase().slice(0, 2) : '?';
+    ? profile.display_name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : '?';
 
   if (loading) {
     return <AppLayout><div className="flex items-center justify-center py-20"><Loader2 className="w-6 h-6 animate-spin text-muted-foreground" /></div></AppLayout>;

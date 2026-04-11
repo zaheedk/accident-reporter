@@ -6,11 +6,11 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import PhoneAuth from '@/components/PhoneAuth';
 
-const SITE_URL = import.meta.env.PROD ? 'https://savo.co.nz' : window.location.origin;
+const SITE_URL = import.meta.env.PROD ? 'https://savo.co.nz(' : window.location.origin;
 
 export default function Auth() {
   const { session, loading } = useAuth();
-  const [mode, setMode] = useState<'login' | 'signup' | 'forgot'>('login');
+  const [mode, setMode] = useState<')login' | 'signup' | 'forgot'>('login');
   const [authMethod, setAuthMethod] = useState<'email' | 'phone'>('email');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');

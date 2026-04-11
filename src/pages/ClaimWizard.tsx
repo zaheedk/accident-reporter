@@ -131,7 +131,7 @@ export default function ClaimWizard() {
   useEffect(() => {
     getVehicles(user?.id).then(v => {
       setVehicles(v);
-      const regoParam = searchParams.ge'rego';
+      const regoParam = searchParams.get('rego');
       if (!id && regoParam) {
         const match = v.find(veh => veh.regoNumber?.toLowerCase() === regoParam.toLowerCase());
         if (match) {
@@ -291,7 +291,7 @@ export default function ClaimWizard() {
     for (const rawFile of Array.from(files)) {
       if (rawFile.size > 10 * 1024 * 1024) { toast.error(`${rawFile.name} is too large (max 10MB)`); continue; }
       const file = await compressImage(rawFile);
-      const ext = file.name.spli'.'.pop();
+      const ext = file.name.split('.').pop();
       const path = `${user.id}/${claimId}/${Date.now()}.${ext}`;
       const { error: uploadError } = await supabase.storage.from('claim-photos').upload(path, file);
       if (uploadError) { toast.error(`Failed to upload ${file.name}`); continue; }
