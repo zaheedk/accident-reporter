@@ -191,6 +191,40 @@ export default function Dashboard() {
           </motion.div>
         </motion.div>
 
+        {/* Stat cards */}
+        <motion.div variants={fadeUp} className="grid grid-cols-2 gap-3">
+          <motion.div whileHover={{ y: -3, boxShadow: '0 8px 24px rgba(0,0,0,0.08)' }} whileTap={{ scale: 0.97 }}>
+            <Link to="/vehicles" className="card-surface-elevated group hover:border-primary/20 transition-all block relative overflow-hidden">
+              <div className="absolute -top-6 -right-6 w-20 h-20 rounded-full bg-primary/5 blur-xl" />
+              <div className="relative z-10 flex flex-col items-center text-center py-2">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
+                    <Car className="w-7 h-7 text-primary" strokeWidth={1.8} />
+                  </div>
+                  <span className="text-sm font-bold text-foreground">Vehicles</span>
+                </div>
+                <div className="text-3xl font-extrabold tabular-nums text-foreground">{vehicles.length}</div>
+              </div>
+              <ArrowUpRight className="absolute top-3 right-3 w-4 h-4 text-muted-foreground/30 group-hover:text-primary group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+            </Link>
+          </motion.div>
+          <motion.div whileHover={{ y: -3, boxShadow: '0 8px 24px rgba(0,0,0,0.08)' }} whileTap={{ scale: 0.97 }}>
+            <Link to="/claims" className="card-surface-elevated group hover:border-primary/20 transition-all block relative overflow-hidden">
+              <div className="absolute -top-6 -right-6 w-20 h-20 rounded-full bg-primary/5 blur-xl" />
+              <div className="relative z-10 flex flex-col items-center text-center py-2">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
+                    <img src={crashIcon} alt="Accidents" className="w-7 h-7" />
+                  </div>
+                  <span className="text-sm font-bold text-foreground">Accidents</span>
+                </div>
+                <div className="text-3xl font-extrabold tabular-nums text-foreground">{claims.length}</div>
+              </div>
+              <ArrowUpRight className="absolute top-3 right-3 w-4 h-4 text-muted-foreground/30 group-hover:text-primary group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+            </Link>
+          </motion.div>
+        </motion.div>
+
         {/* Insurance section */}
         {vehicles.filter(v => v.insuranceCompany).length > 0 && (
           <motion.div variants={fadeUp} className="space-y-2">
@@ -230,40 +264,6 @@ export default function Dashboard() {
             ))}
           </motion.div>
         )}
-
-        {/* Stat cards */}
-        <motion.div variants={fadeUp} className="grid grid-cols-2 gap-3">
-          <motion.div whileHover={{ y: -3, boxShadow: '0 8px 24px rgba(0,0,0,0.08)' }} whileTap={{ scale: 0.97 }}>
-            <Link to="/vehicles" className="card-surface-elevated group hover:border-primary/20 transition-all block relative overflow-hidden">
-              <div className="absolute -top-6 -right-6 w-20 h-20 rounded-full bg-primary/5 blur-xl" />
-              <div className="relative z-10 flex flex-col items-center text-center py-2">
-                <div className="flex items-center gap-2 mb-3">
-                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
-                    <Car className="w-7 h-7 text-primary" strokeWidth={1.8} />
-                  </div>
-                  <span className="text-sm font-bold text-foreground">Vehicles</span>
-                </div>
-                <div className="text-3xl font-extrabold tabular-nums text-foreground">{vehicles.length}</div>
-              </div>
-              <ArrowUpRight className="absolute top-3 right-3 w-4 h-4 text-muted-foreground/30 group-hover:text-primary group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
-            </Link>
-          </motion.div>
-          <motion.div whileHover={{ y: -3, boxShadow: '0 8px 24px rgba(0,0,0,0.08)' }} whileTap={{ scale: 0.97 }}>
-            <Link to="/claims" className="card-surface-elevated group hover:border-primary/20 transition-all block relative overflow-hidden">
-              <div className="absolute -top-6 -right-6 w-20 h-20 rounded-full bg-primary/5 blur-xl" />
-              <div className="relative z-10 flex flex-col items-center text-center py-2">
-                <div className="flex items-center gap-2 mb-3">
-                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
-                    <img src={crashIcon} alt="Accidents" className="w-7 h-7" />
-                  </div>
-                  <span className="text-sm font-bold text-foreground">Accidents</span>
-                </div>
-                <div className="text-3xl font-extrabold tabular-nums text-foreground">{claims.length}</div>
-              </div>
-              <ArrowUpRight className="absolute top-3 right-3 w-4 h-4 text-muted-foreground/30 group-hover:text-primary group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
-            </Link>
-          </motion.div>
-        </motion.div>
 
 
 
