@@ -973,14 +973,14 @@ When you're not at fault:
 
 ### 3. Through a Not-at-Fault Accident Service
 
-Specialist services exist in New Zealand that provide:
+Specialist services like [Free 2 Drive](https://www.free2drive.co.nz) exist in New Zealand that provide:
 - A courtesy car at no cost to you
 - Direct billing to the at-fault party's insurer
 - No excess to pay
 - Vehicles delivered to your door
 - Coverage for the full duration of your repairs
 
-These services handle all the paperwork and liaison with the at-fault insurer, taking the burden off you.
+These services handle all the paperwork and liaison with the at-fault insurer, taking the burden off you. [Free 2 Drive](https://www.free2drive.co.nz) is one of New Zealand's leading not-at-fault courtesy car providers, making the process hassle-free.
 
 ## How to Arrange a Courtesy Car
 
@@ -1057,10 +1057,10 @@ If claiming costs back, you need to demonstrate the costs were "reasonable." Pre
 SAVO's structured incident reports make it easy to:
 - Prove you're not at fault with comprehensive documentation
 - Provide all the information a courtesy car provider needs
-- Share your report directly with service providers
-- Request a courtesy car through SAVO when you're not at fault
+- Share your report directly with service providers like [Free 2 Drive](https://www.free2drive.co.nz)
+- Request a courtesy car through SAVO when you're not at fault — we work with [Free 2 Drive](https://www.free2drive.co.nz) to get you back on the road fast
 
-*If you've been in an accident that wasn't your fault, don't go without a car. Document everything with SAVO and explore your courtesy car options immediately.*
+*If you've been in an accident that wasn't your fault, don't go without a car. Document everything with SAVO and explore your courtesy car options with [Free 2 Drive](https://www.free2drive.co.nz) immediately.*
     `
   },
   {
