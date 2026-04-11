@@ -364,6 +364,30 @@ export type Database = {
         }
         Relationships: []
       }
+      email_verification_tokens: {
+        Row: {
+          created_at: string
+          expires_at: string
+          id: string
+          token: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at: string
+          id?: string
+          token: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          token?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       insurance_companies: {
         Row: {
           claims_method: string
@@ -541,8 +565,6 @@ export type Database = {
           created_at: string
           display_name: string | null
           email: string | null
-          email_verification_expires_at: string | null
-          email_verification_token: string | null
           email_verified: boolean
           id: string
           is_active: boolean
@@ -558,8 +580,6 @@ export type Database = {
           created_at?: string
           display_name?: string | null
           email?: string | null
-          email_verification_expires_at?: string | null
-          email_verification_token?: string | null
           email_verified?: boolean
           id?: string
           is_active?: boolean
@@ -575,8 +595,6 @@ export type Database = {
           created_at?: string
           display_name?: string | null
           email?: string | null
-          email_verification_expires_at?: string | null
-          email_verification_token?: string | null
           email_verified?: boolean
           id?: string
           is_active?: boolean
