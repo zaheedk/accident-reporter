@@ -6,7 +6,6 @@ import { supabase } from '@/integrations/supabase/client';
 import AppLayout from '@/components/AppLayout';
 import ClaimMessages from '@/components/ClaimMessages';
 import { WEATHER_OPTIONS, ROAD_OPTIONS, ClaimReport, Vehicle } from '@/types';
-import { useTranslation } from 'react-i18next';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
@@ -18,7 +17,6 @@ import DashcamUploader from '@/components/DashcamUploader';
 export default function ClaimDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { t } = useTranslation();
   const [claim, setClaim] = useState<ClaimReport | null>(null);
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [photos, setPhotos] = useState<{ id: string; url: string; fullUrl: string; fileName: string }[]>([]);
@@ -64,9 +62,9 @@ export default function ClaimDetail() {
     if (!id) return;
     const load = async () => {
       const [{ data: claimRow }, vehs, { data: claimNumData }] = await Promise.all([
-        supabase.from('claims').select('*').eq('id', id).single(),
+        supabase.from('claims').selec'*'.eq('id', id).single(),
         getVehicles(undefined),
-        supabase.from('claims').select('claim_number').eq('id', id).single(),
+        supabase.from('claims').selec'claim_number'.eq('id', id).single(),
       ]);
       
       if (!claimRow) { setLoading(false); return; }
@@ -97,14 +95,14 @@ export default function ClaimDetail() {
       if (claimNumData?.claim_number) setClaimNumber(String(claimNumData.claim_number));
 
       const [photosRes, tpRes, insurersRes, shopsRes] = await Promise.all([
-        supabase.from('claim_photos').select('*').eq('claim_id', id),
-        supabase.from('tp_photos').select('*').eq('claim_id', id),
-        supabase.from('insurance_companies').select('id, name').order('name'),
-        supabase.from('panel_shops').select('id, name, phone, address').order('name'),
+        supabase.from('claim_photos').selec'*'.eq('claim_id', id),
+        supabase.from('tp_photos').selec'*'.eq('claim_id', id),
+        supabase.from('insurance_companies').selec'id, name'.order('name'),
+        supabase.from('panel_shops').selec'id, name, phone, address'.order('name'),
       ]);
 
       if (foundClaim.insuranceCompany) {
-        const { data: insurer } = await supabase.from('insurance_companies').select('phone, email, claims_portal_url, claims_method').eq('name', foundClaim.insuranceCompany).single();
+        const { data: insurer } = await supabase.from('insurance_companies').selec'phone, email, claims_portal_url, claims_method'.eq('name', foundClaim.insuranceCompany).single();
         if (insurer?.phone) setInsurerPhone(insurer.phone);
         if (insurer?.email) setInsurerEmail(insurer.email);
         if (insurer?.claims_portal_url) setInsurerPortalUrl(insurer.claims_portal_url);
@@ -138,12 +136,12 @@ export default function ClaimDetail() {
     load();
   }, [id]);
 
-  if (loading) return <AppLayout><div className="text-center py-20"><p className="text-sm text-muted-foreground">{t('common.loading')}</p></div></AppLayout>;
+  if (loading) return <AppLayout><div className="text-center py-20"><p className="text-sm text-muted-foreground">Loading...</p></div></AppLayout>;
   if (!claim) return <AppLayout><div className="text-center py-20"><p className="text-sm text-muted-foreground">Report not found.</p></div></AppLayout>;
 
   const vehicle = vehicles.find(v => v.id === claim.vehicleId);
-  const weather = claim.weatherCondition ? t(`weather.${claim.weatherCondition}`) : '—';
-  const road = claim.roadCondition ? t(`road.${claim.roadCondition}`) : '—';
+  const weather = claim.weatherCondition ? \1 : '—';
+  const road = claim.roadCondition ? \1 : '—';
 
   const startEditInsurance = () => {
     setEditInsurance(claim.insuranceCompany);
@@ -164,7 +162,7 @@ export default function ClaimDetail() {
     }).eq('id', claim.id);
     setClaim({ ...claim, insuranceCompany: editInsurance, repairerName: editRepairerName, repairerPhone: editRepairerPhone, repairerAddress: editRepairerAddress });
     if (editInsurance) {
-      const { data: ins } = await supabase.from('insurance_companies').select('phone, email, claims_portal_url, claims_method').eq('name', editInsurance).single();
+      const { data: ins } = await supabase.from('insurance_companies').selec'phone, email, claims_portal_url, claims_method'.eq('name', editInsurance).single();
       setInsurerPhone(ins?.phone || '');
       setInsurerEmail(ins?.email || '');
       setInsurerPortalUrl(ins?.claims_portal_url || '');
@@ -175,7 +173,7 @@ export default function ClaimDetail() {
   };
 
   const handlePrint = async () => {
-    const html2pdf = (await import('html2pdf.js')).default;
+    const html2pdf = (await impor'html2pdf.js').default;
     const element = printRef.current;
     if (!element) return;
     
@@ -189,14 +187,14 @@ export default function ClaimDetail() {
     if (actionBar) actionBar.remove();
     
     // Build a clean printable div
-    const printDiv = document.createElement('div');
+    const printDiv = document.createElemen'div';
     printDiv.style.padding = '20px';
     printDiv.style.fontFamily = 'system-ui, sans-serif';
     printDiv.style.color = '#1a1a1a';
     printDiv.style.maxWidth = '800px';
     
     // Header
-    const header = document.createElement('div');
+    const header = document.createElemen'div';
     header.style.marginBottom = '24px';
     header.style.borderBottom = '2px solid #e5e7eb';
     header.style.paddingBottom = '16px';
@@ -208,12 +206,12 @@ export default function ClaimDetail() {
 
     // Helper to add sections
     const addSection = (title: string, rows: [string, string][]) => {
-      const section = document.createElement('div');
+      const section = document.createElemen'div';
       section.style.marginBottom = '20px';
       section.innerHTML = `<h2 style="font-size:14px;font-weight:700;color:#374151;margin:0 0 8px 0;text-transform:uppercase;letter-spacing:0.05em;">${title}</h2>`;
       rows.forEach(([label, value]) => {
         if (!value || value === '—') return;
-        const row = document.createElement('div');
+        const row = document.createElemen'div';
         row.style.cssText = 'display:flex;justify-content:space-between;gap:16px;padding:6px 0;border-bottom:1px solid #f3f4f6;font-size:13px;';
         row.innerHTML = `<span style="color:#6b7280;flex-shrink:0;">${label}</span><span style="font-weight:500;text-align:right;">${value}</span>`;
         section.appendChild(row);
@@ -277,7 +275,7 @@ export default function ClaimDetail() {
     ]);
 
     // Footer
-    const footer = document.createElement('div');
+    const footer = document.createElemen'div';
     footer.style.cssText = 'margin-top:32px;padding-top:12px;border-top:1px solid #e5e7eb;text-align:center;';
     footer.innerHTML = `<p style="font-size:11px;color:#9ca3af;">Generated by SAVO · savo.co.nz · ${new Date().toLocaleDateString()}</p>`;
     printDiv.appendChild(footer);
@@ -308,7 +306,7 @@ export default function ClaimDetail() {
       const veh = vehicles.find(v => v.id === claim.vehicleId);
       const isInsurer = emailTo === insurerEmail && !!insurerEmail;
       const user = (await supabase.auth.getUser()).data.user;
-      const { data: profile } = await supabase.from('profiles').select('display_name').eq('user_id', user?.id || '').single();
+      const { data: profile } = await supabase.from('profiles').selec'display_name'.eq('user_id', user?.id || '').single();
       
       const { error } = await supabase.functions.invoke('send-email', {
         body: {
@@ -373,8 +371,8 @@ export default function ClaimDetail() {
             <ArrowLeft className="w-5 h-5 text-foreground" strokeWidth={1.5} />
           </button>
           <div className="flex-1">
-            <p className="text-sm text-muted-foreground">{t('dashboard.report')}</p>
-            <h1 className="text-lg font-bold text-foreground -mt-0.5">{t('claims.detail.incidentReport')}</h1>
+            <p className="text-sm text-muted-foreground">Report</p>
+            <h1 className="text-lg font-bold text-foreground -mt-0.5">Incident report</h1>
           </div>
           <button onClick={() => navigate(`/claims/${claim.id}/edit`)} className="p-2 rounded-xl hover:bg-muted transition-colors" title="Edit report">
             <Pencil className="w-5 h-5 text-muted-foreground" strokeWidth={1.5} />
@@ -388,12 +386,12 @@ export default function ClaimDetail() {
           <button onClick={() => setDeleteDialogOpen(true)} className="p-2 rounded-xl hover:bg-destructive/10 transition-colors" title="Delete report">
             <Trash2 className="w-5 h-5 text-destructive" strokeWidth={1.5} />
           </button>
-          <span className="text-[11px] font-medium text-primary bg-primary/8 px-2 py-1 rounded-lg">{claim.status === 'draft' ? t('common.draft') : 'Saved'}</span>
+          <span className="text-[11px] font-medium text-primary bg-primary/8 px-2 py-1 rounded-lg">{claim.status === 'draft' ? 'Draft' : 'Saved'}</span>
         </div>
 
         <div className="hidden print:block mb-6">
-          <h1 className="text-xl font-bold text-foreground">{t('claims.detail.incidentReport')}</h1>
-          <p className="text-sm text-muted-foreground">{t('claims.review.date')}: {claim.incidentDate} · Status: {claim.status === 'draft' ? t('common.draft') : 'Saved'}</p>
+          <h1 className="text-xl font-bold text-foreground">Incident report</h1>
+          <p className="text-sm text-muted-foreground">Date: {claim.incidentDate} · Status: {claim.status === 'draft' ? 'Draft' : 'Saved'}</p>
         </div>
 
         <div className="print:hidden">
@@ -401,25 +399,25 @@ export default function ClaimDetail() {
             {/* ── Section 1: Incident & Vehicle ── */}
             <Section title="Incident & Vehicle" icon={<Car className="w-4 h-4 text-primary" />}>
               <SubHeading>Incident Details</SubHeading>
-              <Row label={t('claims.detail.dateTime')} value={`${claim.incidentDate} at ${claim.incidentTime}`} />
-              <Row label={t('claims.review.location')} value={claim.incidentLocation} />
-              <Row label={t('claims.detail.vehicleUsage')} value={claim.vehicleUsage} />
-              <Row label={t('claims.detail.journey')} value={claim.journeyDetails} />
-              <Row label={t('claims.review.description')} value={claim.description} />
+              <Row label=Date & time value={`${claim.incidentDate} at ${claim.incidentTime}`} />
+              <Row label=Location value={claim.incidentLocation} />
+              <Row label=Vehicle usage value={claim.vehicleUsage} />
+              <Row label=Journey value={claim.journeyDetails} />
+              <Row label=Description value={claim.description} />
 
               <SubHeading>Your Vehicle</SubHeading>
-              <Row label={t('claims.review.vehicle')} value={vehicle ? `${vehicle.year} ${vehicle.make} ${vehicle.model}` : '—'} />
-              <Row label={t('claims.review.rego')} value={vehicle?.regoNumber || '—'} />
-              <Row label={t('claims.detail.speedBraking')} value={claim.speedBeforeBraking ? `${claim.speedBeforeBraking} km/h` : '—'} />
-              <Row label={t('claims.review.damage')} value={claim.damageDescription} />
-              <Row label={t('claims.detail.towed')} value={claim.vehicleTowed ? `${t('common.yes')} – ${claim.towingCompany}` : t('common.no')} />
+              <Row label=Vehicle value={vehicle ? `${vehicle.year} ${vehicle.make} ${vehicle.model}` : '—'} />
+              <Row label=Rego value={vehicle?.regoNumber || '—'} />
+              <Row label=Speed before braking value={claim.speedBeforeBraking ? `${claim.speedBeforeBraking} km/h` : '—'} />
+              <Row label=Damage value={claim.damageDescription} />
+              <Row label=Towed value={claim.vehicleTowed ? `$Yes – ${claim.towingCompany}` : 'No'} />
 
               <SubHeading>Conditions</SubHeading>
-              <Row label={t('claims.review.weatherLabel')} value={weather} />
-              <Row label={t('claims.review.roadLabel')} value={road} />
-              <Row label={t('claims.detail.substanceUse')} value={claim.driverConsumedSubstance ? claim.substanceDetails : t('common.no')} />
-              <Row label={t('claims.detail.faultAssessment')} value={claim.blameDescription} />
-              <Row label={t('claims.detail.liabilityAdmitted')} value={claim.liabilityAdmitted ? claim.liabilityDetails : t('common.no')} />
+              <Row label=Weather value={weather} />
+              <Row label=Road value={road} />
+              <Row label=Substance use value={claim.driverConsumedSubstance ? claim.substanceDetails : 'No'} />
+              <Row label=Fault assessment value={claim.blameDescription} />
+              <Row label=Liability admitted value={claim.liabilityAdmitted ? claim.liabilityDetails : 'No'} />
             </Section>
 
             {/* ── Section 2: Parties & Investigation ── */}
@@ -433,11 +431,11 @@ export default function ClaimDetail() {
                     const tpLicensePhotos = tpPhotos.filter(p => p.tpIndex === i && p.type === 'license');
                     return (
                       <div key={i} className="p-3 rounded-xl bg-background space-y-2">
-                        <Row label={t('claims.review.owner')} value={tp.ownerName} />
-                        <Row label={t('claims.review.vehicle')} value={`${tp.make} ${tp.model} – ${tp.regoNumber}`} />
-                        <Row label={t('claims.thirdParty.phone')} value={tp.phone} />
-                        <Row label={t('claims.thirdParty.insurer')} value={tp.insurer} />
-                        <Row label={t('claims.review.damage')} value={tp.damageDescription} />
+                        <Row label=Owner value={tp.ownerName} />
+                        <Row label=Vehicle value={`${tp.make} ${tp.model} – ${tp.regoNumber}`} />
+                        <Row label=Phone value={tp.phone} />
+                        <Row label=Insurer value={tp.insurer} />
+                        <Row label=Damage value={tp.damageDescription} />
                         {tpDamagePhotos.length > 0 && (
                           <div className="space-y-1">
                             <span className="text-[11px] font-semibold text-muted-foreground">Damage photos</span>
@@ -485,13 +483,13 @@ export default function ClaimDetail() {
               {claim.witnesses.length > 0 && (
                 <>
                   <SubHeading>Witnesses</SubHeading>
-                  {claim.witnesses.map((w, i) => <Row key={i} label={t('claims.witnesses.witnessNumber', { number: i + 1 })} value={`${w.name} – ${w.phone}${w.isPassenger ? ` (${t('claims.witnesses.passenger')})` : ''}`} />)}
+                  {claim.witnesses.map((w, i) => <Row key={i} label={`Witness ${\1}`} value={`${w.name} – ${w.phone}${w.isPassenger ? ` ($Passenger)` : ''}`} />)}
                 </>
               )}
 
               <SubHeading>Police & Injuries</SubHeading>
-              <Row label={t('claims.detail.policeAttended')} value={claim.policeAttended ? `${t('common.yes')} – ${claim.policeOfficerDetails}` : t('common.no')} />
-              <Row label={t('claims.detail.injuries')} value={claim.anyoneHurt ? claim.injuryDetails : t('common.no')} />
+              <Row label=Police attended value={claim.policeAttended ? `$Yes – ${claim.policeOfficerDetails}` : 'No'} />
+              <Row label=Injuries value={claim.anyoneHurt ? claim.injuryDetails : 'No'} />
             </Section>
 
             {/* ── Section 3: Insurance & Repairs ── */}
@@ -534,10 +532,10 @@ export default function ClaimDetail() {
               ) : (
                 <>
                   <SubHeading>Insurance</SubHeading>
-                  <Row label={t('claims.review.insurance')} value={claim.insuranceCompany} />
+                  <Row label=Insurance value={claim.insuranceCompany} />
                   {insurerPhone && (
                     <div className="flex items-center justify-between gap-4 py-2 border-b border-border/60">
-                      <span className="text-[13px] text-muted-foreground flex-shrink-0">{t('claims.detail.claimsLine')}</span>
+                      <span className="text-[13px] text-muted-foreground flex-shrink-0">Claims line</span>
                       <a href={`tel:${insurerPhone.replace(/\s/g, '')}`} className="flex items-center gap-2 text-[13px] font-medium text-primary hover:underline">
                         <Phone className="w-3.5 h-3.5" strokeWidth={2} />{insurerPhone}
                       </a>
@@ -545,9 +543,9 @@ export default function ClaimDetail() {
                   )}
 
                   <SubHeading>Repairer</SubHeading>
-                  <Row label={t('claims.detail.name')} value={claim.repairerName} />
-                  <Row label={t('claims.detail.phone')} value={claim.repairerPhone} />
-                  <Row label={t('profile.address')} value={claim.repairerAddress} />
+                  <Row label=Name value={claim.repairerName} />
+                  <Row label=Phone value={claim.repairerPhone} />
+                  <Row label=Address value={claim.repairerAddress} />
                 </>
               )}
 
@@ -576,9 +574,9 @@ export default function ClaimDetail() {
         {/* Print-only: show report sections */}
         <div className="hidden print:block space-y-4">
           <Section title="Incident & Vehicle" icon={<Car className="w-4 h-4 text-primary" />}>
-            <Row label={t('claims.detail.dateTime')} value={`${claim.incidentDate} at ${claim.incidentTime}`} />
-            <Row label={t('claims.review.location')} value={claim.incidentLocation} />
-            <Row label={t('claims.review.description')} value={claim.description} />
+            <Row label=Date & time value={`${claim.incidentDate} at ${claim.incidentTime}`} />
+            <Row label=Location value={claim.incidentLocation} />
+            <Row label=Description value={claim.description} />
           </Section>
         </div>
       </div>
@@ -586,7 +584,7 @@ export default function ClaimDetail() {
       {lightboxUrl && (
         <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 print:hidden" onClick={() => setLightboxUrl(null)}>
           <div className="absolute top-4 right-4 flex items-center gap-2">
-            <button onClick={async (e) => { e.stopPropagation(); if (navigator.share) { try { await navigator.share({ title: 'Damage photo', url: lightboxUrl }); } catch {} } else { await navigator.clipboard.writeText(lightboxUrl); alert('Link copied to clipboard'); } }}
+            <button onClick={async (e) => { e.stopPropagation(); if (navigator.share) { try { await navigator.share({ title: 'Damage photo', url: lightboxUrl }); } catch {} } else { await navigator.clipboard.writeText(lightboxUrl); aler'Link copied to clipboard'; } }}
               className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors" title="Share photo"><Share2 className="w-5 h-5 text-white" /></button>
             <a href={lightboxUrl} download onClick={e => e.stopPropagation()} className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors" title="Download photo"><Download className="w-5 h-5 text-white" /></a>
             <button onClick={() => setLightboxUrl(null)} className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"><X className="w-6 h-6 text-white" /></button>

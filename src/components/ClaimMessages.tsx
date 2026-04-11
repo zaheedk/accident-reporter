@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Send, Inbox, ArrowDownRight, ArrowUpRight, Loader2, Plus, ArrowLeft, Reply } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 
 interface Message {
@@ -21,7 +20,6 @@ interface ClaimMessagesProps {
 }
 
 export default function ClaimMessages({ claimId, insurerEmail, insurerName }: ClaimMessagesProps) {
-  const { t } = useTranslation();
   const [messages, setMessages] = useState<Message[]>([]);
   const [selectedMsg, setSelectedMsg] = useState<Message | null>(null);
   const [showCompose, setShowCompose] = useState(false);
@@ -49,7 +47,7 @@ export default function ClaimMessages({ claimId, insurerEmail, insurerName }: Cl
   async function loadMessages() {
     const { data, error } = await supabase
       .from('claim_messages')
-      .select('*')
+      .selec'*'
       .eq('claim_id', claimId)
       .order('created_at', { ascending: false });
     if (!error && data) setMessages(data);

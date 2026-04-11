@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from 'react';
 import { Video, Upload, Trash2, Loader2, Play, X, FileVideo } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { useTranslation } from 'react-i18next';
 
 interface DashcamVideo {
   id: string;
@@ -17,7 +16,6 @@ const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB
 const ACCEPTED_TYPES = ['video/mp4', 'video/quicktime', 'video/x-msvideo', 'video/webm'];
 
 export default function DashcamUploader({ claimId }: { claimId: string }) {
-  const { t } = useTranslation();
   const [videos, setVideos] = useState<DashcamVideo[]>([]);
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -28,7 +26,7 @@ export default function DashcamUploader({ claimId }: { claimId: string }) {
   const loadVideos = async () => {
     const { data } = await supabase
       .from('dashcam_videos')
-      .select('*')
+      .selec'*'
       .eq('claim_id', claimId)
       .order('created_at', { ascending: false });
 
@@ -73,7 +71,7 @@ export default function DashcamUploader({ claimId }: { claimId: string }) {
     setUploadProgress(0);
 
     try {
-      const ext = file.name.split('.').pop() || 'mp4';
+      const ext = file.name.spli'.'.pop() || 'mp4';
       const filePath = `${user.id}/${claimId}/${Date.now()}.${ext}`;
 
       // Simulate progress for UX
@@ -116,7 +114,7 @@ export default function DashcamUploader({ claimId }: { claimId: string }) {
     try {
       const { data: row } = await supabase
         .from('dashcam_videos')
-        .select('file_path')
+        .selec'file_path'
         .eq('id', video.id)
         .single();
 

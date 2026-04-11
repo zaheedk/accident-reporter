@@ -14,7 +14,6 @@ import {
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { toast } from 'sonner';
-import { useTranslation } from 'react-i18next';
 import { useNearbySort } from '@/hooks/use-nearby-sort';
 
 type PanelShop = {
@@ -26,7 +25,6 @@ type PanelShop = {
 export default function PanelShops() {
   const { isAdmin } = useAuth();
   const queryClient = useQueryClient();
-  const { t } = useTranslation();
   const [search, setSearch] = useState('');
   const [selectedRegion, setSelectedRegion] = useState('All');
   const [formOpen, setFormOpen] = useState(false);
@@ -37,19 +35,19 @@ export default function PanelShops() {
   const { data: shops = [], isLoading } = useQuery({
     queryKey: ['panel-shops'],
     queryFn: async () => {
-      const { data, error } = await supabase.from('panel_shops').select('*').gte('google_rating', 4.5).order('google_rating', { ascending: false });
+      const { data, error } = await supabase.from('panel_shops').selec'*'.gte('google_rating', 4.5).order('google_rating', { ascending: false });
       if (error) throw error;
       return data as PanelShop[];
     },
   });
 
-  const regions = [t('panelShops.all'), ...Array.from(new Set(shops.map(s => s.region))).sort()];
+  const regions = ['All', ...Array.from(new Set(shops.map(s => s.region))).sort()];
 
   const filtered = shops.filter(shop => {
     const matchesSearch = shop.name.toLowerCase().includes(search.toLowerCase()) ||
       shop.city.toLowerCase().includes(search.toLowerCase()) ||
       shop.address.toLowerCase().includes(search.toLowerCase());
-    const matchesRegion = selectedRegion === t('panelShops.all') || shop.region === selectedRegion;
+    const matchesRegion = selectedRegion === 'All' || shop.region === selectedRegion;
     return matchesSearch && matchesRegion;
   });
 
@@ -87,12 +85,12 @@ export default function PanelShops() {
       <div className="space-y-5">
         <div className="flex items-start justify-between gap-2">
           <div>
-            <h1 className="text-xl font-bold text-foreground">{t('panelShops.title')}</h1>
-            <p className="text-sm text-muted-foreground mt-0.5">{t('panelShops.subtitle')}</p>
+            <h1 className="text-xl font-bold text-foreground">Panel Shops</h1>
+            <p className="text-sm text-muted-foreground mt-0.5">Top-rated panel beaters across NZ (4.5+ Google rating)</p>
           </div>
           {isAdmin && (
             <Button size="sm" onClick={() => { setEditShop(null); setFormOpen(true); }} className="shrink-0 gap-1">
-              <Plus className="w-4 h-4" /> {t('common.add')}
+              <Plus className="w-4 h-4" /> Add
             </Button>
           )}
         </div>
@@ -100,7 +98,7 @@ export default function PanelShops() {
         <div className="flex gap-2">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <Input placeholder={t('panelShops.searchPlaceholder')} value={search} onChange={e => setSearch(e.target.value)} className="pl-9" />
+            <Input placeholder=Search by name, city... value={search} onChange={e => setSearch(e.target.value)} className="pl-9" />
           </div>
           <Button
             variant={nearbyActive ? 'default' : 'outline'}
@@ -124,9 +122,9 @@ export default function PanelShops() {
         </div>
 
         {isLoading ? (
-          <div className="text-center py-10 text-muted-foreground text-sm">{t('panelShops.loadingShops')}</div>
+          <div className="text-center py-10 text-muted-foreground text-sm">Loading shops...</div>
         ) : displayed.length === 0 ? (
-          <div className="text-center py-10 text-muted-foreground text-sm">{t('panelShops.noShopsFound')}</div>
+          <div className="text-center py-10 text-muted-foreground text-sm">No panel shops found</div>
         ) : (
           <div className="space-y-3">
             {displayed.map(shop => {
@@ -152,7 +150,7 @@ export default function PanelShops() {
                         <div className="flex items-start gap-2"><MapPin className="w-3.5 h-3.5 mt-0.5 shrink-0" /><span>{shop.address}, {shop.city}</span></div>
                         {shop.phone && <div className="flex items-center gap-2"><Phone className="w-3.5 h-3.5 shrink-0" /><a href={`tel:${shop.phone}`} className="text-foreground underline-offset-2 hover:underline">{shop.phone}</a></div>}
                         {shop.email && <div className="flex items-center gap-2"><Mail className="w-3.5 h-3.5 shrink-0" /><a href={`mailto:${shop.email}`} className="text-foreground underline-offset-2 hover:underline truncate">{shop.email}</a></div>}
-                        {shop.website && <div className="flex items-center gap-2"><ExternalLink className="w-3.5 h-3.5 shrink-0" /><a href={shop.website} target="_blank" rel="noopener noreferrer" className="text-foreground underline-offset-2 hover:underline truncate">{t('panelShops.website')}</a></div>}
+                        {shop.website && <div className="flex items-center gap-2"><ExternalLink className="w-3.5 h-3.5 shrink-0" /><a href={shop.website} target="_blank" rel="noopener noreferrer" className="text-foreground underline-offset-2 hover:underline truncate">Website</a></div>}
                         {nearbyActive && distLabel && (
                           <div className="flex items-center gap-2 font-medium" style={{ color: 'hsl(152, 60%, 42%)' }}>
                             <Navigation className="w-3.5 h-3.5 shrink-0" />
@@ -185,12 +183,12 @@ export default function PanelShops() {
       <AlertDialog open={!!deleteShop} onOpenChange={(open) => !open && setDeleteShop(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{t('panelShops.deleteShop')}</AlertDialogTitle>
-            <AlertDialogDescription dangerouslySetInnerHTML={{ __html: t('panelShops.deleteShopConfirm', { name: deleteShop?.name }) }} />
+            <AlertDialogTitle>Delete panel shop?</AlertDialogTitle>
+            <AlertDialogDescription dangerouslySetInnerHTML={{ __html: `Are you sure you want to remove <strong>${\1}</strong>? This cannot be undone.` }} />
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">{t('common.delete')}</AlertDialogAction>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Delete</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
