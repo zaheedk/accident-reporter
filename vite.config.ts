@@ -73,9 +73,6 @@ export default defineConfig(({ mode }) => ({
           if (id.includes("node_modules/framer-motion/") || id.includes("node_modules/recharts/")) {
             return "vendor-ui";
           }
-          if (id.includes("node_modules/i18next/") || id.includes("node_modules/react-i18next/")) {
-            return "vendor-i18n";
-          }
         },
       },
     },
