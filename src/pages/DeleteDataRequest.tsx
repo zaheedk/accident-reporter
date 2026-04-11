@@ -20,7 +20,7 @@ export default function DeleteDataRequest() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [selected, setSelected] = useState<string[]>([]);
-  const [reason, setReason] = useState("";
+  const [reason, setReason] = useState(""));
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
@@ -31,13 +31,13 @@ export default function DeleteDataRequest() {
 
   const handleSubmit = async () => {
     if (selected.length === 0) {
-      toast.error("Please select at least one data type.";
+      toast.error("Please select at least one data type.");
       return;
     }
     setLoading(true);
     try {
       // Store the request as a notification for admin review
-      const { error } = await supabase.from("notifications".insert({
+      const { error } = await supabase.from("notifications").insert({
         user_id: user!.id,
         type: "data_deletion_request",
         title: "Data Deletion Request",
@@ -45,7 +45,7 @@ export default function DeleteDataRequest() {
       });
       if (error) throw error;
       setSubmitted(true);
-      toast.success("Your data deletion request has been submitted.";
+      toast.success("Your data deletion request has been submitted.");
     } catch (err: any) {
       toast.error(err.message || "Failed to submit request.";
     } finally {
@@ -64,7 +64,7 @@ export default function DeleteDataRequest() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button variant="outline" onClick={() => navigate("/dashboard"}>
+            <Button variant="outline" onClick={() => navigate("/dashboard")}>
               Return to Dashboard
             </Button>
           </CardContent>
@@ -78,7 +78,7 @@ export default function DeleteDataRequest() {
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-3">
           <button
-            onClick={() => navigate(-1)}
+            onClick={() => navigate(-1))}
             className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground w-fit"
           >
             <ArrowLeft className="w-4 h-4" /> Back

@@ -11,18 +11,18 @@ import { toast } from "sonner";
 export default function DeleteAccount() {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
-  const [confirmation, setConfirmation] = useState("";
+  const [confirmation, setConfirmation] = useState(""));
   const [loading, setLoading] = useState(false);
 
   const handleDelete = async () => {
-    if (confirmation !== "DELETE" return;
+    if (confirmation !== "DELETE") return;
     setLoading(true);
     try {
       const { error } = await supabase.functions.invoke("account-actions", {
         body: { action: "delete" },
       });
       if (error) throw error;
-      toast.success("Your account has been permanently deleted.";
+      toast.success("Your account has been permanently deleted.");
       await signOut();
     } catch (err: any) {
       toast.error(err.message || "Failed to delete account.";
@@ -36,7 +36,7 @@ export default function DeleteAccount() {
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-3">
           <button
-            onClick={() => navigate(-1)}
+            onClick={() => navigate(-1))}
             className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground w-fit"
           >
             <ArrowLeft className="w-4 h-4" /> Back
