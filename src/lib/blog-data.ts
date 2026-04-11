@@ -973,14 +973,14 @@ When you're not at fault:
 
 ### 3. Through a Not-at-Fault Accident Service
 
-Specialist services exist in New Zealand that provide:
+Specialist services like [Free 2 Drive](https://www.free2drive.co.nz) exist in New Zealand that provide:
 - A courtesy car at no cost to you
 - Direct billing to the at-fault party's insurer
 - No excess to pay
 - Vehicles delivered to your door
 - Coverage for the full duration of your repairs
 
-These services handle all the paperwork and liaison with the at-fault insurer, taking the burden off you.
+These services handle all the paperwork and liaison with the at-fault insurer, taking the burden off you. [Free 2 Drive](https://www.free2drive.co.nz) is one of New Zealand's leading not-at-fault courtesy car providers, making the process hassle-free.
 
 ## How to Arrange a Courtesy Car
 
