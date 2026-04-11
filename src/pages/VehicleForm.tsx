@@ -30,7 +30,7 @@ export default function VehicleForm() {
   const [customInsurer, setCustomInsurer] = useState('');
 
   useEffect(() => {
-    supabase.from('insurance_companies').selec'id, name'.order('name').then(({ data }) => {
+    supabase.from('insurance_companies').select('id, name').order('name').then(({ data }) => {
       if (data) setInsuranceCompanies(data);
     });
   }, []);
@@ -66,12 +66,12 @@ export default function VehicleForm() {
     setUploading(true);
     try {
       const compressed = await compressImage(file);
-      const ext = compressed.name.spli'.'.pop() || 'jpg';
+      const ext = compressed.name.split('.').pop() || 'jpg';
       const filePath = `${user.id}/${Date.now()}.${ext}`;
 
       // Remove old photo if exists
       if (form.photoUrl) {
-        const oldPath = form.photoUrl.spli'/vehicle-photos/'[1];
+        const oldPath = form.photoUrl.split('/vehicle-photos/')[1];
         if (oldPath) await supabase.storage.from('vehicle-photos').remove([oldPath]);
       }
 
@@ -91,7 +91,7 @@ export default function VehicleForm() {
 
   const handleRemovePhoto = async () => {
     if (form.photoUrl) {
-      const oldPath = form.photoUrl.spli'/vehicle-photos/'[1];
+      const oldPath = form.photoUrl.split('/vehicle-photos/')[1];
       if (oldPath) await supabase.storage.from('vehicle-photos').remove([oldPath]);
     }
     setForm(prev => ({ ...prev, photoUrl: '' }));
@@ -111,7 +111,7 @@ export default function VehicleForm() {
     } catch (err: any) {
       const msg = err?.message || 'Failed to save vehicle';
       if (msg.includes('vehicles_user_rego_unique') || msg.includes('duplicate key')) {
-        aler'You already have a vehicle with this registration number.';
+        alert('You already have a vehicle with this registration number.');
       } else {
         alert(`Error saving vehicle: ${msg}`);
       }
@@ -141,7 +141,7 @@ export default function VehicleForm() {
 
         {/* Vehicle Photo */}
         <div className="card-surface space-y-3">
-          <h2 className="text-sm font-semibold text-foreground">{Vehicle photo}</h2>
+          <h2 className="text-sm font-semibold text-foreground">Vehicle photo</h2>
           {photoPreview ? (
             <div className="relative">
               <img src={photoPreview} alt="Vehicle" className="w-full h-48 object-cover rounded-xl" />
@@ -157,11 +157,11 @@ export default function VehicleForm() {
               className="w-full h-36 border-2 border-dashed border-border rounded-xl flex flex-col items-center justify-center gap-2 text-muted-foreground hover:border-foreground/30 hover:text-foreground transition-colors"
             >
               {uploading ? (
-                <span className="text-sm">{Uploading...}</span>
+                <span className="text-sm">Uploading...</span>
               ) : (
                 <>
                   <ImageIcon className="w-8 h-8" strokeWidth={1.2} />
-                  <span className="text-sm">{Add a photo of your vehicle}</span>
+                  <span className="text-sm">Add a photo of your vehicle</span>
                 </>
               )}
             </button>
@@ -173,7 +173,7 @@ export default function VehicleForm() {
               disabled={uploading}
               className="text-xs text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
             >
-              <Camera className="w-3.5 h-3.5" /> {Change photo}
+              <Camera className="w-3.5 h-3.5" /> Change photo
             </button>
           )}
           <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handlePhotoUpload} />
@@ -207,7 +207,7 @@ export default function VehicleForm() {
               }
             }}>
               <SelectTrigger className="form-input">
-                <SelectValue placeholder=Select insurance company />
+                <SelectValue placeholder="Select insurance company" />
               </SelectTrigger>
               <SelectContent>
                 {insuranceCompanies.map(c => (
@@ -230,13 +230,13 @@ export default function VehicleForm() {
         </div>
 
         <div className="card-surface space-y-3">
-          <Toggle active={form.financeArrangement} onToggle={() => update('financeArrangement', !form.financeArrangement)} label=Subject to finance arrangement />
+          <Toggle active={form.financeArrangement} onToggle={() => update('financeArrangement', !form.financeArrangement)} label="Subject to finance arrangement" />
           {form.financeArrangement && (
-            <div className="pl-14"><label className="form-label">Finance details</label><input className="form-input" placeholder=Finance company and details value={form.financeDetails} onChange={e => update('financeDetails', e.target.value)} /></div>
+            <div className="pl-14"><label className="form-label">Finance details</label><input className="form-input" placeholder="Finance company and details" value={form.financeDetails} onChange={e => update('financeDetails', e.target.value)} /></div>
           )}
-          <Toggle active={form.modified} onToggle={() => update('modified', !form.modified)} label=Modified from standard specs />
+          <Toggle active={form.modified} onToggle={() => update('modified', !form.modified)} label="Modified from standard specs" />
           {form.modified && (
-            <div className="pl-14"><label className="form-label">Modification details</label><input className="form-input" placeholder=Describe modifications value={form.modificationDetails} onChange={e => update('modificationDetails', e.target.value)} /></div>
+            <div className="pl-14"><label className="form-label">Modification details</label><input className="form-input" placeholder="Describe modifications" value={form.modificationDetails} onChange={e => update('modificationDetails', e.target.value)} /></div>
           )}
         </div>
 

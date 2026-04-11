@@ -37,7 +37,7 @@ const ChartContainer = React.forwardRef<
   }
 >(({ id, className, children, config, ...props }, ref) => {
   const uniqueId = React.useId();
-  const chartId = `chart-${id || uniqueId.replace(/:/g, "")}`;
+  const chartId = `chart-${id || uniqueId.replace(/:/g, ""}`;
 
   return (
     <ChartContext.Provider value={{ config }}>
@@ -77,11 +77,11 @@ ${colorConfig
     const color = itemConfig.theme?.[theme as keyof typeof itemConfig.theme] || itemConfig.color;
     return color ? `  --color-${key}: ${color};` : null;
   })
-  .join("\n")}
+  .join("\n"}
 }
 `,
           )
-          .join("\n"),
+          .join("\n",
       }}
     />
   );
@@ -287,7 +287,7 @@ function getPayloadConfigFromPayload(config: ChartConfig, payload: unknown, key:
 
   let configLabelKey: string = key;
 
-  if (key in payload && typeof payload[key as keyof typeof payload] === "string") {
+  if (key in payload && typeof payload[key as keyof typeof payload] === "string" {
     configLabelKey = payload[key as keyof typeof payload] as string;
   } else if (
     payloadPayload &&

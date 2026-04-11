@@ -49,13 +49,13 @@ export default function ClaimList() {
       const claimIds = c.map(cl => cl.id).filter(Boolean);
 
       if (claimIds.length > 0) {
-        const { data: metaData } = await supabase.from('claims').selec'id, claim_number, report_number'.in('id', claimIds);
+        const { data: metaData } = await supabase.from('claims').select('id, claim_number, report_number').in('id', claimIds);
         if (metaData) {
           metaData.forEach((m: any) => { meta[m.id] = { claimNumber: m.claim_number, reportNumber: m.report_number }; });
         }
 
         // Fetch first photo per claim (only for user's claims)
-        const { data: photoData } = await supabase.from('claim_photos').selec'claim_id, file_path'.in('claim_id', claimIds).order('created_at', { ascending: true });
+        const { data: photoData } = await supabase.from('claim_photos').select('claim_id, file_path').in('claim_id', claimIds).order('created_at', { ascending: true });
         if (photoData && photoData.length > 0) {
           const photoMap: Record<string, string> = {};
           photoData.forEach((p: any) => {

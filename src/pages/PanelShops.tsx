@@ -35,7 +35,7 @@ export default function PanelShops() {
   const { data: shops = [], isLoading } = useQuery({
     queryKey: ['panel-shops'],
     queryFn: async () => {
-      const { data, error } = await supabase.from('panel_shops').selec'*'.gte('google_rating', 4.5).order('google_rating', { ascending: false });
+      const { data, error } = await supabase.from('panel_shops').select('*').gte('google_rating', 4.5).order('google_rating', { ascending: false });
       if (error) throw error;
       return data as PanelShop[];
     },
@@ -98,7 +98,7 @@ export default function PanelShops() {
         <div className="flex gap-2">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <Input placeholder=Search by name, city... value={search} onChange={e => setSearch(e.target.value)} className="pl-9" />
+            <Input placeholder="Search by name, city..." value={search} onChange={e => setSearch(e.target.value)} className="pl-9" />
           </div>
           <Button
             variant={nearbyActive ? 'default' : 'outline'}
@@ -184,7 +184,7 @@ export default function PanelShops() {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete panel shop?</AlertDialogTitle>
-            <AlertDialogDescription dangerouslySetInnerHTML={{ __html: `Are you sure you want to remove <strong>${\1}</strong>? This cannot be undone.` }} />
+            <AlertDialogDescription dangerouslySetInnerHTML={{ __html: `Are you sure you want to remove <strong>${shopToDelete?.name}</strong>? This cannot be undone.` }} />
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>

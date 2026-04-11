@@ -15,7 +15,7 @@ export default function Legal() {
 
           <TabsContent value="terms" className="card-surface space-y-5">
             <Section title="1. Acceptance of Terms">
-              By accessing or using SAVO ("the Service"), you agree to be bound by these Terms of Service. If you do not agree, do not use the Service.
+              By accessing or using SAVO ("the Service", you agree to be bound by these Terms of Service. If you do not agree, do not use the Service.
             </Section>
             <Section title="2. Description of Service">
               SAVO provides a digital platform for documenting vehicle insurance incidents, managing vehicle records, and connecting with panel repair shops. The Service is provided "as is" for informational and organisational purposes only.

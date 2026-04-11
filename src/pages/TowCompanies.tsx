@@ -22,7 +22,7 @@ export default function TowCompanies() {
   const { data: companies = [], isLoading } = useQuery({
     queryKey: ['tow-companies-public'],
     queryFn: async () => {
-      const { data, error } = await supabase.from('tow_companies').selec'*'.order('name');
+      const { data, error } = await supabase.from('tow_companies').select('*').order('name');
       if (error) throw error;
       return data as TowCompany[];
     },
@@ -54,7 +54,7 @@ export default function TowCompanies() {
         <div className="flex gap-2">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <Input placeholder=Search by name, address... value={search} onChange={e => setSearch(e.target.value)} className="pl-9" />
+            <Input placeholder="Search by name, address..." value={search} onChange={e => setSearch(e.target.value)} className="pl-9" />
           </div>
           <Button
             variant={nearbyActive ? 'default' : 'outline'}
@@ -132,7 +132,7 @@ export default function TowCompanies() {
         )}
 
         <p className="text-[10px] text-muted-foreground text-center pt-2">
-          Showing {displayed.length} of {afterNearby.length} {`${\1} companies found`}
+          Showing {displayed.length} of {afterNearby.length} {`${afterNearby.length} companies found`}
         </p>
       </div>
     </AppLayout>

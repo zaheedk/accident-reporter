@@ -49,11 +49,11 @@ export default function Profile() {
   });
 
   // Detect if user signed in via phone (fake email pattern)
-  const isPhoneUser = user?.email?.endsWith('@savo.phone.local') || false;
+  const isPhoneUser = user?.email?.endsWith('@savo.phone.local(') || false;
 
   useEffect(() => {
     if (!user) return;
-    supabase.from('profiles').selec'display_name, phone_number, address, avatar_url, email, email_verified, license_number, license_expiry'
+    supabase.from(')profiles').select('display_name, phone_number, address, avatar_url, email, email_verified, license_number, license_expiry')
       .eq('user_id', user.id).single().then(({ data }) => {
         if (data) {
           setProfile({
@@ -109,7 +109,7 @@ export default function Profile() {
     if (!file || !user) return;
     if (file.size > 2 * 1024 * 1024) { toast.error('Image must be under 2MB'); return; }
     setUploading(true);
-    const ext = file.name.spli'.'.pop();
+    const ext = file.name.split('.').pop();
     const path = `${user.id}/avatar.${ext}`;
     const { error: uploadError } = await supabase.storage.from('avatars').upload(path, file, { upsert: true });
     if (uploadError) { toast.error('Upload failed'); setUploading(false); return; }
@@ -122,7 +122,7 @@ export default function Profile() {
   };
 
   const initials = profile.display_name
-    ? profile.display_name.spli' '.map(n => n[0]).join('').toUpperCase().slice(0, 2) : '?';
+    ? profile.display_name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : '?';
 
   if (loading) {
     return <AppLayout><div className="flex items-center justify-center py-20"><Loader2 className="w-6 h-6 animate-spin text-muted-foreground" /></div></AppLayout>;
@@ -162,7 +162,7 @@ export default function Profile() {
         <form onSubmit={handleSave} className="card-surface space-y-4">
           <div>
             <label className="form-label flex items-center gap-1.5"><User className="w-3.5 h-3.5" strokeWidth={1.5} />Full name</label>
-            <input className="form-input" placeholder=Your full name value={profile.display_name} onChange={e => setProfile(p => ({ ...p, display_name: e.target.value }))} />
+            <input className="form-input" placeholder="Your full name" value={profile.display_name} onChange={e => setProfile(p => ({ ...p, display_name: e.target.value }))} />
           </div>
 
           {isPhoneUser ? (
@@ -215,11 +215,11 @@ export default function Profile() {
 
           <div>
             <label className="form-label flex items-center gap-1.5"><Phone className="w-3.5 h-3.5" strokeWidth={1.5} />Phone number</label>
-            <input className="form-input" type="tel" placeholder=e.g. 021 123 4567 value={profile.phone_number} onChange={e => setProfile(p => ({ ...p, phone_number: e.target.value }))} />
+            <input className="form-input" type="tel" placeholder="e.g. 021 123 4567" value={profile.phone_number} onChange={e => setProfile(p => ({ ...p, phone_number: e.target.value }))} />
           </div>
           <div>
             <label className="form-label flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5" strokeWidth={1.5} />Address</label>
-            <textarea className="form-input min-h-[80px] resize-none" placeholder=Your home or postal address value={profile.address} onChange={e => setProfile(p => ({ ...p, address: e.target.value }))} />
+            <textarea className="form-input min-h-[80px] resize-none" placeholder="Your home or postal address" value={profile.address} onChange={e => setProfile(p => ({ ...p, address: e.target.value }))} />
           </div>
           <div className="border-t border-border/50 pt-4 mt-2">
             <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Driver License</p>
@@ -380,7 +380,7 @@ export default function Profile() {
             <AlertDialogDescription className="space-y-3">
               <span className="block">This will permanently delete your account and all associated data including vehicles, claims, and profile information. This action cannot be undone.</span>
               <span className="block text-sm font-medium text-foreground">Type DELETE to confirm:</span>
-              <Input value={deleteConfirmText} onChange={e => setDeleteConfirmText(e.target.value)} placeholder=Type DELETE className="mt-1" />
+              <Input value={deleteConfirmText} onChange={e => setDeleteConfirmText(e.target.value)} placeholder="Type DELETE" className="mt-1" />
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

@@ -131,7 +131,7 @@ export default function ClaimWizard() {
   useEffect(() => {
     getVehicles(user?.id).then(v => {
       setVehicles(v);
-      const regoParam = searchParams.ge'rego';
+      const regoParam = searchParams.get('rego');
       if (!id && regoParam) {
         const match = v.find(veh => veh.regoNumber?.toLowerCase() === regoParam.toLowerCase());
         if (match) {
@@ -152,9 +152,9 @@ export default function ClaimWizard() {
     if (id) {
       const loadClaim = async () => {
         const [{ data: claimRow }, { data: claimNumData }, { data: photosData }] = await Promise.all([
-          supabase.from('claims').selec'*'.eq('id', id).single(),
-          supabase.from('claims').selec'claim_number'.eq('id', id).single(),
-          supabase.from('claim_photos').selec'id, file_path, file_name'.eq('claim_id', id),
+          supabase.from('claims').select('*').eq('id', id).single(),
+          supabase.from('claims').select('claim_number').eq('id', id).single(),
+          supabase.from('claim_photos').select('id, file_path, file_name').eq('claim_id', id),
         ]);
         if (claimRow) {
           const loaded: ClaimReport = {
@@ -291,13 +291,13 @@ export default function ClaimWizard() {
     for (const rawFile of Array.from(files)) {
       if (rawFile.size > 10 * 1024 * 1024) { toast.error(`${rawFile.name} is too large (max 10MB)`); continue; }
       const file = await compressImage(rawFile);
-      const ext = file.name.spli'.'.pop();
+      const ext = file.name.split('.').pop();
       const path = `${user.id}/${claimId}/${Date.now()}.${ext}`;
       const { error: uploadError } = await supabase.storage.from('claim-photos').upload(path, file);
       if (uploadError) { toast.error(`Failed to upload ${file.name}`); continue; }
       const { data } = await supabase.from('claim_photos')
         .insert({ claim_id: claimId, user_id: user.id, file_path: path, file_name: file.name })
-        .selec'id, file_path, file_name'.single();
+        .select('id, file_path, file_name').single();
       if (data) setPhotos(prev => [...prev, data as ClaimPhoto]);
     }
     setUploading(false);
@@ -493,7 +493,7 @@ export default function ClaimWizard() {
                               <div>
                                 <label className="form-label">Location (street and town)</label>
                                 <div className="flex gap-2">
-                                  <input className="form-input flex-1" placeholder=e.g. 42 Queen St, Auckland CBD value={claim.incidentLocation} onChange={e => update('incidentLocation', e.target.value)} />
+                                  <input className="form-input flex-1" placeholder="e.g. 42 Queen St, Auckland CBD" value={claim.incidentLocation} onChange={e => update('incidentLocation', e.target.value)} />
                                   <button type="button" onClick={detectLocation} disabled={detectingLocation}
                                     className="flex-shrink-0 h-10 px-3 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors flex items-center gap-1.5 text-xs font-medium disabled:opacity-50">
                                     {detectingLocation ? <Loader2 className="w-4 h-4 animate-spin" /> : <MapPin className="w-4 h-4" />}
@@ -551,7 +551,7 @@ export default function ClaimWizard() {
                                   }} disabled={uploading}
                                     className="btn-secondary flex-1 h-9 gap-2 text-xs">
                                     {uploading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Camera className="w-3.5 h-3.5" />}
-                                    {Take photo}
+                                    Take photo
                                   </button>
                                   <button type="button" onClick={async () => {
                                     if (!claim.id) {
@@ -562,7 +562,7 @@ export default function ClaimWizard() {
                                   }} disabled={uploading}
                                     className="btn-secondary flex-1 h-9 gap-2 text-xs">
                                     {uploading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <span>📁</span>}
-                                    {Gallery}
+                                    Gallery
                                   </button>
                                 </div>
                                 <input ref={cameraInputRef} type="file" accept="image/*" capture="environment" multiple className="hidden" onChange={handlePhotoUpload} />
@@ -585,7 +585,7 @@ export default function ClaimWizard() {
                                 {claim.thirdParties.map((tp, i) => (
                                   <div key={i} className="p-4 rounded-xl bg-background space-y-3">
                                     <div className="flex items-center justify-between">
-                                      <span className="text-xs font-semibold text-muted-foreground">{`Vehicle ${\1}`}</span>
+                                      <span className="text-xs font-semibold text-muted-foreground">{`Vehicle ${i + 1}`}</span>
                                       <button onClick={() => rmTP(i)} className="text-xs text-destructive hover:underline font-medium">Remove</button>
                                     </div>
                                     <div><label className="form-label">Rego no.</label><input className="form-input tabular-nums text-base font-bold" placeholder="e.g. ABC123" value={tp.regoNumber} onChange={e => updTP(i, 'regoNumber', e.target.value.toUpperCase())} /></div>
@@ -630,7 +630,7 @@ export default function ClaimWizard() {
                                 {claim.witnesses.map((w, i) => (
                                   <div key={i} className="p-4 rounded-xl bg-background space-y-3">
                                     <div className="flex items-center justify-between">
-                                      <span className="text-xs font-semibold text-muted-foreground">{`Witness ${\1}`}</span>
+                                      <span className="text-xs font-semibold text-muted-foreground">{`Witness ${i + 1}`}</span>
                                       <button onClick={() => rmW(i)} className="text-xs text-destructive hover:underline font-medium">Remove</button>
                                     </div>
                                     <div className="grid grid-cols-2 gap-3">
@@ -715,7 +715,7 @@ export default function ClaimWizard() {
                     <div>
                       <label className="form-label">Location (street and town)</label>
                       <div className="flex gap-2">
-                        <input className="form-input flex-1" placeholder=e.g. 42 Queen St, Auckland CBD value={claim.incidentLocation} onChange={e => update('incidentLocation', e.target.value)} />
+                        <input className="form-input flex-1" placeholder="e.g. 42 Queen St, Auckland CBD" value={claim.incidentLocation} onChange={e => update('incidentLocation', e.target.value)} />
                         <button type="button" onClick={detectLocation} disabled={detectingLocation}
                           className="flex-shrink-0 h-10 px-3 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors flex items-center gap-1.5 text-xs font-medium disabled:opacity-50">
                           {detectingLocation ? <Loader2 className="w-4 h-4 animate-spin" /> : <MapPin className="w-4 h-4" />}
@@ -776,7 +776,7 @@ export default function ClaimWizard() {
                         }} disabled={uploading}
                           className="btn-secondary flex-1 h-9 gap-2 text-xs">
                           {uploading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Camera className="w-3.5 h-3.5" />}
-                          {Take photo}
+                          Take photo
                         </button>
                         <button type="button" onClick={async () => {
                           if (!claim.id) {
@@ -787,7 +787,7 @@ export default function ClaimWizard() {
                         }} disabled={uploading}
                           className="btn-secondary flex-1 h-9 gap-2 text-xs">
                           {uploading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <span>📁</span>}
-                          {Gallery}
+                          Gallery
                         </button>
                       </div>
                       <input ref={cameraInputRef} type="file" accept="image/*" capture="environment" multiple className="hidden" onChange={handlePhotoUpload} />
@@ -835,7 +835,7 @@ export default function ClaimWizard() {
                       {claim.thirdParties.map((tp, i) => (
                         <div key={i} className="p-4 rounded-xl bg-background space-y-3">
                           <div className="flex items-center justify-between">
-                            <span className="text-xs font-semibold text-muted-foreground">{`Vehicle ${\1}`}</span>
+                            <span className="text-xs font-semibold text-muted-foreground">{`Vehicle ${i + 1}`}</span>
                             <button onClick={() => rmTP(i)} className="text-xs text-destructive hover:underline font-medium">Remove</button>
                           </div>
                           <div><label className="form-label">Rego no.</label><input className="form-input tabular-nums text-base font-bold" placeholder="e.g. ABC123" value={tp.regoNumber} onChange={e => updTP(i, 'regoNumber', e.target.value.toUpperCase())} /></div>
@@ -886,7 +886,7 @@ export default function ClaimWizard() {
                       {claim.witnesses.map((w, i) => (
                         <div key={i} className="p-4 rounded-xl bg-background space-y-3">
                           <div className="flex items-center justify-between">
-                            <span className="text-xs font-semibold text-muted-foreground">{`Witness ${\1}`}</span>
+                            <span className="text-xs font-semibold text-muted-foreground">{`Witness ${i + 1}`}</span>
                             <button onClick={() => rmW(i)} className="text-xs text-destructive hover:underline font-medium">Remove</button>
                           </div>
                           <div className="grid grid-cols-2 gap-3">
@@ -993,21 +993,21 @@ export default function ClaimWizard() {
                 {/* Step 5: Review */}
                 {step === STEPS.length - 1 && (
                   <div className="space-y-3">
-                    <RSection title=Incident>
-                      <RRow label=Date value={claim.incidentDate} />
-                      <RRow label=Time value={claim.incidentTime} />
-                      <RRow label=Location value={claim.incidentLocation} />
+                    <RSection title="Incident">
+                      <RRow label="Date" value={claim.incidentDate} />
+                      <RRow label="Time" value={claim.incidentTime} />
+                      <RRow label="Location" value={claim.incidentLocation} />
                       {claim.vehicleUsage && <RRow label="Usage" value={claim.vehicleUsage} />}
                       {claim.description && <RRow label="Description" value={claim.description} />}
                     </RSection>
-                    <RSection title=Your vehicle>
-                      <RRow label=Vehicle value={selV ? `${selV.year} ${selV.make} ${selV.model}` : '—'} />
-                      <RRow label=Rego value={selV?.regoNumber || '—'} />
-                      <RRow label=Photos value={`${\1} uploaded`} />
-                      {claim.damageDescription && <RRow label=Damage value={claim.damageDescription} />}
+                    <RSection title="Your vehicle">
+                      <RRow label="Vehicle" value={selV ? `${selV.year} ${selV.make} ${selV.model}` : '—'} />
+                      <RRow label="Rego" value={selV?.regoNumber || '—'} />
+                      <RRow label="Photos" value={`${photos.length} uploaded`} />
+                      {claim.damageDescription && <RRow label="Damage" value={claim.damageDescription} />}
                       {claim.speedBeforeBraking && <RRow label="Speed" value={`${claim.speedBeforeBraking} km/h`} />}
                     </RSection>
-                    <RSection title=Third parties>
+                    <RSection title="Third parties">
                       {claim.thirdParties.length === 0 ? <p className="text-sm text-muted-foreground">None</p> : claim.thirdParties.map((tp, i) => (
                         <div key={i} className="p-3 rounded-xl bg-background space-y-0.5">
                           <RRow label="Rego" value={tp.regoNumber} />
@@ -1022,8 +1022,8 @@ export default function ClaimWizard() {
                         {claim.atFault === 'other_party' && <RRow label="Courtesy car" value={claim.courtesyCarRequested ? 'Requested' : 'Not requested'} />}
                       </RSection>
                     )}
-                    <RSection title=Witnesses>
-                      {claim.witnesses.length === 0 ? <p className="text-sm text-muted-foreground">None</p> : claim.witnesses.map((w, i) => <RRow key={i} label={`Witness ${\1}`} value={`${w.name} – ${w.phone}`} />)}
+                    <RSection title="Witnesses">
+                      {claim.witnesses.length === 0 ? <p className="text-sm text-muted-foreground">None</p> : claim.witnesses.map((w, i) => <RRow key={i} label={`Witness ${i + 1}`} value={`${w.name} – ${w.phone}`} />)}
                     </RSection>
                     {(claim.weatherCondition || claim.roadCondition || claim.blameDescription) && (
                       <RSection title="Conditions & Liability">
