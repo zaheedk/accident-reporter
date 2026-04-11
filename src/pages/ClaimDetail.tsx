@@ -399,25 +399,25 @@ export default function ClaimDetail() {
             {/* ── Section 1: Incident & Vehicle ── */}
             <Section title="Incident & Vehicle" icon={<Car className="w-4 h-4 text-primary" />}>
               <SubHeading>Incident Details</SubHeading>
-              <Row label=Date & time value={`${claim.incidentDate} at ${claim.incidentTime}`} />
-              <Row label=Location value={claim.incidentLocation} />
-              <Row label=Vehicle usage value={claim.vehicleUsage} />
-              <Row label=Journey value={claim.journeyDetails} />
-              <Row label=Description value={claim.description} />
+              <Row label="Date & time" value={`${claim.incidentDate} at ${claim.incidentTime}`} />
+              <Row label="Location" value={claim.incidentLocation} />
+              <Row label="Vehicle usage" value={claim.vehicleUsage} />
+              <Row label="Journey" value={claim.journeyDetails} />
+              <Row label="Description" value={claim.description} />
 
               <SubHeading>Your Vehicle</SubHeading>
-              <Row label=Vehicle value={vehicle ? `${vehicle.year} ${vehicle.make} ${vehicle.model}` : '—'} />
-              <Row label=Rego value={vehicle?.regoNumber || '—'} />
-              <Row label=Speed before braking value={claim.speedBeforeBraking ? `${claim.speedBeforeBraking} km/h` : '—'} />
-              <Row label=Damage value={claim.damageDescription} />
-              <Row label=Towed value={claim.vehicleTowed ? `$Yes – ${claim.towingCompany}` : 'No'} />
+              <Row label="Vehicle" value={vehicle ? `${vehicle.year} ${vehicle.make} ${vehicle.model}` : '—'} />
+              <Row label="Rego" value={vehicle?.regoNumber || '—'} />
+              <Row label="Speed before braking" value={claim.speedBeforeBraking ? `${claim.speedBeforeBraking} km/h` : '—'} />
+              <Row label="Damage" value={claim.damageDescription} />
+              <Row label="Towed" value={claim.vehicleTowed ? `$Yes – ${claim.towingCompany}` : 'No'} />
 
               <SubHeading>Conditions</SubHeading>
-              <Row label=Weather value={weather} />
-              <Row label=Road value={road} />
-              <Row label=Substance use value={claim.driverConsumedSubstance ? claim.substanceDetails : 'No'} />
-              <Row label=Fault assessment value={claim.blameDescription} />
-              <Row label=Liability admitted value={claim.liabilityAdmitted ? claim.liabilityDetails : 'No'} />
+              <Row label="Weather" value={weather} />
+              <Row label="Road" value={road} />
+              <Row label="Substance use" value={claim.driverConsumedSubstance ? claim.substanceDetails : 'No'} />
+              <Row label="Fault assessment" value={claim.blameDescription} />
+              <Row label="Liability admitted" value={claim.liabilityAdmitted ? claim.liabilityDetails : 'No'} />
             </Section>
 
             {/* ── Section 2: Parties & Investigation ── */}
@@ -431,11 +431,11 @@ export default function ClaimDetail() {
                     const tpLicensePhotos = tpPhotos.filter(p => p.tpIndex === i && p.type === 'license');
                     return (
                       <div key={i} className="p-3 rounded-xl bg-background space-y-2">
-                        <Row label=Owner value={tp.ownerName} />
-                        <Row label=Vehicle value={`${tp.make} ${tp.model} – ${tp.regoNumber}`} />
-                        <Row label=Phone value={tp.phone} />
-                        <Row label=Insurer value={tp.insurer} />
-                        <Row label=Damage value={tp.damageDescription} />
+                        <Row label="Owner" value={tp.ownerName} />
+                        <Row label="Vehicle" value={`${tp.make} ${tp.model} – ${tp.regoNumber}`} />
+                        <Row label="Phone" value={tp.phone} />
+                        <Row label="Insurer" value={tp.insurer} />
+                        <Row label="Damage" value={tp.damageDescription} />
                         {tpDamagePhotos.length > 0 && (
                           <div className="space-y-1">
                             <span className="text-[11px] font-semibold text-muted-foreground">Damage photos</span>
@@ -488,8 +488,8 @@ export default function ClaimDetail() {
               )}
 
               <SubHeading>Police & Injuries</SubHeading>
-              <Row label=Police attended value={claim.policeAttended ? `$Yes – ${claim.policeOfficerDetails}` : 'No'} />
-              <Row label=Injuries value={claim.anyoneHurt ? claim.injuryDetails : 'No'} />
+              <Row label="Police attended" value={claim.policeAttended ? `$Yes – ${claim.policeOfficerDetails}` : 'No'} />
+              <Row label="Injuries" value={claim.anyoneHurt ? claim.injuryDetails : 'No'} />
             </Section>
 
             {/* ── Section 3: Insurance & Repairs ── */}
@@ -532,7 +532,7 @@ export default function ClaimDetail() {
               ) : (
                 <>
                   <SubHeading>Insurance</SubHeading>
-                  <Row label=Insurance value={claim.insuranceCompany} />
+                  <Row label="Insurance" value={claim.insuranceCompany} />
                   {insurerPhone && (
                     <div className="flex items-center justify-between gap-4 py-2 border-b border-border/60">
                       <span className="text-[13px] text-muted-foreground flex-shrink-0">Claims line</span>
@@ -543,9 +543,9 @@ export default function ClaimDetail() {
                   )}
 
                   <SubHeading>Repairer</SubHeading>
-                  <Row label=Name value={claim.repairerName} />
-                  <Row label=Phone value={claim.repairerPhone} />
-                  <Row label=Address value={claim.repairerAddress} />
+                  <Row label="Name" value={claim.repairerName} />
+                  <Row label="Phone" value={claim.repairerPhone} />
+                  <Row label="Address" value={claim.repairerAddress} />
                 </>
               )}
 
@@ -574,9 +574,9 @@ export default function ClaimDetail() {
         {/* Print-only: show report sections */}
         <div className="hidden print:block space-y-4">
           <Section title="Incident & Vehicle" icon={<Car className="w-4 h-4 text-primary" />}>
-            <Row label=Date & time value={`${claim.incidentDate} at ${claim.incidentTime}`} />
-            <Row label=Location value={claim.incidentLocation} />
-            <Row label=Description value={claim.description} />
+            <Row label="Date & time" value={`${claim.incidentDate} at ${claim.incidentTime}`} />
+            <Row label="Location" value={claim.incidentLocation} />
+            <Row label="Description" value={claim.description} />
           </Section>
         </div>
       </div>

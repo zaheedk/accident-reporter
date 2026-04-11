@@ -994,17 +994,17 @@ export default function ClaimWizard() {
                 {step === STEPS.length - 1 && (
                   <div className="space-y-3">
                     <RSection title=Incident>
-                      <RRow label=Date value={claim.incidentDate} />
-                      <RRow label=Time value={claim.incidentTime} />
-                      <RRow label=Location value={claim.incidentLocation} />
+                      <RRow label="Date" value={claim.incidentDate} />
+                      <RRow label="Time" value={claim.incidentTime} />
+                      <RRow label="Location" value={claim.incidentLocation} />
                       {claim.vehicleUsage && <RRow label="Usage" value={claim.vehicleUsage} />}
                       {claim.description && <RRow label="Description" value={claim.description} />}
                     </RSection>
                     <RSection title=Your vehicle>
-                      <RRow label=Vehicle value={selV ? `${selV.year} ${selV.make} ${selV.model}` : '—'} />
-                      <RRow label=Rego value={selV?.regoNumber || '—'} />
-                      <RRow label=Photos value={`${\1} uploaded`} />
-                      {claim.damageDescription && <RRow label=Damage value={claim.damageDescription} />}
+                      <RRow label="Vehicle" value={selV ? `${selV.year} ${selV.make} ${selV.model}` : '—'} />
+                      <RRow label="Rego" value={selV?.regoNumber || '—'} />
+                      <RRow label="Photos" value={`${\1} uploaded`} />
+                      {claim.damageDescription && <RRow label="Damage" value={claim.damageDescription} />}
                       {claim.speedBeforeBraking && <RRow label="Speed" value={`${claim.speedBeforeBraking} km/h`} />}
                     </RSection>
                     <RSection title=Third parties>

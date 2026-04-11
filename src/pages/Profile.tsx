@@ -162,7 +162,7 @@ export default function Profile() {
         <form onSubmit={handleSave} className="card-surface space-y-4">
           <div>
             <label className="form-label flex items-center gap-1.5"><User className="w-3.5 h-3.5" strokeWidth={1.5} />Full name</label>
-            <input className="form-input" placeholder=Your full name value={profile.display_name} onChange={e => setProfile(p => ({ ...p, display_name: e.target.value }))} />
+            <input className="form-input" placeholder="Your full name" value={profile.display_name} onChange={e => setProfile(p => ({ ...p, display_name: e.target.value }))} />
           </div>
 
           {isPhoneUser ? (
@@ -219,7 +219,7 @@ export default function Profile() {
           </div>
           <div>
             <label className="form-label flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5" strokeWidth={1.5} />Address</label>
-            <textarea className="form-input min-h-[80px] resize-none" placeholder=Your home or postal address value={profile.address} onChange={e => setProfile(p => ({ ...p, address: e.target.value }))} />
+            <textarea className="form-input min-h-[80px] resize-none" placeholder="Your home or postal address" value={profile.address} onChange={e => setProfile(p => ({ ...p, address: e.target.value }))} />
           </div>
           <div className="border-t border-border/50 pt-4 mt-2">
             <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Driver License</p>
@@ -380,7 +380,7 @@ export default function Profile() {
             <AlertDialogDescription className="space-y-3">
               <span className="block">This will permanently delete your account and all associated data including vehicles, claims, and profile information. This action cannot be undone.</span>
               <span className="block text-sm font-medium text-foreground">Type DELETE to confirm:</span>
-              <Input value={deleteConfirmText} onChange={e => setDeleteConfirmText(e.target.value)} placeholder=Type DELETE className="mt-1" />
+              <Input value={deleteConfirmText} onChange={e => setDeleteConfirmText(e.target.value)} placeholder="Type DELETE" className="mt-1" />
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

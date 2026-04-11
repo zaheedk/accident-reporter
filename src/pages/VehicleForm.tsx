@@ -232,11 +232,11 @@ export default function VehicleForm() {
         <div className="card-surface space-y-3">
           <Toggle active={form.financeArrangement} onToggle={() => update('financeArrangement', !form.financeArrangement)} label=Subject to finance arrangement />
           {form.financeArrangement && (
-            <div className="pl-14"><label className="form-label">Finance details</label><input className="form-input" placeholder=Finance company and details value={form.financeDetails} onChange={e => update('financeDetails', e.target.value)} /></div>
+            <div className="pl-14"><label className="form-label">Finance details</label><input className="form-input" placeholder="Finance company and details" value={form.financeDetails} onChange={e => update('financeDetails', e.target.value)} /></div>
           )}
           <Toggle active={form.modified} onToggle={() => update('modified', !form.modified)} label=Modified from standard specs />
           {form.modified && (
-            <div className="pl-14"><label className="form-label">Modification details</label><input className="form-input" placeholder=Describe modifications value={form.modificationDetails} onChange={e => update('modificationDetails', e.target.value)} /></div>
+            <div className="pl-14"><label className="form-label">Modification details</label><input className="form-input" placeholder="Describe modifications" value={form.modificationDetails} onChange={e => update('modificationDetails', e.target.value)} /></div>
           )}
         </div>
 
