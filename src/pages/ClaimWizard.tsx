@@ -222,14 +222,30 @@ export default function ClaimWizard() {
     if (submitting) return;
     setSubmitting(true);
     await saveClaim({ ...claim, status: 'saved' as const, updatedAt: new Date().toISOString() });
-    if (user?.email) {
+    // Resolve email: for phone users, use verified profile email
+    let recipientEmail = user?.email || '';
+    const isPhoneUser = recipientEmail.endsWith('@savo.phone.local');
+    if (isPhoneUser) {
+      const { data: profileData } = await supabase.from('profiles')
+        .select('email, email_verified')
+        .eq('user_id', user!.id)
+        .single();
+      if (profileData?.email && profileData.email_verified) {
+        recipientEmail = profileData.email;
+      } else {
+        recipientEmail = ''; // No verified email, skip sending
+      }
+    }
+
+    if (recipientEmail) {
       const vehicle = vehicles.find(v => v.id === claim.vehicleId);
       supabase.functions.invoke('send-email', {
         body: {
           type: 'claim_submitted',
-          to: user.email,
+          to: recipientEmail,
           data: {
             claimId: claim.id || '',
+            userId: user!.id,
             date: claim.incidentDate,
             time: claim.incidentTime,
             location: claim.incidentLocation,

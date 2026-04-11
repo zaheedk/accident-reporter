@@ -79,9 +79,29 @@ export default function Profile() {
     if (isPhoneUser) {
       updateData.email = profile.email;
     }
+    // Check if email was added/changed (for phone users) to auto-send verification
+    const emailChanged = isPhoneUser && profile.email && profile.email.includes('@') && !profile.email_verified;
+    
     const { error } = await supabase.from('profiles').update(updateData as any).eq('user_id', user.id);
     setSaving(false);
-    if (error) { toast.error('Failed to save profile'); } else { toast.success('Profile updated'); }
+    if (error) { toast.error('Failed to save profile'); return; }
+    
+    toast.success('Profile updated');
+    
+    // Auto-send verification email if phone user just added/changed their email
+    if (emailChanged) {
+      try {
+        const { data, error: verifyErr } = await supabase.functions.invoke('verify-email', {
+          body: { email: profile.email },
+        });
+        if (verifyErr) throw new Error(verifyErr.message);
+        if (data?.error) throw new Error(data.error);
+        toast.success('Verification email sent to ' + profile.email);
+      } catch (err: any) {
+        console.error('Auto-verification email failed:', err);
+        toast.info('Save successful. Click Verify to send a verification email.');
+      }
+    }
   };
 
   const handleSendVerification = async () => {
