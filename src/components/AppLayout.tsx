@@ -3,8 +3,6 @@ import { LayoutDashboard, Car, FileText, Plus, Wrench, Truck, Info, HelpCircle, 
 import NotificationBell from '@/components/NotificationBell';
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { useTranslation } from 'react-i18next';
-import LanguageSwitcher from '@/components/LanguageSwitcher';
 import { supabase } from '@/integrations/supabase/client';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
@@ -12,7 +10,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
   const { user, signOut } = useAuth();
-  const { t } = useTranslation();
   const [profile, setProfile] = useState<{ display_name: string | null; avatar_url: string | null } | null>(null);
 
   useEffect(() => {
@@ -25,11 +22,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     .split(/[\s@]/).filter(Boolean).slice(0, 2).map(s => s[0].toUpperCase()).join('');
 
   const authedNavItems = [
-    { to: '/dashboard', icon: LayoutDashboard, label: t('nav.dashboard') },
-    { to: '/vehicles', icon: Car, label: t('nav.vehicles') },
-    { to: '/claims', icon: FileText, label: t('nav.claims') },
+    { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
+    { to: '/vehicles', icon: Car, label: 'Vehicles' },
+    { to: '/claims', icon: FileText, label: 'Incidents' },
     { to: '/documents', icon: FolderOpen, label: 'Documents' },
-    { to: '/panel-shops', icon: Wrench, label: t('nav.shops') },
+    { to: '/panel-shops', icon: Wrench, label: 'Shops' },
   ];
 
   const publicNavItems = [
@@ -42,13 +39,13 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const navItems = user ? authedNavItems : publicNavItems;
 
   const contentLinks = [
-    { to: '/dashboard', icon: LayoutDashboard, label: t('nav.dashboard') },
-    { to: '/panel-shops', icon: Wrench, label: t('nav.shops') },
-    { to: '/tow-companies', icon: Truck, label: t('nav.towCompanies') },
-    { to: '/how-it-works', icon: BookOpen, label: t('nav.howItWorks') },
+    { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
+    { to: '/panel-shops', icon: Wrench, label: 'Shops' },
+    { to: '/tow-companies', icon: Truck, label: 'Tow Trucks' },
+    { to: '/how-it-works', icon: BookOpen, label: 'How It Works' },
     { to: '/blog', icon: Newspaper, label: 'Blog' },
-    { to: '/faq', icon: HelpCircle, label: t('nav.faqHelp') },
-    { to: '/about', icon: Info, label: t('nav.aboutContact') },
+    { to: '/faq', icon: HelpCircle, label: 'FAQ & Help' },
+    { to: '/about', icon: Info, label: 'About & Contact' },
   ];
 
   const logoLink = user ? '/dashboard' : '/';
@@ -65,7 +62,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               <NotificationBell />
               <Link to="/claims/new" className="h-8 px-3.5 text-xs rounded-lg bg-primary text-primary-foreground font-semibold inline-flex items-center gap-1.5 transition-all active:scale-[0.98]" style={{ boxShadow: '0 2px 8px hsla(213, 52%, 24%, 0.3)' }}>
                 <Plus className="w-3.5 h-3.5" />
-                {t('nav.newReport')}
+                New report
               </Link>
             </>
           )}
@@ -107,21 +104,19 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                   <AvatarFallback className="bg-primary/15 text-primary text-[10px] font-semibold">{initials}</AvatarFallback>
                 </Avatar>
                 <span className="flex flex-col leading-tight">
-                  <span>{t('nav.profile')}</span>
+                  <span>Profile</span>
                   {profile?.display_name && <span className="text-xs text-muted-foreground font-normal">{profile.display_name}</span>}
                 </span>
               </Link>
             </>
           )}
-          <div className="border-t border-border/50 my-2" />
-          <LanguageSwitcher />
           {user ? (
             <>
               <div className="border-t border-border/50 my-2" />
               <button onClick={() => { setMenuOpen(false); signOut(); }}
                 className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors text-destructive hover:bg-destructive/10 w-full text-left">
                 <LogOut className="w-4 h-4" />
-                {t('common.signOut')}
+                Sign out
               </button>
             </>
           ) : (

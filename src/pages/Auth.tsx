@@ -4,15 +4,12 @@ import { Mail, Lock, User, Loader2, LogIn, Camera, MapPin, Users, FileText, Phon
 import { supabase } from '@/integrations/supabase/client';
 
 import { useAuth } from '@/contexts/AuthContext';
-import { useTranslation } from 'react-i18next';
-import LanguageSwitcher from '@/components/LanguageSwitcher';
 import PhoneAuth from '@/components/PhoneAuth';
 
 const SITE_URL = import.meta.env.PROD ? 'https://savo.co.nz' : window.location.origin;
 
 export default function Auth() {
   const { session, loading } = useAuth();
-  const { t } = useTranslation();
   const [mode, setMode] = useState<'login' | 'signup' | 'forgot'>('login');
   const [authMethod, setAuthMethod] = useState<'email' | 'phone'>('email');
   const [email, setEmail] = useState('');
@@ -38,7 +35,6 @@ export default function Auth() {
           options: { data: { full_name: name }, emailRedirectTo: SITE_URL },
         });
         if (error) throw error;
-        // Supabase returns a user with empty identities when the email already exists
         if (data.user && data.user.identities && data.user.identities.length === 0) {
           setError('An account with this email already exists. Please sign in instead.');
           setSubmitting(false);
@@ -89,29 +85,22 @@ export default function Auth() {
 
   return (
     <div className="min-h-screen flex flex-col lg:flex-row">
-      {/* Dark hero section */}
       <div className="px-6 pt-6 pb-6 lg:pt-10 lg:pb-10 relative overflow-hidden lg:w-1/2 lg:min-h-screen lg:flex lg:items-center lg:justify-center" style={{ background: 'linear-gradient(160deg, hsl(220 30% 10%), hsl(213 52% 18%), hsl(220 25% 14%))' }}>
-        {/* Back to Home - hidden on mobile */}
         <Link to="/" className="hidden lg:inline-flex absolute top-5 left-5 z-20 items-center gap-1.5 text-sm text-slate-400 hover:text-slate-200 transition-colors">
           <ArrowLeft className="w-4 h-4" />
           Home
         </Link>
-        {/* Subtle grid/line decoration */}
         <div className="absolute inset-0 opacity-[0.04]" style={{
           backgroundImage: `linear-gradient(hsl(210 50% 60% / 0.4) 1px, transparent 1px), linear-gradient(90deg, hsl(210 50% 60% / 0.4) 1px, transparent 1px)`,
           backgroundSize: '60px 60px',
         }} />
-        {/* Glow accent */}
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[500px] h-[500px] rounded-full opacity-[0.08]" style={{ background: 'radial-gradient(circle, hsl(213 60% 50%), transparent 70%)' }} />
         <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[hsl(220,30%,10%)] to-transparent lg:hidden" />
 
         <div className="relative z-10 text-center lg:max-w-md">
-          {/* Logo - smaller on mobile */}
           <div className="flex items-center mb-4 lg:mb-10 justify-center">
             <img src="/savo-logo.svg" alt="SAVO" className="h-16 lg:h-28" />
           </div>
-
-          {/* Headline - compact on mobile */}
           <h1 className="text-[26px] lg:text-[34px] leading-[1.08] tracking-tight mb-2 lg:mb-4" style={{ textWrap: 'balance' as any }}>
             <span className="font-semibold text-slate-100" style={{ fontFamily: "'Playfair Display', serif" }}>
               Capture the scene.
@@ -121,19 +110,14 @@ export default function Auth() {
               Protect your claim.
             </span>
           </h1>
-
-          {/* Subtitle - hidden on mobile */}
           <p className="hidden lg:block text-[15px] leading-relaxed text-slate-400 max-w-xs mx-auto lg:max-w-sm">
             SAVO helps you record accident data instantly — photos, GPS, witness info, and reports — so your claim is airtight from minute one.
           </p>
-
         </div>
       </div>
 
-      {/* Form section */}
       <div className="flex-1 px-6 pt-6 pb-6 lg:pt-8 lg:pb-8 -mt-3 rounded-t-3xl relative z-10 lg:mt-0 lg:rounded-none lg:flex lg:items-center lg:justify-center" style={{ background: 'hsl(220 20% 97%)', boxShadow: '0 -4px 24px rgba(0,0,0,0.08)' }}>
         <div className="max-w-sm mx-auto">
-          {/* Secure portal badge */}
           <div className="hidden lg:flex items-center gap-2 mb-4">
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-primary/8 text-primary border border-primary/15">
               <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
@@ -154,7 +138,6 @@ export default function Auth() {
             {mode === 'forgot' ? "Enter your email and we'll send you a reset link." : mode === 'login' ? 'Access your incidents, claims, and reports in one place.' : 'Create your free account to get started.'}
           </p>
 
-          {/* OAuth buttons - side by side */}
           <button onClick={() => handleOAuth()}
             className="w-full h-12 px-4 bg-white border border-border/80 rounded-xl text-sm font-semibold text-foreground transition-all hover:bg-slate-50 hover:border-border active:scale-[0.98] inline-flex items-center justify-center gap-2.5 shadow-sm mb-5">
             <svg className="w-[18px] h-[18px] flex-shrink-0" viewBox="0 0 24 24">
@@ -172,7 +155,6 @@ export default function Auth() {
             <div className="flex-1 h-px bg-border/60" />
           </div>
 
-          {/* Email / Phone toggle */}
           <div className="flex rounded-xl bg-muted/60 p-1 mb-5 border border-border/30">
             <button
               onClick={() => { setAuthMethod('email'); setError(''); }}
@@ -279,7 +261,6 @@ export default function Auth() {
             </>
           )}
 
-          {/* Feature chips - hidden on mobile to save space */}
           <div className="hidden lg:flex flex-wrap items-center justify-center gap-2 mt-6">
             {features.map(({ icon: Icon, label }) => (
               <span key={label} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-white text-muted-foreground border border-border/50 shadow-sm">
@@ -289,22 +270,18 @@ export default function Auth() {
             ))}
           </div>
 
-          <div className="hidden lg:block mt-5">
-            <LanguageSwitcher />
-          </div>
-
           <div className="hidden lg:flex items-center justify-center gap-3 mt-4 text-xs text-muted-foreground flex-wrap">
-            <a href="/panel-shops" className="hover:text-foreground transition-colors">{t('nav.shops')}</a>
+            <a href="/panel-shops" className="hover:text-foreground transition-colors">Shops</a>
             <span>·</span>
-            <a href="/tow-companies" className="hover:text-foreground transition-colors">{t('nav.towCompanies')}</a>
+            <a href="/tow-companies" className="hover:text-foreground transition-colors">Tow Trucks</a>
             <span>·</span>
-            <a href="/about" className="hover:text-foreground transition-colors">{t('auth.about')}</a>
+            <a href="/about" className="hover:text-foreground transition-colors">About</a>
             <span>·</span>
-            <a href="/how-it-works" className="hover:text-foreground transition-colors">{t('nav.howItWorks')}</a>
+            <a href="/how-it-works" className="hover:text-foreground transition-colors">How It Works</a>
             <span>·</span>
-            <a href="/faq" className="hover:text-foreground transition-colors">{t('auth.faq')}</a>
+            <a href="/faq" className="hover:text-foreground transition-colors">FAQ</a>
             <span>·</span>
-            <a href="/legal" className="hover:text-foreground transition-colors">{t('nav.termsPrivacy')}</a>
+            <a href="/legal" className="hover:text-foreground transition-colors">Terms & Privacy</a>
           </div>
         </div>
       </div>
