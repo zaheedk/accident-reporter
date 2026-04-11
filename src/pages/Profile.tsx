@@ -53,7 +53,7 @@ export default function Profile() {
 
   useEffect(() => {
     if (!user) return;
-    supabase.from(')profiles').select('display_name, phone_number, address, avatar_url, email, email_verified, license_number, license_expiry')
+    supabase.from('profiles').select('display_name, phone_number, address, avatar_url, email, email_verified, license_number, license_expiry')
       .eq('user_id', user.id).single().then(({ data }) => {
         if (data) {
           setProfile({
