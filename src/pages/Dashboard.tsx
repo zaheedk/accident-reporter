@@ -8,7 +8,7 @@ import AppLayout from '@/components/AppLayout';
 import { Vehicle, ClaimReport } from '@/types';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { supabase } from '@/integrations/supabase/client';
-import { useTranslation } from 'react-i18next';
+
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { formatDistanceToNow } from 'date-fns';
 import { toast } from 'sonner';
@@ -16,7 +16,7 @@ import { motion } from 'framer-motion';
 
 export default function Dashboard() {
   const { user, signOut, isAdmin } = useAuth();
-  const { t } = useTranslation();
+  
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [claims, setClaims] = useState<ClaimReport[]>([]);
   const [avatarUrl, setAvatarUrl] = useState('');
