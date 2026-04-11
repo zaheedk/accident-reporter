@@ -47,7 +47,7 @@ export default function ClaimMessages({ claimId, insurerEmail, insurerName }: Cl
   async function loadMessages() {
     const { data, error } = await supabase
       .from('claim_messages')
-      .select('*'
+      .select('*')
       .eq('claim_id', claimId)
       .order('created_at', { ascending: false });
     if (!error && data) setMessages(data);

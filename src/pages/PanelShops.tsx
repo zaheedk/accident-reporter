@@ -35,7 +35,7 @@ export default function PanelShops() {
   const { data: shops = [], isLoading } = useQuery({
     queryKey: ['panel-shops'],
     queryFn: async () => {
-      const { data, error } = await supabase.from('panel_shops').select('*'.gte('google_rating', 4.5).order('google_rating', { ascending: false });
+      const { data, error } = await supabase.from('panel_shops').select('*').gte('google_rating', 4.5).order('google_rating', { ascending: false });
       if (error) throw error;
       return data as PanelShop[];
     },
