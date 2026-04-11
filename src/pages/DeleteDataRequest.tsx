@@ -78,7 +78,7 @@ export default function DeleteDataRequest() {
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-3">
           <button
-            onClick={() => navigate(-1))}
+            onClick={() => navigate(-1)}
             className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground w-fit"
           >
             <ArrowLeft className="w-4 h-4" /> Back
