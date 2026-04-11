@@ -132,7 +132,7 @@ export default function TowCompanies() {
         )}
 
         <p className="text-[10px] text-muted-foreground text-center pt-2">
-          Showing {displayed.length} of {afterNearby.length} {`${\1} companies found`}
+          Showing {displayed.length} of {afterNearby.length} {`${afterNearby.length} companies found`}
         </p>
       </div>
     </AppLayout>

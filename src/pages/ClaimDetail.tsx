@@ -140,8 +140,8 @@ export default function ClaimDetail() {
   if (!claim) return <AppLayout><div className="text-center py-20"><p className="text-sm text-muted-foreground">Report not found.</p></div></AppLayout>;
 
   const vehicle = vehicles.find(v => v.id === claim.vehicleId);
-  const weather = claim.weatherCondition ? \1 : '—';
-  const road = claim.roadCondition ? \1 : '—';
+  const weather = claim.weatherCondition ? claim.weatherCondition.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : '—';
+  const road = claim.roadCondition ? claim.roadCondition.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : '—';
 
   const startEditInsurance = () => {
     setEditInsurance(claim.insuranceCompany);
@@ -483,7 +483,7 @@ export default function ClaimDetail() {
               {claim.witnesses.length > 0 && (
                 <>
                   <SubHeading>Witnesses</SubHeading>
-                  {claim.witnesses.map((w, i) => <Row key={i} label={`Witness ${\1}`} value={`${w.name} – ${w.phone}${w.isPassenger ? ` ($Passenger)` : ''}`} />)}
+                  {claim.witnesses.map((w, i) => <Row key={i} label={`Witness ${i + 1}`} value={`${w.name} – ${w.phone}${w.isPassenger ? ` (Passenger)` : ''}`} />)}
                 </>
               )}
 

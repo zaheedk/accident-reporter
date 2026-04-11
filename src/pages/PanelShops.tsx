@@ -184,7 +184,7 @@ export default function PanelShops() {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete panel shop?</AlertDialogTitle>
-            <AlertDialogDescription dangerouslySetInnerHTML={{ __html: `Are you sure you want to remove <strong>${\1}</strong>? This cannot be undone.` }} />
+            <AlertDialogDescription dangerouslySetInnerHTML={{ __html: `Are you sure you want to remove <strong>${shopToDelete?.name}</strong>? This cannot be undone.` }} />
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>

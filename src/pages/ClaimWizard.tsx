@@ -585,7 +585,7 @@ export default function ClaimWizard() {
                                 {claim.thirdParties.map((tp, i) => (
                                   <div key={i} className="p-4 rounded-xl bg-background space-y-3">
                                     <div className="flex items-center justify-between">
-                                      <span className="text-xs font-semibold text-muted-foreground">{`Vehicle ${\1}`}</span>
+                                      <span className="text-xs font-semibold text-muted-foreground">{`Vehicle ${i + 1}`}</span>
                                       <button onClick={() => rmTP(i)} className="text-xs text-destructive hover:underline font-medium">Remove</button>
                                     </div>
                                     <div><label className="form-label">Rego no.</label><input className="form-input tabular-nums text-base font-bold" placeholder="e.g. ABC123" value={tp.regoNumber} onChange={e => updTP(i, 'regoNumber', e.target.value.toUpperCase())} /></div>
@@ -630,7 +630,7 @@ export default function ClaimWizard() {
                                 {claim.witnesses.map((w, i) => (
                                   <div key={i} className="p-4 rounded-xl bg-background space-y-3">
                                     <div className="flex items-center justify-between">
-                                      <span className="text-xs font-semibold text-muted-foreground">{`Witness ${\1}`}</span>
+                                      <span className="text-xs font-semibold text-muted-foreground">{`Witness ${i + 1}`}</span>
                                       <button onClick={() => rmW(i)} className="text-xs text-destructive hover:underline font-medium">Remove</button>
                                     </div>
                                     <div className="grid grid-cols-2 gap-3">
@@ -835,7 +835,7 @@ export default function ClaimWizard() {
                       {claim.thirdParties.map((tp, i) => (
                         <div key={i} className="p-4 rounded-xl bg-background space-y-3">
                           <div className="flex items-center justify-between">
-                            <span className="text-xs font-semibold text-muted-foreground">{`Vehicle ${\1}`}</span>
+                            <span className="text-xs font-semibold text-muted-foreground">{`Vehicle ${i + 1}`}</span>
                             <button onClick={() => rmTP(i)} className="text-xs text-destructive hover:underline font-medium">Remove</button>
                           </div>
                           <div><label className="form-label">Rego no.</label><input className="form-input tabular-nums text-base font-bold" placeholder="e.g. ABC123" value={tp.regoNumber} onChange={e => updTP(i, 'regoNumber', e.target.value.toUpperCase())} /></div>
@@ -886,7 +886,7 @@ export default function ClaimWizard() {
                       {claim.witnesses.map((w, i) => (
                         <div key={i} className="p-4 rounded-xl bg-background space-y-3">
                           <div className="flex items-center justify-between">
-                            <span className="text-xs font-semibold text-muted-foreground">{`Witness ${\1}`}</span>
+                            <span className="text-xs font-semibold text-muted-foreground">{`Witness ${i + 1}`}</span>
                             <button onClick={() => rmW(i)} className="text-xs text-destructive hover:underline font-medium">Remove</button>
                           </div>
                           <div className="grid grid-cols-2 gap-3">
@@ -1003,7 +1003,7 @@ export default function ClaimWizard() {
                     <RSection title=Your vehicle>
                       <RRow label="Vehicle" value={selV ? `${selV.year} ${selV.make} ${selV.model}` : '—'} />
                       <RRow label="Rego" value={selV?.regoNumber || '—'} />
-                      <RRow label="Photos" value={`${\1} uploaded`} />
+                      <RRow label="Photos" value={`${photos.length} uploaded`} />
                       {claim.damageDescription && <RRow label="Damage" value={claim.damageDescription} />}
                       {claim.speedBeforeBraking && <RRow label="Speed" value={`${claim.speedBeforeBraking} km/h`} />}
                     </RSection>
@@ -1023,7 +1023,7 @@ export default function ClaimWizard() {
                       </RSection>
                     )}
                     <RSection title=Witnesses>
-                      {claim.witnesses.length === 0 ? <p className="text-sm text-muted-foreground">None</p> : claim.witnesses.map((w, i) => <RRow key={i} label={`Witness ${\1}`} value={`${w.name} – ${w.phone}`} />)}
+                      {claim.witnesses.length === 0 ? <p className="text-sm text-muted-foreground">None</p> : claim.witnesses.map((w, i) => <RRow key={i} label={`Witness ${i + 1}`} value={`${w.name} – ${w.phone}`} />)}
                     </RSection>
                     {(claim.weatherCondition || claim.roadCondition || claim.blameDescription) && (
                       <RSection title="Conditions & Liability">
