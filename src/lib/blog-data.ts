@@ -1062,6 +1062,468 @@ SAVO's structured incident reports make it easy to:
 
 *If you've been in an accident that wasn't your fault, don't go without a car. Document everything with SAVO and explore your courtesy car options immediately.*
     `
+  },
+  {
+    slug: "roadside-assistance-nz-what-to-know",
+    title: "Roadside Assistance in New Zealand: What Every Driver Should Know",
+    metaDescription: "Everything NZ drivers need to know about roadside assistance — what's covered, how to call for help, and how it connects to your insurance claim.",
+    excerpt: "Stranded on the side of the road? Understanding roadside assistance options in New Zealand can save you time, money, and stress after a breakdown or accident.",
+    date: "2026-04-04",
+    readTime: "6 min read",
+    heroImage: roadsideAssistanceHero,
+    content: `
+## When You're Stuck on the Side of the Road
+
+Breaking down or being involved in an accident on a New Zealand road is stressful enough without worrying about what to do next. Roadside assistance is one of the most underused benefits many NZ drivers already have access to — and understanding your options before you need them can make all the difference.
+
+## Types of Roadside Assistance in NZ
+
+### Through Your Insurer
+
+Many comprehensive car insurance policies in New Zealand include roadside assistance as a standard benefit or optional add-on. Check with your provider — you may already be covered for:
+
+- **Towing** to the nearest approved repairer
+- **Flat battery** jump-starts
+- **Flat tyre** changes (using your spare)
+- **Lockouts** — if you've locked your keys in the car
+- **Emergency fuel** delivery
+
+### AA Roadservice
+
+The New Zealand Automobile Association (AA) is the country's largest roadside assistance provider. AA Membership includes:
+
+- 24/7 breakdown assistance
+- Towing to the nearest repairer
+- Battery, tyre, and lockout help
+- Coverage across New Zealand
+
+### Pay-As-You-Go
+
+If you don't have insurance-included assistance or AA membership, you can still call a tow truck directly — but expect to pay between $150–$400 depending on distance and time of day.
+
+## What to Do When You Break Down
+
+1. **Move safely off the road** if possible — use the shoulder or a safe pull-off area
+2. **Turn on hazard lights** immediately
+3. **Stay in your vehicle** if you're on a motorway or busy road
+4. **Call for assistance** — your insurer, AA, or a local tow company
+5. **Note your exact location** — road name, nearest landmark, or use Google Maps to share a pin
+
+## How Breakdowns Connect to Insurance Claims
+
+If your vehicle breaks down due to an accident, your response at the scene still matters for your insurance claim:
+
+- **Document the scene** before the vehicle is towed
+- **Take photos** of damage, road conditions, and your vehicle's position
+- **Get the tow company's details** — name, phone, and where the vehicle is being taken
+- **Notify your insurer** as soon as possible
+
+## Choosing a Tow Company After an Accident
+
+When your vehicle needs towing after an accident:
+
+- Ask your insurer if they have preferred tow operators
+- Confirm where the vehicle will be stored
+- Get a receipt for any towing charges
+- Know that your insurer may reimburse towing costs if included in your policy
+
+## Key Takeaways
+
+1. Check if your insurance already includes roadside assistance
+2. Keep your insurer's claims number and AA membership details in your phone
+3. Always document the scene before your vehicle is towed
+4. Store tow company details with your claim information using SAVO
+
+*Don't wait until you're stranded. Check your roadside assistance coverage today and save the key numbers in your phone.*
+    `
+  },
+  {
+    slug: "renewing-car-insurance-nz-tips",
+    title: "5 Smart Tips for Renewing Your Car Insurance in New Zealand",
+    metaDescription: "Renewing your NZ car insurance? These 5 tips help you save money, avoid coverage gaps, and make sure your policy fits your needs.",
+    excerpt: "Car insurance renewal time is your best opportunity to review your coverage, compare prices, and potentially save hundreds. Here's how NZ drivers can make the most of it.",
+    date: "2026-04-06",
+    readTime: "5 min read",
+    heroImage: insuranceRenewalHero,
+    content: `
+## Make Renewal Season Work for You
+
+Most New Zealand drivers simply auto-renew their car insurance without a second thought. But renewal time is actually the best opportunity to review your coverage, adjust your policy, and potentially save money. Here are five smart strategies.
+
+## Tip 1: Don't Auto-Renew Without Checking
+
+Loyalty doesn't always pay when it comes to insurance. Premiums can creep up year after year without any change in your circumstances. Before your policy renews:
+
+- **Compare quotes** from at least three providers
+- **Check what's changed** in your coverage terms
+- **Look at your excess** — has it increased?
+- **Review your sum insured** — does it still reflect your vehicle's value?
+
+Popular NZ insurers to compare include AA Insurance, Tower, AMI, State, and Vero.
+
+## Tip 2: Update Your Vehicle Details
+
+Your premium is based on the information your insurer holds. Make sure they have accurate details about:
+
+- **Annual kilometres driven** — if you're driving less (e.g., working from home), you may qualify for a lower premium
+- **Where you park overnight** — garage vs street parking affects risk
+- **Vehicle modifications** — any changes since your last renewal must be declared
+- **Additional drivers** — add or remove drivers as needed
+
+## Tip 3: Adjust Your Excess Strategically
+
+Your excess is the amount you pay towards each claim. Choosing a higher voluntary excess reduces your premium, but make sure you can afford to pay it if you need to claim.
+
+**Rule of thumb:** Set your excess at the highest amount you could comfortably pay out of pocket. For many NZ drivers, this is between $500 and $1,000.
+
+## Tip 4: Bundle for Discounts
+
+Many NZ insurers offer multi-policy discounts if you hold more than one policy with them:
+
+- **Home and contents** + car insurance
+- **Multiple vehicles** on one policy
+- **Life or health** insurance bundles
+
+Ask your insurer what discounts are available — even a 10% multi-policy discount can save you $100+ per year.
+
+## Tip 5: Keep Your Claims History Clean
+
+Your claims history directly affects your premium. To keep costs down:
+
+- **Avoid claiming for minor damage** that's close to your excess amount
+- **Drive defensively** and maintain your vehicle
+- **Use SAVO to document incidents thoroughly** — better documentation leads to smoother claims and fewer disputes
+
+## When to Switch Insurers
+
+Consider switching if:
+- Your premium has increased significantly without explanation
+- You've had poor claims service
+- Another provider offers better coverage for a similar price
+- Your circumstances have changed (new vehicle, different address)
+
+## Renewal Checklist
+
+Before you renew, make sure:
+- ☑ Vehicle details are accurate
+- ☑ Sum insured matches current market value
+- ☑ You've compared at least 2-3 quotes
+- ☑ Your excess is set at a comfortable level
+- ☑ All drivers are listed on the policy
+- ☑ You've asked about available discounts
+
+*Store your insurance policy details in SAVO so they're always at your fingertips — especially when you need them most.*
+    `
+  },
+  {
+    slug: "right-of-way-rules-nz-intersections",
+    title: "Right of Way Rules at NZ Intersections: Avoid Accidents and Disputes",
+    metaDescription: "Confused about right of way at New Zealand intersections? This guide explains the rules, common mistakes, and how they affect insurance claims.",
+    excerpt: "Intersection accidents are among the most common in New Zealand. Understanding right of way rules can prevent collisions and protect your insurance claim if one occurs.",
+    date: "2026-04-08",
+    readTime: "7 min read",
+    heroImage: rightOfWayHero,
+    content: `
+## Intersection Accidents: NZ's Most Common Collision Type
+
+Intersection crashes account for a significant proportion of all vehicle accidents in New Zealand. Many of these collisions stem from confusion about right of way rules — and that confusion can also complicate insurance claims.
+
+## The Basic Give Way Rules
+
+New Zealand's give way rules were updated in 2012 and apply at all uncontrolled intersections (those without traffic lights or signs):
+
+### Rule 1: Give Way to Your Right
+
+At an uncontrolled intersection where two vehicles approach from different roads, you must give way to vehicles on your right. This is the most fundamental rule and the one most commonly misunderstood.
+
+### Rule 2: Turning Traffic Gives Way
+
+If you're turning, you must give way to vehicles that are not turning. This applies whether you're turning left or right:
+
+- **Turning left** — Give way to vehicles coming from your right
+- **Turning right** — Give way to all oncoming traffic going straight or turning left
+
+### Rule 3: Left Turn vs Right Turn
+
+When two vehicles are facing each other at an intersection and both are turning, the vehicle turning right must give way to the vehicle turning left. This was the rule that changed in 2012 — previously, the left-turner gave way.
+
+## Controlled Intersections
+
+At traffic lights and stop/give way signs:
+
+- **Red light** — Stop completely. Proceeding through a red light makes you automatically at fault
+- **Stop sign** — Come to a complete stop, then give way to all other traffic
+- **Give way sign** — Slow down and give way to all other traffic
+- **Green arrow** — You have right of way in the direction of the arrow
+
+## Roundabouts
+
+New Zealand roundabouts follow a simple rule: **give way to vehicles already on the roundabout** (traffic from your right). Common mistakes include:
+
+- Not indicating when exiting the roundabout
+- Entering too fast without checking for traffic
+- Using the wrong lane for your intended exit
+
+## How Right of Way Affects Insurance Claims
+
+When an intersection accident occurs, insurers determine fault based largely on who had right of way:
+
+- **Clear right of way violation** — The driver who failed to give way is typically found at fault
+- **Disputed right of way** — Both parties may claim they had right of way, making documentation critical
+- **Shared fault** — In some cases, both drivers may be partially at fault
+
+### Protecting Your Claim
+
+If you're involved in an intersection accident:
+
+1. **Document the intersection** — Photograph signs, lights, lane markings, and sight lines
+2. **Note which direction each vehicle was travelling** — North, south, turning left, etc.
+3. **Record traffic light status** — If applicable, note what colour the lights were
+4. **Get witnesses** — Intersection accidents often have witnesses who can confirm right of way
+5. **Don't admit fault** — Let the insurer determine liability based on the evidence
+
+## Common Intersection Mistakes That Lead to Claims
+
+1. **Rolling through stop signs** — Even a brief stop is not enough if you don't check properly
+2. **Misjudging gaps** — Turning across oncoming traffic without enough space
+3. **Distracted driving** — Not noticing give way signs or lights
+4. **Following too closely** — The vehicle ahead stops at a give way and you rear-end them
+5. **Assumption of right of way** — Assuming the other driver will stop
+
+## Key Takeaways
+
+- Know the give way rules — they haven't changed since 2012
+- Document intersection details thoroughly if an accident occurs
+- Witnesses are especially valuable for intersection disputes
+- Use SAVO to record all the details your insurer needs
+
+*Intersection accidents happen fast but their consequences last. Document everything with SAVO and let the evidence speak for itself.*
+    `
+  },
+  {
+    slug: "car-insurance-guide-young-drivers-nz",
+    title: "Car Insurance for Young Drivers in New Zealand: A Complete Guide",
+    metaDescription: "Young driver in NZ? Learn how car insurance works for under-25s, how to reduce premiums, and what to do if you're in an accident.",
+    excerpt: "Car insurance for young drivers in New Zealand can be expensive. Learn how premiums work, ways to reduce costs, and essential tips for new drivers on NZ roads.",
+    date: "2026-04-09",
+    readTime: "6 min read",
+    heroImage: youngDriverHero,
+    content: `
+## Why Insurance Costs More for Young Drivers
+
+If you're under 25 in New Zealand, you've probably noticed that car insurance premiums are significantly higher than for older drivers. This isn't personal — it's based on statistics that show younger drivers are more likely to be involved in accidents.
+
+### What Drives Higher Premiums
+
+Insurers consider several risk factors:
+
+- **Age** — Drivers under 25 statistically have more accidents
+- **Experience** — Less time on the road means less experience handling hazards
+- **Vehicle type** — Young drivers often choose cars with higher performance
+- **Claims history** — New drivers have no claims-free record to earn discounts
+
+## Types of Cover for Young Drivers
+
+### Comprehensive
+
+The most expensive option but provides the best protection:
+- Covers damage to your car and others
+- Includes theft and fire
+- Often comes with an **age excess** (extra $200–$500 on top of standard excess)
+
+### Third Party, Fire and Theft
+
+A popular middle-ground for young drivers:
+- Covers damage you cause to other people's property
+- Covers theft and fire of your vehicle
+- Does NOT cover damage to your own car in an accident
+- Significantly cheaper than comprehensive
+
+### Third Party Only
+
+The most affordable option:
+- Covers damage to other people's property only
+- No cover for your own vehicle
+- Best for very low-value cars
+
+## How to Reduce Your Premium
+
+### 1. Choose Your Vehicle Wisely
+
+Insurers rate vehicles by risk group. Choosing a lower-risk vehicle saves money:
+- **Avoid:** Sports cars, turbocharged engines, modified vehicles
+- **Choose:** Smaller engine sizes, common makes with cheap parts, good safety ratings
+
+### 2. Increase Your Excess
+
+A higher voluntary excess lowers your premium. Just make sure you can afford to pay it if you need to claim.
+
+### 3. Add an Experienced Named Driver
+
+Adding a parent or older driver as a named driver (not the main driver) can sometimes reduce your premium.
+
+### 4. Complete a Defensive Driving Course
+
+Some NZ insurers offer discounts for drivers who have completed an approved defensive driving course.
+
+### 5. Build a Claims-Free History
+
+Every year without a claim helps build your no-claims bonus, which can significantly reduce future premiums.
+
+### 6. Install Security Features
+
+Immobilisers, alarms, and GPS tracking devices can qualify you for security discounts.
+
+## What Young Drivers Should Know About Claims
+
+If you're involved in an accident as a young driver:
+
+1. **Stay calm** — Panicking leads to poor decisions
+2. **Don't leave the scene** — This is a legal requirement
+3. **Document everything** — Photos, details, witnesses
+4. **Call your parents or a trusted adult** — They can help guide you through the process
+5. **Don't admit fault** — Be polite and factual, but let insurers determine liability
+6. **Report to your insurer quickly** — Within 24 hours is best
+
+## The Age Excess Explained
+
+Most NZ insurers apply an **age excess** for drivers under 25. This is an additional excess on top of the standard and voluntary excess:
+
+- **Typical age excess:** $200–$500
+- **Applied when:** The driver at the time of the accident is under 25
+- **Combined example:** $400 standard excess + $300 age excess = $700 total
+
+Some policies waive the age excess if you're not at fault — check your policy wording.
+
+## Key Takeaways for Young NZ Drivers
+
+1. Shop around — premiums vary significantly between insurers
+2. Choose a sensible vehicle with a smaller engine
+3. Build your claims-free record from day one
+4. Use SAVO to document any incidents properly
+5. Understand your excess, including the age excess
+
+*Being a responsible driver starts with being prepared. Add your vehicle to SAVO today and know exactly what to do if the unexpected happens.*
+    `
+  },
+  {
+    slug: "how-to-talk-to-your-insurer-after-accident-nz",
+    title: "How to Talk to Your Insurer After a Car Accident in New Zealand",
+    metaDescription: "Learn what to say (and what not to say) when calling your insurer after a car accident in NZ. Tips for clear communication and faster claims.",
+    excerpt: "What you say to your insurer after an accident matters. Learn how to communicate effectively, what information to have ready, and common pitfalls to avoid.",
+    date: "2026-04-10",
+    readTime: "5 min read",
+    heroImage: talkingToInsurerHero,
+    content: `
+## The Call That Shapes Your Claim
+
+The first conversation with your insurer after an accident sets the tone for your entire claim. What you say, how you say it, and what information you provide can speed things up or slow them down. Here's how to handle it like a pro.
+
+## Before You Call: Prepare
+
+Don't call your insurer in a panic. Take 10 minutes to gather:
+
+- **Your policy number** — Check your insurance documents or app
+- **Incident details** — Date, time, and exact location
+- **Your description** — A clear, factual account of what happened
+- **Other party details** — Name, phone, vehicle registration, insurer
+- **Witness information** — Names and contact numbers
+- **Photos** — Have them accessible on your phone
+- **Police reference** — If police attended
+
+## What to Say
+
+### Be Factual, Not Emotional
+
+Stick to the facts of what happened:
+
+**Good:** "I was travelling north on Queen Street at approximately 50 km/h. The other vehicle pulled out from a side street on my left without stopping."
+
+**Avoid:** "This idiot just flew out of nowhere and smashed into me!"
+
+### Be Specific About Damage
+
+Describe the damage clearly:
+- Which panels, bumpers, or lights are affected
+- Whether the vehicle is driveable
+- If there's any mechanical damage (unusual noises, fluid leaks)
+
+### Be Honest
+
+Never exaggerate or minimise what happened. Insurers investigate claims, and inconsistencies can delay or even void your claim. If you're unsure about something, say so — "I'm not certain of their speed, but I estimate it was around 40 km/h."
+
+## What NOT to Say
+
+### Don't Admit Fault
+
+Even if you think you may have been at fault, don't say it:
+- "It was my fault" — Let the insurer determine liability
+- "I should have seen them" — This implies you weren't paying attention
+- "I wasn't looking" — This undermines your claim
+
+### Don't Speculate
+
+Stick to what you know:
+- Don't guess speeds if you're not sure
+- Don't assume what the other driver was doing
+- Don't diagnose damage you haven't inspected
+
+### Don't Agree to Anything on the Spot
+
+If the other party's insurer calls you:
+- You're not obligated to give a statement to them
+- Refer them to your own insurer
+- Don't agree to settle directly
+
+## The Information Your Insurer Will Ask For
+
+Be prepared to answer:
+
+1. **When and where** did the accident happen?
+2. **What were you doing?** — Direction, speed, lane position
+3. **What did the other vehicle do?** — Their actions leading to the collision
+4. **What damage occurred?** — To all vehicles and property
+5. **Were there any injuries?**
+6. **Did police attend?**
+7. **Are there witnesses?**
+8. **Where is the vehicle now?** — Driveable or towed?
+9. **Do you need a courtesy car?**
+10. **Have you chosen a repairer?**
+
+## After the Call
+
+### Follow Up in Writing
+
+After your phone call, consider sending a follow-up email summarising what was discussed. This creates a written record and ensures nothing was misunderstood.
+
+### Keep Records
+
+Save the following:
+- **Claim reference number** — You'll get this during or after the call
+- **Name of the person you spoke to**
+- **Date and time of the call**
+- **Summary of what was discussed**
+
+### Track Progress
+
+Don't assume things are happening. Follow up regularly:
+- Check if your claim has been assigned to an assessor
+- Ask about expected timelines
+- Confirm next steps
+
+## How SAVO Helps You Communicate With Your Insurer
+
+SAVO's structured incident report gives you all the information you need before you call:
+
+- Organised, factual description of the incident
+- All vehicle, driver, and witness details in one place
+- Photos attached to your report
+- Clear timeline of events
+
+When you call your insurer with a SAVO report in hand, you'll sound prepared, confident, and credible — which is exactly what leads to faster claim processing.
+
+*Create your incident report in SAVO before calling your insurer. You'll have every detail at your fingertips.*
+    `
   }
 ];
 

@@ -1,9 +1,33 @@
-import { Link } from 'react-router-dom';
+import { useState } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import { blogArticles } from '@/lib/blog-data';
 import { Calendar, Clock, ChevronRight } from 'lucide-react';
 import AppLayout from '@/components/AppLayout';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from '@/components/ui/pagination';
+
+const ARTICLES_PER_PAGE = 5;
 
 export default function Blog() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const currentPage = Math.max(1, Number(searchParams.get('page') || '1'));
+  const totalPages = Math.ceil(blogArticles.length / ARTICLES_PER_PAGE);
+  const safePage = Math.min(currentPage, totalPages);
+
+  const startIdx = (safePage - 1) * ARTICLES_PER_PAGE;
+  const pageArticles = blogArticles.slice(startIdx, startIdx + ARTICLES_PER_PAGE);
+
+  const goToPage = (page: number) => {
+    setSearchParams(page === 1 ? {} : { page: String(page) });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
     <AppLayout>
       <div className="max-w-2xl mx-auto px-4 py-6 pb-24">
@@ -15,7 +39,7 @@ export default function Blog() {
         </div>
 
         <div className="space-y-4">
-          {blogArticles.map((article) => (
+          {pageArticles.map((article) => (
             <Link
               key={article.slug}
               to={`/blog/${article.slug}`}
@@ -51,6 +75,40 @@ export default function Blog() {
             </Link>
           ))}
         </div>
+
+        {totalPages > 1 && (
+          <Pagination className="mt-8">
+            <PaginationContent>
+              {safePage > 1 && (
+                <PaginationItem>
+                  <PaginationPrevious
+                    onClick={() => goToPage(safePage - 1)}
+                    className="cursor-pointer"
+                  />
+                </PaginationItem>
+              )}
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                <PaginationItem key={page}>
+                  <PaginationLink
+                    isActive={page === safePage}
+                    onClick={() => goToPage(page)}
+                    className="cursor-pointer"
+                  >
+                    {page}
+                  </PaginationLink>
+                </PaginationItem>
+              ))}
+              {safePage < totalPages && (
+                <PaginationItem>
+                  <PaginationNext
+                    onClick={() => goToPage(safePage + 1)}
+                    className="cursor-pointer"
+                  />
+                </PaginationItem>
+              )}
+            </PaginationContent>
+          </Pagination>
+        )}
       </div>
     </AppLayout>
   );
