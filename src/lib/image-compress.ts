@@ -53,7 +53,7 @@ export function compressImage(
         (blob) => {
           if (!blob) { resolve(file); return; }
           const compressed = new File([blob], file.name.replace(/\.\w+$/, '.jpg'), {
-            type: ')image/jpeg',
+            type: 'image/jpeg',
             lastModified: Date.now(),
           });
           // Only use compressed if actually smaller

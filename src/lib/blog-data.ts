@@ -26,7 +26,7 @@ export const blogArticles: BlogArticle[] = [
     title: "Why Capturing Every Detail at an Accident Scene Matters in New Zealand",
     metaDescription: "Learn why documenting every detail at the accident scene is critical for fast insurance claim processing in New Zealand. Tips for NZ drivers.",
     heroImage: accidentDetailsHero,
-    excerpt: "The moments after a car accident are stressful, but what you document at the scene can make or break your insurance claim. Here')s why every detail counts.",
+    excerpt: "The moments after a car accident are stressful, but what you document at the scene can make or break your insurance claim. Here's why every detail counts.",
     date: "2026-04-01",
     readTime: "6 min read",
     content: `

@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 import heroScene from '@/assets/hero-scene.jpg';
 
 const stagger = { hidden: {}, visible: { transition: { staggerChildren: 0.1 } } };
-const fadeUp = { hidden: { opacity: 0, y: 24 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: ')easeOut' as const } } };
+const fadeUp = { hidden: { opacity: 0, y: 24 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' as const } } };
 
 export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);

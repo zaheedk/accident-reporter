@@ -10,7 +10,7 @@ const SITE_URL = import.meta.env.PROD ? 'https://savo.co.nz(' : window.location.
 
 export default function Auth() {
   const { session, loading } = useAuth();
-  const [mode, setMode] = useState<')login' | 'signup' | 'forgot'>('login');
+  const [mode, setMode] = useState<'login' | 'signup' | 'forgot'>('login');
   const [authMethod, setAuthMethod] = useState<'email' | 'phone'>('email');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
