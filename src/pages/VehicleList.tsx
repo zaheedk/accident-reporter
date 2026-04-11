@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
-import { Plus, Car, Trash2, ChevronRight, ArrowLeft, ArrowUpRight } from 'lucide-react';
+import { Plus, Car, Trash2, ChevronRight, ArrowLeft, ArrowUpRight, Phone } from 'lucide-react';
 import { getVehicles, deleteVehicle } from '@/lib/storage';
+import { supabase } from '@/integrations/supabase/client';
 import AppLayout from '@/components/AppLayout';
 import { Vehicle } from '@/types';
 import { motion } from 'framer-motion';
@@ -17,8 +18,19 @@ export default function VehicleList() {
   const { user } = useAuth();
   const [deleteTarget, setDeleteTarget] = useState<Vehicle | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [insurerPhones, setInsurerPhones] = useState<Record<string, string>>({});
 
-  useEffect(() => { if (user) getVehicles(user.id).then(setVehicles); }, [user]);
+  useEffect(() => {
+    if (!user) return;
+    getVehicles(user.id).then(setVehicles);
+    supabase.from('insurance_companies').select('name, phone').then(({ data }) => {
+      if (data) {
+        const map: Record<string, string> = {};
+        data.forEach((ic: any) => { if (ic.phone) map[ic.name] = ic.phone; });
+        setInsurerPhones(map);
+      }
+    });
+  }, [user]);
 
   const handleDelete = async () => {
     if (!deleteTarget) return;
@@ -93,6 +105,16 @@ export default function VehicleList() {
                       <div className="text-xs text-muted-foreground truncate mt-0.5">{v.year} {v.make} {v.model}</div>
                     </div>
                   </Link>
+                  {v.insuranceCompany && insurerPhones[v.insuranceCompany] && (
+                    <a
+                      href={`tel:${insurerPhones[v.insuranceCompany].replace(/\s/g, '')}`}
+                      onClick={(e) => e.stopPropagation()}
+                      className="flex items-center gap-1.5 mt-2 px-2.5 py-1.5 rounded-lg text-[11px] font-semibold text-white bg-primary whitespace-nowrap transition-transform hover:scale-105 active:scale-95 w-fit"
+                    >
+                      <Phone className="w-3 h-3" />
+                      Call insurer
+                    </a>
+                  )}
                   <button
                     onClick={(e) => { e.preventDefault(); e.stopPropagation(); setDeleteTarget(v); }}
                     className="absolute top-3 right-3 p-1.5 rounded-lg text-muted-foreground/20 hover:text-destructive hover:bg-destructive/5 transition-colors"
