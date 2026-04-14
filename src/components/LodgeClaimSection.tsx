@@ -3,6 +3,7 @@ import { ExternalLink, Phone, Copy, Check, FileText, Globe, PhoneCall } from 'lu
 import { ClaimReport, Vehicle } from '@/types';
 import { toast } from 'sonner';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import CallRecorder from '@/components/CallRecorder';
 
 interface InsurerInfo {
   phone: string;
