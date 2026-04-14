@@ -24,6 +24,11 @@ export type Database = {
           file_size: number
           id: string
           notes: string | null
+          recording_url: string | null
+          status: string
+          summary: string | null
+          transcript: string | null
+          twilio_call_sid: string | null
           user_id: string
         }
         Insert: {
@@ -35,6 +40,11 @@ export type Database = {
           file_size?: number
           id?: string
           notes?: string | null
+          recording_url?: string | null
+          status?: string
+          summary?: string | null
+          transcript?: string | null
+          twilio_call_sid?: string | null
           user_id: string
         }
         Update: {
@@ -46,6 +56,11 @@ export type Database = {
           file_size?: number
           id?: string
           notes?: string | null
+          recording_url?: string | null
+          status?: string
+          summary?: string | null
+          transcript?: string | null
+          twilio_call_sid?: string | null
           user_id?: string
         }
         Relationships: [

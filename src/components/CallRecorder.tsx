@@ -1,5 +1,5 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
-import { Mic, Square, Play, Pause, Trash2, Loader2, Check } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
+import { Mic, Square, Play, Pause, Trash2, Loader2, Phone, FileText, ChevronDown, ChevronUp } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
@@ -10,21 +10,27 @@ interface Recording {
   durationSeconds: number | null;
   createdAt: string;
   notes: string | null;
+  status: string;
+  transcript: string;
+  summary: string;
 }
 
 interface CallRecorderProps {
   claimId: string;
   compact?: boolean;
+  insurerPhone?: string;
+  userPhone?: string;
 }
 
-export default function CallRecorder({ claimId, compact = false }: CallRecorderProps) {
+export default function CallRecorder({ claimId, compact = false, insurerPhone, userPhone }: CallRecorderProps) {
   const [isRecording, setIsRecording] = useState(false);
-  const [isPaused, setIsPaused] = useState(false);
   const [elapsed, setElapsed] = useState(0);
   const [uploading, setUploading] = useState(false);
   const [recordings, setRecordings] = useState<Recording[]>([]);
   const [playingId, setPlayingId] = useState<string | null>(null);
   const [loadingRecordings, setLoadingRecordings] = useState(true);
+  const [calling, setCalling] = useState(false);
+  const [expandedTranscript, setExpandedTranscript] = useState<string | null>(null);
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
@@ -32,10 +38,15 @@ export default function CallRecorder({ claimId, compact = false }: CallRecorderP
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
 
-  // Load existing recordings
+  useEffect(() => { loadRecordings(); }, [claimId]);
+
+  // Poll for status changes on pending recordings
   useEffect(() => {
-    loadRecordings();
-  }, [claimId]);
+    const pending = recordings.some(r => ['calling', 'recording', 'transcribing'].includes(r.status));
+    if (!pending) return;
+    const interval = setInterval(loadRecordings, 5000);
+    return () => clearInterval(interval);
+  }, [recordings]);
 
   const loadRecordings = async () => {
     setLoadingRecordings(true);
@@ -48,16 +59,23 @@ export default function CallRecorder({ claimId, compact = false }: CallRecorderP
     if (data) {
       const recs = await Promise.all(
         data.map(async (r: any) => {
-          const { data: signedData } = await supabase.storage
-            .from('call-recordings')
-            .createSignedUrl(r.file_path, 3600);
+          let url = '';
+          if (r.file_path) {
+            const { data: signedData } = await supabase.storage
+              .from('call-recordings')
+              .createSignedUrl(r.file_path, 3600);
+            url = signedData?.signedUrl || '';
+          }
           return {
             id: r.id,
             fileName: r.file_name,
-            url: signedData?.signedUrl || '',
+            url,
             durationSeconds: r.duration_seconds,
             createdAt: r.created_at,
             notes: r.notes,
+            status: r.status || 'complete',
+            transcript: r.transcript || '',
+            summary: r.summary || '',
           };
         })
       );
@@ -66,16 +84,48 @@ export default function CallRecorder({ claimId, compact = false }: CallRecorderP
     setLoadingRecordings(false);
   };
 
+  // ── Twilio Bridged Call ──
+  const initiateBridgedCall = async () => {
+    if (!insurerPhone || !userPhone) {
+      toast.error('Phone numbers are required to initiate a bridged call.');
+      return;
+    }
+    setCalling(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error('Not authenticated');
+
+      const resp = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/initiate-call`,
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${session.access_token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ claimId, insurerPhone, userPhone }),
+        }
+      );
+      const result = await resp.json();
+      if (!resp.ok) throw new Error(result.error || 'Call failed');
+      toast.success('Call initiated — answer your phone to connect to the insurer.');
+      loadRecordings();
+    } catch (err: any) {
+      console.error('Bridged call error:', err);
+      toast.error(err.message || 'Failed to initiate call');
+    } finally {
+      setCalling(false);
+    }
+  };
+
+  // ── Mic Recording (fallback) ──
   const startRecording = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       streamRef.current = stream;
-
       const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
         ? 'audio/webm;codecs=opus'
-        : MediaRecorder.isTypeSupported('audio/mp4')
-        ? 'audio/mp4'
-        : 'audio/webm';
+        : MediaRecorder.isTypeSupported('audio/mp4') ? 'audio/mp4' : 'audio/webm';
 
       const mediaRecorder = new MediaRecorder(stream, { mimeType });
       mediaRecorderRef.current = mediaRecorder;
@@ -84,7 +134,6 @@ export default function CallRecorder({ claimId, compact = false }: CallRecorderP
       mediaRecorder.ondataavailable = (e) => {
         if (e.data.size > 0) chunksRef.current.push(e.data);
       };
-
       mediaRecorder.onstop = () => {
         const blob = new Blob(chunksRef.current, { type: mimeType });
         uploadRecording(blob, mimeType);
@@ -93,12 +142,10 @@ export default function CallRecorder({ claimId, compact = false }: CallRecorderP
 
       mediaRecorder.start(1000);
       setIsRecording(true);
-      setIsPaused(false);
       setElapsed(0);
       timerRef.current = setInterval(() => setElapsed(e => e + 1), 1000);
-    } catch (err) {
-      console.error('Microphone access denied', err);
-      toast.error('Microphone access is required to record calls. Please enable it in your device settings.');
+    } catch {
+      toast.error('Microphone access is required. Please enable it in your device settings.');
     }
   };
 
@@ -108,7 +155,6 @@ export default function CallRecorder({ claimId, compact = false }: CallRecorderP
     }
     if (timerRef.current) clearInterval(timerRef.current);
     setIsRecording(false);
-    setIsPaused(false);
   };
 
   const uploadRecording = async (blob: Blob, mimeType: string) => {
@@ -116,7 +162,6 @@ export default function CallRecorder({ claimId, compact = false }: CallRecorderP
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
-
       const ext = mimeType.includes('mp4') ? 'mp4' : 'webm';
       const ts = new Date().toISOString().replace(/[:.]/g, '-');
       const fileName = `call-${ts}.${ext}`;
@@ -134,6 +179,7 @@ export default function CallRecorder({ claimId, compact = false }: CallRecorderP
         file_name: fileName,
         file_size: blob.size,
         duration_seconds: elapsed,
+        status: 'complete',
       });
       if (dbErr) throw dbErr;
 
@@ -175,7 +221,6 @@ export default function CallRecorder({ claimId, compact = false }: CallRecorderP
     setPlayingId(rec.id);
   };
 
-  // Clean up on unmount
   useEffect(() => {
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
@@ -187,9 +232,31 @@ export default function CallRecorder({ claimId, compact = false }: CallRecorderP
   const formatTime = (s: number) =>
     `${Math.floor(s / 60).toString().padStart(2, '0')}:${(s % 60).toString().padStart(2, '0')}`;
 
+  const statusLabel = (status: string) => {
+    switch (status) {
+      case 'calling': return 'Calling…';
+      case 'recording': return 'In progress…';
+      case 'transcribing': return 'Transcribing…';
+      case 'failed': return 'Failed';
+      default: return null;
+    }
+  };
+
   return (
     <div className="space-y-3">
-      {/* Recording controls */}
+      {/* Bridged call button */}
+      {insurerPhone && userPhone && (
+        <button
+          onClick={initiateBridgedCall}
+          disabled={calling}
+          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary/10 text-primary text-sm font-semibold hover:bg-primary/20 transition-colors border border-primary/20 active:scale-[0.98] w-full"
+        >
+          {calling ? <Loader2 className="w-4 h-4 animate-spin" /> : <Phone className="w-4 h-4" />}
+          {calling ? 'Connecting…' : compact ? 'Call & Record' : 'Call Insurer (Recorded & Transcribed)'}
+        </button>
+      )}
+
+      {/* Manual mic recording controls */}
       <div className="flex items-center gap-3">
         {!isRecording ? (
           <button
@@ -198,7 +265,7 @@ export default function CallRecorder({ claimId, compact = false }: CallRecorderP
             className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-red-500/10 text-red-600 text-sm font-semibold hover:bg-red-500/20 transition-colors border border-red-500/20 active:scale-[0.98]"
           >
             <Mic className="w-4 h-4" />
-            {compact ? 'Record' : 'Record Conversation'}
+            {compact ? 'Record' : 'Record via Mic'}
           </button>
         ) : (
           <>
@@ -223,10 +290,9 @@ export default function CallRecorder({ claimId, compact = false }: CallRecorderP
         )}
       </div>
 
-      {/* Hint */}
       {isRecording && (
         <p className="text-xs text-muted-foreground leading-relaxed">
-          💡 Put your phone on speaker to capture both sides of the conversation. The recording uses your device microphone.
+          💡 Put your phone on speaker to capture both sides of the conversation.
         </p>
       )}
 
@@ -236,39 +302,88 @@ export default function CallRecorder({ claimId, compact = false }: CallRecorderP
           <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
             Saved Recordings ({recordings.length})
           </p>
-          {recordings.map(rec => (
-            <div
-              key={rec.id}
-              className="flex items-center gap-3 p-3 rounded-xl bg-background border border-border/50"
-            >
-              <button
-                onClick={() => togglePlayback(rec)}
-                className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0 hover:bg-primary/20 transition-colors"
-              >
-                {playingId === rec.id ? (
-                  <Pause className="w-4 h-4 text-primary" />
-                ) : (
-                  <Play className="w-4 h-4 text-primary ml-0.5" />
+          {recordings.map(rec => {
+            const label = statusLabel(rec.status);
+            const isProcessing = ['calling', 'recording', 'transcribing'].includes(rec.status);
+            return (
+              <div key={rec.id} className="rounded-xl bg-background border border-border/50 overflow-hidden">
+                <div className="flex items-center gap-3 p-3">
+                  {rec.url && !isProcessing ? (
+                    <button
+                      onClick={() => togglePlayback(rec)}
+                      className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0 hover:bg-primary/20 transition-colors"
+                    >
+                      {playingId === rec.id ? (
+                        <Pause className="w-4 h-4 text-primary" />
+                      ) : (
+                        <Play className="w-4 h-4 text-primary ml-0.5" />
+                      )}
+                    </button>
+                  ) : (
+                    <div className="w-9 h-9 rounded-lg bg-muted flex items-center justify-center flex-shrink-0">
+                      {isProcessing ? <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" /> : <Phone className="w-4 h-4 text-muted-foreground" />}
+                    </div>
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[13px] font-medium text-foreground truncate">{rec.fileName}</p>
+                    <p className="text-[11px] text-muted-foreground">
+                      {label && <span className="text-primary font-medium">{label} </span>}
+                      {rec.durationSeconds != null ? formatTime(rec.durationSeconds) : '—'} ·{' '}
+                      {new Date(rec.createdAt).toLocaleDateString('en-NZ', {
+                        day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit',
+                      })}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    {(rec.transcript || rec.summary) && (
+                      <button
+                        onClick={() => setExpandedTranscript(expandedTranscript === rec.id ? null : rec.id)}
+                        className="p-1.5 rounded-lg hover:bg-primary/10 text-muted-foreground hover:text-primary transition-colors"
+                        title="View transcript"
+                      >
+                        <FileText className="w-4 h-4" />
+                      </button>
+                    )}
+                    <button
+                      onClick={() => deleteRecording(rec)}
+                      className="p-1.5 rounded-lg hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"
+                      title="Delete recording"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Expanded transcript/summary */}
+                {expandedTranscript === rec.id && (rec.transcript || rec.summary) && (
+                  <div className="px-3 pb-3 pt-0 border-t border-border/40 space-y-2">
+                    {rec.summary && (
+                      <div className="mt-2">
+                        <p className="text-[11px] font-bold uppercase tracking-wider text-primary mb-1">Summary</p>
+                        <p className="text-xs text-foreground leading-relaxed whitespace-pre-wrap">{rec.summary}</p>
+                      </div>
+                    )}
+                    {rec.transcript && (
+                      <div>
+                        <button
+                          onClick={() => {
+                            const el = document.getElementById(`transcript-${rec.id}`);
+                            if (el) el.classList.toggle('hidden');
+                          }}
+                          className="flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors"
+                        >
+                          Full Transcript <ChevronDown className="w-3 h-3" />
+                        </button>
+                        <div id={`transcript-${rec.id}`} className="hidden mt-1 max-h-60 overflow-y-auto">
+                          <p className="text-xs text-muted-foreground leading-relaxed whitespace-pre-wrap">{rec.transcript}</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 )}
-              </button>
-              <div className="flex-1 min-w-0">
-                <p className="text-[13px] font-medium text-foreground truncate">{rec.fileName}</p>
-                <p className="text-[11px] text-muted-foreground">
-                  {rec.durationSeconds != null ? formatTime(rec.durationSeconds) : '—'} ·{' '}
-                  {new Date(rec.createdAt).toLocaleDateString('en-NZ', {
-                    day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit',
-                  })}
-                </p>
               </div>
-              <button
-                onClick={() => deleteRecording(rec)}
-                className="p-1.5 rounded-lg hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"
-                title="Delete recording"
-              >
-                <Trash2 className="w-4 h-4" />
-              </button>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>

@@ -45,6 +45,7 @@ export default function ClaimDetail() {
   const [claimNumber, setClaimNumber] = useState('');
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [userPhone, setUserPhone] = useState('');
 
   const handleDelete = async () => {
     if (!claim) return;
@@ -111,6 +112,13 @@ export default function ClaimDetail() {
         if (insurer?.email) setInsurerEmail(insurer.email);
         if (insurer?.claims_portal_url) setInsurerPortalUrl(insurer.claims_portal_url);
         if (insurer?.claims_method) setInsurerClaimsMethod(insurer.claims_method);
+      }
+
+      // Fetch user phone from profile
+      const { data: { user: currentUser } } = await supabase.auth.getUser();
+      if (currentUser) {
+        const { data: profile } = await supabase.from('profiles').select('phone_number').eq('user_id', currentUser.id).single();
+        if (profile?.phone_number) setUserPhone(profile.phone_number);
       }
       
       if (photosRes.data) {
@@ -580,7 +588,7 @@ export default function ClaimDetail() {
 
             {/* ── Section 5: Call Recordings ── */}
             <Section title="Call Recordings" icon={<Mic className="w-4 h-4 text-primary" />}>
-              <CallRecorder claimId={claim.id} />
+              <CallRecorder claimId={claim.id} insurerPhone={insurerPhone} userPhone={userPhone} />
             </Section>
 
           </div>
