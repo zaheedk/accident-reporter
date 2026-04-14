@@ -61,11 +61,11 @@ export default function ClaimList() {
         const { data: photoData } = await supabase.from('claim_photos').select('claim_id, file_path').in('claim_id', claimIds).order('created_at', { ascending: true });
         if (photoData && photoData.length > 0) {
           const photoMap: Record<string, string> = {};
-          photoData.forEach((p: any) => {
+          for (const p of photoData as any[]) {
             if (!photoMap[p.claim_id]) {
-              photoMap[p.claim_id] = getThumbnailUrl('claim-photos', p.file_path);
+              photoMap[p.claim_id] = (await getThumbnailUrl('claim-photos', p.file_path)) || '';
             }
-          });
+          }
           setClaimPhotos(photoMap);
         }
       }
