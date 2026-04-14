@@ -51,7 +51,7 @@ function emptyClaim(): ClaimReport {
 }
 
 type ClaimPhoto = {
-  id: string; file_path: string; file_name: string;
+  id: string; file_path: string; file_name: string; url?: string;
 };
 
 export default function ClaimWizard() {
@@ -183,7 +183,15 @@ export default function ClaimWizard() {
           setClaim(loaded);
         }
         if (claimNumData?.claim_number) setClaimNumber(claimNumData.claim_number);
-        if (photosData) setPhotos(photosData as ClaimPhoto[]);
+        if (photosData) {
+          const photosWithUrls = await Promise.all(
+            (photosData as ClaimPhoto[]).map(async (p) => {
+              const { data: urlData } = await supabase.storage.from('claim-photos').createSignedUrl(p.file_path, 3600);
+              return { ...p, url: urlData?.signedUrl || '' };
+            })
+          );
+          setPhotos(photosWithUrls);
+        }
         setLoadingClaim(false);
       };
       loadClaim();
@@ -318,7 +326,10 @@ export default function ClaimWizard() {
       const { data } = await supabase.from('claim_photos')
         .insert({ claim_id: claimId, user_id: user.id, file_path: path, file_name: file.name })
         .select('id, file_path, file_name').single();
-      if (data) setPhotos(prev => [...prev, data as ClaimPhoto]);
+      if (data) {
+        const { data: urlData } = await supabase.storage.from('claim-photos').createSignedUrl(path, 3600);
+        setPhotos(prev => [...prev, { ...data, url: urlData?.signedUrl || '' } as ClaimPhoto]);
+      }
     }
     setUploading(false);
     toast.success('Photos uploaded');
@@ -331,10 +342,7 @@ export default function ClaimWizard() {
     setPhotos(prev => prev.filter(p => p.id !== photo.id));
   };
 
-  const getPhotoUrl = async (filePath: string) => {
-    const { data, error } = await supabase.storage.from('claim-photos').createSignedUrl(filePath, 300);
-    return data?.signedUrl || '';
-  };
+  const getPhotoUrl = (photo: ClaimPhoto) => photo.url || '';
 
   const addTP = () => update('thirdParties', [...claim.thirdParties, { ...emptyTP }]);
   const updTP = (i: number, f: string, v: string) => { const u = [...claim.thirdParties]; (u[i] as any)[f] = v; update('thirdParties', u); };
