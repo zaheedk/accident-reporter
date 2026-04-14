@@ -15,9 +15,9 @@ interface DamagePhotoAnalyzerProps {
 export function DamagePhotoAnalyzer({ claimId, userId, currentDescription, onDescriptionGenerated, photos }: DamagePhotoAnalyzerProps) {
   const [analyzing, setAnalyzing] = useState(false);
 
-  const getPhotoUrl = (filePath: string) => {
-    const { data } = supabase.storage.from('claim-photos').getPublicUrl(filePath);
-    return data.publicUrl;
+  const getPhotoUrl = async (filePath: string) => {
+    const { data } = await supabase.storage.from('claim-photos').createSignedUrl(filePath, 300);
+    return data?.signedUrl || '';
   };
 
   const analyzePhotos = async () => {
@@ -29,7 +29,7 @@ export function DamagePhotoAnalyzer({ claimId, userId, currentDescription, onDes
     try {
       const descriptions: string[] = [];
       for (const photo of photos.slice(0, 4)) {
-        const url = getPhotoUrl(photo.file_path);
+        const url = await getPhotoUrl(photo.file_path);
         const { data, error } = await supabase.functions.invoke('analyze-photo', {
           body: { imageUrl: url, type: 'damage' },
         });
@@ -83,12 +83,14 @@ export function ThirdPartyPhotos({ tpIndex, claimId, userId, onRegoDetected, onL
         .select('*')
         .eq('claim_id', claimId)
         .eq('tp_index', tpIndex)
-        .then(({ data }) => {
+        .then(async ({ data }) => {
           if (data && data.length > 0) {
-            const mapped = data.map((p: any) => {
-              const { data: urlData } = supabase.storage.from('tp-photos').getPublicUrl(p.file_path);
-              return { id: p.id, type: p.type as TPPhoto['type'], url: urlData.publicUrl, path: p.file_path };
-            });
+            const mapped = await Promise.all(
+              data.map(async (p: any) => {
+                const { data: urlData } = await supabase.storage.from('tp-photos').createSignedUrl(p.file_path, 3600);
+                return { id: p.id, type: p.type as TPPhoto['type'], url: urlData?.signedUrl || '', path: p.file_path };
+              })
+            );
             setPhotos(mapped);
           }
           setLoaded(true);
@@ -96,9 +98,9 @@ export function ThirdPartyPhotos({ tpIndex, claimId, userId, onRegoDetected, onL
     }
   });
 
-  const getPhotoUrl = (filePath: string) => {
-    const { data } = supabase.storage.from('tp-photos').getPublicUrl(filePath);
-    return data.publicUrl;
+  const getSignedPhotoUrl = async (filePath: string) => {
+    const { data } = await supabase.storage.from('tp-photos').createSignedUrl(filePath, 300);
+    return data?.signedUrl || '';
   };
 
   const uploadAndAnalyze = async (rawFile: File, type: 'damage' | 'rego' | 'license') => {
@@ -114,7 +116,7 @@ export function ThirdPartyPhotos({ tpIndex, claimId, userId, onRegoDetected, onL
       const { error: uploadError } = await supabase.storage.from('tp-photos').upload(path, file);
       if (uploadError) throw uploadError;
 
-      const url = getPhotoUrl(path);
+      const signedUrl = await getSignedPhotoUrl(path);
 
       // Persist to database
       const { data: insertedRow, error: dbError } = await supabase.from('tp_photos').insert({
@@ -127,14 +129,14 @@ export function ThirdPartyPhotos({ tpIndex, claimId, userId, onRegoDetected, onL
       }).select().single();
       if (dbError) throw dbError;
 
-      const photoEntry: TPPhoto = { id: insertedRow.id, type, url, path };
+      const photoEntry: TPPhoto = { id: insertedRow.id, type, url: signedUrl, path };
       setPhotos(prev => [...prev, photoEntry]);
       setUploading(null);
 
       // Auto-analyze
       setAnalyzing(type);
       const { data, error } = await supabase.functions.invoke('analyze-photo', {
-        body: { imageUrl: url, type },
+        body: { imageUrl: signedUrl, type },
       });
       if (error) throw error;
 

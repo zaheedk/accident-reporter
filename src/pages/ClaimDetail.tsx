@@ -113,22 +113,28 @@ export default function ClaimDetail() {
       }
       
       if (photosRes.data) {
-        setPhotos(photosRes.data.map((p: any) => ({
-          id: p.id,
-          url: getMediumUrl('claim-photos', p.file_path),
-          fullUrl: getFullUrl('claim-photos', p.file_path),
-          fileName: p.file_name,
-        })));
+        const photosWithUrls = await Promise.all(
+          photosRes.data.map(async (p: any) => ({
+            id: p.id,
+            url: await getMediumUrl('claim-photos', p.file_path),
+            fullUrl: await getFullUrl('claim-photos', p.file_path),
+            fileName: p.file_name,
+          }))
+        );
+        setPhotos(photosWithUrls);
       }
       
       if (tpRes.data) {
-        setTpPhotos(tpRes.data.map((p: any) => ({
-          id: p.id,
-          url: getMediumUrl('tp-photos', p.file_path),
-          fullUrl: getFullUrl('tp-photos', p.file_path),
-          type: p.type,
-          tpIndex: p.tp_index,
-        })));
+        const tpWithUrls = await Promise.all(
+          tpRes.data.map(async (p: any) => ({
+            id: p.id,
+            url: await getMediumUrl('tp-photos', p.file_path),
+            fullUrl: await getFullUrl('tp-photos', p.file_path),
+            type: p.type,
+            tpIndex: p.tp_index,
+          }))
+        );
+        setTpPhotos(tpWithUrls);
       }
       
       if (insurersRes.data) setInsuranceCompanies(insurersRes.data);
