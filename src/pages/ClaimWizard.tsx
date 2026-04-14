@@ -331,9 +331,9 @@ export default function ClaimWizard() {
     setPhotos(prev => prev.filter(p => p.id !== photo.id));
   };
 
-  const getPhotoUrl = (filePath: string) => {
-    const { data } = supabase.storage.from('claim-photos').getPublicUrl(filePath);
-    return data.publicUrl;
+  const getPhotoUrl = async (filePath: string) => {
+    const { data, error } = await supabase.storage.from('claim-photos').createSignedUrl(filePath, 300);
+    return data?.signedUrl || '';
   };
 
   const addTP = () => update('thirdParties', [...claim.thirdParties, { ...emptyTP }]);
