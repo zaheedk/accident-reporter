@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Printer, Mail, X, Download, Share2, Phone, Pencil, Save, Loader2, Send, Car, Users, Wrench, Trash2, Video } from 'lucide-react';
+import { ArrowLeft, Printer, Mail, X, Download, Share2, Phone, Pencil, Save, Loader2, Send, Car, Users, Wrench, Trash2, Video, Mic } from 'lucide-react';
 import { getClaims, getVehicles, deleteClaim } from '@/lib/storage';
 import { supabase } from '@/integrations/supabase/client';
 import AppLayout from '@/components/AppLayout';
@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { getMediumUrl, getFullUrl } from '@/lib/image-url';
 import DashcamUploader from '@/components/DashcamUploader';
+import CallRecorder from '@/components/CallRecorder';
 import { useQueryClient } from '@tanstack/react-query';
 
 export default function ClaimDetail() {
@@ -575,6 +576,11 @@ export default function ClaimDetail() {
             {/* ── Section 4: Dashcam Footage ── */}
             <Section title="Dashcam Footage" icon={<Video className="w-4 h-4 text-primary" />}>
               <DashcamUploader claimId={claim.id} />
+            </Section>
+
+            {/* ── Section 5: Call Recordings ── */}
+            <Section title="Call Recordings" icon={<Mic className="w-4 h-4 text-primary" />}>
+              <CallRecorder claimId={claim.id} />
             </Section>
 
           </div>

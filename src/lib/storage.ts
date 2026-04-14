@@ -164,6 +164,16 @@ export async function deleteClaim(id: string): Promise<void> {
     await supabase.from('claim_messages').delete().eq('claim_id', id);
     await supabase.from('repair_requests').delete().eq('claim_id', id);
 
+    // Delete call recordings
+    const { data: callRecs } = await supabase
+      .from('call_recordings')
+      .select('file_path')
+      .eq('claim_id', id);
+    if (callRecs && callRecs.length > 0) {
+      await supabase.storage.from('call-recordings').remove(callRecs.map((r: any) => r.file_path));
+    }
+    await supabase.from('call_recordings').delete().eq('claim_id', id);
+
     const { error } = await supabase.from('claims').delete().eq('id', id);
     if (error) throw error;
   } catch (error) {

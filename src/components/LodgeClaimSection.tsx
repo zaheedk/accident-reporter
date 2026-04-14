@@ -3,6 +3,7 @@ import { ExternalLink, Phone, Copy, Check, FileText, Globe, PhoneCall } from 'lu
 import { ClaimReport, Vehicle } from '@/types';
 import { toast } from 'sonner';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import CallRecorder from '@/components/CallRecorder';
 
 interface InsurerInfo {
   phone: string;
@@ -143,6 +144,17 @@ export default function LodgeClaimSection({ claim, vehicle, insurer, claimNumber
               </a>
             )}
           </div>
+
+          {/* Call recorder */}
+          {insurer.phone && (
+            <div className="p-3 rounded-xl bg-muted/30 border border-border/40 space-y-2">
+              <p className="text-xs font-semibold text-muted-foreground">Record your call</p>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                Use speakerphone and tap record to capture your conversation with the insurer.
+              </p>
+              <CallRecorder claimId={claim.id} compact />
+            </div>
+          )}
 
           {/* How to lodge hint */}
           <div className="flex items-start gap-2 p-3 rounded-xl bg-primary/5 border border-primary/10">
