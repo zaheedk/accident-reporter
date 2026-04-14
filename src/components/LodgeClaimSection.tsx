@@ -47,7 +47,7 @@ function CopyField({ label, value }: { label: string; value: string }) {
   );
 }
 
-export default function LodgeClaimSection({ claim, vehicle, insurer, claimNumber }: LodgeClaimSectionProps) {
+export default function LodgeClaimSection({ claim, vehicle, insurer, claimNumber, userPhone }: LodgeClaimSectionProps) {
   const [allCopied, setAllCopied] = useState(false);
 
   const cheatSheetFields = [
@@ -151,9 +151,9 @@ export default function LodgeClaimSection({ claim, vehicle, insurer, claimNumber
             <div className="p-3 rounded-xl bg-muted/30 border border-border/40 space-y-2">
               <p className="text-xs font-semibold text-muted-foreground">Record your call</p>
               <p className="text-xs text-muted-foreground leading-relaxed">
-                Use speakerphone and tap record to capture your conversation with the insurer.
+                Tap "Call & Record" to have SAVO connect you to the insurer with automatic recording and transcription. Or use the mic to record manually on speakerphone.
               </p>
-              <CallRecorder claimId={claim.id} compact />
+              <CallRecorder claimId={claim.id} compact insurerPhone={insurer.phone} userPhone={userPhone} />
             </div>
           )}
 
