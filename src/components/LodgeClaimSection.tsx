@@ -17,6 +17,7 @@ interface LodgeClaimSectionProps {
   vehicle?: Vehicle;
   insurer: InsurerInfo;
   claimNumber: string;
+  userPhone?: string;
 }
 
 function CopyField({ label, value }: { label: string; value: string }) {
