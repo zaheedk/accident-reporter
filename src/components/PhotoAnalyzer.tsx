@@ -129,14 +129,14 @@ export function ThirdPartyPhotos({ tpIndex, claimId, userId, onRegoDetected, onL
       }).select().single();
       if (dbError) throw dbError;
 
-      const photoEntry: TPPhoto = { id: insertedRow.id, type, url, path };
+      const photoEntry: TPPhoto = { id: insertedRow.id, type, url: signedUrl, path };
       setPhotos(prev => [...prev, photoEntry]);
       setUploading(null);
 
       // Auto-analyze
       setAnalyzing(type);
       const { data, error } = await supabase.functions.invoke('analyze-photo', {
-        body: { imageUrl: url, type },
+        body: { imageUrl: signedUrl, type },
       });
       if (error) throw error;
 
