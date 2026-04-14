@@ -14,6 +14,50 @@ export type Database = {
   }
   public: {
     Tables: {
+      call_recordings: {
+        Row: {
+          claim_id: string
+          created_at: string
+          duration_seconds: number | null
+          file_name: string
+          file_path: string
+          file_size: number
+          id: string
+          notes: string | null
+          user_id: string
+        }
+        Insert: {
+          claim_id: string
+          created_at?: string
+          duration_seconds?: number | null
+          file_name?: string
+          file_path: string
+          file_size?: number
+          id?: string
+          notes?: string | null
+          user_id: string
+        }
+        Update: {
+          claim_id?: string
+          created_at?: string
+          duration_seconds?: number | null
+          file_name?: string
+          file_path?: string
+          file_size?: number
+          id?: string
+          notes?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "call_recordings_claim_id_fkey"
+            columns: ["claim_id"]
+            isOneToOne: false
+            referencedRelation: "claims"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       claim_messages: {
         Row: {
           body: string
