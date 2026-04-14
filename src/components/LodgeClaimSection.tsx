@@ -145,6 +145,17 @@ export default function LodgeClaimSection({ claim, vehicle, insurer, claimNumber
             )}
           </div>
 
+          {/* Call recorder */}
+          {insurer.phone && (
+            <div className="p-3 rounded-xl bg-muted/30 border border-border/40 space-y-2">
+              <p className="text-xs font-semibold text-muted-foreground">Record your call</p>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                Use speakerphone and tap record to capture your conversation with the insurer.
+              </p>
+              <CallRecorder claimId={claim.id} compact />
+            </div>
+          )}
+
           {/* How to lodge hint */}
           <div className="flex items-start gap-2 p-3 rounded-xl bg-primary/5 border border-primary/10">
             <MethodIcon className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
