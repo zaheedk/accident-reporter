@@ -94,7 +94,7 @@ export default function Dashboard() {
           toast.error('Location access denied. Please enable location permissions to see nearby tow companies.', { duration: 6000 });
         }
       });
-    }
+    });
   };
 
   const sortByDistance = (list: any[]) => {
