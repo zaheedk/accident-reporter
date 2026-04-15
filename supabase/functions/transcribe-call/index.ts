@@ -34,7 +34,14 @@ serve(async (req) => {
 
     // Convert audio to base64 for the AI model
     const arrayBuffer = await audioData.arrayBuffer();
-    const base64Audio = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
+    // Chunk the conversion to avoid stack overflow on large files
+    const bytes = new Uint8Array(arrayBuffer);
+    const chunkSize = 8192;
+    let binary = "";
+    for (let i = 0; i < bytes.length; i += chunkSize) {
+      binary += String.fromCharCode(...bytes.subarray(i, i + chunkSize));
+    }
+    const base64Audio = btoa(binary);
 
     // Use Gemini for audio transcription (it supports audio natively)
     const transcribeResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
