@@ -1,0 +1,1 @@
+UPDATE insurance_companies SET phone = '+64275353037' WHERE id = '5871eea8-4ee9-4901-8c7c-a0284667bd2b';
