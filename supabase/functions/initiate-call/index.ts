@@ -29,12 +29,25 @@ serve(async (req) => {
     const { data: { user }, error: authErr } = await anonClient.auth.getUser(authHeader.replace("Bearer ", ""));
     if (authErr || !user) throw new Error("Not authenticated");
 
-    const { claimId, insurerPhone, userPhone } = await req.json();
-    if (!claimId || !insurerPhone || !userPhone) {
+    const { claimId, insurerPhone: rawInsurerPhone, userPhone: rawUserPhone } = await req.json();
+    if (!claimId || !rawInsurerPhone || !rawUserPhone) {
       return new Response(JSON.stringify({ error: "claimId, insurerPhone, and userPhone are required" }), {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+
+    // Normalize NZ phone numbers to E.164
+    const normalizeNZPhone = (phone: string): string => {
+      const digits = phone.replace(/[\s\-()]/g, "");
+      if (digits.startsWith("+")) return digits;
+      if (digits.startsWith("00")) return "+" + digits.slice(2);
+      if (digits.startsWith("0")) return "+64" + digits.slice(1);
+      return "+64" + digits;
+    };
+
+    const insurerPhone = normalizeNZPhone(rawInsurerPhone);
+    const userPhone = normalizeNZPhone(rawUserPhone);
+    console.log(`Normalized phones — user: ${userPhone}, insurer: ${insurerPhone}`);
 
     // The callback URL for Twilio to hit when the call connects / ends
     const statusCallbackUrl = `${SUPABASE_URL}/functions/v1/call-status-webhook`;
