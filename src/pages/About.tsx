@@ -64,7 +64,7 @@ export default function About() {
               <Mail className="w-4 h-4 text-primary" /> support@savo.co.nz
             </div>
             <div className="flex items-center gap-3 text-sm text-muted-foreground">
-              <Phone className="w-4 h-4 text-primary" /> 0800 SAVO (7286)
+              <Phone className="w-4 h-4 text-primary" /> +64 27 535 3037
             </div>
             <div className="flex items-center gap-3 text-sm text-muted-foreground">
               <MapPin className="w-4 h-4 text-primary" /> Auckland, New Zealand
