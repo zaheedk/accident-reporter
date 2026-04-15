@@ -30,8 +30,51 @@ serve(async (req) => {
     if (authErr || !user) throw new Error("Not authenticated");
 
     const { claimId, insurerPhone: rawInsurerPhone, userPhone: rawUserPhone } = await req.json();
-    if (!claimId || !rawInsurerPhone || !rawUserPhone) {
-      return new Response(JSON.stringify({ error: "claimId, insurerPhone, and userPhone are required" }), {
+    if (!claimId || !rawUserPhone) {
+      return new Response(JSON.stringify({ error: "claimId and userPhone are required" }), {
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const { data: claim, error: claimErr } = await supabase
+      .from("claims")
+      .select("insurance_company")
+      .eq("id", claimId)
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+    if (claimErr) {
+      throw new Error(`Failed to load claim: ${claimErr.message}`);
+    }
+
+    if (!claim) {
+      return new Response(JSON.stringify({ error: "Claim not found" }), {
+        status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    let resolvedInsurerPhone = rawInsurerPhone;
+
+    if (claim.insurance_company) {
+      const { data: insurer, error: insurerErr } = await supabase
+        .from("insurance_companies")
+        .select("phone")
+        .eq("name", claim.insurance_company)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (insurerErr) {
+        throw new Error(`Failed to resolve insurer phone: ${insurerErr.message}`);
+      }
+
+      if (insurer?.phone) {
+        resolvedInsurerPhone = insurer.phone;
+      }
+    }
+
+    if (!resolvedInsurerPhone) {
+      return new Response(JSON.stringify({ error: "No insurer phone number found for this claim" }), {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
@@ -45,9 +88,9 @@ serve(async (req) => {
       return "+64" + digits;
     };
 
-    const insurerPhone = normalizeNZPhone(rawInsurerPhone);
+    const insurerPhone = normalizeNZPhone(resolvedInsurerPhone);
     const userPhone = normalizeNZPhone(rawUserPhone);
-    console.log(`Normalized phones — user: ${userPhone}, insurer: ${insurerPhone}`);
+    console.log(`Resolved insurer phone from claim ${claimId} (${claim.insurance_company}) — user: ${userPhone}, insurer: ${insurerPhone}`);
 
     // The callback URL for Twilio to hit when the call connects / ends
     const statusCallbackUrl = `${SUPABASE_URL}/functions/v1/call-status-webhook`;
