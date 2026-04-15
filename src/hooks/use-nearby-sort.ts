@@ -24,28 +24,18 @@ export function useNearbySort() {
       setNearbyActive(true);
       return;
     }
-    if (!navigator.geolocation) {
-      toast.error('Geolocation is not supported by your browser');
-      return;
-    }
     setLocating(true);
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        setUserLat(pos.coords.latitude);
-        setUserLng(pos.coords.longitude);
+    import('@/lib/geolocation').then(({ getCurrentPosition }) => {
+      getCurrentPosition({ timeout: 10000 }).then(({ latitude, longitude }) => {
+        setUserLat(latitude);
+        setUserLng(longitude);
         setNearbyActive(true);
         setLocating(false);
-      },
-      (err) => {
+      }).catch((err: Error) => {
         setLocating(false);
-        if (err.code === 1) {
-          toast.error('Location access denied. Please enable location permissions.');
-        } else {
-          toast.error('Could not determine your location.');
-        }
-      },
-      { timeout: 10000 }
-    );
+        toast.error(err.message || 'Could not determine your location.');
+      });
+    });
   }, [nearbyActive, userLat]);
 
   const getDistance = useCallback((lat: number | null, lng: number | null): number | null => {

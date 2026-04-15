@@ -77,24 +77,24 @@ export default function Dashboard() {
     supabase.from('tow_companies').select('*').then(({ data }) => {
       if (data) setTowCompanies(data);
     });
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(async (pos) => {
-        setUserLat(pos.coords.latitude);
-        setUserLng(pos.coords.longitude);
+    import('@/lib/geolocation').then(({ getCurrentPosition }) => {
+      getCurrentPosition({ timeout: 10000 }).then(async ({ latitude, longitude }) => {
+        setUserLat(latitude);
+        setUserLng(longitude);
         try {
-          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&format=json`);
+          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`);
           const geo = await res.json();
           const city = geo.address?.city || geo.address?.town || geo.address?.suburb || '';
           const region = geo.address?.state || geo.address?.region || '';
           setUserCity(city);
           setUserRegion(region);
         } catch { /* ignore */ }
-      }, (err) => {
-        if (err.code === 1) {
-          toast.error('Location access denied. Please enable location permissions in your browser settings to see nearby tow companies.', { duration: 6000 });
+      }).catch((err: Error) => {
+        if (err.message.includes('denied')) {
+          toast.error('Location access denied. Please enable location permissions to see nearby tow companies.', { duration: 6000 });
         }
       });
-    }
+    });
   };
 
   const sortByDistance = (list: any[]) => {

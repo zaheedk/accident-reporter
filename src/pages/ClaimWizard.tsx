@@ -79,16 +79,10 @@ export default function ClaimWizard() {
   const [visitedSections, setVisitedSections] = useState<Set<string>>(new Set());
 
   const detectLocation = useCallback(async () => {
-    if (!navigator.geolocation) {
-      toast.error('Geolocation is not supported by your browser');
-      return;
-    }
     setDetectingLocation(true);
     try {
-      const position = await new Promise<GeolocationPosition>((resolve, reject) =>
-        navigator.geolocation.getCurrentPosition(resolve, reject, { enableHighAccuracy: true, timeout: 10000 })
-      );
-      const { latitude, longitude } = position.coords;
+      const { getCurrentPosition } = await import('@/lib/geolocation');
+      const { latitude, longitude } = await getCurrentPosition({ enableHighAccuracy: true, timeout: 10000 });
       const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json&addressdetails=1`);
       const data = await res.json();
       if (data?.display_name) {
