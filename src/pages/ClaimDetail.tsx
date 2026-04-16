@@ -530,6 +530,10 @@ export default function ClaimDetail() {
                     </select>
                   </div>
                   <div>
+                    <label className="text-[11px] font-medium text-muted-foreground mb-1 block">Your claim number</label>
+                    <input className="form-input text-sm" value={editUserClaimNumber} onChange={e => setEditUserClaimNumber(e.target.value)} placeholder="e.g. CLM-1234 or your insurer's reference" />
+                  </div>
+                  <div>
                     <label className="text-[11px] font-medium text-muted-foreground mb-1 block">Repairer Name</label>
                     <select className="form-input text-sm" value={editRepairerName} onChange={e => {
                       const shop = panelShops.find(s => s.name === e.target.value);
@@ -559,6 +563,7 @@ export default function ClaimDetail() {
                 <>
                   <SubHeading>Insurance</SubHeading>
                   <Row label="Insurance" value={claim.insuranceCompany} />
+                  {claim.userClaimNumber && <Row label="Your claim number" value={claim.userClaimNumber} />}
                   {insurerPhone && (
                     <div className="flex items-center justify-between gap-4 py-2 border-b border-border/60">
                       <span className="text-[13px] text-muted-foreground flex-shrink-0">Claims line</span>
