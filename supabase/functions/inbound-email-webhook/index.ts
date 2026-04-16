@@ -8,9 +8,7 @@ const corsHeaders = {
 
 function extractString(value: unknown): string {
   if (!value) return '';
-
   if (typeof value === 'string') return value.trim();
-
   if (Array.isArray(value)) {
     for (const item of value) {
       const extracted = extractString(item);
@@ -18,22 +16,16 @@ function extractString(value: unknown): string {
     }
     return '';
   }
-
   if (typeof value === 'object') {
     const obj = value as Record<string, unknown>;
-
-    // Common address object shapes
     if (typeof obj.address === 'string' && obj.address.trim()) return obj.address.trim();
     if (typeof obj.email === 'string' && obj.email.trim()) return obj.email.trim();
-
-    // Common content object shapes
     const candidates = [obj.text, obj.plain_text, obj.plain, obj.body, obj.value, obj.content];
     for (const candidate of candidates) {
       const extracted = extractString(candidate);
       if (extracted) return extracted;
     }
   }
-
   return '';
 }
 
@@ -47,7 +39,6 @@ function firstNonEmpty(...values: unknown[]): string {
 
 function htmlToText(html: string): string {
   if (!html) return '';
-
   return html
     .replace(/<style[\s\S]*?<\/style>/gi, '')
     .replace(/<script[\s\S]*?<\/script>/gi, '')
@@ -64,6 +55,23 @@ function htmlToText(html: string): string {
     .trim();
 }
 
+/**
+ * Extract a CLM-XXXX claim number from:
+ * 1. The "to" address (e.g. claim-0001@replies.savo.co.nz)
+ * 2. The subject line (e.g. "Re: CLM-0042 – my damage claim")
+ */
+function extractClaimNumber(toAddress: string, subject: string): number | null {
+  // Method 1: from the to-address (existing behaviour)
+  const toMatch = toAddress.match(/claim-(\d+)@/i);
+  if (toMatch) return parseInt(toMatch[1], 10);
+
+  // Method 2: from the subject line (new – for info@savo.co.nz emails)
+  const subjectMatch = subject.match(/CLM[- ]?(\d+)/i);
+  if (subjectMatch) return parseInt(subjectMatch[1], 10);
+
+  return null;
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -77,7 +85,6 @@ serve(async (req) => {
     const payload = await req.json();
     const emailData = (payload?.data || payload || {}) as Record<string, unknown>;
 
-    // Support multiple provider payload shapes
     const from = firstNonEmpty(
       emailData.from,
       emailData.sender,
@@ -120,17 +127,16 @@ serve(async (req) => {
       throw new Error('Missing required fields in webhook payload');
     }
 
-    // Extract claim reference from the to address: claim-0001@replies.savo.co.nz
-    const match = toAddress.match(/claim-(\d+)@/i);
-    if (!match) {
-      console.log('No claim reference found in to address:', toAddress);
-      return new Response(JSON.stringify({ success: true, skipped: true, reason: 'No claim ref in address' }), {
+    // --- Extract claim number from to-address OR subject line ---
+    const claimNumber = extractClaimNumber(toAddress, subject);
+
+    if (claimNumber === null) {
+      console.log('No claim reference found in address or subject:', toAddress, subject);
+      return new Response(JSON.stringify({ success: true, skipped: true, reason: 'No claim ref found' }), {
         status: 200,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
-
-    const claimNumber = parseInt(match[1], 10);
 
     // Look up claim by claim_number
     const { data: claim, error: claimErr } = await supabase
@@ -147,9 +153,60 @@ serve(async (req) => {
       });
     }
 
-    const fromEmail = from || 'unknown@unknown';
+    const fromEmail = (from || 'unknown@unknown').toLowerCase();
 
-    // Store the inbound message
+    // --- Determine if sender matches the claim owner ---
+    // Check if the sender's email matches a user profile in the database
+    const isReplyRoute = toAddress.match(/claim-\d+@/i); // existing reply-to routing
+    let senderVerified = !!isReplyRoute; // reply-route emails are always trusted
+
+    if (!senderVerified) {
+      // For info@ emails, verify the sender matches the claim owner's profile
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('user_id')
+        .eq('user_id', claim.user_id)
+        .eq('email', fromEmail)
+        .maybeSingle();
+
+      if (profile) {
+        senderVerified = true;
+      } else {
+        // Also check auth.users email via profiles (email might not be in profiles)
+        // Try matching via the auth user's email stored at signup
+        const { data: authCheck } = await supabase.auth.admin.getUserById(claim.user_id);
+        if (authCheck?.user?.email?.toLowerCase() === fromEmail) {
+          senderVerified = true;
+        }
+      }
+    }
+
+    if (!senderVerified) {
+      console.log('Sender email does not match claim owner:', fromEmail, 'claim_number:', claimNumber);
+
+      // Notify all admins about the unmatched email
+      const { data: admins } = await supabase
+        .from('user_roles')
+        .select('user_id')
+        .eq('role', 'admin');
+
+      if (admins && admins.length > 0) {
+        const notifications = admins.map((admin) => ({
+          user_id: admin.user_id,
+          type: 'unmatched_email',
+          title: 'Unmatched inbound email',
+          message: `An email from ${fromEmail} referenced CLM-${String(claimNumber).padStart(4, '0')} but the sender doesn't match any registered user. Subject: ${subject}`,
+        }));
+        await supabase.from('notifications').insert(notifications);
+      }
+
+      return new Response(JSON.stringify({ success: true, skipped: true, reason: 'Sender not verified' }), {
+        status: 200,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // --- Store the inbound message ---
     await supabase.from('claim_messages').insert({
       claim_id: claim.id,
       user_id: claim.user_id,
@@ -160,12 +217,12 @@ serve(async (req) => {
       to_email: toAddress,
     });
 
-    // Create an in-app notification
+    // Create an in-app notification for the claim owner
     await supabase.from('notifications').insert({
       user_id: claim.user_id,
       type: 'insurer_reply',
-      title: 'Reply from Insurance Company',
-      message: `You received a reply regarding claim CLM-${String(claimNumber).padStart(4, '0')} from ${fromEmail}. Subject: ${subject || '(No subject)'}`,
+      title: 'New email filed to your incident',
+      message: `An email has been filed against CLM-${String(claimNumber).padStart(4, '0')}. Subject: ${subject}`,
     });
 
     return new Response(JSON.stringify({ success: true, claimId: claim.id, claimNumber, stored: true }), {
@@ -176,7 +233,7 @@ serve(async (req) => {
     const message = error instanceof Error ? error.message : 'Unknown error';
     console.error('Inbound email webhook error:', message);
     return new Response(JSON.stringify({ success: false, error: message }), {
-      status: 200, // Return 200 to prevent provider retries on malformed payloads
+      status: 200,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   }
