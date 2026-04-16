@@ -24,6 +24,7 @@ interface CallRecorderProps {
 
 export default function CallRecorder({ claimId, compact = false, insurerPhone, userPhone }: CallRecorderProps) {
   const [isRecording, setIsRecording] = useState(false);
+  const [showSpeakerConfirm, setShowSpeakerConfirm] = useState(false);
   const [elapsed, setElapsed] = useState(0);
   const [uploading, setUploading] = useState(false);
   const [recordings, setRecordings] = useState<Recording[]>([]);
@@ -260,18 +261,18 @@ export default function CallRecorder({ claimId, compact = false, insurerPhone, u
       <div className="flex items-center gap-3">
         {!isRecording ? (
           <button
-            onClick={startRecording}
+            onClick={() => setShowSpeakerConfirm(true)}
             disabled={uploading}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-red-500/10 text-red-600 text-sm font-semibold hover:bg-red-500/20 transition-colors border border-red-500/20 active:scale-[0.98]"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-destructive/10 text-destructive text-sm font-semibold hover:bg-destructive/20 transition-colors border border-destructive/20 active:scale-[0.98]"
           >
             <Mic className="w-4 h-4" />
             {compact ? 'Record' : 'Record via Mic'}
           </button>
         ) : (
           <>
-            <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-red-500/10 border border-red-500/30">
-              <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse" />
-              <span className="text-sm font-mono font-semibold text-red-600">{formatTime(elapsed)}</span>
+            <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-destructive/10 border border-destructive/30">
+              <span className="w-2.5 h-2.5 rounded-full bg-destructive animate-pulse" />
+              <span className="text-sm font-mono font-semibold text-destructive">{formatTime(elapsed)}</span>
             </div>
             <button
               onClick={stopRecording}
@@ -292,8 +293,43 @@ export default function CallRecorder({ claimId, compact = false, insurerPhone, u
 
       {isRecording && (
         <p className="text-xs text-muted-foreground leading-relaxed">
-          💡 Put your phone on speaker to capture both sides of the conversation.
+          📢 Speakerphone is on — recording both sides of the conversation.
         </p>
+      )}
+
+      {/* Speakerphone confirmation dialog */}
+      {showSpeakerConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" onClick={() => setShowSpeakerConfirm(false)}>
+          <div className="bg-background border border-border rounded-2xl p-5 max-w-sm w-full space-y-4 shadow-xl" onClick={e => e.stopPropagation()}>
+            <div className="text-center space-y-2">
+              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
+                <Phone className="w-6 h-6 text-primary" />
+              </div>
+              <h3 className="text-lg font-bold text-foreground">Enable Speakerphone</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                To capture both sides of the conversation, please make sure your phone is on <strong className="text-foreground">speakerphone</strong> before starting the recording.
+              </p>
+            </div>
+            <div className="space-y-2">
+              <button
+                onClick={() => {
+                  setShowSpeakerConfirm(false);
+                  startRecording();
+                }}
+                className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 transition-colors active:scale-[0.98]"
+              >
+                <Mic className="w-4 h-4" />
+                Speakerphone is on — Start Recording
+              </button>
+              <button
+                onClick={() => setShowSpeakerConfirm(false)}
+                className="w-full px-4 py-2.5 rounded-xl text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* Saved recordings list */}
