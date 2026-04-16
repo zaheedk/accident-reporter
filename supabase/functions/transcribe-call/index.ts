@@ -16,25 +16,43 @@ serve(async (req) => {
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
-    const { callSid, filePath, claimId } = await req.json();
+    const { callSid, filePath, claimId, recordingId } = await req.json();
 
-    if (!callSid || !filePath) {
-      return new Response(JSON.stringify({ error: "callSid and filePath required" }), {
+    // Support lookup by recordingId (for uploaded files) or callSid (for Twilio calls)
+    if (!filePath && !recordingId) {
+      return new Response(JSON.stringify({ error: "filePath or recordingId required" }), {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
+    let actualFilePath = filePath;
+    const lookupField = recordingId ? "id" : "twilio_call_sid";
+    const lookupValue = recordingId || callSid;
+
+    // If recordingId provided, fetch the file_path from DB
+    if (recordingId && !filePath) {
+      const { data: rec } = await supabase
+        .from("call_recordings")
+        .select("file_path")
+        .eq("id", recordingId)
+        .single();
+      if (!rec?.file_path) throw new Error("Recording not found");
+      actualFilePath = rec.file_path;
+    }
+
+    // Mark as transcribing
+    await supabase.from("call_recordings").update({ status: "transcribing" }).eq(lookupField, lookupValue);
+
     // Download the audio from storage
     const { data: audioData, error: dlErr } = await supabase.storage
       .from("call-recordings")
-      .download(filePath);
+      .download(actualFilePath);
     if (dlErr || !audioData) {
       throw new Error(`Failed to download recording: ${dlErr?.message}`);
     }
 
-    // Convert audio to base64 for the AI model
+    // Convert audio to base64
     const arrayBuffer = await audioData.arrayBuffer();
-    // Chunk the conversion to avoid stack overflow on large files
     const bytes = new Uint8Array(arrayBuffer);
     const chunkSize = 8192;
     let binary = "";
@@ -43,7 +61,12 @@ serve(async (req) => {
     }
     const base64Audio = btoa(binary);
 
-    // Use Gemini for audio transcription (it supports audio natively)
+    // Determine format from file path
+    const ext = actualFilePath.split('.').pop()?.toLowerCase() || "mp3";
+    const formatMap: Record<string, string> = { mp3: "mp3", wav: "wav", m4a: "mp3", webm: "mp3", mp4: "mp3", ogg: "mp3", aac: "mp3" };
+    const audioFormat = formatMap[ext] || "mp3";
+
+    // Use Gemini for audio transcription
     const transcribeResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -64,7 +87,7 @@ serve(async (req) => {
                 type: "input_audio",
                 input_audio: {
                   data: base64Audio,
-                  format: "mp3",
+                  format: audioFormat,
                 },
               },
               {
@@ -81,12 +104,11 @@ serve(async (req) => {
       const errText = await transcribeResponse.text();
       console.error("AI transcription error:", transcribeResponse.status, errText);
       
-      // Mark as complete without transcript on AI failure
       await supabase.from("call_recordings").update({
         status: "complete",
         transcript: "",
         summary: "Transcription failed — audio saved successfully.",
-      }).eq("twilio_call_sid", callSid);
+      }).eq(lookupField, lookupValue);
 
       return new Response(JSON.stringify({ error: "Transcription failed" }), {
         status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -114,7 +136,7 @@ serve(async (req) => {
       transcript,
       summary,
       status: "complete",
-    }).eq("twilio_call_sid", callSid);
+    }).eq(lookupField, lookupValue);
 
     return new Response(JSON.stringify({ success: true }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
