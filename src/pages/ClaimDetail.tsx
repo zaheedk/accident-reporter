@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Printer, Mail, X, Download, Share2, Phone, Pencil, Save, Loader2, Send, Car, Users, Wrench, Trash2, Video, Mic } from 'lucide-react';
 import { getClaims, getVehicles, deleteClaim } from '@/lib/storage';
 import { supabase } from '@/integrations/supabase/client';
+import { resolveClaimId } from '@/lib/claim-id';
 import AppLayout from '@/components/AppLayout';
 import ClaimMessages from '@/components/ClaimMessages';
 import { WEATHER_OPTIONS, ROAD_OPTIONS, ClaimReport, Vehicle } from '@/types';
@@ -67,10 +68,12 @@ export default function ClaimDetail() {
   useEffect(() => {
     if (!id) return;
     const load = async () => {
+      const resolvedId = await resolveClaimId(id);
+      if (!resolvedId) { setLoading(false); return; }
       const [{ data: claimRow }, vehs, { data: claimNumData }] = await Promise.all([
-        supabase.from('claims').select('*').eq('id', id).single(),
+        supabase.from('claims').select('*').eq('id', resolvedId).single(),
         getVehicles(undefined),
-        supabase.from('claims').select('claim_number').eq('id', id).single(),
+        supabase.from('claims').select('claim_number').eq('id', resolvedId).single(),
       ]);
       
       if (!claimRow) { setLoading(false); return; }
