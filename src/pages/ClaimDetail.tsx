@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Printer, Mail, X, Download, Share2, Phone, Pencil, Save, Loader2, Send, Car, Users, Wrench, Trash2, Video, Mic } from 'lucide-react';
 import { getClaims, getVehicles, deleteClaim } from '@/lib/storage';
 import { supabase } from '@/integrations/supabase/client';
+import { resolveClaimId } from '@/lib/claim-id';
 import AppLayout from '@/components/AppLayout';
 import ClaimMessages from '@/components/ClaimMessages';
 import { WEATHER_OPTIONS, ROAD_OPTIONS, ClaimReport, Vehicle } from '@/types';
@@ -44,6 +45,7 @@ export default function ClaimDetail() {
   const [emailTo, setEmailTo] = useState('');
   const [sendingEmail, setSendingEmail] = useState(false);
   const [claimNumber, setClaimNumber] = useState('');
+  const [reportNumber, setReportNumber] = useState('');
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [userPhone, setUserPhone] = useState('');
@@ -67,10 +69,12 @@ export default function ClaimDetail() {
   useEffect(() => {
     if (!id) return;
     const load = async () => {
+      const resolvedId = await resolveClaimId(id);
+      if (!resolvedId) { setLoading(false); return; }
       const [{ data: claimRow }, vehs, { data: claimNumData }] = await Promise.all([
-        supabase.from('claims').select('*').eq('id', id).single(),
+        supabase.from('claims').select('*').eq('id', resolvedId).single(),
         getVehicles(undefined),
-        supabase.from('claims').select('claim_number').eq('id', id).single(),
+        supabase.from('claims').select('claim_number, report_number').eq('id', resolvedId).single(),
       ]);
       
       if (!claimRow) { setLoading(false); return; }
@@ -100,10 +104,11 @@ export default function ClaimDetail() {
       setClaim(foundClaim);
       setVehicles(vehs);
       if (claimNumData?.claim_number) setClaimNumber(String(claimNumData.claim_number));
+      if (claimNumData?.report_number) setReportNumber(claimNumData.report_number);
 
       const [photosRes, tpRes, insurersRes, shopsRes] = await Promise.all([
-        supabase.from('claim_photos').select('*').eq('claim_id', id),
-        supabase.from('tp_photos').select('*').eq('claim_id', id),
+        supabase.from('claim_photos').select('*').eq('claim_id', resolvedId),
+        supabase.from('tp_photos').select('*').eq('claim_id', resolvedId),
         supabase.from('insurance_companies').select('id, name').order('name'),
         supabase.from('panel_shops').select('id, name, phone, address').order('name'),
       ]);
@@ -400,7 +405,7 @@ export default function ClaimDetail() {
             <h1 className="text-lg font-bold text-foreground -mt-0.5 truncate">Incident report</h1>
           </div>
           <div className="flex items-center gap-1 flex-shrink-0">
-            <button onClick={() => navigate(`/claims/${claim.id}/edit`)} className="p-2 rounded-xl hover:bg-muted transition-colors" title="Edit report">
+            <button onClick={() => navigate(`/claims/${reportNumber || claim.id}/edit`)} className="p-2 rounded-xl hover:bg-muted transition-colors" title="Edit report">
               <Pencil className="w-[18px] h-[18px] text-muted-foreground" strokeWidth={1.5} />
             </button>
             <button onClick={handleEmail} className="p-2 rounded-xl hover:bg-muted transition-colors" title="Email report">
