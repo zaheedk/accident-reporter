@@ -7,6 +7,7 @@ import { ClaimReport, ThirdPartyVehicle, Witness, Vehicle, WEATHER_OPTIONS, ROAD
 import { deleteClaim, getVehicles, saveClaim } from '@/lib/storage';
 import { compressImage } from '@/lib/image-compress';
 import { supabase } from '@/integrations/supabase/client';
+import { resolveClaimId } from '@/lib/claim-id';
 import { useAuth } from '@/contexts/AuthContext';
 import AppLayout from '@/components/AppLayout';
 import { toast } from 'sonner';
@@ -147,10 +148,12 @@ export default function ClaimWizard() {
     });
     if (id) {
       const loadClaim = async () => {
+        const resolvedId = await resolveClaimId(id);
+        if (!resolvedId) { setLoadingClaim(false); return; }
         const [{ data: claimRow }, { data: claimNumData }, { data: photosData }] = await Promise.all([
-          supabase.from('claims').select('*').eq('id', id).single(),
-          supabase.from('claims').select('claim_number').eq('id', id).single(),
-          supabase.from('claim_photos').select('id, file_path, file_name').eq('claim_id', id),
+          supabase.from('claims').select('*').eq('id', resolvedId).single(),
+          supabase.from('claims').select('claim_number').eq('id', resolvedId).single(),
+          supabase.from('claim_photos').select('id, file_path, file_name').eq('claim_id', resolvedId),
         ]);
         if (claimRow) {
           const loaded: ClaimReport = {
