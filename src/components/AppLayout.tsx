@@ -147,16 +147,16 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </div>
       </div>
 
-      <nav className="fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-xl border-t border-border/50 flex justify-around py-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] px-4 md:hidden z-20">
+      <nav className="fixed bottom-0 left-0 right-0 bg-card border-t border-border/50 flex justify-around py-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] px-2 md:hidden z-40" style={{ transform: 'translateZ(0)' }}>
         {navItems.map(({ to, icon: Icon, label }) => {
           const active = location.pathname === to || (to !== '/dashboard' && to !== '/' && location.pathname.startsWith(to));
           return (
             <Link key={to} to={to}
-              className={`flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-xl text-[11px] font-medium transition-all ${active ? 'text-primary' : 'text-muted-foreground'}`}>
+              className={`flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-xl text-[11px] font-medium transition-all min-w-0 ${active ? 'text-primary' : 'text-muted-foreground'}`}>
               <div className={`p-1 rounded-lg transition-colors ${active ? 'bg-primary/10' : ''}`}>
                 <Icon className="w-5 h-5" strokeWidth={active ? 2.2 : 1.5} />
               </div>
-              {label}
+              <span className="truncate max-w-full">{label}</span>
             </Link>
           );
         })}
