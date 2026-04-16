@@ -47,10 +47,10 @@ export default function NotificationBell() {
       const match = n.message.match(/CLM-(\d+)/);
       if (match) {
         const claimNum = parseInt(match[1], 10);
-        const { data: claim } = await supabase.from('claims').select('id').eq('claim_number', claimNum).single();
+        const { data: claim } = await supabase.from('claims').select('id, report_number').eq('claim_number', claimNum).single();
         if (claim) {
           setOpen(false);
-          navigate(`/claims/${claim.id}`);
+          navigate(`/claims/${(claim as any).report_number || claim.id}`);
           return;
         }
       }
