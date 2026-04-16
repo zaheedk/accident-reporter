@@ -45,6 +45,7 @@ export default function ClaimDetail() {
   const [emailTo, setEmailTo] = useState('');
   const [sendingEmail, setSendingEmail] = useState(false);
   const [claimNumber, setClaimNumber] = useState('');
+  const [reportNumber, setReportNumber] = useState('');
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [userPhone, setUserPhone] = useState('');
@@ -103,6 +104,7 @@ export default function ClaimDetail() {
       setClaim(foundClaim);
       setVehicles(vehs);
       if (claimNumData?.claim_number) setClaimNumber(String(claimNumData.claim_number));
+      if (claimNumData?.report_number) setReportNumber(claimNumData.report_number);
 
       const [photosRes, tpRes, insurersRes, shopsRes] = await Promise.all([
         supabase.from('claim_photos').select('*').eq('claim_id', resolvedId),
@@ -403,7 +405,7 @@ export default function ClaimDetail() {
             <h1 className="text-lg font-bold text-foreground -mt-0.5 truncate">Incident report</h1>
           </div>
           <div className="flex items-center gap-1 flex-shrink-0">
-            <button onClick={() => navigate(`/claims/${claim.id}/edit`)} className="p-2 rounded-xl hover:bg-muted transition-colors" title="Edit report">
+            <button onClick={() => navigate(`/claims/${reportNumber || claim.id}/edit`)} className="p-2 rounded-xl hover:bg-muted transition-colors" title="Edit report">
               <Pencil className="w-[18px] h-[18px] text-muted-foreground" strokeWidth={1.5} />
             </button>
             <button onClick={handleEmail} className="p-2 rounded-xl hover:bg-muted transition-colors" title="Email report">
