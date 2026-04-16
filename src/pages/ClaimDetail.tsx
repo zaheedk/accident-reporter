@@ -383,7 +383,7 @@ export default function ClaimDetail() {
 
   return (
     <AppLayout>
-      <div className="space-y-4" id="claim-report" ref={printRef}>
+      <div className="space-y-4 overflow-x-hidden" id="claim-report" ref={printRef}>
         <div className="flex items-center gap-3 print:hidden">
           <button onClick={() => navigate(-1)} className="p-2 -ml-2 rounded-xl hover:bg-muted transition-colors">
             <ArrowLeft className="w-5 h-5 text-foreground" strokeWidth={1.5} />
@@ -686,9 +686,9 @@ function Section({ title, children, action, icon }: { title: string; children: R
 
 function Row({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex justify-between gap-4 py-2.5 border-b border-border/40 last:border-0">
+    <div className="flex justify-between gap-4 py-2.5 border-b border-border/40 last:border-0 min-w-0">
       <span className="text-[13px] text-muted-foreground flex-shrink-0">{label}</span>
-      <span className="text-[13px] font-medium text-foreground text-right">{value || '—'}</span>
+      <span className="text-[13px] font-medium text-foreground text-right break-words min-w-0">{value || '—'}</span>
     </div>
   );
 }

@@ -51,7 +51,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const logoLink = user ? '/dashboard' : '/';
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background overflow-x-hidden">
       <header className="bg-card px-4 py-3 pt-[max(0.75rem,env(safe-area-inset-top))] flex items-center justify-between border-b border-border/50 sticky top-0 z-30">
         <Link to={logoLink} className="flex items-center gap-2.5">
           <img src="/savo-logo.svg" alt="SAVO" className="h-11" width="110" height="44" />
