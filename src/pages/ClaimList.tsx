@@ -148,7 +148,8 @@ export default function ClaimList() {
               const rego = getRegoForClaim(c);
               const meta = claimMeta[c.id];
               const reportNum = meta?.reportNumber || '';
-              const href = c.status === 'draft' ? `/claims/${c.id}/edit` : `/claims/${c.id}`;
+              const slug = reportNum || c.id;
+              const href = c.status === 'draft' ? `/claims/${slug}/edit` : `/claims/${slug}`;
               const isDraft = c.status === 'draft';
               const statusLabel = isDraft ? 'Draft' : 'Saved';
               const photoUrl = claimPhotos[c.id];
