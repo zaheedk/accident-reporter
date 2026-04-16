@@ -130,23 +130,34 @@ serve(async (req) => {
     // --- Extract claim number from to-address OR subject line ---
     const claimNumber = extractClaimNumber(toAddress, subject);
 
-    if (claimNumber === null) {
-      console.log('No claim reference found in address or subject:', toAddress, subject);
-      return new Response(JSON.stringify({ success: true, skipped: true, reason: 'No claim ref found' }), {
-        status: 200,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+    let claim: { id: string; user_id: string; insurance_company: string } | null = null;
+
+    if (claimNumber !== null) {
+      // Try matching by internal CLM sequence number
+      const { data } = await supabase
+        .from('claims')
+        .select('id, user_id, insurance_company')
+        .eq('claim_number', claimNumber)
+        .single();
+      claim = data;
     }
 
-    // Look up claim by claim_number
-    const { data: claim, error: claimErr } = await supabase
-      .from('claims')
-      .select('id, user_id, insurance_company')
-      .eq('claim_number', claimNumber)
-      .single();
+    // If no match by CLM number, try matching the subject against user_claim_number
+    if (!claim) {
+      // Search for any claim whose user_claim_number appears in the subject
+      const { data: allClaims } = await supabase
+        .from('claims')
+        .select('id, user_id, insurance_company, user_claim_number')
+        .neq('user_claim_number', '');
 
-    if (claimErr || !claim) {
-      console.error('Claim not found for inbound email, claim_number:', claimNumber);
+      if (allClaims) {
+        const subjectLower = subject.toLowerCase();
+        claim = allClaims.find(c => c.user_claim_number && subjectLower.includes(c.user_claim_number.toLowerCase())) || null;
+      }
+    }
+
+    if (!claim) {
+      console.log('No claim found for inbound email. Subject:', subject, 'To:', toAddress);
       return new Response(JSON.stringify({ success: true, skipped: true, reason: 'Claim not found' }), {
         status: 200,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
