@@ -36,6 +36,7 @@ export default function ClaimDetail() {
   const [editRepairerName, setEditRepairerName] = useState('');
   const [editRepairerPhone, setEditRepairerPhone] = useState('');
   const [editRepairerAddress, setEditRepairerAddress] = useState('');
+  const [editUserClaimNumber, setEditUserClaimNumber] = useState('');
   const [savingInsurance, setSavingInsurance] = useState(false);
   const [panelShops, setPanelShops] = useState<{ id: string; name: string; phone: string; address: string }[]>([]);
   const printRef = useRef<HTMLDivElement>(null);
@@ -167,6 +168,7 @@ export default function ClaimDetail() {
     setEditRepairerName(claim.repairerName);
     setEditRepairerPhone(claim.repairerPhone);
     setEditRepairerAddress(claim.repairerAddress);
+    setEditUserClaimNumber(claim.userClaimNumber || '');
     setEditingInsurance(true);
   };
 
@@ -178,8 +180,9 @@ export default function ClaimDetail() {
       repairer_name: editRepairerName,
       repairer_phone: editRepairerPhone,
       repairer_address: editRepairerAddress,
+      user_claim_number: editUserClaimNumber,
     }).eq('id', claim.id);
-    setClaim({ ...claim, insuranceCompany: editInsurance, repairerName: editRepairerName, repairerPhone: editRepairerPhone, repairerAddress: editRepairerAddress });
+    setClaim({ ...claim, insuranceCompany: editInsurance, repairerName: editRepairerName, repairerPhone: editRepairerPhone, repairerAddress: editRepairerAddress, userClaimNumber: editUserClaimNumber });
     if (editInsurance) {
       const { data: ins } = await supabase.from('insurance_companies').select('phone, email, claims_portal_url, claims_method').eq('name', editInsurance).single();
       setInsurerPhone(ins?.phone || '');
