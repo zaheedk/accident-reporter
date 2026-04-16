@@ -191,6 +191,7 @@ export type Database = {
           third_parties: Json
           towing_company: string
           updated_at: string
+          user_claim_number: string
           user_id: string
           vehicle_id: string
           vehicle_towed: boolean
@@ -233,6 +234,7 @@ export type Database = {
           third_parties?: Json
           towing_company?: string
           updated_at?: string
+          user_claim_number?: string
           user_id: string
           vehicle_id?: string
           vehicle_towed?: boolean
@@ -275,6 +277,7 @@ export type Database = {
           third_parties?: Json
           towing_company?: string
           updated_at?: string
+          user_claim_number?: string
           user_id?: string
           vehicle_id?: string
           vehicle_towed?: boolean

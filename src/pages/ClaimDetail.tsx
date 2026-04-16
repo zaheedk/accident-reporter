@@ -36,6 +36,7 @@ export default function ClaimDetail() {
   const [editRepairerName, setEditRepairerName] = useState('');
   const [editRepairerPhone, setEditRepairerPhone] = useState('');
   const [editRepairerAddress, setEditRepairerAddress] = useState('');
+  const [editUserClaimNumber, setEditUserClaimNumber] = useState('');
   const [savingInsurance, setSavingInsurance] = useState(false);
   const [panelShops, setPanelShops] = useState<{ id: string; name: string; phone: string; address: string }[]>([]);
   const printRef = useRef<HTMLDivElement>(null);
@@ -94,6 +95,7 @@ export default function ClaimDetail() {
         repairerName: claimRow.repairer_name, repairerPhone: claimRow.repairer_phone,
         repairerAddress: claimRow.repairer_address, insuranceCompany: claimRow.insurance_company || '',
         selectedPanelShopId: claimRow.selected_panel_shop_id || '',
+        userClaimNumber: (claimRow as any).user_claim_number || '',
       };
       setClaim(foundClaim);
       setVehicles(vehs);
@@ -166,6 +168,7 @@ export default function ClaimDetail() {
     setEditRepairerName(claim.repairerName);
     setEditRepairerPhone(claim.repairerPhone);
     setEditRepairerAddress(claim.repairerAddress);
+    setEditUserClaimNumber(claim.userClaimNumber || '');
     setEditingInsurance(true);
   };
 
@@ -177,8 +180,9 @@ export default function ClaimDetail() {
       repairer_name: editRepairerName,
       repairer_phone: editRepairerPhone,
       repairer_address: editRepairerAddress,
+      user_claim_number: editUserClaimNumber,
     }).eq('id', claim.id);
-    setClaim({ ...claim, insuranceCompany: editInsurance, repairerName: editRepairerName, repairerPhone: editRepairerPhone, repairerAddress: editRepairerAddress });
+    setClaim({ ...claim, insuranceCompany: editInsurance, repairerName: editRepairerName, repairerPhone: editRepairerPhone, repairerAddress: editRepairerAddress, userClaimNumber: editUserClaimNumber });
     if (editInsurance) {
       const { data: ins } = await supabase.from('insurance_companies').select('phone, email, claims_portal_url, claims_method').eq('name', editInsurance).single();
       setInsurerPhone(ins?.phone || '');
@@ -526,6 +530,10 @@ export default function ClaimDetail() {
                     </select>
                   </div>
                   <div>
+                    <label className="text-[11px] font-medium text-muted-foreground mb-1 block">Your claim number</label>
+                    <input className="form-input text-sm" value={editUserClaimNumber} onChange={e => setEditUserClaimNumber(e.target.value)} placeholder="e.g. CLM-1234 or your insurer's reference" />
+                  </div>
+                  <div>
                     <label className="text-[11px] font-medium text-muted-foreground mb-1 block">Repairer Name</label>
                     <select className="form-input text-sm" value={editRepairerName} onChange={e => {
                       const shop = panelShops.find(s => s.name === e.target.value);
@@ -555,6 +563,7 @@ export default function ClaimDetail() {
                 <>
                   <SubHeading>Insurance</SubHeading>
                   <Row label="Insurance" value={claim.insuranceCompany} />
+                  {claim.userClaimNumber && <Row label="Your claim number" value={claim.userClaimNumber} />}
                   {insurerPhone && (
                     <div className="flex items-center justify-between gap-4 py-2 border-b border-border/60">
                       <span className="text-[13px] text-muted-foreground flex-shrink-0">Claims line</span>

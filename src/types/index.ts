@@ -93,6 +93,7 @@ export interface ClaimReport {
   repairerAddress: string;
   insuranceCompany: string;
   selectedPanelShopId: string;
+  userClaimNumber: string;
 }
 
 export const WEATHER_OPTIONS: { value: WeatherCondition; label: string }[] = [
