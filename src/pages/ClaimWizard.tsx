@@ -46,7 +46,7 @@ function emptyClaim(): ClaimReport {
     atFault: '', courtesyCarRequested: false,
     damageDescription: '', vehicleTowed: false, towingCompany: '',
     repairerName: '', repairerPhone: '', repairerAddress: '',
-    insuranceCompany: '', selectedPanelShopId: '',
+    insuranceCompany: '', selectedPanelShopId: '', userClaimNumber: '',
   };
 }
 
