@@ -73,7 +73,7 @@ export default function ClaimDetail() {
       const [{ data: claimRow }, vehs, { data: claimNumData }] = await Promise.all([
         supabase.from('claims').select('*').eq('id', resolvedId).single(),
         getVehicles(undefined),
-        supabase.from('claims').select('claim_number').eq('id', resolvedId).single(),
+        supabase.from('claims').select('claim_number, report_number').eq('id', resolvedId).single(),
       ]);
       
       if (!claimRow) { setLoading(false); return; }
