@@ -173,6 +173,7 @@ export default function ClaimWizard() {
             repairerName: claimRow.repairer_name, repairerPhone: claimRow.repairer_phone,
             repairerAddress: claimRow.repairer_address, insuranceCompany: claimRow.insurance_company || '',
             selectedPanelShopId: claimRow.selected_panel_shop_id || '',
+            userClaimNumber: (claimRow as any).user_claim_number || '',
           };
           setClaim(loaded);
         }

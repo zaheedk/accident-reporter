@@ -126,6 +126,7 @@ export async function saveClaim(claim: ClaimReport, userId?: string): Promise<st
     repairer_address: claim.repairerAddress,
     insurance_company: claim.insuranceCompany,
     selected_panel_shop_id: claim.selectedPanelShopId || null,
+    user_claim_number: claim.userClaimNumber || '',
   };
 
   if (claim.id) {
@@ -221,5 +222,6 @@ function dbClaimToClaim(row: any): ClaimReport {
     repairerAddress: row.repairer_address,
     insuranceCompany: row.insurance_company || '',
     selectedPanelShopId: row.selected_panel_shop_id || '',
+    userClaimNumber: row.user_claim_number || '',
   };
 }
