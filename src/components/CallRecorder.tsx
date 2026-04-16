@@ -24,6 +24,7 @@ interface CallRecorderProps {
 
 export default function CallRecorder({ claimId, compact = false, insurerPhone, userPhone }: CallRecorderProps) {
   const [isRecording, setIsRecording] = useState(false);
+  const [showSpeakerConfirm, setShowSpeakerConfirm] = useState(false);
   const [elapsed, setElapsed] = useState(0);
   const [uploading, setUploading] = useState(false);
   const [recordings, setRecordings] = useState<Recording[]>([]);
