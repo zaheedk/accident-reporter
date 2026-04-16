@@ -1,0 +1,1 @@
+ALTER TABLE public.claims ADD COLUMN user_claim_number text NOT NULL DEFAULT '';
