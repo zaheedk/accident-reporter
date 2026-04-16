@@ -384,27 +384,31 @@ export default function ClaimDetail() {
   return (
     <AppLayout>
       <div className="space-y-4 overflow-x-hidden" id="claim-report" ref={printRef}>
-        <div className="flex items-center gap-3 print:hidden">
-          <button onClick={() => navigate(-1)} className="p-2 -ml-2 rounded-xl hover:bg-muted transition-colors">
+        <div className="flex items-start gap-2 print:hidden">
+          <button onClick={() => navigate(-1)} className="p-2 -ml-2 rounded-xl hover:bg-muted transition-colors flex-shrink-0">
             <ArrowLeft className="w-5 h-5 text-foreground" strokeWidth={1.5} />
           </button>
-          <div className="flex-1">
-            <p className="text-sm text-muted-foreground">Report</p>
-            <h1 className="text-lg font-bold text-foreground -mt-0.5">Incident report</h1>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2">
+              <p className="text-sm text-muted-foreground">Report</p>
+              <span className="text-[11px] font-medium text-primary bg-primary/8 px-2 py-0.5 rounded-lg">{claim.status === 'draft' ? 'Draft' : 'Saved'}</span>
+            </div>
+            <h1 className="text-lg font-bold text-foreground -mt-0.5 truncate">Incident report</h1>
           </div>
-          <button onClick={() => navigate(`/claims/${claim.id}/edit`)} className="p-2 rounded-xl hover:bg-muted transition-colors" title="Edit report">
-            <Pencil className="w-5 h-5 text-muted-foreground" strokeWidth={1.5} />
-          </button>
-          <button onClick={handleEmail} className="p-2 rounded-xl hover:bg-muted transition-colors" title="Email report">
-            <Mail className="w-5 h-5 text-muted-foreground" strokeWidth={1.5} />
-          </button>
-          <button onClick={handlePrint} className="p-2 rounded-xl hover:bg-muted transition-colors" title="Download as PDF">
-            <Download className="w-5 h-5 text-muted-foreground" strokeWidth={1.5} />
-          </button>
-          <button onClick={() => setDeleteDialogOpen(true)} className="p-2 rounded-xl hover:bg-destructive/10 transition-colors" title="Delete report">
-            <Trash2 className="w-5 h-5 text-destructive" strokeWidth={1.5} />
-          </button>
-          <span className="text-[11px] font-medium text-primary bg-primary/8 px-2 py-1 rounded-lg">{claim.status === 'draft' ? 'Draft' : 'Saved'}</span>
+          <div className="flex items-center gap-1 flex-shrink-0">
+            <button onClick={() => navigate(`/claims/${claim.id}/edit`)} className="p-2 rounded-xl hover:bg-muted transition-colors" title="Edit report">
+              <Pencil className="w-[18px] h-[18px] text-muted-foreground" strokeWidth={1.5} />
+            </button>
+            <button onClick={handleEmail} className="p-2 rounded-xl hover:bg-muted transition-colors" title="Email report">
+              <Mail className="w-[18px] h-[18px] text-muted-foreground" strokeWidth={1.5} />
+            </button>
+            <button onClick={handlePrint} className="p-2 rounded-xl hover:bg-muted transition-colors" title="Download as PDF">
+              <Download className="w-[18px] h-[18px] text-muted-foreground" strokeWidth={1.5} />
+            </button>
+            <button onClick={() => setDeleteDialogOpen(true)} className="p-2 rounded-xl hover:bg-destructive/10 transition-colors" title="Delete report">
+              <Trash2 className="w-[18px] h-[18px] text-destructive" strokeWidth={1.5} />
+            </button>
+          </div>
         </div>
 
         <div className="hidden print:block mb-6">
