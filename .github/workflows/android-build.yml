@@ -59,6 +59,13 @@ jobs:
           name: app-release-aab
           path: android/app/build/outputs/bundle/release/app-release.aab
 
+      - name: Upload Mapping File (deobfuscation)
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release-mapping
+          path: android/app/build/outputs/mapping/release/mapping.txt
+          if-no-files-found: warn
+
       - name: Upload Debug APK
         uses: actions/upload-artifact@v4
         with:
