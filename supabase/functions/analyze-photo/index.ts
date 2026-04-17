@@ -39,6 +39,27 @@ Return ONLY a JSON object with these fields:
 Do not include any other text, just the JSON.`;
     }
 
+    // Download the image and convert to base64 data URL.
+    // Gemini's URL-fetcher does not reliably handle Supabase signed URLs (query string tokens),
+    // so we inline the image bytes instead.
+    let imagePayload: string = imageUrl;
+    try {
+      const imgRes = await fetch(imageUrl);
+      if (!imgRes.ok) throw new Error(`Image fetch failed: ${imgRes.status}`);
+      const contentType = imgRes.headers.get("content-type") || "image/jpeg";
+      const buf = new Uint8Array(await imgRes.arrayBuffer());
+      // Convert to base64 in chunks to avoid call stack overflow
+      let binary = "";
+      const chunkSize = 0x8000;
+      for (let i = 0; i < buf.length; i += chunkSize) {
+        binary += String.fromCharCode(...buf.subarray(i, i + chunkSize));
+      }
+      const base64 = btoa(binary);
+      imagePayload = `data:${contentType};base64,${base64}`;
+    } catch (fetchErr) {
+      console.error("Failed to download image, falling back to URL:", fetchErr);
+    }
+
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -53,7 +74,7 @@ Do not include any other text, just the JSON.`;
             role: "user",
             content: [
               { type: "text", text: type === "damage" ? "Analyze the damage in this vehicle photo." : type === "rego" ? "Extract the registration number from this photo." : "Extract the driver license details from this photo." },
-              { type: "image_url", image_url: { url: imageUrl } },
+              { type: "image_url", image_url: { url: imagePayload } },
             ],
           },
         ],
