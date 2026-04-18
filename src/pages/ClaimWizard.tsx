@@ -290,16 +290,28 @@ export default function ClaimWizard() {
         },
       }).catch(err => console.error('Email send failed:', err));
     }
-    // Send courtesy car request email if requested
-    if (claim.courtesyCarRequested && claim.atFault === 'other_party') {
-      supabase.functions.invoke('send-courtesy-car-request', {
-        body: { claimId: claim.id },
-      }).then(() => {
-        toast.success('Courtesy car request lodged – someone will be in touch shortly');
-      }).catch(err => {
-        console.error('Courtesy car email failed:', err);
-        toast.error('Could not lodge courtesy car request. Please try again.');
-      });
+    // Send courtesy car request email if requested — only once per claim
+    if (claim.courtesyCarRequested && claim.atFault === 'other_party' && claim.id) {
+      const { data: existing } = await supabase
+        .from('claims')
+        .select('courtesy_car_email_sent_at')
+        .eq('id', claim.id)
+        .maybeSingle();
+
+      if (!existing?.courtesy_car_email_sent_at) {
+        supabase.functions.invoke('send-courtesy-car-request', {
+          body: { claimId: claim.id },
+        }).then(async () => {
+          await supabase
+            .from('claims')
+            .update({ courtesy_car_email_sent_at: new Date().toISOString() })
+            .eq('id', claim.id);
+          toast.success('Courtesy car request lodged – someone will be in touch shortly');
+        }).catch(err => {
+          console.error('Courtesy car email failed:', err);
+          toast.error('Could not lodge courtesy car request. Please try again.');
+        });
+      }
     }
 
     queryClient.invalidateQueries({ queryKey: ['claims'] });
