@@ -1,0 +1,1 @@
+ALTER TABLE public.claims ADD COLUMN IF NOT EXISTS courtesy_car_email_sent_at timestamp with time zone;

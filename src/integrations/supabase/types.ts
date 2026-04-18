@@ -161,6 +161,7 @@ export type Database = {
           at_fault: string
           blame_description: string
           claim_number: number | null
+          courtesy_car_email_sent_at: string | null
           courtesy_car_requested: boolean
           created_at: string
           damage_description: string
@@ -204,6 +205,7 @@ export type Database = {
           at_fault?: string
           blame_description?: string
           claim_number?: number | null
+          courtesy_car_email_sent_at?: string | null
           courtesy_car_requested?: boolean
           created_at?: string
           damage_description?: string
@@ -247,6 +249,7 @@ export type Database = {
           at_fault?: string
           blame_description?: string
           claim_number?: number | null
+          courtesy_car_email_sent_at?: string | null
           courtesy_car_requested?: boolean
           created_at?: string
           damage_description?: string
