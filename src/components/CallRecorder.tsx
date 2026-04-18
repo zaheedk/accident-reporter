@@ -310,7 +310,7 @@ export default function CallRecorder({ claimId, compact = false, insurerPhone, u
       />
 
       {/* Bridged call button */}
-      {insurerPhone && userPhone && (
+      {insurerPhone && userPhone ? (
         <button
           onClick={initiateBridgedCall}
           disabled={calling}
@@ -319,6 +319,17 @@ export default function CallRecorder({ claimId, compact = false, insurerPhone, u
           {calling ? <Loader2 className="w-4 h-4 animate-spin" /> : <Phone className="w-4 h-4" />}
           {calling ? 'Connecting…' : compact ? 'Call & Record' : 'Call Insurer (Recorded & Transcribed)'}
         </button>
+      ) : (
+        <div className="px-4 py-3 rounded-xl bg-muted/50 border border-border text-sm text-muted-foreground">
+          <p className="font-medium text-foreground mb-1">Bridged call unavailable</p>
+          <p>
+            {!insurerPhone && !userPhone
+              ? 'Add your mobile number in Profile and ensure your insurer has a phone number on file to enable a recorded call.'
+              : !insurerPhone
+              ? "We don't have a phone number on file for this insurer. Use Record via Mic or Upload Audio instead."
+              : 'Add your mobile number in Profile to enable a bridged recorded call with the insurer.'}
+          </p>
+        </div>
       )}
 
       {/* Manual mic recording + upload controls */}
