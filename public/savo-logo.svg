@@ -32,6 +32,7 @@
 
   <!-- Camera lens -->
   <circle cx="250" cy="218" r="56" fill="#6B7280" opacity="0.12"/>
+  <circle cx="250" cy="218" r="52" fill="none" stroke="#7CB342" stroke-width="5"/>
   <circle cx="250" cy="218" r="48" fill="#6B7280"/>
   <circle cx="250" cy="218" r="37" fill="#1e3a5f"/>
   <circle cx="250" cy="218" r="28" fill="#1A1A2E"/>
