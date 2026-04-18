@@ -23,7 +23,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   const authedNavItems = [
     { to: '/dashboard', icon: LayoutDashboard, label: 'Home' },
-    { to: '/vehicles', icon: Car, label: 'Garage' },
+    { to: '/vehicles', icon: Car, label: 'Vehicles' },
     { to: '/claims', icon: FileText, label: 'Reports' },
     { to: '/documents', icon: FolderOpen, label: 'Docs' },
     { to: '/panel-shops', icon: Wrench, label: 'Shops' },
