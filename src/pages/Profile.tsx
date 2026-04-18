@@ -358,7 +358,7 @@ export default function Profile() {
               <div className="text-xs text-muted-foreground">Temporarily disable your account</div>
             </div>
           </button>
-          <button onClick={() => setShowDelete(true)} className="w-full card-surface flex items-center gap-3 text-left hover:shadow-md transition-shadow border border-destructive/20">
+          <button onClick={() => setShowDelete(true)} className="w-full card-surface flex items-center gap-3 text-left hover:border-destructive/40 transition-colors !border-destructive/20">
             <div className="w-9 h-9 rounded-xl bg-destructive/10 flex items-center justify-center shrink-0"><Trash2 className="w-4 h-4 text-destructive" /></div>
             <div>
               <div className="text-sm font-semibold text-destructive">Delete Account</div>

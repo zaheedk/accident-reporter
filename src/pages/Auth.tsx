@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import { Navigate, Link } from 'react-router-dom';
-import { Mail, Lock, User, Loader2, LogIn, Camera, MapPin, Users, FileText, Phone, Eye, EyeOff, ArrowLeft } from 'lucide-react';
+import { Mail, Lock, User, Loader2, LogIn, Phone, Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 
 import { useAuth } from '@/contexts/AuthContext';
 import PhoneAuth from '@/components/PhoneAuth';
 import { isNativeApp, signInWithGoogleNative } from '@/lib/native-google-auth';
 
-const SITE_URL = import.meta.env.PROD ? 'https://savo.co.nz(' : window.location.origin;
+const SITE_URL = import.meta.env.PROD ? 'https://savo.co.nz' : window.location.origin;
 
 export default function Auth() {
   const { session, loading } = useAuth();
@@ -68,7 +68,6 @@ export default function Auth() {
 
   const handleOAuth = async () => {
     setError('');
-    // Native Android/iOS: use the in-app Google account picker (no browser).
     if (isNativeApp()) {
       try {
         await signInWithGoogleNative();
@@ -79,77 +78,40 @@ export default function Auth() {
     }
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: {
-        redirectTo: `${SITE_URL}/dashboard`,
-      },
+      options: { redirectTo: `${SITE_URL}/dashboard` },
     });
     if (error) setError(error.message || 'OAuth sign-in failed');
   };
 
-  const features = [
-    { icon: Camera, label: 'Photo capture' },
-    { icon: MapPin, label: 'GPS tagging' },
-    { icon: Users, label: 'Witness forms' },
-    { icon: FileText, label: 'Auto reports' },
-  ];
-
   return (
-    <div className="min-h-screen flex flex-col lg:flex-row">
-      <div className="px-6 pt-6 pb-6 lg:pt-10 lg:pb-10 relative overflow-hidden lg:w-1/2 lg:min-h-screen lg:flex lg:items-center lg:justify-center" style={{ background: 'linear-gradient(160deg, hsl(220 30% 10%), hsl(213 52% 18%), hsl(220 25% 14%))' }}>
-        <Link to="/" className="hidden lg:inline-flex absolute top-5 left-5 z-20 items-center gap-1.5 text-sm text-slate-400 hover:text-slate-200 transition-colors">
+    <div className="min-h-screen bg-background flex flex-col">
+      {/* Top bar */}
+      <header className="px-5 py-4 flex items-center justify-between border-b border-border">
+        <Link to="/" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors">
           <ArrowLeft className="w-4 h-4" />
           Home
         </Link>
-        <div className="absolute inset-0 opacity-[0.04]" style={{
-          backgroundImage: `linear-gradient(hsl(210 50% 60% / 0.4) 1px, transparent 1px), linear-gradient(90deg, hsl(210 50% 60% / 0.4) 1px, transparent 1px)`,
-          backgroundSize: '60px 60px',
-        }} />
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[500px] h-[500px] rounded-full opacity-[0.08]" style={{ background: 'radial-gradient(circle, hsl(213 60% 50%), transparent 70%)' }} />
-        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[hsl(220,30%,10%)] to-transparent lg:hidden" />
+        <img src="/savo-logo.svg" alt="SAVO" className="h-7" />
+        <span className="w-12" />
+      </header>
 
-        <div className="relative z-10 text-center lg:max-w-md">
-          <div className="flex items-center mb-4 lg:mb-10 justify-center">
-            <img src="/savo-logo.svg" alt="SAVO" className="h-16 lg:h-28" />
-          </div>
-          <h1 className="text-[26px] lg:text-[34px] leading-[1.08] tracking-tight mb-2 lg:mb-4" style={{ textWrap: 'balance' as any }}>
-            <span className="font-semibold text-slate-100" style={{ fontFamily: "'Playfair Display', serif" }}>
-              Capture the scene.
-            </span>
-            <br />
-            <span className="font-bold italic" style={{ fontFamily: "'Playfair Display', serif", color: 'hsl(210 60% 70%)' }}>
-              Protect your claim.
-            </span>
+      <div className="flex-1 flex items-center justify-center px-5 py-10">
+        <div className="w-full max-w-sm">
+          <h1 className="text-2xl font-bold text-foreground tracking-tight">
+            {mode === 'forgot' ? 'Reset password' : mode === 'login' ? 'Welcome back' : 'Create account'}
           </h1>
-          <p className="hidden lg:block text-[15px] leading-relaxed text-slate-400 max-w-xs mx-auto lg:max-w-sm">
-            SAVO helps you record accident data instantly — photos, GPS, witness info, and reports — so your claim is airtight from minute one.
-          </p>
-        </div>
-      </div>
-
-      <div className="flex-1 px-6 pt-6 pb-6 lg:pt-8 lg:pb-8 -mt-3 rounded-t-3xl relative z-10 lg:mt-0 lg:rounded-none lg:flex lg:items-center lg:justify-center" style={{ background: 'hsl(220 20% 97%)', boxShadow: '0 -4px 24px rgba(0,0,0,0.08)' }}>
-        <div className="max-w-sm mx-auto">
-          <div className="hidden lg:flex items-center gap-2 mb-4">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-primary/8 text-primary border border-primary/15">
-              <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-              Secure Portal
-            </span>
-          </div>
-
-          <h2 className="text-[22px] font-bold text-foreground mb-1" style={{ fontFamily: "'Playfair Display', serif" }}>
-            {mode === 'forgot' ? (
-              <>Reset your <span className="italic text-primary">password</span></>
-            ) : mode === 'login' ? (
-              <>Welcome back to <span className="italic text-primary">SAVO</span></>
-            ) : (
-              <>Join <span className="italic text-primary">SAVO</span> today</>
-            )}
-          </h2>
-          <p className="text-sm text-muted-foreground mb-6">
-            {mode === 'forgot' ? "Enter your email and we'll send you a reset link." : mode === 'login' ? 'Access your incidents, claims, and reports in one place.' : 'Create your free account to get started.'}
+          <p className="text-sm text-muted-foreground mt-1.5 mb-7">
+            {mode === 'forgot'
+              ? "Enter your email and we'll send you a reset link."
+              : mode === 'login'
+                ? 'Sign in to access your reports and vehicles.'
+                : 'Free, no credit card required.'}
           </p>
 
-          <button onClick={() => handleOAuth()}
-            className="w-full h-12 px-4 bg-white border border-border/80 rounded-xl text-sm font-semibold text-foreground transition-all hover:bg-slate-50 hover:border-border active:scale-[0.98] inline-flex items-center justify-center gap-2.5 shadow-sm mb-5">
+          <button
+            onClick={() => handleOAuth()}
+            className="w-full h-11 px-4 bg-card border border-border rounded-xl text-sm font-semibold text-foreground transition-colors hover:bg-muted active:scale-[0.99] inline-flex items-center justify-center gap-2.5 mb-5"
+          >
             <svg className="w-[18px] h-[18px] flex-shrink-0" viewBox="0 0 24 24">
               <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/>
               <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
@@ -160,16 +122,16 @@ export default function Auth() {
           </button>
 
           <div className="flex items-center gap-3 mb-5">
-            <div className="flex-1 h-px bg-border/60" />
-            <span className="text-xs text-muted-foreground/70 font-medium">or continue with</span>
-            <div className="flex-1 h-px bg-border/60" />
+            <div className="flex-1 h-px bg-border" />
+            <span className="text-[11px] text-muted-foreground font-medium uppercase tracking-wider">or</span>
+            <div className="flex-1 h-px bg-border" />
           </div>
 
-          <div className="flex rounded-xl bg-muted/60 p-1 mb-5 border border-border/30">
+          <div className="flex rounded-xl bg-muted p-1 mb-5 border border-border">
             <button
               onClick={() => { setAuthMethod('email'); setError(''); }}
-              className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-semibold transition-all ${
-                authMethod === 'email' ? 'bg-white text-foreground shadow-sm border border-border/40' : 'text-muted-foreground hover:text-foreground'
+              className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-semibold transition-colors ${
+                authMethod === 'email' ? 'bg-card text-foreground border border-border' : 'text-muted-foreground hover:text-foreground'
               }`}
             >
               <Mail className="w-3.5 h-3.5" />
@@ -177,8 +139,8 @@ export default function Auth() {
             </button>
             <button
               onClick={() => { setAuthMethod('phone'); setError(''); }}
-              className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-semibold transition-all ${
-                authMethod === 'phone' ? 'bg-white text-foreground shadow-sm border border-border/40' : 'text-muted-foreground hover:text-foreground'
+              className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-semibold transition-colors ${
+                authMethod === 'phone' ? 'bg-card text-foreground border border-border' : 'text-muted-foreground hover:text-foreground'
               }`}
             >
               <Phone className="w-3.5 h-3.5" />
@@ -196,57 +158,51 @@ export default function Auth() {
               <form onSubmit={handleSubmit} className="space-y-4">
                 {mode === 'signup' && (
                   <div>
-                    <label className="text-[11px] font-bold text-foreground/70 uppercase tracking-wider mb-1.5 block">Full Name</label>
+                    <label className="form-label">Full name</label>
                     <div className="relative">
-                      <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/50" strokeWidth={1.5} />
+                      <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/60" strokeWidth={1.5} />
                       <input className="form-input pl-10" placeholder="John Doe" value={name} onChange={e => setName(e.target.value)} required />
                     </div>
                   </div>
                 )}
                 <div>
-                  <label className="text-[11px] font-bold text-foreground/70 uppercase tracking-wider mb-1.5 block">Email Address</label>
+                  <label className="form-label">Email address</label>
                   <div className="relative">
-                    <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/50" strokeWidth={1.5} />
-                    <input type="email" className="form-input pl-10" placeholder="name@company.com" value={email} onChange={e => setEmail(e.target.value)} required />
+                    <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/60" strokeWidth={1.5} />
+                    <input type="email" className="form-input pl-10" placeholder="name@email.com" value={email} onChange={e => setEmail(e.target.value)} required />
                   </div>
                 </div>
                 {mode !== 'forgot' && (
-                <div>
-                  <label className="text-[11px] font-bold text-foreground/70 uppercase tracking-wider mb-1.5 block">Password</label>
-                  <div className="relative">
-                    <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/50" strokeWidth={1.5} />
-                    <input type={showPassword ? 'text' : 'password'} className="form-input pl-10 pr-10" placeholder="••••••••" value={password} onChange={e => setPassword(e.target.value)} required minLength={6} />
-                    <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground/50 hover:text-muted-foreground transition-colors">
-                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                    </button>
+                  <div>
+                    <label className="form-label">Password</label>
+                    <div className="relative">
+                      <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/60" strokeWidth={1.5} />
+                      <input type={showPassword ? 'text' : 'password'} className="form-input pl-10 pr-10" placeholder="••••••••" value={password} onChange={e => setPassword(e.target.value)} required minLength={6} />
+                      <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground/60 hover:text-foreground transition-colors">
+                        {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
+                    </div>
                   </div>
-                </div>
                 )}
 
                 {mode === 'login' && (
-                  <div className="flex items-center justify-between">
-                    <label className="flex items-center gap-2 text-sm text-muted-foreground cursor-pointer">
-                      <input type="checkbox" className="w-4 h-4 rounded border-border text-primary focus:ring-primary/20" />
-                      Keep me signed in
-                    </label>
-                    <button type="button" onClick={() => { setMode('forgot'); setError(''); setSuccess(''); }} className="text-sm text-primary font-semibold hover:underline">
+                  <div className="flex items-center justify-end">
+                    <button type="button" onClick={() => { setMode('forgot'); setError(''); setSuccess(''); }} className="text-sm text-foreground font-semibold hover:underline">
                       Forgot password?
                     </button>
                   </div>
                 )}
 
-                {success && <p className="text-xs text-green-700 font-medium bg-green-50 px-3 py-2 rounded-lg">{success}</p>}
+                {success && <p className="text-xs text-foreground font-medium bg-muted px-3 py-2 rounded-lg border border-border">{success}</p>}
                 {error && <p className="text-xs text-destructive font-medium bg-destructive/5 px-3 py-2 rounded-lg">{error}</p>}
 
-                <button type="submit" disabled={submitting}
-                  className="btn-primary w-full h-12 text-[15px] rounded-xl"
-                  style={{ boxShadow: '0 4px 20px hsla(213, 52%, 24%, 0.35)' }}>
+                <button type="submit" disabled={submitting} className="btn-primary w-full h-11">
                   {submitting ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
                   ) : (
                     <>
                       <LogIn className="w-4 h-4" />
-                      {mode === 'forgot' ? 'Send Reset Link' : mode === 'login' ? 'Sign in to SAVO' : 'Create Account'}
+                      {mode === 'forgot' ? 'Send reset link' : mode === 'login' ? 'Sign in' : 'Create account'}
                     </>
                   )}
                 </button>
@@ -256,38 +212,25 @@ export default function Auth() {
                 {mode === 'forgot' ? (
                   <>
                     Remember your password?{' '}
-                    <button onClick={() => { setMode('login'); setError(''); setSuccess(''); }} className="text-primary font-bold hover:underline">Sign in</button>
+                    <button onClick={() => { setMode('login'); setError(''); setSuccess(''); }} className="text-foreground font-semibold hover:underline">Sign in</button>
                   </>
                 ) : mode === 'login' ? (
                   <>New to SAVO?{' '}
-                    <button onClick={() => { setMode('signup'); setError(''); setSuccess(''); }} className="text-primary font-bold hover:underline">Create a free account</button>
+                    <button onClick={() => { setMode('signup'); setError(''); setSuccess(''); }} className="text-foreground font-semibold hover:underline">Create an account</button>
                   </>
                 ) : (
                   <>Already have an account?{' '}
-                    <button onClick={() => { setMode('login'); setError(''); setSuccess(''); }} className="text-primary font-bold hover:underline">Sign in</button>
+                    <button onClick={() => { setMode('login'); setError(''); setSuccess(''); }} className="text-foreground font-semibold hover:underline">Sign in</button>
                   </>
                 )}
               </p>
             </>
           )}
 
-          <div className="hidden lg:flex flex-wrap items-center justify-center gap-2 mt-6">
-            {features.map(({ icon: Icon, label }) => (
-              <span key={label} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-white text-muted-foreground border border-border/50 shadow-sm">
-                <Icon className="w-3.5 h-3.5 text-primary/70" />
-                {label}
-              </span>
-            ))}
-          </div>
-
-          <div className="hidden lg:flex items-center justify-center gap-3 mt-4 text-xs text-muted-foreground flex-wrap">
-            <a href="/panel-shops" className="hover:text-foreground transition-colors">Shops</a>
-            <span>·</span>
-            <a href="/tow-companies" className="hover:text-foreground transition-colors">Tow Trucks</a>
-            <span>·</span>
+          <div className="flex items-center justify-center gap-3 mt-8 text-[11px] text-muted-foreground flex-wrap">
             <a href="/about" className="hover:text-foreground transition-colors">About</a>
             <span>·</span>
-            <a href="/how-it-works" className="hover:text-foreground transition-colors">How It Works</a>
+            <a href="/how-it-works" className="hover:text-foreground transition-colors">How it works</a>
             <span>·</span>
             <a href="/faq" className="hover:text-foreground transition-colors">FAQ</a>
             <span>·</span>
