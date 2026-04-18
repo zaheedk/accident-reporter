@@ -21,17 +21,24 @@ async function ensureInit() {
  * and exchanges the Google ID token for a Supabase session — no browser redirect.
  */
 export async function signInWithGoogleNative() {
-  await ensureInit();
-  const result = await GoogleAuth.signIn();
-  const idToken = result.authentication?.idToken;
-  if (!idToken) throw new Error('No ID token returned from Google');
+  try {
+    await ensureInit();
+    const result = await GoogleAuth.signIn();
+    console.log('[GoogleAuth] signIn result keys:', Object.keys(result || {}));
+    const idToken = result.authentication?.idToken;
+    if (!idToken) throw new Error('No ID token returned from Google');
 
-  const { data, error } = await supabase.auth.signInWithIdToken({
-    provider: 'google',
-    token: idToken,
-  });
-  if (error) throw error;
-  return data;
+    const { data, error } = await supabase.auth.signInWithIdToken({
+      provider: 'google',
+      token: idToken,
+    });
+    if (error) throw error;
+    return data;
+  } catch (err: any) {
+    console.error('[GoogleAuth] native sign-in failed:', err);
+    const msg = err?.message || err?.error || JSON.stringify(err);
+    throw new Error(`Google sign-in failed: ${msg}`);
+  }
 }
 
 export async function signOutGoogleNative() {
