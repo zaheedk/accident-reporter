@@ -6,7 +6,7 @@ import { PhotoCapture } from '@/components/PhotoCapture';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ClaimReport, ThirdPartyVehicle, Witness, Vehicle, WEATHER_OPTIONS, ROAD_OPTIONS } from '@/types';
 import { deleteClaim, getVehicles, saveClaim } from '@/lib/storage';
-import { compressImage } from '@/lib/image-compress';
+
 import { supabase } from '@/integrations/supabase/client';
 import { resolveClaimId } from '@/lib/claim-id';
 import { useAuth } from '@/contexts/AuthContext';
