@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
-import { Car, FileText, Camera, Phone, FolderOpen, Bell, ChevronRight, ChevronLeft, X, Sparkles } from 'lucide-react';
+import { Car, FileText, Camera, Phone, FolderOpen, Bell, ChevronRight, ChevronLeft, X, Sparkles, LucideIcon } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/contexts/AuthContext';
 
 interface Step {
-  icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
+  icon: LucideIcon;
   title: string;
   body: string;
   accent: string;
