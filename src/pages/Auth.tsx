@@ -5,6 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 
 import { useAuth } from '@/contexts/AuthContext';
 import PhoneAuth from '@/components/PhoneAuth';
+import { isNativeApp, signInWithGoogleNative } from '@/lib/native-google-auth';
 
 const SITE_URL = import.meta.env.PROD ? 'https://savo.co.nz(' : window.location.origin;
 
@@ -67,6 +68,15 @@ export default function Auth() {
 
   const handleOAuth = async () => {
     setError('');
+    // Native Android/iOS: use the in-app Google account picker (no browser).
+    if (isNativeApp()) {
+      try {
+        await signInWithGoogleNative();
+      } catch (err: any) {
+        setError(err?.message || 'Google sign-in failed');
+      }
+      return;
+    }
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
