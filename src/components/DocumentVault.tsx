@@ -91,6 +91,12 @@ export default function DocumentVault({ vehicleId = null, showCategories }: Docu
     const file = e.target.files?.[0];
     if (!file || !user) return;
 
+    if (!selectedCategory) {
+      toast.error('Please choose a document type first');
+      if (fileInputRef.current) fileInputRef.current.value = '';
+      return;
+    }
+
     if (file.size > 10 * 1024 * 1024) {
       toast.error('File too large. Maximum 10MB.');
       return;
@@ -120,6 +126,7 @@ export default function DocumentVault({ vehicleId = null, showCategories }: Docu
       if (dbError) throw dbError;
 
       toast.success('Document uploaded');
+      setSelectedCategory('');
       await loadDocuments();
     } catch (err: any) {
       toast.error(err.message || 'Upload failed');
@@ -167,20 +174,23 @@ export default function DocumentVault({ vehicleId = null, showCategories }: Docu
 
   return (
     <div className="space-y-5">
-      {/* Document type — inline filter row */}
-      <div className="flex items-center justify-between gap-3">
-        <p className="text-[11px] font-medium tracking-[0.12em] uppercase text-muted-foreground">
-          Document type
-        </p>
+      {/* Upload zone with inline document type selector */}
+      <div className="border-2 border-dashed border-border rounded-2xl px-6 py-6 flex flex-col items-center text-center">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button className="inline-flex items-center gap-1.5 h-9 px-3 rounded-lg border border-border bg-card text-sm font-medium text-foreground hover:border-foreground/20 transition-colors">
-              <span className="text-base leading-none">{activeCategory.icon}</span>
-              <span>{activeCategory.label}</span>
+            <button className="inline-flex items-center gap-1.5 h-9 px-3 rounded-lg border border-border bg-card text-sm font-medium text-foreground hover:border-foreground/20 transition-colors self-stretch sm:self-auto justify-center">
+              {activeCategory ? (
+                <>
+                  <span className="text-base leading-none">{activeCategory.icon}</span>
+                  <span>{activeCategory.label}</span>
+                </>
+              ) : (
+                <span className="text-muted-foreground">Choose document type</span>
+              )}
               <ChevronDown className="w-3.5 h-3.5 text-muted-foreground ml-0.5" strokeWidth={2} />
             </button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="rounded-xl min-w-[200px]">
+          <DropdownMenuContent align="center" className="rounded-xl min-w-[220px]">
             {categories.map(c => (
               <DropdownMenuItem
                 key={c.value}
@@ -193,11 +203,8 @@ export default function DocumentVault({ vehicleId = null, showCategories }: Docu
             ))}
           </DropdownMenuContent>
         </DropdownMenu>
-      </div>
 
-      {/* Upload zone */}
-      <div className="border-2 border-dashed border-border rounded-2xl px-6 py-8 flex flex-col items-center text-center">
-        <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center mb-3">
+        <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center mb-3 mt-5">
           <UploadCloud className="w-6 h-6 text-muted-foreground" strokeWidth={1.75} />
         </div>
         <p className="text-base font-semibold text-foreground">Tap to upload</p>
@@ -205,7 +212,13 @@ export default function DocumentVault({ vehicleId = null, showCategories }: Docu
           PDF, images or documents up to 10 MB
         </p>
         <button
-          onClick={() => fileInputRef.current?.click()}
+          onClick={() => {
+            if (!selectedCategory) {
+              toast.error('Please choose a document type first');
+              return;
+            }
+            fileInputRef.current?.click();
+          }}
           disabled={uploading}
           className="mt-4 inline-flex items-center justify-center gap-2 h-10 px-5 rounded-xl border border-foreground/15 bg-card text-sm font-semibold text-foreground hover:bg-muted/50 transition-colors disabled:opacity-50"
         >
