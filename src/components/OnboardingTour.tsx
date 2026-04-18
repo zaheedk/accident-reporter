@@ -127,12 +127,12 @@ export default function OnboardingTour() {
             <X className="w-4 h-4" />
           </button>
 
-          {/* Hero image area with subtle navy gradient backdrop */}
+          {/* Hero image area showing real app screenshots */}
           <div
-            className="relative h-56 sm:h-64 w-full overflow-hidden"
+            className="relative h-64 sm:h-72 w-full overflow-hidden flex items-start justify-center"
             style={{
               background:
-                'linear-gradient(135deg, hsl(var(--primary) / 0.08) 0%, hsl(var(--primary) / 0.02) 60%, hsl(var(--card)) 100%)',
+                'linear-gradient(180deg, hsl(var(--muted) / 0.6) 0%, hsl(var(--muted) / 0.2) 100%)',
             }}
           >
             <AnimatePresence mode="wait">
@@ -140,14 +140,15 @@ export default function OnboardingTour() {
                 key={step}
                 src={current.image}
                 alt=""
-                width={768}
-                height={512}
+                width={390}
+                height={844}
                 loading="lazy"
-                initial={{ opacity: 0, scale: 0.96, y: 8 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.98 }}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
                 transition={{ duration: 0.35, ease: 'easeOut' }}
-                className="absolute inset-0 w-full h-full object-contain p-6"
+                className="h-full w-auto object-contain object-top pt-6 drop-shadow-xl"
+                style={{ maxWidth: '70%' }}
               />
             </AnimatePresence>
 
