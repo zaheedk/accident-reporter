@@ -49,24 +49,22 @@ export default function DocumentVault({ vehicleId = null, showCategories }: Docu
   const [uploading, setUploading] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<Document | null>(null);
   const [deleting, setDeleting] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState('other');
+  const [selectedCategory, setSelectedCategory] = useState<string>('');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const categories = showCategories
     ? CATEGORIES.filter(c => showCategories.includes(c.value))
     : CATEGORIES;
 
-  const activeCategory = categories.find(c => c.value === selectedCategory) || categories[0];
+  const activeCategory = categories.find(c => c.value === selectedCategory);
 
   useEffect(() => {
     if (user) loadDocuments();
   }, [user, vehicleId]);
 
-  // Reset selected category if it's not in the allowed list for this context
+  // Reset selected category when context changes
   useEffect(() => {
-    if (!categories.some(c => c.value === selectedCategory)) {
-      setSelectedCategory(categories[0]?.value || 'other');
-    }
+    setSelectedCategory('');
   }, [vehicleId]);
 
   const loadDocuments = async () => {
