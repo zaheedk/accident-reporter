@@ -766,46 +766,21 @@ export default function ClaimWizard() {
                     )}
                     <div className="space-y-3">
                       <label className="form-label flex items-center gap-1.5"><Camera className="w-3.5 h-3.5" /> Your Vehicle Photos</label>
-                      <p className="text-xs text-muted-foreground -mt-2">Take photos of the damage to your vehicle</p>
-                      {photos.length > 0 && (
-                        <div className="grid grid-cols-4 gap-2">
-                          {photos.map(photo => (
-                            <div key={photo.id} className="relative aspect-square rounded-xl overflow-hidden bg-muted">
-                              <img src={getPhotoUrl(photo)} alt={photo.file_name} className="w-full h-full object-cover" />
-                              <button onClick={() => removePhoto(photo)}
-                                className="absolute top-1 right-1 w-5 h-5 rounded-full bg-foreground/80 text-card flex items-center justify-center">
-                                <X className="w-3 h-3" />
-                              </button>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                      <div className="flex gap-2">
-                        <button type="button" onClick={async () => {
-                          if (!claim.id) {
-                            const savedId = await saveClaim({ ...claim, updatedAt: new Date().toISOString() });
-                            if (savedId) setClaim(prev => ({ ...prev, id: savedId }));
-                          }
-                          cameraInputRef.current?.click();
-                        }} disabled={uploading}
-                          className="btn-secondary flex-1 h-9 gap-2 text-xs">
-                          {uploading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Camera className="w-3.5 h-3.5" />}
-                          Take photo
-                        </button>
-                        <button type="button" onClick={async () => {
-                          if (!claim.id) {
-                            const savedId = await saveClaim({ ...claim, updatedAt: new Date().toISOString() });
-                            if (savedId) setClaim(prev => ({ ...prev, id: savedId }));
-                          }
-                          photoInputRef.current?.click();
-                        }} disabled={uploading}
-                          className="btn-secondary flex-1 h-9 gap-2 text-xs">
-                          {uploading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <span>📁</span>}
-                          Gallery
-                        </button>
-                      </div>
-                      <input ref={cameraInputRef} type="file" accept="image/*" capture="environment" multiple className="hidden" onChange={handlePhotoUpload} />
-                      <input ref={photoInputRef} type="file" accept="image/*" multiple className="hidden" onChange={handlePhotoUpload} />
+                      <p className="text-xs text-muted-foreground -mt-2">Take multiple photos, then press Done to upload them all</p>
+                      <PhotoCapture
+                        photos={photos}
+                        uploading={uploading}
+                        setUploading={setUploading}
+                        userId={user?.id || ''}
+                        ensureClaimId={async () => {
+                          if (claim.id) return claim.id;
+                          const savedId = await saveClaim({ ...claim, updatedAt: new Date().toISOString() });
+                          if (savedId) setClaim(prev => ({ ...prev, id: savedId }));
+                          return savedId || undefined;
+                        }}
+                        onUploaded={(p) => setPhotos(prev => [...prev, p as ClaimPhoto])}
+                        onRemoved={removePhoto}
+                      />
                     </div>
                   </div>
                 )}
