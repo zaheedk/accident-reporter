@@ -84,10 +84,11 @@ export default function VehicleList() {
             </Link>
           </motion.div>
         ) : (
-          <motion.div variants={fadeUp} className="grid grid-cols-2 gap-3">
+          <motion.div variants={fadeUp} className="space-y-3">
             {vehicles.map((v, i) => {
               const today = new Date().toISOString().slice(0, 10);
               const isExpired = (v.wofExpiry && v.wofExpiry < today) || (v.regoExpiry && v.regoExpiry < today) || (v.insuranceExpiry && v.insuranceExpiry < today);
+              const insurerPhone = v.insuranceCompany ? insurerPhones[v.insuranceCompany] : '';
 
               return (
                 <motion.div
@@ -96,27 +97,30 @@ export default function VehicleList() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.1 + i * 0.06, duration: 0.35 }}
                   whileHover={{ y: -2, boxShadow: '0 8px 24px rgba(0,0,0,0.08)' }}
-                  whileTap={{ scale: 0.97 }}
+                  whileTap={{ scale: 0.99 }}
                   className={`group transition-all relative overflow-hidden ${isExpired ? 'card-surface-elevated border-destructive/40 bg-destructive/5 hover:border-destructive/60' : 'card-surface-elevated hover:border-primary/20'}`}
                 >
-                  <Link to={`/vehicles/${v.id}/edit`} className="flex flex-col h-[92px] justify-between">
+                  <Link to={`/vehicles/${v.id}/edit`} className="flex items-center gap-3 pr-10">
                     {v.photoUrl ? (
-                      <img src={v.photoUrl} alt={`${v.make} ${v.model}`} className="w-10 h-10 rounded-xl object-cover ring-1 ring-border/30" />
+                      <img src={v.photoUrl} alt={`${v.make} ${v.model}`} className="w-14 h-14 rounded-xl object-cover ring-1 ring-border/30 shrink-0" />
                     ) : (
-                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isExpired ? 'bg-destructive/10' : 'bg-primary/10'}`}>
-                        <Car className={`w-5 h-5 ${isExpired ? 'text-destructive' : 'text-primary'}`} strokeWidth={1.8} />
+                      <div className={`w-14 h-14 rounded-xl flex items-center justify-center shrink-0 ${isExpired ? 'bg-destructive/10' : 'bg-primary/10'}`}>
+                        <Car className={`w-7 h-7 ${isExpired ? 'text-destructive' : 'text-primary'}`} strokeWidth={1.8} />
                       </div>
                     )}
-                    <div className="min-w-0">
-                      <div className="text-sm font-bold text-foreground tabular-nums tracking-wide">{v.regoNumber}</div>
+                    <div className="min-w-0 flex-1">
+                      <div className="text-base font-bold text-foreground tabular-nums tracking-wide truncate">{v.regoNumber}</div>
                       <div className="text-xs text-muted-foreground truncate mt-0.5">{v.year} {v.make} {v.model}</div>
+                      {isExpired && (
+                        <div className="text-[11px] font-semibold text-destructive mt-1">Expired documents</div>
+                      )}
                     </div>
                   </Link>
-                  {v.insuranceCompany && insurerPhones[v.insuranceCompany] && (
+                  {insurerPhone && (
                     <a
-                      href={`tel:${insurerPhones[v.insuranceCompany].replace(/\s/g, '')}`}
+                      href={`tel:${insurerPhone.replace(/\s/g, '')}`}
                       onClick={(e) => e.stopPropagation()}
-                      className="flex items-center gap-1.5 mt-2 px-2.5 py-1.5 rounded-lg text-[11px] font-semibold text-white bg-primary whitespace-nowrap transition-transform hover:scale-105 active:scale-95 w-fit"
+                      className="flex items-center gap-1.5 mt-3 px-3 py-1.5 rounded-lg text-[11px] font-semibold text-white bg-primary whitespace-nowrap transition-transform hover:scale-105 active:scale-95 w-fit"
                     >
                       <Phone className="w-3 h-3" />
                       Call insurer
@@ -124,11 +128,11 @@ export default function VehicleList() {
                   )}
                   <button
                     onClick={(e) => { e.preventDefault(); e.stopPropagation(); setDeleteTarget(v); }}
-                    className="absolute top-3 right-3 p-1.5 rounded-lg text-muted-foreground/20 hover:text-destructive hover:bg-destructive/5 transition-colors"
+                    aria-label="Delete vehicle"
+                    className="absolute top-3 right-3 p-1.5 rounded-lg text-muted-foreground/40 hover:text-destructive hover:bg-destructive/5 transition-colors"
                   >
-                    <Trash2 className="w-3.5 h-3.5" strokeWidth={1.5} />
+                    <Trash2 className="w-4 h-4" strokeWidth={1.5} />
                   </button>
-                  <ArrowUpRight className={`absolute bottom-3 right-3 w-4 h-4 transition-all ${isExpired ? 'text-destructive/30 group-hover:text-destructive group-hover:translate-x-0.5 group-hover:-translate-y-0.5' : 'text-muted-foreground/20 group-hover:text-primary group-hover:translate-x-0.5 group-hover:-translate-y-0.5'}`} />
                 </motion.div>
               );
             })}

@@ -22,10 +22,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     .split(/[\s@]/).filter(Boolean).slice(0, 2).map(s => s[0].toUpperCase()).join('');
 
   const authedNavItems = [
-    { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-    { to: '/vehicles', icon: Car, label: 'Vehicles' },
-    { to: '/claims', icon: FileText, label: 'Incidents' },
-    { to: '/documents', icon: FolderOpen, label: 'Documents' },
+    { to: '/dashboard', icon: LayoutDashboard, label: 'Home' },
+    { to: '/vehicles', icon: Car, label: 'Garage' },
+    { to: '/claims', icon: FileText, label: 'Reports' },
+    { to: '/documents', icon: FolderOpen, label: 'Docs' },
     { to: '/panel-shops', icon: Wrench, label: 'Shops' },
   ];
 
@@ -147,16 +147,16 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </div>
       </div>
 
-      <nav className="fixed bottom-0 left-0 right-0 bg-card border-t border-border/50 flex justify-around py-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] px-2 md:hidden z-40" style={{ transform: 'translateZ(0)' }}>
+      <nav className="fixed bottom-0 left-0 right-0 bg-card border-t border-border/50 grid grid-cols-5 gap-0 py-1.5 pb-[max(0.375rem,env(safe-area-inset-bottom))] px-1 md:hidden z-40" style={{ transform: 'translateZ(0)' }}>
         {navItems.map(({ to, icon: Icon, label }) => {
           const active = location.pathname === to || (to !== '/dashboard' && to !== '/' && location.pathname.startsWith(to));
           return (
             <Link key={to} to={to}
-              className={`flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-xl text-[11px] font-medium transition-all min-w-0 ${active ? 'text-primary' : 'text-muted-foreground'}`}>
+              className={`flex flex-col items-center justify-center gap-0.5 px-1 py-1 rounded-xl text-[10px] font-medium transition-all min-w-0 ${active ? 'text-primary' : 'text-muted-foreground'}`}>
               <div className={`p-1 rounded-lg transition-colors ${active ? 'bg-primary/10' : ''}`}>
                 <Icon className="w-5 h-5" strokeWidth={active ? 2.2 : 1.5} />
               </div>
-              <span className="truncate max-w-full">{label}</span>
+              <span className="leading-tight">{label}</span>
             </Link>
           );
         })}

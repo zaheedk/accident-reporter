@@ -178,8 +178,8 @@ export default function Dashboard() {
               <Phone className="w-5 h-5" style={{ color: 'hsl(152, 60%, 42%)' }} strokeWidth={1.8} />
             </div>
             <div>
-              <div className="text-sm font-bold text-foreground">Call a tow truck</div>
-              <div className="text-xs text-muted-foreground mt-0.5">24/7 emergency towing</div>
+              <div className="text-sm font-bold text-foreground leading-tight">Call tow truck</div>
+              <div className="text-xs text-muted-foreground mt-1">24/7 emergency</div>
             </div>
           </motion.button>
 
