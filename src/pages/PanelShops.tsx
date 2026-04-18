@@ -131,7 +131,7 @@ export default function PanelShops() {
               const dist = getDistance(shop.latitude ?? null, shop.longitude ?? null);
               const distLabel = formatDistance(dist);
               return (
-                <Card key={shop.id} className="p-4">
+                <Card key={shop.id} className="p-4 rounded-2xl border-border shadow-none hover:border-foreground/20 transition-colors">
                   <div className="flex items-start gap-3">
                     <div className="flex-1 space-y-2.5 min-w-0">
                       <div className="flex items-start justify-between gap-2">
@@ -152,7 +152,7 @@ export default function PanelShops() {
                         {shop.email && <div className="flex items-center gap-2"><Mail className="w-3.5 h-3.5 shrink-0" /><a href={`mailto:${shop.email}`} className="text-foreground underline-offset-2 hover:underline truncate">{shop.email}</a></div>}
                         {shop.website && <div className="flex items-center gap-2"><ExternalLink className="w-3.5 h-3.5 shrink-0" /><a href={shop.website} target="_blank" rel="noopener noreferrer" className="text-foreground underline-offset-2 hover:underline truncate">Website</a></div>}
                         {nearbyActive && distLabel && (
-                          <div className="flex items-center gap-2 font-medium" style={{ color: 'hsl(152, 60%, 42%)' }}>
+                          <div className="flex items-center gap-2 font-medium text-primary">
                             <Navigation className="w-3.5 h-3.5 shrink-0" />
                             <span>{distLabel}</span>
                           </div>

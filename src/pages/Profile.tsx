@@ -351,14 +351,14 @@ export default function Profile() {
 
         <div className="pt-4 space-y-3">
           <h2 className="text-[13px] font-semibold text-destructive">Danger Zone</h2>
-          <button onClick={() => setShowDeactivate(true)} className="w-full card-surface flex items-center gap-3 text-left hover:shadow-md transition-shadow">
+          <button onClick={() => setShowDeactivate(true)} className="w-full card-surface flex items-center gap-3 text-left hover:border-foreground/20 transition-colors">
             <div className="w-9 h-9 rounded-xl bg-muted flex items-center justify-center shrink-0"><ShieldOff className="w-4 h-4 text-muted-foreground" /></div>
             <div>
               <div className="text-sm font-semibold text-foreground">Deactivate Account</div>
               <div className="text-xs text-muted-foreground">Temporarily disable your account</div>
             </div>
           </button>
-          <button onClick={() => setShowDelete(true)} className="w-full card-surface flex items-center gap-3 text-left hover:shadow-md transition-shadow border border-destructive/20">
+          <button onClick={() => setShowDelete(true)} className="w-full card-surface flex items-center gap-3 text-left hover:border-destructive/40 transition-colors !border-destructive/20">
             <div className="w-9 h-9 rounded-xl bg-destructive/10 flex items-center justify-center shrink-0"><Trash2 className="w-4 h-4 text-destructive" /></div>
             <div>
               <div className="text-sm font-semibold text-destructive">Delete Account</div>

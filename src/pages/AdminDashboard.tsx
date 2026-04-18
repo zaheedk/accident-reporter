@@ -71,7 +71,7 @@ export default function AdminDashboard() {
 
         {/* Stats */}
         <div className="grid grid-cols-3 gap-3">
-          <Link to="/users" className="card-surface text-center hover:shadow-md transition-shadow">
+          <Link to="/users" className="card-surface text-center hover:border-foreground/20 transition-colors">
             <Users className="w-5 h-5 text-muted-foreground mx-auto mb-2" strokeWidth={1.5} />
             <div className="text-2xl font-extrabold tabular-nums text-foreground">{profiles.length}</div>
             <div className="text-[11px] text-muted-foreground mt-0.5">Users</div>
@@ -89,7 +89,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* Admin links */}
-        <Link to="/admin/insurance-companies" className="card-surface flex items-center justify-between hover:shadow-md transition-shadow">
+        <Link to="/admin/insurance-companies" className="card-surface flex items-center justify-between hover:border-foreground/20 transition-colors">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-xl bg-muted flex items-center justify-center">
               <Building2 className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />

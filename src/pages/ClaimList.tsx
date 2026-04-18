@@ -154,7 +154,7 @@ export default function ClaimList() {
               const statusLabel = isDraft ? 'Draft' : 'Saved';
               const photoUrl = claimPhotos[c.id];
               return (
-                <div key={c.id} className="card-surface overflow-hidden hover:shadow-md transition-all group">
+                <div key={c.id} className="card-surface overflow-hidden hover:border-foreground/20 transition-colors group !p-0">
                   <div className="flex">
                     <Link to={href} className="block flex-1 min-w-0">
                       <div className="flex gap-3">
