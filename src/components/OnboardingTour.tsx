@@ -115,7 +115,7 @@ export default function OnboardingTour() {
           animate={{ y: 0, opacity: 1, scale: 1 }}
           exit={{ y: 40, opacity: 0 }}
           transition={{ type: 'spring', damping: 26, stiffness: 280 }}
-          className="relative w-full sm:max-w-md bg-card rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden border border-border/40"
+          className="relative w-full sm:max-w-md bg-card rounded-t-3xl sm:rounded-3xl overflow-hidden border border-border"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Close button */}
@@ -176,10 +176,7 @@ export default function OnboardingTour() {
                 <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-primary/80">
                   {current.eyebrow}
                 </p>
-                <h2
-                  className="mt-2 text-2xl font-bold text-foreground leading-tight"
-                  style={{ fontFamily: "'Playfair Display', serif" }}
-                >
+                <h2 className="mt-2 text-2xl font-bold text-foreground leading-tight tracking-tight">
                   {current.title}
                 </h2>
                 <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
@@ -231,11 +228,7 @@ export default function OnboardingTour() {
               )}
               <button
                 onClick={next}
-                className="flex-1 h-11 px-5 rounded-xl text-sm font-bold inline-flex items-center justify-center gap-1.5 active:scale-[0.98] transition-all text-primary-foreground shadow-lg shadow-primary/25"
-                style={{
-                  background:
-                    'linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(213 52% 18%) 100%)',
-                }}
+                className="flex-1 h-11 px-5 rounded-xl text-sm font-bold inline-flex items-center justify-center gap-1.5 active:scale-[0.98] transition-colors text-primary-foreground bg-primary hover:bg-primary/90"
               >
                 {isLast ? "Let's go" : 'Next'}
                 {!isLast && <ChevronRight className="w-4 h-4" />}

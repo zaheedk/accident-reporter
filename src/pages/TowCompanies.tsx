@@ -87,7 +87,7 @@ export default function TowCompanies() {
               const dist = getDistance(company.latitude, company.longitude);
               const distLabel = formatDistance(dist);
               return (
-                <Card key={company.id} className="p-4">
+                <Card key={company.id} className="p-4 rounded-2xl border-border shadow-none hover:border-foreground/20 transition-colors">
                   <div className="flex items-start gap-3">
                     <div className="flex-1 space-y-2.5 min-w-0">
                       <h3 className="text-sm font-semibold text-foreground leading-tight">{company.name}</h3>
@@ -102,7 +102,7 @@ export default function TowCompanies() {
                           </div>
                         )}
                         {nearbyActive && distLabel && (
-                          <div className="flex items-center gap-2 font-medium" style={{ color: 'hsl(152, 60%, 42%)' }}>
+                          <div className="flex items-center gap-2 font-medium text-primary">
                             <Navigation className="w-3.5 h-3.5 shrink-0" />
                             <span>{distLabel}</span>
                           </div>

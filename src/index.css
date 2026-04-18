@@ -82,11 +82,11 @@
   }
 
   .card-surface {
-    @apply bg-card rounded-2xl p-5 border border-border;
+    @apply bg-card rounded-2xl p-5 border border-border shadow-none;
   }
 
   .card-surface-elevated {
-    @apply bg-card rounded-2xl p-5 border border-border;
+    @apply bg-card rounded-2xl p-5 border border-border shadow-none;
   }
 
   .card-dark {

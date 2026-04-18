@@ -297,7 +297,7 @@ export default function Dashboard() {
         <SheetContent side="bottom" className="h-[90vh] rounded-t-2xl p-0 flex flex-col" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
           <SheetHeader className="px-5 pt-5 pb-3 shrink-0">
             <SheetTitle className="text-left flex items-center gap-2">
-                <Phone className="w-5 h-5" style={{ color: 'hsl(152, 60%, 42%)' }} />
+                <Phone className="w-5 h-5 text-foreground" />
                 Tow Companies Near You
             </SheetTitle>
           </SheetHeader>
@@ -329,7 +329,7 @@ export default function Dashboard() {
               <div className="text-center py-8 text-sm text-muted-foreground">No tow companies found</div>
             ) : (
               displayedTowCompanies.map(tc => (
-                <div key={tc.id} className="flex items-center gap-3 p-3 rounded-xl border border-border hover:border-primary/20 transition-all">
+                <div key={tc.id} className="flex items-center gap-3 p-3 rounded-xl border border-border hover:border-foreground/20 transition-colors">
                   <div className="flex-1 min-w-0">
                     <div className="text-sm font-semibold text-foreground">{tc.name}</div>
                     <div className="text-xs text-muted-foreground mt-0.5 flex items-center gap-1">
@@ -338,13 +338,12 @@ export default function Dashboard() {
                     </div>
                     <div className="text-xs text-muted-foreground mt-0.5">{tc.phone}</div>
                     {getDistanceLabel(tc) && (
-                      <div className="text-xs font-medium mt-0.5" style={{ color: 'hsl(152, 60%, 42%)' }}>{getDistanceLabel(tc)}</div>
+                      <div className="text-xs font-medium text-primary mt-0.5">{getDistanceLabel(tc)}</div>
                     )}
                   </div>
                   <a
                     href={`tel:${tc.phone.replace(/\s/g, '')}`}
-                    className="shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold text-white whitespace-nowrap"
-                    style={{ backgroundColor: 'hsl(152, 60%, 42%)' }}
+                    className="shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold bg-foreground text-background whitespace-nowrap hover:bg-foreground/90 transition-colors"
                   >
                     <Phone className="w-3.5 h-3.5" />
                     Call

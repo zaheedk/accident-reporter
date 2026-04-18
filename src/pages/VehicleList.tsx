@@ -96,16 +96,15 @@ export default function VehicleList() {
                   initial={{ opacity: 0, y: 16 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.1 + i * 0.06, duration: 0.35 }}
-                  whileHover={{ y: -2, boxShadow: '0 8px 24px rgba(0,0,0,0.08)' }}
                   whileTap={{ scale: 0.99 }}
-                  className={`group transition-all relative overflow-hidden ${isExpired ? 'card-surface-elevated border-destructive/40 bg-destructive/5 hover:border-destructive/60' : 'card-surface-elevated hover:border-primary/20'}`}
+                  className={`group transition-colors relative overflow-hidden ${isExpired ? 'card-surface-elevated border-destructive/40 hover:border-destructive/60' : 'card-surface-elevated hover:border-foreground/20'}`}
                 >
                   <Link to={`/vehicles/${v.id}/edit`} className="flex items-center gap-3 pr-10">
                     {v.photoUrl ? (
                       <img src={v.photoUrl} alt={`${v.make} ${v.model}`} className="w-14 h-14 rounded-xl object-cover ring-1 ring-border/30 shrink-0" />
                     ) : (
-                      <div className={`w-14 h-14 rounded-xl flex items-center justify-center shrink-0 ${isExpired ? 'bg-destructive/10' : 'bg-primary/10'}`}>
-                        <Car className={`w-7 h-7 ${isExpired ? 'text-destructive' : 'text-primary'}`} strokeWidth={1.8} />
+                      <div className={`w-14 h-14 rounded-xl flex items-center justify-center shrink-0 ${isExpired ? 'bg-destructive/10' : 'bg-muted'}`}>
+                        <Car className={`w-7 h-7 ${isExpired ? 'text-destructive' : 'text-foreground/70'}`} strokeWidth={1.8} />
                       </div>
                     )}
                     <div className="min-w-0 flex-1">
@@ -120,7 +119,7 @@ export default function VehicleList() {
                     <a
                       href={`tel:${insurerPhone.replace(/\s/g, '')}`}
                       onClick={(e) => e.stopPropagation()}
-                      className="flex items-center gap-1.5 mt-3 px-3 py-1.5 rounded-lg text-[11px] font-semibold text-white bg-primary whitespace-nowrap transition-transform hover:scale-105 active:scale-95 w-fit"
+                      className="inline-flex items-center gap-1.5 mt-3 px-3 py-1.5 rounded-lg text-[11px] font-semibold text-foreground border border-border hover:bg-muted whitespace-nowrap transition-colors w-fit"
                     >
                       <Phone className="w-3 h-3" />
                       Call insurer
