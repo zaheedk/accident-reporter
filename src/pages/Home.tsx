@@ -71,30 +71,28 @@ export default function Home() {
         {/* Hero */}
         <motion.section
           variants={stagger} initial="hidden" animate="visible"
-          className="relative overflow-hidden"
-          style={{ background: 'linear-gradient(135deg, hsl(213 52% 24%), hsl(213 52% 14%))' }}
+          className="relative overflow-hidden bg-dark-surface"
         >
-          <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle at 70% 30%, white 0%, transparent 60%)' }} />
           <div className="max-w-5xl mx-auto px-4 py-16 md:py-24 relative z-10 flex flex-col md:flex-row items-center gap-10 md:gap-16">
             <motion.div variants={fadeUp} className="flex-1 max-w-xl">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-white/15 text-white/90 backdrop-blur-sm mb-5">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold bg-white/[0.06] text-white/80 border border-white/10 mb-6">
                 <Shield className="w-3.5 h-3.5" /> Made for New Zealand drivers
               </span>
-              <h1 className="text-3xl md:text-5xl font-extrabold text-white leading-tight tracking-tight">
+              <h1 className="text-4xl md:text-6xl font-bold text-white leading-[1.05] tracking-tight">
                 Car accident?<br />
-                <span className="text-white/80">We've got you covered.</span>
+                <span className="text-white/60">We've got you covered.</span>
               </h1>
-              <p className="mt-4 text-base md:text-lg text-white/70 leading-relaxed max-w-md">
+              <p className="mt-5 text-base md:text-lg text-white/60 leading-relaxed max-w-md">
                 SAVO helps New Zealand drivers document accidents, lodge insurance claims, request courtesy cars, and find panel beaters — all in one free app.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
                 <Link to="/auth?mode=signup">
-                  <Button size="lg" className="text-sm font-bold gap-2 h-12 px-6">
+                  <Button size="lg" className="text-sm font-semibold gap-2 h-12 px-6 bg-primary hover:bg-primary/90 text-primary-foreground">
                     Get started — it's free <ArrowRight className="w-4 h-4" />
                   </Button>
                 </Link>
                 <Link to="/how-it-works">
-                  <Button variant="outline" size="lg" className="text-sm font-semibold h-12 px-6 border-white/20 text-white bg-white/10 hover:bg-white/20">
+                  <Button variant="outline" size="lg" className="text-sm font-semibold h-12 px-6 border-white/15 text-white bg-transparent hover:bg-white/[0.06]">
                     How it works
                   </Button>
                 </Link>
@@ -104,7 +102,7 @@ export default function Home() {
               <img
                 src={heroScene}
                 alt="Person documenting car accident with smartphone"
-                className="w-full rounded-2xl shadow-2xl border border-white/10"
+                className="w-full rounded-2xl border border-white/10"
                 width={800}
                 height={800}
                 loading="eager"
@@ -190,20 +188,18 @@ export default function Home() {
 
         {/* CTA */}
         <motion.section initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}
-          className="relative overflow-hidden"
-          style={{ background: 'linear-gradient(135deg, hsl(213 52% 24%), hsl(213 52% 14%))' }}>
-          <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle at 30% 70%, white 0%, transparent 60%)' }} />
+          className="relative overflow-hidden bg-dark-surface">
           <div className="max-w-5xl mx-auto px-4 py-16 md:py-20 text-center relative z-10">
-            <h2 className="text-2xl md:text-3xl font-extrabold text-white">Ready to protect your next claim?</h2>
-            <p className="mt-3 text-white/70 max-w-md mx-auto">Join Kiwi drivers who use SAVO to document accidents, lodge insurance claims, and arrange courtesy cars with confidence.</p>
+            <h2 className="text-3xl md:text-4xl font-bold text-white tracking-tight">Ready to protect your next claim?</h2>
+            <p className="mt-3 text-white/60 max-w-md mx-auto">Join Kiwi drivers who use SAVO to document accidents, lodge insurance claims, and arrange courtesy cars with confidence.</p>
             <div className="mt-8 flex flex-wrap justify-center gap-3">
               <Link to="/auth?mode=signup">
-                <Button size="lg" className="text-sm font-bold gap-2 h-12 px-8 bg-white text-primary hover:bg-white/90">
+                <Button size="lg" className="text-sm font-semibold gap-2 h-12 px-8 bg-primary hover:bg-primary/90 text-primary-foreground">
                   Create free account <ArrowRight className="w-4 h-4" />
                 </Button>
               </Link>
               <Link to="/auth?mode=login">
-                <Button variant="outline" size="lg" className="text-sm font-semibold h-12 px-6 border-white/20 text-white bg-white/10 hover:bg-white/20">
+                <Button variant="outline" size="lg" className="text-sm font-semibold h-12 px-6 border-white/15 text-white bg-transparent hover:bg-white/[0.06]">
                   Log in
                 </Button>
               </Link>
