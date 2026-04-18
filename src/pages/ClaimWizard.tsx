@@ -73,8 +73,6 @@ export default function ClaimWizard() {
   const [loadingClaim, setLoadingClaim] = useState(!!id);
   const [submitting, setSubmitting] = useState(false);
   const [navigating, setNavigating] = useState(false);
-  const photoInputRef = useRef<HTMLInputElement>(null);
-  const cameraInputRef = useRef<HTMLInputElement>(null);
 
   // Checklist state for new claims
   const [openSection, setOpenSection] = useState<string | null>('vehicle');
