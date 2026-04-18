@@ -317,33 +317,6 @@ export default function ClaimWizard() {
     navigate('/claims');
   };
 
-  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files || !user) return;
-    const claimId = claim.id || (await saveClaim({ ...claim, updatedAt: new Date().toISOString() }));
-    if (!claimId) return;
-    if (!claim.id) setClaim(prev => ({ ...prev, id: claimId }));
-
-    setUploading(true);
-    for (const rawFile of Array.from(files)) {
-      if (rawFile.size > 10 * 1024 * 1024) { toast.error(`${rawFile.name} is too large (max 10MB)`); continue; }
-      const file = await compressImage(rawFile);
-      const ext = file.name.split('.').pop();
-      const path = `${user.id}/${claimId}/${Date.now()}.${ext}`;
-      const { error: uploadError } = await supabase.storage.from('claim-photos').upload(path, file);
-      if (uploadError) { toast.error(`Failed to upload ${file.name}`); continue; }
-      const { data } = await supabase.from('claim_photos')
-        .insert({ claim_id: claimId, user_id: user.id, file_path: path, file_name: file.name })
-        .select('id, file_path, file_name').single();
-      if (data) {
-        const { data: urlData } = await supabase.storage.from('claim-photos').createSignedUrl(path, 3600);
-        setPhotos(prev => [...prev, { ...data, url: urlData?.signedUrl || '' } as ClaimPhoto]);
-      }
-    }
-    setUploading(false);
-    toast.success('Photos uploaded');
-    if (photoInputRef.current) photoInputRef.current.value = '';
-  };
 
   const removePhoto = async (photo: ClaimPhoto) => {
     await supabase.storage.from('claim-photos').remove([photo.file_path]);
