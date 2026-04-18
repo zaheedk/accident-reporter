@@ -539,6 +539,7 @@ export default function ClaimWizard() {
                                 <label className="form-label flex items-center gap-1.5"><Camera className="w-3.5 h-3.5" /> Your Vehicle Photos</label>
                                 <p className="text-xs text-muted-foreground -mt-2">Take multiple photos, then press Done to upload them all</p>
                                 <PhotoCapture
+                                  claimId={claim.id}
                                   photos={photos}
                                   uploading={uploading}
                                   setUploading={setUploading}
@@ -739,6 +740,7 @@ export default function ClaimWizard() {
                       <label className="form-label flex items-center gap-1.5"><Camera className="w-3.5 h-3.5" /> Your Vehicle Photos</label>
                       <p className="text-xs text-muted-foreground -mt-2">Take multiple photos, then press Done to upload them all</p>
                       <PhotoCapture
+                                  claimId={claim.id}
                         photos={photos}
                         uploading={uploading}
                         setUploading={setUploading}
