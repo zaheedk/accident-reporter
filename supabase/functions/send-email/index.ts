@@ -244,7 +244,7 @@ function getEmailContent(type: string, data: Record<string, string> = {}) {
       const isInsurer = data.isInsurerEmail === 'true';
       const subjectLine = isInsurer
         ? `New Claim Submitted – Policy ${data.policyNumber || 'N/A'} | ${data.rego || ''}`
-        : `Your claim has been submitted – ${data.date || 'SAVO'}`;
+        : `Your claim has been saved – ${data.date || 'SAVO'}`;
       const bodyHtml = isInsurer
         ? `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
