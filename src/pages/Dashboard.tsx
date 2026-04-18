@@ -144,155 +144,125 @@ export default function Dashboard() {
 
   return (
     <AppLayout>
-      <motion.div className="space-y-5" variants={stagger} initial="hidden" animate="visible">
-        {/* Header */}
-        <motion.div variants={fadeUp} className="flex items-center justify-between">
-          <div>
-            <p className="text-sm text-muted-foreground">Welcome back</p>
-            <h1 className="text-[22px] font-extrabold text-foreground tracking-tight -mt-0.5">{firstName} 👋</h1>
-          </div>
-          <div className="flex items-center gap-2">
+      <motion.div className="space-y-6" variants={stagger} initial="hidden" animate="visible">
+        {/* Dark hero card */}
+        <motion.div variants={fadeUp} className="card-dark">
+          <div className="flex items-start justify-between mb-6">
+            <div>
+              <p className="text-xs uppercase tracking-[0.18em] text-white/50 font-semibold">Welcome back</p>
+              <h1 className="text-2xl font-bold text-white tracking-tight mt-1">{firstName}</h1>
+            </div>
             <Link to="/profile">
-              <Avatar className="w-10 h-10 ring-2 ring-primary/10 ring-offset-2 ring-offset-background transition-transform hover:scale-105">
+              <Avatar className="w-11 h-11 ring-1 ring-white/15">
                 <AvatarImage src={avatarUrl} alt={displayName} />
-                <AvatarFallback className="bg-primary/10 text-primary text-xs font-bold">
+                <AvatarFallback className="bg-white/10 text-white text-xs font-bold">
                   {displayName ? displayName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : <User className="w-4 h-4" />}
                 </AvatarFallback>
               </Avatar>
             </Link>
-            <button onClick={signOut} className="p-2 rounded-xl hover:bg-muted transition-colors" title="Sign out">
-              <LogOut className="w-5 h-5 text-muted-foreground" strokeWidth={1.5} />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              onClick={handleOpenTowSheet}
+              className="rounded-xl bg-white/[0.06] hover:bg-white/[0.1] border border-white/10 px-4 py-4 text-left transition-colors"
+            >
+              <Phone className="w-5 h-5 text-white mb-3" strokeWidth={1.8} />
+              <div className="text-sm font-semibold text-white">Call tow truck</div>
+              <div className="text-[11px] text-white/50 mt-0.5">24/7 emergency</div>
             </button>
+            <Link
+              to="/claims/new"
+              className="rounded-xl bg-primary hover:bg-primary/90 px-4 py-4 transition-colors block"
+            >
+              <AlertTriangle className="w-5 h-5 text-white mb-3" strokeWidth={1.8} />
+              <div className="text-sm font-semibold text-white">Report incident</div>
+              <div className="text-[11px] text-white/70 mt-0.5">File a claim</div>
+            </Link>
           </div>
         </motion.div>
 
-        {/* Action cards */}
-        <motion.div variants={fadeUp} className="grid grid-cols-2 gap-3">
-          <motion.button
-            onClick={handleOpenTowSheet}
-            whileHover={{ y: -2, boxShadow: '0 8px 24px rgba(0,0,0,0.08)' }}
-            whileTap={{ scale: 0.97 }}
-            className="card-surface-elevated group hover:border-primary/20 transition-all text-left h-[140px] flex flex-col justify-between"
-          >
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: 'hsla(152, 60%, 42%, 0.1)' }}>
-              <Phone className="w-5 h-5" style={{ color: 'hsl(152, 60%, 42%)' }} strokeWidth={1.8} />
-            </div>
-            <div>
-              <div className="text-sm font-bold text-foreground leading-tight">Call tow truck</div>
-              <div className="text-xs text-muted-foreground mt-1">24/7 emergency</div>
-            </div>
-          </motion.button>
-
-          <motion.div
-            whileHover={{ y: -2, boxShadow: '0 12px 32px hsla(213, 52%, 24%, 0.35)' }}
-            whileTap={{ scale: 0.97 }}
-          >
-            <Link to="/claims/new" className="card-gradient block group h-[140px] flex flex-col justify-between">
-              <div className="relative z-10 flex flex-col justify-between h-full">
-                <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
-                  <AlertTriangle className="w-5 h-5 text-white" />
-                </div>
-                <div>
-                  <div className="text-sm font-bold text-white">Report an incident</div>
-                  <p className="text-xs text-white/70 mt-0.5">File a new claim report in minutes</p>
-                </div>
+        {/* OVERVIEW */}
+        <motion.div variants={fadeUp} className="space-y-3">
+          <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground font-semibold px-1">Overview</p>
+          <div className="grid grid-cols-2 gap-3">
+            <Link to="/vehicles" className="group rounded-2xl bg-card border border-border p-4 hover:border-foreground/20 transition-colors">
+              <div className="flex items-center justify-between mb-3">
+                <Car className="w-5 h-5 text-foreground" strokeWidth={1.8} />
+                <ArrowUpRight className="w-4 h-4 text-muted-foreground/40 group-hover:text-foreground transition-colors" />
               </div>
-            </Link>
-          </motion.div>
-        </motion.div>
-
-        {/* Stat cards */}
-        <motion.div variants={fadeUp} className="grid grid-cols-2 gap-3">
-          <motion.div whileHover={{ y: -3, boxShadow: '0 8px 24px rgba(0,0,0,0.08)' }} whileTap={{ scale: 0.97 }}>
-            <Link to="/vehicles" className="card-surface-elevated group hover:border-primary/20 transition-all block relative overflow-hidden">
-              <div className="absolute -top-6 -right-6 w-20 h-20 rounded-full bg-primary/5 blur-xl" />
-              <div className="relative z-10 flex flex-col items-center text-center py-2">
-                <div className="flex items-center gap-2 mb-3">
-                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
-                    <Car className="w-7 h-7 text-primary" strokeWidth={1.8} />
-                  </div>
-                  <span className="text-sm font-bold text-foreground">Vehicles</span>
-                </div>
-                {vehiclesLoading ? (
-                  <Skeleton className="h-9 w-8" />
-                ) : (
-                  <div className="text-3xl font-extrabold tabular-nums text-foreground">{vehicles.length}</div>
+              {vehiclesLoading ? <Skeleton className="h-8 w-10" /> : (
+                <div className="text-3xl font-bold tabular-nums text-foreground leading-none">{vehicles.length}</div>
+              )}
+              <div className="flex items-center justify-between mt-2">
+                <span className="text-xs text-muted-foreground">Vehicles</span>
+                {vehicles.length > 0 && (
+                  <span className="text-[10px] font-semibold text-primary bg-primary/10 px-1.5 py-0.5 rounded">
+                    {vehicles.length} total
+                  </span>
                 )}
               </div>
-              <ArrowUpRight className="absolute top-3 right-3 w-4 h-4 text-muted-foreground/30 group-hover:text-primary group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
             </Link>
-          </motion.div>
-          <motion.div whileHover={{ y: -3, boxShadow: '0 8px 24px rgba(0,0,0,0.08)' }} whileTap={{ scale: 0.97 }}>
-            <Link to="/claims" className="card-surface-elevated group hover:border-primary/20 transition-all block relative overflow-hidden">
-              <div className="absolute -top-6 -right-6 w-20 h-20 rounded-full bg-primary/5 blur-xl" />
-              <div className="relative z-10 flex flex-col items-center text-center py-2">
-                <div className="flex items-center gap-2 mb-3">
-                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
-                    <img src={crashIcon} alt="Accidents" className="w-7 h-7" />
-                  </div>
-                  <span className="text-sm font-bold text-foreground">Accidents</span>
-                </div>
-                {claimsLoading ? (
-                  <Skeleton className="h-9 w-8" />
-                ) : (
-                  <div className="text-3xl font-extrabold tabular-nums text-foreground">{claims.length}</div>
+            <Link to="/claims" className="group rounded-2xl bg-card border border-border p-4 hover:border-foreground/20 transition-colors">
+              <div className="flex items-center justify-between mb-3">
+                <FileText className="w-5 h-5 text-foreground" strokeWidth={1.8} />
+                <ArrowUpRight className="w-4 h-4 text-muted-foreground/40 group-hover:text-foreground transition-colors" />
+              </div>
+              {claimsLoading ? <Skeleton className="h-8 w-10" /> : (
+                <div className="text-3xl font-bold tabular-nums text-foreground leading-none">{claims.length}</div>
+              )}
+              <div className="flex items-center justify-between mt-2">
+                <span className="text-xs text-muted-foreground">Reports</span>
+                {claims.length > 0 && (
+                  <span className="text-[10px] font-semibold text-foreground bg-muted px-1.5 py-0.5 rounded">
+                    Active
+                  </span>
                 )}
               </div>
-              <ArrowUpRight className="absolute top-3 right-3 w-4 h-4 text-muted-foreground/30 group-hover:text-primary group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
             </Link>
-          </motion.div>
+          </div>
         </motion.div>
 
         {/* Insurance section */}
         {vehicles.filter(v => v.insuranceCompany).length > 0 && (
-          <motion.div variants={fadeUp} className="space-y-2">
-            <div className="flex items-center gap-2 px-1">
-              <Shield className="w-4 h-4 text-primary" />
-              <span className="text-[13px] font-semibold text-foreground">Your Insurance</span>
-            </div>
-            {vehicles.filter(v => v.insuranceCompany).map((v, i) => (
-              <motion.div
-                key={v.id}
-                initial={{ opacity: 0, x: -12 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.3 + i * 0.08, duration: 0.35 }}
-                className="card-surface-elevated flex items-center gap-3"
-              >
-                <div className="flex-1 min-w-0">
-                  <div className="text-sm font-semibold text-foreground">{v.insuranceCompany}</div>
-                  <div className="text-xs text-muted-foreground mt-0.5">
-                    {v.year} {v.make} {v.model} · {v.regoNumber}
-                  </div>
-                  {v.insurancePolicyNumber && (
-                    <div className="text-xs text-muted-foreground mt-0.5">
-                      Policy: <span className="font-mono font-medium text-foreground">{v.insurancePolicyNumber}</span>
+          <motion.div variants={fadeUp} className="space-y-3">
+            <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground font-semibold px-1">Your Insurance</p>
+            <div className="space-y-2">
+              {vehicles.filter(v => v.insuranceCompany).map((v) => (
+                <div
+                  key={v.id}
+                  className="rounded-2xl bg-card border border-border p-4 flex items-center gap-3"
+                >
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm font-semibold text-foreground">{v.insuranceCompany}</div>
+                    <div className="text-xs text-muted-foreground mt-0.5 truncate">
+                      {v.year} {v.make} {v.model} · {v.regoNumber}
                     </div>
+                  </div>
+                  {insurerPhones[v.insuranceCompany] && (
+                    <a
+                      href={`tel:${insurerPhones[v.insuranceCompany].replace(/\s/g, '')}`}
+                      className="shrink-0 inline-flex items-center gap-1.5 px-3 h-8 rounded-lg text-xs font-semibold text-foreground border border-border hover:bg-muted transition-colors"
+                    >
+                      <Phone className="w-3.5 h-3.5" />
+                      Call
+                    </a>
                   )}
                 </div>
-                {insurerPhones[v.insuranceCompany] && (
-                  <a
-                    href={`tel:${insurerPhones[v.insuranceCompany].replace(/\s/g, '')}`}
-                    className="shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold text-white bg-primary whitespace-nowrap transition-transform hover:scale-105 active:scale-95"
-                  >
-                    <Phone className="w-3.5 h-3.5" />
-                    Call
-                  </a>
-                )}
-              </motion.div>
-            ))}
+              ))}
+            </div>
           </motion.div>
         )}
 
         {recentMessages.length > 0 && (
-          <motion.div variants={fadeUp} className="card-surface-elevated space-y-2">
+          <motion.div variants={fadeUp} className="rounded-2xl bg-card border border-border p-4 space-y-2">
             <div className="flex items-center gap-2 mb-1">
-              <MessageSquare className="w-4 h-4 text-primary" />
-              <span className="text-[13px] font-semibold text-foreground">Recent Messages</span>
+              <MessageSquare className="w-4 h-4 text-foreground" />
+              <span className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground font-semibold">Recent Messages</span>
             </div>
             {recentMessages.map(msg => (
               <Link key={msg.id} to={`/claims/${msg.claim_id}`}
                 className="flex items-start gap-2.5 p-2.5 rounded-xl hover:bg-muted/50 transition-colors -mx-1">
-                <ArrowDownRight className={`w-3.5 h-3.5 mt-0.5 shrink-0 ${msg.direction === 'inbound' ? 'text-emerald-600' : 'text-primary'}`} />
+                <ArrowDownRight className={`w-3.5 h-3.5 mt-0.5 shrink-0 ${msg.direction === 'inbound' ? 'text-primary' : 'text-foreground'}`} />
                 <div className="flex-1 min-w-0">
                   <p className="text-xs font-medium text-foreground truncate">{msg.subject || '(No subject)'}</p>
                   <p className="text-[11px] text-muted-foreground truncate mt-0.5">{msg.body?.slice(0, 80)}</p>
@@ -308,16 +278,16 @@ export default function Dashboard() {
 
         {/* Admin */}
         {isAdmin && (
-          <motion.div variants={fadeUp} whileHover={{ x: 4 }} whileTap={{ scale: 0.98 }}>
-            <Link to="/admin" className="card-surface-elevated flex items-center gap-4 group hover:border-primary/20 transition-all">
-              <div className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: 'hsla(152, 60%, 42%, 0.1)' }}>
-                <Shield className="w-5 h-5" style={{ color: 'hsl(152, 60%, 42%)' }} />
+          <motion.div variants={fadeUp}>
+            <Link to="/admin" className="rounded-2xl bg-card border border-border p-4 flex items-center gap-3 group hover:border-foreground/20 transition-colors">
+              <div className="w-10 h-10 rounded-xl bg-foreground flex items-center justify-center shrink-0">
+                <Shield className="w-5 h-5 text-background" strokeWidth={1.8} />
               </div>
               <div className="flex-1 min-w-0">
-                <div className="text-sm font-bold text-foreground">Admin Overview</div>
+                <div className="text-sm font-semibold text-foreground">Admin Overview</div>
                 <div className="text-xs text-muted-foreground mt-0.5">Manage users, vehicles & reports</div>
               </div>
-              <ChevronRight className="w-4 h-4 text-muted-foreground/30 group-hover:text-primary group-hover:translate-x-1 transition-all shrink-0" strokeWidth={1.5} />
+              <ChevronRight className="w-4 h-4 text-muted-foreground/40 group-hover:text-foreground transition-colors shrink-0" strokeWidth={1.8} />
             </Link>
           </motion.div>
         )}
