@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { FileText, Upload, Trash2, Download, Loader2, Eye, FolderOpen } from 'lucide-react';
+import { FileText, UploadCloud, Trash2, Loader2, Eye, ChevronDown } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
@@ -7,6 +7,12 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { formatDistanceToNow } from 'date-fns';
 
 interface Document {
@@ -21,12 +27,12 @@ interface Document {
 }
 
 const CATEGORIES: { value: string; label: string; icon: string }[] = [
-  { value: 'insurance_policy', label: 'Insurance Policy', icon: '🛡️' },
+  { value: 'insurance_policy', label: 'Insurance policy', icon: '🛡️' },
   { value: 'registration', label: 'Registration', icon: '📋' },
-  { value: 'wof_certificate', label: 'WOF Certificate', icon: '✅' },
-  { value: 'drivers_license', label: "Driver's Licence", icon: '🪪' },
-  { value: 'purchase_receipt', label: 'Purchase Receipt', icon: '🧾' },
-  { value: 'service_record', label: 'Service Record', icon: '🔧' },
+  { value: 'wof_certificate', label: 'WOF certificate', icon: '✅' },
+  { value: 'drivers_license', label: "Driver's licence", icon: '🪪' },
+  { value: 'purchase_receipt', label: 'Purchase receipt', icon: '🧾' },
+  { value: 'service_record', label: 'Service record', icon: '🔧' },
   { value: 'other', label: 'Other', icon: '📄' },
 ];
 
@@ -36,7 +42,7 @@ interface DocumentVaultProps {
   showCategories?: string[];
 }
 
-export default function DocumentVault({ vehicleId = null, title = 'Document Vault', showCategories }: DocumentVaultProps) {
+export default function DocumentVault({ vehicleId = null, showCategories }: DocumentVaultProps) {
   const { user } = useAuth();
   const [documents, setDocuments] = useState<Document[]>([]);
   const [loading, setLoading] = useState(true);
@@ -50,12 +56,22 @@ export default function DocumentVault({ vehicleId = null, title = 'Document Vaul
     ? CATEGORIES.filter(c => showCategories.includes(c.value))
     : CATEGORIES;
 
+  const activeCategory = categories.find(c => c.value === selectedCategory) || categories[0];
+
   useEffect(() => {
     if (user) loadDocuments();
   }, [user, vehicleId]);
 
+  // Reset selected category if it's not in the allowed list for this context
+  useEffect(() => {
+    if (!categories.some(c => c.value === selectedCategory)) {
+      setSelectedCategory(categories[0]?.value || 'other');
+    }
+  }, [vehicleId]);
+
   const loadDocuments = async () => {
     if (!user) return;
+    setLoading(true);
     let query = supabase
       .from('user_documents' as any)
       .select('*')
@@ -148,38 +164,62 @@ export default function DocumentVault({ vehicleId = null, title = 'Document Vaul
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   };
 
-  const getCategoryInfo = (val: string) => CATEGORIES.find(c => c.value === val) || CATEGORIES[CATEGORIES.length - 1];
+  const getCategoryInfo = (val: string) =>
+    CATEGORIES.find(c => c.value === val) || CATEGORIES[CATEGORIES.length - 1];
 
   return (
-    <div className="space-y-3">
-      <div className="flex items-center justify-between">
-        <h2 className="text-sm font-semibold text-foreground flex items-center gap-1.5">
-          <FolderOpen className="w-4 h-4" strokeWidth={1.5} /> {title}
-        </h2>
+    <div className="space-y-5">
+      {/* Document type — inline filter row */}
+      <div className="flex items-center justify-between gap-3">
+        <p className="text-[11px] font-medium tracking-[0.12em] uppercase text-muted-foreground">
+          Document type
+        </p>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button className="inline-flex items-center gap-1.5 h-9 px-3 rounded-lg border border-border bg-card text-sm font-medium text-foreground hover:border-foreground/20 transition-colors">
+              <span className="text-base leading-none">{activeCategory.icon}</span>
+              <span>{activeCategory.label}</span>
+              <ChevronDown className="w-3.5 h-3.5 text-muted-foreground ml-0.5" strokeWidth={2} />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="rounded-xl min-w-[200px]">
+            {categories.map(c => (
+              <DropdownMenuItem
+                key={c.value}
+                onClick={() => setSelectedCategory(c.value)}
+                className="py-2"
+              >
+                <span className="text-base mr-2">{c.icon}</span>
+                <span>{c.label}</span>
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
-      {/* Upload area */}
-      <div className="border-2 border-dashed border-border rounded-xl p-4 space-y-3">
-        <div className="flex items-center gap-2">
-          <select
-            value={selectedCategory}
-            onChange={e => setSelectedCategory(e.target.value)}
-            className="form-input text-sm h-10 flex-1 min-w-0 truncate rounded-lg px-2.5 py-1"
-          >
-            {categories.map(c => (
-              <option key={c.value} value={c.value}>{c.icon} {c.label}</option>
-            ))}
-          </select>
-          <button
-            onClick={() => fileInputRef.current?.click()}
-            disabled={uploading}
-            className="btn-primary h-10 px-4 text-sm rounded-lg shrink-0 flex items-center gap-1.5"
-          >
-            {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
-            Upload
-          </button>
+      {/* Upload zone */}
+      <div className="border-2 border-dashed border-border rounded-2xl px-6 py-8 flex flex-col items-center text-center">
+        <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center mb-3">
+          <UploadCloud className="w-6 h-6 text-muted-foreground" strokeWidth={1.75} />
         </div>
-        <p className="text-[10px] text-muted-foreground text-center">PDF, images, or documents up to 10MB</p>
+        <p className="text-base font-semibold text-foreground">Tap to upload</p>
+        <p className="text-xs text-muted-foreground mt-1 max-w-[220px]">
+          PDF, images or documents up to 10 MB
+        </p>
+        <button
+          onClick={() => fileInputRef.current?.click()}
+          disabled={uploading}
+          className="mt-4 inline-flex items-center justify-center gap-2 h-10 px-5 rounded-xl border border-foreground/15 bg-card text-sm font-semibold text-foreground hover:bg-muted/50 transition-colors disabled:opacity-50"
+        >
+          {uploading ? (
+            <>
+              <Loader2 className="w-4 h-4 animate-spin" />
+              Uploading…
+            </>
+          ) : (
+            'Browse files'
+          )}
+        </button>
         <input
           ref={fileInputRef}
           type="file"
@@ -189,37 +229,55 @@ export default function DocumentVault({ vehicleId = null, title = 'Document Vaul
         />
       </div>
 
-      {/* Document list */}
+      {/* Document list / empty state */}
       {loading ? (
-        <div className="flex items-center justify-center py-8">
+        <div className="flex items-center justify-center py-10">
           <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
         </div>
       ) : documents.length === 0 ? (
-        <div className="text-center py-6">
-          <FileText className="w-10 h-10 text-muted-foreground/30 mx-auto mb-2" strokeWidth={1.2} />
-          <p className="text-xs text-muted-foreground">No documents yet</p>
+        <div className="flex flex-col items-center text-center py-8">
+          <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center mb-3">
+            <FileText className="w-6 h-6 text-muted-foreground" strokeWidth={1.5} />
+          </div>
+          <p className="text-sm font-semibold text-foreground">No documents yet</p>
+          <p className="text-xs text-muted-foreground mt-1 max-w-[260px]">
+            {vehicleId
+              ? 'Uploaded files for this vehicle will appear here'
+              : 'Your personal uploads will appear here'}
+          </p>
         </div>
       ) : (
-        <div className="space-y-1.5">
+        <div className="space-y-2">
           {documents.map(doc => {
             const cat = getCategoryInfo(doc.category);
             return (
-              <div key={doc.id} className="card-surface flex items-center gap-3">
-                <div className="w-9 h-9 rounded-lg bg-muted flex items-center justify-center text-base shrink-0">
+              <div
+                key={doc.id}
+                className="flex items-center gap-3 bg-card border border-border rounded-xl p-3"
+              >
+                <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center text-base shrink-0">
                   {cat.icon}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-xs font-medium text-foreground truncate">{doc.file_name}</p>
-                  <p className="text-[10px] text-muted-foreground">
+                  <p className="text-sm font-medium text-foreground truncate">{doc.file_name}</p>
+                  <p className="text-[11px] text-muted-foreground truncate mt-0.5">
                     {cat.label} · {formatSize(doc.file_size)} · {formatDistanceToNow(new Date(doc.created_at), { addSuffix: true })}
                   </p>
                 </div>
-                <div className="flex items-center gap-0.5">
-                  <button onClick={() => handleDownload(doc)} className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
-                    <Eye className="w-3.5 h-3.5" />
+                <div className="flex items-center gap-0.5 shrink-0">
+                  <button
+                    onClick={() => handleDownload(doc)}
+                    className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                    aria-label="View"
+                  >
+                    <Eye className="w-4 h-4" strokeWidth={1.75} />
                   </button>
-                  <button onClick={() => setDeleteTarget(doc)} className="p-1.5 rounded-lg text-muted-foreground/40 hover:text-destructive hover:bg-destructive/5 transition-colors">
-                    <Trash2 className="w-3.5 h-3.5" />
+                  <button
+                    onClick={() => setDeleteTarget(doc)}
+                    className="p-2 rounded-lg text-muted-foreground/50 hover:text-destructive hover:bg-destructive/5 transition-colors"
+                    aria-label="Delete"
+                  >
+                    <Trash2 className="w-4 h-4" strokeWidth={1.75} />
                   </button>
                 </div>
               </div>
