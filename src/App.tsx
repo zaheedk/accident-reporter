@@ -8,6 +8,7 @@ import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { Loader2 } from "lucide-react";
 import { Capacitor } from "@capacitor/core";
 import InstallPrompt from "@/components/InstallPrompt";
+import OnboardingTour from "@/components/OnboardingTour";
 
 // Lazy-loaded pages for code splitting
 const Home = lazy(() => import("./pages/Home"));
@@ -95,6 +96,7 @@ const App = () => (
       <TooltipProvider>
         <Toaster />
         <Sonner />
+        <OnboardingTour />
         <BrowserRouter>
           <Suspense fallback={<PageLoader />}>
             <Routes>
