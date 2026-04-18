@@ -4,4 +4,5 @@
     <string name="title_activity_main">Savo</string>
     <string name="package_name">nz.co.savo.app</string>
     <string name="custom_url_scheme">nz.co.savo.app</string>
+    <string name="server_client_id">801226493928-0uq06s4htaufogc6ra2h1t9j1tog2rfl.apps.googleusercontent.com</string>
 </resources>
