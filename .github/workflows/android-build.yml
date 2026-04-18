@@ -40,6 +40,20 @@ jobs:
       - name: Decode Keystore
         run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > android/app/savonz-keystore.jks
 
+      # TEMPORARY: Print SHA-1 fingerprints for Google OAuth setup. Remove after copying values.
+      - name: Print Keystore SHA-1 Fingerprints
+        run: |
+          echo "================ RELEASE KEYSTORE ================"
+          keytool -list -v \
+            -keystore android/app/savonz-keystore.jks \
+            -alias "${{ secrets.KEY_ALIAS }}" \
+            -storepass "${{ secrets.KEYSTORE_PASSWORD }}" \
+            -keypass "${{ secrets.KEY_PASSWORD }}" \
+            | grep -E "Alias name|SHA1|SHA-1|SHA256|SHA-256" || true
+          echo "=================================================="
+          echo "Package name: nz.co.savo.app"
+          echo "=================================================="
+
       - name: Build Signed Release AAB
         working-directory: android
         run: ./gradlew bundleRelease
