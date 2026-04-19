@@ -57,26 +57,29 @@ export default function VehicleList() {
   return (
     <AppLayout>
       <motion.div className="space-y-5" variants={stagger} initial="hidden" animate="visible">
-        <motion.div variants={fadeUp} className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <button onClick={() => navigate('/dashboard')} aria-label="Back" className="w-10 h-10 -ml-1 rounded-xl border border-border bg-card hover:bg-muted flex items-center justify-center transition-colors">
+        <motion.div variants={fadeUp} className="flex items-start justify-between gap-3">
+          <div className="flex items-start gap-3 min-w-0">
+            <button onClick={() => navigate('/dashboard')} aria-label="Back" className="w-10 h-10 -ml-1 rounded-xl border border-border bg-card hover:bg-muted flex items-center justify-center transition-colors shrink-0 mt-1">
               <ArrowLeft className="w-5 h-5 text-foreground" strokeWidth={2} />
             </button>
-            <h1 className="text-[22px] font-extrabold text-foreground tracking-tight">My vehicles</h1>
+            <div className="min-w-0">
+              <p className="eyebrow">Garage</p>
+              <h1 className="display-heading mt-1">My vehicles</h1>
+            </div>
           </div>
-          <Link to="/vehicles/new" className="inline-flex items-center gap-1.5 h-8 px-3.5 text-xs font-semibold rounded-lg border-2 border-primary text-primary hover:bg-primary/5 transition-colors">
+          <Link to="/vehicles/new" className="inline-flex items-center gap-1.5 h-9 px-3.5 text-xs font-semibold rounded-xl bg-foreground text-background hover:bg-foreground/90 transition-colors shrink-0 mt-1">
             <Plus className="w-3.5 h-3.5" /> Add
           </Link>
         </motion.div>
 
         {vehicles.length === 0 ? (
-          <motion.div variants={fadeUp} className="text-center py-16 px-6">
+          <motion.div variants={fadeUp} className="card-soft text-center py-14 px-6">
             <div className="w-16 h-16 rounded-2xl bg-muted/60 flex items-center justify-center mx-auto mb-4">
-              <Car className="w-8 h-8 text-muted-foreground/40" strokeWidth={1.5} />
+              <Car className="w-8 h-8 text-muted-foreground/50" strokeWidth={1.5} />
             </div>
             <p className="text-base font-semibold text-foreground">No vehicles added yet</p>
             <p className="text-sm text-muted-foreground mt-1.5 mb-5 max-w-[240px] mx-auto">Add your vehicles to speed up claim filing.</p>
-            <Link to="/vehicles/new" className="btn-primary h-10 px-5 text-sm rounded-xl inline-flex items-center gap-2">
+            <Link to="/vehicles/new" className="inline-flex items-center justify-center gap-2 h-10 px-5 rounded-xl text-sm font-semibold bg-foreground text-background hover:bg-foreground/90 transition-colors">
               <Plus className="w-4 h-4" /> Add vehicle
             </Link>
           </motion.div>
@@ -94,7 +97,7 @@ export default function VehicleList() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.1 + i * 0.06, duration: 0.35 }}
                   whileTap={{ scale: 0.99 }}
-                  className={`group transition-colors relative overflow-hidden ${isExpired ? 'card-surface-elevated border-destructive/40 hover:border-destructive/60' : 'card-surface-elevated hover:border-foreground/20'}`}
+                  className={`group transition-colors relative overflow-hidden card-soft ${isExpired ? 'border-destructive/40 hover:border-destructive/60' : 'hover:border-foreground/20'}`}
                 >
                   <div className="flex items-stretch gap-3 pr-10">
                     <Link to={`/vehicles/${v.id}/edit`} className="flex-1 min-w-0 flex flex-col">
@@ -107,7 +110,7 @@ export default function VehicleList() {
                         <a
                           href={`tel:${insurerPhone.replace(/\s/g, '')}`}
                           onClick={(e) => e.stopPropagation()}
-                          className="inline-flex items-center gap-1.5 mt-3 px-3 py-1.5 rounded-lg text-[11px] font-semibold text-foreground border border-foreground/40 hover:bg-muted hover:border-foreground/60 whitespace-nowrap transition-colors w-fit"
+                          className="inline-flex items-center gap-1.5 mt-3 px-3 py-1.5 rounded-lg text-[11px] font-semibold text-background bg-foreground hover:bg-foreground/90 whitespace-nowrap transition-colors w-fit"
                         >
                           <Phone className="w-3 h-3" />
                           Call insurer
