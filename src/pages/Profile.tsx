@@ -151,17 +151,17 @@ export default function Profile() {
   return (
     <AppLayout>
       <div className="space-y-5">
-        <div className="flex items-center gap-3">
-          <Link to="/dashboard" className="p-2 -ml-2 rounded-xl hover:bg-muted transition-colors">
-            <ArrowLeft className="w-5 h-5 text-foreground" strokeWidth={1.5} />
+        <div className="flex items-start gap-3">
+          <Link to="/dashboard" aria-label="Back" className="w-10 h-10 -ml-1 rounded-xl border border-border bg-card hover:bg-muted flex items-center justify-center transition-colors shrink-0 mt-1">
+            <ArrowLeft className="w-5 h-5 text-foreground" strokeWidth={2} />
           </Link>
-          <div>
-            <p className="text-sm text-muted-foreground">Settings</p>
-            <h1 className="text-[22px] font-extrabold text-foreground tracking-tight -mt-0.5">Profile</h1>
+          <div className="min-w-0">
+            <p className="eyebrow">Settings</p>
+            <h1 className="display-heading mt-1">Profile</h1>
           </div>
         </div>
 
-        <div className="card-surface flex flex-col items-center gap-3 py-6">
+        <div className="card-soft flex flex-col items-center gap-3 py-6">
           <div className="relative">
             <Avatar className="w-20 h-20">
               <AvatarImage src={profile.avatar_url} alt={profile.display_name} />
@@ -179,7 +179,7 @@ export default function Profile() {
           </div>
         </div>
 
-        <form onSubmit={handleSave} className="card-surface space-y-4">
+        <form onSubmit={handleSave} className="card-soft space-y-4">
           <div>
             <label className="form-label flex items-center gap-1.5"><User className="w-3.5 h-3.5" strokeWidth={1.5} />Full name</label>
             <input className="form-input" placeholder="Your full name" value={profile.display_name} onChange={e => setProfile(p => ({ ...p, display_name: e.target.value }))} />
@@ -215,7 +215,7 @@ export default function Profile() {
                     type="button"
                     onClick={handleSendVerification}
                     disabled={sendingVerification}
-                    className="btn-primary h-10 px-3 text-xs rounded-lg shrink-0 flex items-center gap-1.5"
+                    className="h-10 px-3 rounded-xl text-xs font-semibold bg-foreground text-background hover:bg-foreground/90 disabled:opacity-40 disabled:pointer-events-none shrink-0 inline-flex items-center gap-1.5 transition-colors"
                   >
                     {sendingVerification ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
                     Verify
@@ -254,13 +254,13 @@ export default function Profile() {
               </div>
             </div>
           </div>
-          <button type="submit" disabled={saving} className="btn-primary w-full h-11">
+          <button type="submit" disabled={saving} className="w-full h-12 rounded-xl text-sm font-semibold bg-foreground text-background hover:bg-foreground/90 active:scale-[0.99] disabled:opacity-40 disabled:pointer-events-none inline-flex items-center justify-center gap-2 transition-all">
             {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Save changes'}
           </button>
         </form>
 
         {isSupported && (
-          <div className="card-surface space-y-3">
+          <div className="card-soft space-y-3">
             <h2 className="text-sm font-semibold text-foreground flex items-center gap-1.5">
               <Bell className="w-3.5 h-3.5" strokeWidth={1.5} /> Push Notifications
             </h2>
@@ -286,7 +286,7 @@ export default function Profile() {
         )}
 
         {!isPhoneUser && (
-          <div className="card-surface space-y-4">
+          <div className="card-soft space-y-4">
             <h2 className="text-sm font-semibold text-foreground flex items-center gap-1.5">
               <Lock className="w-3.5 h-3.5" strokeWidth={1.5} /> Change password
             </h2>
@@ -335,14 +335,14 @@ export default function Profile() {
                   setConfirmPassword('');
                 }
               }}
-              className="btn-primary w-full h-11"
+              className="w-full h-12 rounded-xl text-sm font-semibold bg-foreground text-background hover:bg-foreground/90 active:scale-[0.99] disabled:opacity-40 disabled:pointer-events-none inline-flex items-center justify-center gap-2 transition-all"
             >
               {changingPassword ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Update password'}
             </button>
           </div>
         )}
 
-        <div className="card-surface">
+        <div className="card-soft">
           <DocumentVault
             title="My Documents"
             showCategories={['drivers_license', 'other']}
@@ -350,15 +350,15 @@ export default function Profile() {
         </div>
 
         <div className="pt-4 space-y-3">
-          <h2 className="text-[13px] font-semibold text-destructive">Danger Zone</h2>
-          <button onClick={() => setShowDeactivate(true)} className="w-full card-surface flex items-center gap-3 text-left hover:border-foreground/20 transition-colors">
+          <p className="eyebrow text-destructive">Danger zone</p>
+          <button onClick={() => setShowDeactivate(true)} className="w-full card-soft flex items-center gap-3 text-left hover:border-foreground/20 transition-colors">
             <div className="w-9 h-9 rounded-xl bg-muted flex items-center justify-center shrink-0"><ShieldOff className="w-4 h-4 text-muted-foreground" /></div>
             <div>
               <div className="text-sm font-semibold text-foreground">Deactivate Account</div>
               <div className="text-xs text-muted-foreground">Temporarily disable your account</div>
             </div>
           </button>
-          <button onClick={() => setShowDelete(true)} className="w-full card-surface flex items-center gap-3 text-left hover:border-destructive/40 transition-colors !border-destructive/20">
+          <button onClick={() => setShowDelete(true)} className="w-full card-soft flex items-center gap-3 text-left hover:border-destructive/40 transition-colors !border-destructive/20">
             <div className="w-9 h-9 rounded-xl bg-destructive/10 flex items-center justify-center shrink-0"><Trash2 className="w-4 h-4 text-destructive" /></div>
             <div>
               <div className="text-sm font-semibold text-destructive">Delete Account</div>
