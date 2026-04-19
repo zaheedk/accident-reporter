@@ -156,12 +156,12 @@ export default function ClaimList() {
               const statusLabel = isDraft ? 'Draft' : 'Saved';
               const photoUrl = claimPhotos[c.id];
               return (
-                <div key={c.id} className="card-surface overflow-hidden hover:border-foreground/20 transition-colors group !p-0">
+                <div key={c.id} className="card-soft overflow-hidden hover:border-foreground/20 transition-colors group !p-0">
                   <div className="flex">
                     <Link to={href} className="block flex-1 min-w-0">
                       <div className="flex gap-3">
                         {/* Photo thumbnail */}
-                        <div className="w-24 h-24 flex-shrink-0 bg-muted overflow-hidden rounded-l-xl">
+                        <div className="w-24 h-24 flex-shrink-0 bg-muted overflow-hidden rounded-l-2xl">
                           {photoUrl ? (
                             <img src={photoUrl} alt="Damage" className="w-full h-full object-cover" loading="lazy" />
                           ) : (
@@ -174,7 +174,7 @@ export default function ClaimList() {
                         {/* Content */}
                         <div className="flex-1 min-w-0 py-3">
                           <div className="flex items-center gap-2 mb-1">
-                            <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${isDraft ? 'bg-muted text-muted-foreground' : 'bg-primary/10 text-primary'}`}>
+                            <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${isDraft ? 'bg-muted text-muted-foreground' : 'bg-foreground text-background'}`}>
                               {statusLabel}
                             </span>
                             {reportNum && (
@@ -200,7 +200,7 @@ export default function ClaimList() {
 
                         {/* Centered chevron */}
                         <div className="flex items-center pr-2 flex-shrink-0">
-                          <ChevronRight className="w-4 h-4 text-muted-foreground/30 group-hover:text-primary transition-colors" />
+                          <ChevronRight className="w-4 h-4 text-muted-foreground/30 group-hover:text-foreground transition-colors" />
                         </div>
                       </div>
                     </Link>
