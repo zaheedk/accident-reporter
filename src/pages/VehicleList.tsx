@@ -73,13 +73,13 @@ export default function VehicleList() {
         </motion.div>
 
         {vehicles.length === 0 ? (
-          <motion.div variants={fadeUp} className="text-center py-16 px-6">
+          <motion.div variants={fadeUp} className="card-soft text-center py-14 px-6">
             <div className="w-16 h-16 rounded-2xl bg-muted/60 flex items-center justify-center mx-auto mb-4">
-              <Car className="w-8 h-8 text-muted-foreground/40" strokeWidth={1.5} />
+              <Car className="w-8 h-8 text-muted-foreground/50" strokeWidth={1.5} />
             </div>
             <p className="text-base font-semibold text-foreground">No vehicles added yet</p>
             <p className="text-sm text-muted-foreground mt-1.5 mb-5 max-w-[240px] mx-auto">Add your vehicles to speed up claim filing.</p>
-            <Link to="/vehicles/new" className="btn-primary h-10 px-5 text-sm rounded-xl inline-flex items-center gap-2">
+            <Link to="/vehicles/new" className="inline-flex items-center justify-center gap-2 h-10 px-5 rounded-xl text-sm font-semibold bg-foreground text-background hover:bg-foreground/90 transition-colors">
               <Plus className="w-4 h-4" /> Add vehicle
             </Link>
           </motion.div>
