@@ -53,8 +53,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-background overflow-x-hidden">
       <header className="bg-card pl-2 pr-4 py-3 pt-[max(0.75rem,env(safe-area-inset-top))] flex items-center justify-between border-b border-border/50 sticky top-0 z-30">
-        <Link to={logoLink} className="flex items-center">
+        <Link to={logoLink} className="flex items-center gap-2">
           <img src="/savo-icon.svg" alt="SAVO" className="h-9 w-9" width="36" height="36" />
+          <span className="font-extrabold tracking-tight text-foreground text-[17px]">SAVO</span>
         </Link>
         <div className="flex items-center gap-2">
           {user && <NotificationBell />}
