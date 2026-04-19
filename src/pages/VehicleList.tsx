@@ -100,9 +100,9 @@ export default function VehicleList() {
                     <Link to={`/vehicles/${v.id}/edit`} className="flex-1 min-w-0 flex flex-col">
                       <div className="text-base font-bold text-foreground tabular-nums tracking-wide truncate">{v.regoNumber}</div>
                       <div className="text-xs text-muted-foreground truncate mt-0.5">{v.year} {v.make} {v.model}</div>
-                      {isExpired && (
-                        <div className="text-[11px] font-semibold text-destructive mt-1">Expired documents</div>
-                      )}
+                      <div className="text-[11px] font-semibold text-destructive mt-1 min-h-[16px]">
+                        {isExpired ? 'Expired documents' : '\u00A0'}
+                      </div>
                       {insurerPhone && (
                         <a
                           href={`tel:${insurerPhone.replace(/\s/g, '')}`}
