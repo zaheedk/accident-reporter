@@ -43,21 +43,22 @@ export default function Documents() {
             <ArrowLeft className="w-5 h-5 text-foreground" strokeWidth={1.75} />
           </Link>
           <div>
-            <p className="text-[11px] font-medium tracking-[0.12em] uppercase text-muted-foreground">
-              Secure storage
+            <p className="eyebrow">Secure storage</p>
+            <h1 className="display-heading mt-1.5">Document vault</h1>
+            <p className="text-sm text-muted-foreground mt-2 max-w-[320px]">
+              Keep your licence, insurance and vehicle paperwork in one safe place.
             </p>
-            <h1 className="text-[28px] font-bold text-foreground tracking-tight leading-tight mt-0.5">
-              Document vault
-            </h1>
           </div>
         </div>
 
         {/* Vehicle / personal selector — hero pill */}
+        <div>
+          <p className="field-label">Showing documents for</p>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button className="w-full flex items-center gap-3 bg-card border border-border rounded-2xl px-3 py-3 hover:border-foreground/20 transition-colors text-left">
-              <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center shrink-0">
-                <Car className="w-5 h-5 text-muted-foreground" strokeWidth={1.75} />
+            <button className="w-full flex items-center gap-3 card-soft hover:border-foreground/30 transition-colors text-left !py-3 !px-3">
+              <div className="w-11 h-11 rounded-xl bg-foreground text-background flex items-center justify-center shrink-0">
+                <Car className="w-5 h-5" strokeWidth={2} />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-base font-semibold text-foreground truncate leading-tight">
@@ -89,6 +90,7 @@ export default function Documents() {
             ))}
           </DropdownMenuContent>
         </DropdownMenu>
+        </div>
 
         {/* Vault content */}
         {selected === 'personal' ? (
