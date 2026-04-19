@@ -59,13 +59,10 @@ export default function VehicleList() {
       <motion.div className="space-y-5" variants={stagger} initial="hidden" animate="visible">
         <motion.div variants={fadeUp} className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <button onClick={() => navigate('/dashboard')} className="p-2 -ml-2 rounded-xl hover:bg-muted transition-colors">
-              <ArrowLeft className="w-5 h-5 text-foreground" strokeWidth={1.5} />
+            <button onClick={() => navigate('/dashboard')} aria-label="Back" className="w-10 h-10 -ml-1 rounded-xl border border-border bg-card hover:bg-muted flex items-center justify-center transition-colors">
+              <ArrowLeft className="w-5 h-5 text-foreground" strokeWidth={2} />
             </button>
-            <div>
-              <p className="text-sm text-muted-foreground">Garage</p>
-              <h1 className="text-[22px] font-extrabold text-foreground tracking-tight -mt-0.5">My vehicles</h1>
-            </div>
+            <h1 className="text-[22px] font-extrabold text-foreground tracking-tight">My vehicles</h1>
           </div>
           <Link to="/vehicles/new" className="btn-primary h-8 px-3.5 text-xs rounded-lg">
             <Plus className="w-3.5 h-3.5" /> Add
