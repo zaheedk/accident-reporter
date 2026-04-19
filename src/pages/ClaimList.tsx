@@ -99,17 +99,17 @@ export default function ClaimList() {
   return (
     <AppLayout>
       <div className="space-y-5">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <button onClick={() => window.history.back()} className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors">
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3 min-w-0">
+            <button onClick={() => window.history.back()} className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors flex-shrink-0">
               <ArrowLeft className="w-5 h-5" />
             </button>
-            <div>
-              <p className="text-sm text-muted-foreground">Reports</p>
-              <h1 className="text-[22px] font-extrabold text-foreground tracking-tight -mt-0.5">Accident reports</h1>
+            <div className="min-w-0">
+              <p className="eyebrow">Reports</p>
+              <h1 className="display-heading mt-1">Accident reports</h1>
             </div>
           </div>
-          <Link to="/claims/new" className="btn-primary h-8 px-3.5 text-xs rounded-lg">
+          <Link to="/claims/new" className="inline-flex items-center gap-1.5 h-9 px-3.5 text-xs font-semibold rounded-xl bg-foreground text-background active:scale-[0.99] transition-transform flex-shrink-0">
             <Plus className="w-3.5 h-3.5" /> New
           </Link>
         </div>
@@ -122,7 +122,7 @@ export default function ClaimList() {
               placeholder="Search by rego, date, or report #..."
               value={search}
               onChange={e => setSearch(e.target.value)}
-              className="w-full pl-9 pr-9 py-2.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+              className="w-full pl-9 pr-9 py-2.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-foreground/10"
             />
             {search && (
               <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2">
@@ -133,13 +133,15 @@ export default function ClaimList() {
         )}
 
         {claims.length === 0 ? (
-          <div className="card-surface text-center py-14">
-            <FileText className="w-12 h-12 text-muted-foreground/30 mx-auto mb-3" strokeWidth={1.2} />
+          <div className="card-soft text-center py-14">
+            <div className="w-12 h-12 rounded-2xl bg-foreground text-background mx-auto mb-3 flex items-center justify-center">
+              <FileText className="w-6 h-6" strokeWidth={1.5} />
+            </div>
             <p className="text-sm font-semibold text-foreground">No reports yet</p>
             <p className="text-xs text-muted-foreground mt-1">File a report when you need to document an incident.</p>
           </div>
         ) : filteredClaims.length === 0 ? (
-          <div className="card-surface text-center py-10">
+          <div className="card-soft text-center py-10">
             <p className="text-sm text-muted-foreground">No reports match your search</p>
           </div>
         ) : (
