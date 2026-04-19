@@ -208,6 +208,8 @@ serve(async (req) => {
 
     if (!claim) {
       console.log('No claim found for inbound email. Subject:', subject, 'To:', toAddress);
+      // Auto-reply to the sender so they know to include CLM-XXXX
+      await sendAutoReply(from, subject, 'no_claim_ref');
       return new Response(JSON.stringify({ success: true, skipped: true, reason: 'Claim not found' }), {
         status: 200,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
