@@ -188,7 +188,7 @@ export default function VehicleForm() {
           <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handlePhotoUpload} />
         </div>
 
-        <div className="card-surface space-y-4">
+        <div className="card-soft space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div><label className="form-label">Year</label><input className="form-input" placeholder="2024" value={form.year} onChange={e => update('year', e.target.value)} /></div>
             <div><label className="form-label">Rego number</label><input className="form-input tabular-nums" placeholder="ABC123" value={form.regoNumber} onChange={e => update('regoNumber', e.target.value.toUpperCase())} /></div>
@@ -202,7 +202,7 @@ export default function VehicleForm() {
           </div>
         </div>
 
-        <div className="card-surface space-y-4">
+        <div className="card-soft space-y-4">
           <h2 className="text-sm font-semibold text-foreground">Insurance details</h2>
           <div>
             <label className="form-label">Insurance company</label>
@@ -238,7 +238,7 @@ export default function VehicleForm() {
           <div><label className="form-label">Policy expiry</label><input type="date" className="form-input tabular-nums" value={form.insuranceExpiry} onChange={e => update('insuranceExpiry', e.target.value)} /></div>
         </div>
 
-        <div className="card-surface space-y-3">
+        <div className="card-soft space-y-3">
           <Toggle active={form.financeArrangement} onToggle={() => update('financeArrangement', !form.financeArrangement)} label="Subject to finance arrangement" />
           {form.financeArrangement && (
             <div className="pl-14"><label className="form-label">Finance details</label><input className="form-input" placeholder="Finance company and details" value={form.financeDetails} onChange={e => update('financeDetails', e.target.value)} /></div>
@@ -250,7 +250,7 @@ export default function VehicleForm() {
         </div>
 
         {isEdit && id && (
-          <div className="card-surface">
+          <div className="card-soft">
             <DocumentVault
               vehicleId={id}
               title="Vehicle Documents"
@@ -259,7 +259,7 @@ export default function VehicleForm() {
           </div>
         )}
 
-        <button onClick={handleSave} disabled={saving || !form.make || !form.model || !form.regoNumber} className="btn-primary w-full h-11">
+        <button onClick={handleSave} disabled={saving || !form.make || !form.model || !form.regoNumber} className="w-full h-12 rounded-xl text-sm font-semibold bg-foreground text-background hover:bg-foreground/90 active:scale-[0.99] disabled:opacity-40 disabled:pointer-events-none inline-flex items-center justify-center gap-2 transition-all">
           {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />} {isEdit ? 'Update vehicle' : 'Save vehicle'}
         </button>
       </div>
