@@ -57,15 +57,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           <img src="/savo-logo.svg" alt="SAVO" className="h-11" width="110" height="44" />
         </Link>
         <div className="flex items-center gap-2">
-          {user && (
-            <>
-              <NotificationBell />
-              <Link to="/claims/new" className="h-8 px-3.5 text-xs rounded-lg bg-primary text-primary-foreground font-semibold inline-flex items-center gap-1.5 transition-all active:scale-[0.98]" style={{ boxShadow: '0 2px 8px hsla(213, 52%, 24%, 0.3)' }}>
-                <Plus className="w-3.5 h-3.5" />
-                New report
-              </Link>
-            </>
-          )}
+          {user && <NotificationBell />}
           {!user && (
             <>
               <Link to="/auth?mode=login" className="h-8 px-3.5 text-xs rounded-lg text-foreground font-semibold inline-flex items-center gap-1.5 transition-all hover:text-primary">
