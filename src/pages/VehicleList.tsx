@@ -96,32 +96,32 @@ export default function VehicleList() {
                   whileTap={{ scale: 0.99 }}
                   className={`group transition-colors relative overflow-hidden ${isExpired ? 'card-surface-elevated border-destructive/40 hover:border-destructive/60' : 'card-surface-elevated hover:border-foreground/20'}`}
                 >
-                  <Link to={`/vehicles/${v.id}/edit`} className="flex items-center gap-3 pr-10">
-                    <div className="min-w-0 flex-1">
+                  <div className="flex items-stretch gap-3 pr-10">
+                    <Link to={`/vehicles/${v.id}/edit`} className="flex-1 min-w-0 flex flex-col">
                       <div className="text-base font-bold text-foreground tabular-nums tracking-wide truncate">{v.regoNumber}</div>
                       <div className="text-xs text-muted-foreground truncate mt-0.5">{v.year} {v.make} {v.model}</div>
                       {isExpired && (
                         <div className="text-[11px] font-semibold text-destructive mt-1">Expired documents</div>
                       )}
-                    </div>
+                      {insurerPhone && (
+                        <a
+                          href={`tel:${insurerPhone.replace(/\s/g, '')}`}
+                          onClick={(e) => e.stopPropagation()}
+                          className="inline-flex items-center gap-1.5 mt-3 px-3 py-1.5 rounded-lg text-[11px] font-semibold text-foreground border border-border hover:bg-muted whitespace-nowrap transition-colors w-fit"
+                        >
+                          <Phone className="w-3 h-3" />
+                          Call insurer
+                        </a>
+                      )}
+                    </Link>
                     {v.photoUrl ? (
-                      <img src={v.photoUrl} alt={`${v.make} ${v.model}`} className="w-20 h-20 rounded-xl object-cover ring-1 ring-border/30 shrink-0" />
+                      <img src={v.photoUrl} alt={`${v.make} ${v.model}`} className="w-24 self-stretch rounded-xl object-cover ring-1 ring-border/30 shrink-0" />
                     ) : (
-                      <div className={`w-20 h-20 rounded-xl flex items-center justify-center shrink-0 border-2 border-dashed ${isExpired ? 'bg-destructive/10 border-destructive/40' : 'bg-muted/40 border-border'}`}>
+                      <div className={`w-24 self-stretch rounded-xl flex items-center justify-center shrink-0 border-2 border-dashed ${isExpired ? 'bg-destructive/10 border-destructive/40' : 'bg-muted/40 border-border'}`}>
                         <Car className={`w-10 h-10 ${isExpired ? 'text-destructive' : 'text-foreground/60'}`} strokeWidth={1.8} />
                       </div>
                     )}
-                  </Link>
-                  {insurerPhone && (
-                    <a
-                      href={`tel:${insurerPhone.replace(/\s/g, '')}`}
-                      onClick={(e) => e.stopPropagation()}
-                      className="inline-flex items-center gap-1.5 mt-3 px-3 py-1.5 rounded-lg text-[11px] font-semibold text-foreground border border-border hover:bg-muted whitespace-nowrap transition-colors w-fit"
-                    >
-                      <Phone className="w-3 h-3" />
-                      Call insurer
-                    </a>
-                  )}
+                  </div>
                   <button
                     onClick={(e) => { e.preventDefault(); e.stopPropagation(); setDeleteTarget(v); }}
                     aria-label="Delete vehicle"
