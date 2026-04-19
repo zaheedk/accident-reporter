@@ -151,13 +151,13 @@ export default function Profile() {
   return (
     <AppLayout>
       <div className="space-y-5">
-        <div className="flex items-center gap-3">
-          <Link to="/dashboard" className="p-2 -ml-2 rounded-xl hover:bg-muted transition-colors">
-            <ArrowLeft className="w-5 h-5 text-foreground" strokeWidth={1.5} />
+        <div className="flex items-start gap-3">
+          <Link to="/dashboard" aria-label="Back" className="w-10 h-10 -ml-1 rounded-xl border border-border bg-card hover:bg-muted flex items-center justify-center transition-colors shrink-0 mt-1">
+            <ArrowLeft className="w-5 h-5 text-foreground" strokeWidth={2} />
           </Link>
-          <div>
-            <p className="text-sm text-muted-foreground">Settings</p>
-            <h1 className="text-[22px] font-extrabold text-foreground tracking-tight -mt-0.5">Profile</h1>
+          <div className="min-w-0">
+            <p className="eyebrow">Settings</p>
+            <h1 className="display-heading mt-1">Profile</h1>
           </div>
         </div>
 
