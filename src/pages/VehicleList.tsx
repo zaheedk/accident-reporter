@@ -107,7 +107,7 @@ export default function VehicleList() {
                         <a
                           href={`tel:${insurerPhone.replace(/\s/g, '')}`}
                           onClick={(e) => e.stopPropagation()}
-                          className="inline-flex items-center gap-1.5 mt-3 px-3 py-1.5 rounded-lg text-[11px] font-semibold text-foreground border border-border hover:bg-muted whitespace-nowrap transition-colors w-fit"
+                          className="inline-flex items-center gap-1.5 mt-3 px-3 py-1.5 rounded-lg text-[11px] font-semibold text-foreground border border-foreground/40 hover:bg-muted hover:border-foreground/60 whitespace-nowrap transition-colors w-fit"
                         >
                           <Phone className="w-3 h-3" />
                           Call insurer
