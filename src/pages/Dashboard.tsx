@@ -183,7 +183,7 @@ export default function Dashboard() {
 
         {/* OVERVIEW */}
         <motion.div variants={fadeUp} className="space-y-3">
-          <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground font-semibold px-1">Overview</p>
+          <p className="text-[11px] uppercase tracking-[0.18em] text-foreground font-semibold px-1">Overview</p>
           <div className="grid grid-cols-2 gap-3">
             <Link to="/vehicles" className="group rounded-2xl bg-card border border-border p-4 hover:border-foreground/20 transition-colors">
               <div className="flex items-center justify-between mb-3">
