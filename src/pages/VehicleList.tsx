@@ -57,14 +57,17 @@ export default function VehicleList() {
   return (
     <AppLayout>
       <motion.div className="space-y-5" variants={stagger} initial="hidden" animate="visible">
-        <motion.div variants={fadeUp} className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <button onClick={() => navigate('/dashboard')} aria-label="Back" className="w-10 h-10 -ml-1 rounded-xl border border-border bg-card hover:bg-muted flex items-center justify-center transition-colors">
+        <motion.div variants={fadeUp} className="flex items-start justify-between gap-3">
+          <div className="flex items-start gap-3 min-w-0">
+            <button onClick={() => navigate('/dashboard')} aria-label="Back" className="w-10 h-10 -ml-1 rounded-xl border border-border bg-card hover:bg-muted flex items-center justify-center transition-colors shrink-0 mt-1">
               <ArrowLeft className="w-5 h-5 text-foreground" strokeWidth={2} />
             </button>
-            <h1 className="text-[22px] font-extrabold text-foreground tracking-tight">My vehicles</h1>
+            <div className="min-w-0">
+              <p className="eyebrow">Garage</p>
+              <h1 className="display-heading mt-1">My vehicles</h1>
+            </div>
           </div>
-          <Link to="/vehicles/new" className="inline-flex items-center gap-1.5 h-8 px-3.5 text-xs font-semibold rounded-lg border-2 border-primary text-primary hover:bg-primary/5 transition-colors">
+          <Link to="/vehicles/new" className="inline-flex items-center gap-1.5 h-9 px-3.5 text-xs font-semibold rounded-xl bg-foreground text-background hover:bg-foreground/90 transition-colors shrink-0 mt-1">
             <Plus className="w-3.5 h-3.5" /> Add
           </Link>
         </motion.div>
