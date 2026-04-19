@@ -153,13 +153,26 @@ export default function DocumentVault({ vehicleId = null, showCategories }: Docu
   };
 
   const handleDownload = async (doc: Document) => {
-    const { data } = await supabase.storage
-      .from('user-documents')
-      .createSignedUrl(doc.file_path, 60);
-    if (data?.signedUrl) {
-      window.open(data.signedUrl, '_blank');
-    } else {
-      toast.error('Could not generate download link');
+    try {
+      const { data, error } = await supabase.storage
+        .from('user-documents')
+        .download(doc.file_path);
+      if (error || !data) throw error || new Error('No data');
+      const blobUrl = URL.createObjectURL(data);
+      const win = window.open(blobUrl, '_blank');
+      if (!win) {
+        // Popup blocked — fall back to forced download
+        const a = document.createElement('a');
+        a.href = blobUrl;
+        a.download = doc.file_name;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+      }
+      // Revoke after a delay so the new tab has time to load
+      setTimeout(() => URL.revokeObjectURL(blobUrl), 60_000);
+    } catch (err: any) {
+      toast.error(err.message || 'Could not open document');
     }
   };
 
