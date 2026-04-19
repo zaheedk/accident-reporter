@@ -73,8 +73,8 @@ export default function NotificationBell() {
 
   return (
     <div className="relative">
-      <button onClick={() => setOpen(!open)} className="w-8 h-8 rounded-lg flex items-center justify-center text-dark-surface-muted hover:text-dark-surface-foreground transition-colors relative">
-        <Bell className="w-5 h-5" />
+      <button onClick={() => setOpen(!open)} className="w-8 h-8 rounded-lg flex items-center justify-center text-foreground hover:text-foreground transition-colors relative">
+        <Bell className="w-5 h-5" strokeWidth={2.25} />
         {unreadCount > 0 && (
           <span className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full bg-primary text-[10px] font-bold text-primary-foreground flex items-center justify-center">
             {unreadCount > 9 ? '9+' : unreadCount}
