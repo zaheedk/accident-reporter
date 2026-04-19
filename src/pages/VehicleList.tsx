@@ -64,7 +64,7 @@ export default function VehicleList() {
             </button>
             <h1 className="text-[22px] font-extrabold text-foreground tracking-tight">My vehicles</h1>
           </div>
-          <Link to="/vehicles/new" className="btn-primary h-8 px-3.5 text-xs rounded-lg">
+          <Link to="/vehicles/new" className="inline-flex items-center gap-1.5 h-8 px-3.5 text-xs font-semibold rounded-lg border-2 border-primary text-primary hover:bg-primary/5 transition-colors">
             <Plus className="w-3.5 h-3.5" /> Add
           </Link>
         </motion.div>
