@@ -175,17 +175,17 @@ export default function DocumentVault({ vehicleId = null, showCategories }: Docu
   return (
     <div className="space-y-5">
       {/* Upload zone with inline document type selector */}
-      <div className="border-2 border-dashed border-border rounded-2xl px-6 py-6 flex flex-col items-center text-center">
+      <div className="dashed-zone px-6 py-7 flex flex-col items-center text-center">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button className="inline-flex items-center gap-1.5 h-9 px-3 rounded-lg border border-border bg-card text-sm font-medium text-foreground hover:border-foreground/20 transition-colors self-stretch sm:self-auto justify-center">
+            <button className="inline-flex items-center gap-1.5 h-9 px-3.5 rounded-full border border-border bg-card text-sm font-semibold text-foreground hover:border-foreground/30 transition-colors">
               {activeCategory ? (
                 <>
                   <span className="text-base leading-none">{activeCategory.icon}</span>
                   <span>{activeCategory.label}</span>
                 </>
               ) : (
-                <span className="text-muted-foreground">Choose document type</span>
+                <span className="text-muted-foreground font-medium">Choose document type</span>
               )}
               <ChevronDown className="w-3.5 h-3.5 text-muted-foreground ml-0.5" strokeWidth={2} />
             </button>
@@ -204,11 +204,11 @@ export default function DocumentVault({ vehicleId = null, showCategories }: Docu
           </DropdownMenuContent>
         </DropdownMenu>
 
-        <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center mb-3 mt-5">
-          <UploadCloud className="w-6 h-6 text-muted-foreground" strokeWidth={1.75} />
+        <div className="w-14 h-14 rounded-2xl bg-foreground text-background flex items-center justify-center mb-3 mt-6">
+          <UploadCloud className="w-7 h-7" strokeWidth={1.75} />
         </div>
-        <p className="text-base font-semibold text-foreground">Tap to upload</p>
-        <p className="text-xs text-muted-foreground mt-1 max-w-[220px]">
+        <p className="text-[15px] font-bold text-foreground tracking-tight">Tap to upload</p>
+        <p className="text-xs text-muted-foreground mt-1 max-w-[240px]">
           PDF, images or documents up to 10 MB
         </p>
         <button
@@ -220,7 +220,7 @@ export default function DocumentVault({ vehicleId = null, showCategories }: Docu
             fileInputRef.current?.click();
           }}
           disabled={uploading}
-          className="mt-4 inline-flex items-center justify-center gap-2 h-10 px-5 rounded-xl border border-foreground/15 bg-card text-sm font-semibold text-foreground hover:bg-muted/50 transition-colors disabled:opacity-50"
+          className="mt-5 inline-flex items-center justify-center gap-2 h-10 px-6 rounded-xl border border-foreground/20 bg-card text-sm font-semibold text-foreground hover:bg-foreground hover:text-background hover:border-foreground transition-all active:scale-[0.98] disabled:opacity-50"
         >
           {uploading ? (
             <>
@@ -246,11 +246,11 @@ export default function DocumentVault({ vehicleId = null, showCategories }: Docu
           <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
         </div>
       ) : documents.length === 0 ? (
-        <div className="flex flex-col items-center text-center py-8">
-          <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center mb-3">
-            <FileText className="w-6 h-6 text-muted-foreground" strokeWidth={1.5} />
+        <div className="card-soft flex flex-col items-center text-center py-10">
+          <div className="w-14 h-14 rounded-2xl bg-muted flex items-center justify-center mb-3">
+            <FileText className="w-7 h-7 text-muted-foreground" strokeWidth={1.5} />
           </div>
-          <p className="text-sm font-semibold text-foreground">No documents yet</p>
+          <p className="text-[15px] font-bold text-foreground tracking-tight">No documents yet</p>
           <p className="text-xs text-muted-foreground mt-1 max-w-[260px]">
             {vehicleId
               ? 'Uploaded files for this vehicle will appear here'
@@ -259,18 +259,19 @@ export default function DocumentVault({ vehicleId = null, showCategories }: Docu
         </div>
       ) : (
         <div className="space-y-2">
+          <p className="field-label">Your files</p>
           {documents.map(doc => {
             const cat = getCategoryInfo(doc.category);
             return (
               <div
                 key={doc.id}
-                className="flex items-center gap-3 bg-card border border-border rounded-xl p-3"
+                className="flex items-center gap-3 card-soft !p-3 hover:border-foreground/20 transition-colors"
               >
-                <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center text-base shrink-0">
+                <div className="w-11 h-11 rounded-xl bg-muted flex items-center justify-center text-lg shrink-0">
                   {cat.icon}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-foreground truncate">{doc.file_name}</p>
+                  <p className="text-sm font-semibold text-foreground truncate">{doc.file_name}</p>
                   <p className="text-[11px] text-muted-foreground truncate mt-0.5">
                     {cat.label} · {formatSize(doc.file_size)} · {formatDistanceToNow(new Date(doc.created_at), { addSuffix: true })}
                   </p>
@@ -278,14 +279,14 @@ export default function DocumentVault({ vehicleId = null, showCategories }: Docu
                 <div className="flex items-center gap-0.5 shrink-0">
                   <button
                     onClick={() => handleDownload(doc)}
-                    className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                    className="w-9 h-9 inline-flex items-center justify-center rounded-lg text-foreground hover:bg-muted transition-colors"
                     aria-label="View"
                   >
                     <Eye className="w-4 h-4" strokeWidth={1.75} />
                   </button>
                   <button
                     onClick={() => setDeleteTarget(doc)}
-                    className="p-2 rounded-lg text-muted-foreground/50 hover:text-destructive hover:bg-destructive/5 transition-colors"
+                    className="w-9 h-9 inline-flex items-center justify-center rounded-lg text-muted-foreground/60 hover:text-destructive hover:bg-destructive/5 transition-colors"
                     aria-label="Delete"
                   >
                     <Trash2 className="w-4 h-4" strokeWidth={1.75} />
