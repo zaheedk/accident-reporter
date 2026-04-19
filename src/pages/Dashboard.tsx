@@ -142,82 +142,89 @@ export default function Dashboard() {
 
   const recentMessages: any[] = [];
 
+  const greeting = (() => {
+    const h = new Date().getHours();
+    if (h < 12) return 'Good morning';
+    if (h < 18) return 'Good afternoon';
+    return 'Good evening';
+  })();
+
   return (
     <AppLayout>
-      <motion.div className="space-y-6" variants={stagger} initial="hidden" animate="visible">
-        {/* Dark hero card */}
-        <motion.div variants={fadeUp} className="card-dark">
-          <div className="flex items-start justify-between mb-6">
-            <div>
-              <p className="text-xs uppercase tracking-[0.18em] text-white/50 font-semibold">Welcome back</p>
-              <h1 className="text-2xl font-bold text-white tracking-tight mt-1">{firstName}</h1>
+      <motion.div className="space-y-7" variants={stagger} initial="hidden" animate="visible">
+        {/* Header — eyebrow + display name + avatar */}
+        <motion.div variants={fadeUp} className="flex items-start justify-between gap-3 pt-1">
+          <div className="min-w-0">
+            <p className="eyebrow">{greeting}</p>
+            <h1 className="display-heading mt-1.5 truncate">{firstName}.</h1>
+          </div>
+          <Link to="/profile" className="shrink-0">
+            <Avatar className="w-12 h-12 ring-2 ring-border">
+              <AvatarImage src={avatarUrl} alt={displayName} />
+              <AvatarFallback className="bg-muted text-foreground text-xs font-bold">
+                {displayName ? displayName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : <User className="w-4 h-4" />}
+              </AvatarFallback>
+            </Avatar>
+          </Link>
+        </motion.div>
+
+        {/* Hero action tiles */}
+        <motion.div variants={fadeUp} className="grid grid-cols-2 gap-3">
+          <button
+            onClick={handleOpenTowSheet}
+            className="group relative overflow-hidden rounded-2xl bg-foreground text-background p-5 text-left transition-all active:scale-[0.98] min-h-[148px] flex flex-col justify-between"
+          >
+            <div className="w-10 h-10 rounded-xl bg-background/10 flex items-center justify-center">
+              <Phone className="w-5 h-5" strokeWidth={2} />
             </div>
-            <Link to="/profile">
-              <Avatar className="w-11 h-11 ring-1 ring-white/15">
-                <AvatarImage src={avatarUrl} alt={displayName} />
-                <AvatarFallback className="bg-white/10 text-white text-xs font-bold">
-                  {displayName ? displayName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : <User className="w-4 h-4" />}
-                </AvatarFallback>
-              </Avatar>
-            </Link>
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            <button
-              onClick={handleOpenTowSheet}
-              className="rounded-xl bg-white/[0.06] hover:bg-white/[0.1] border border-white/10 px-4 py-4 text-left transition-colors"
-            >
-              <Phone className="w-5 h-5 text-white mb-3" strokeWidth={1.8} />
-              <div className="text-sm font-semibold text-white">Call tow truck</div>
-              <div className="text-[11px] text-white/50 mt-0.5">24/7 emergency</div>
-            </button>
-            <Link
-              to="/claims/new"
-              className="rounded-xl bg-primary hover:bg-primary/90 px-4 py-4 transition-colors block"
-            >
-              <AlertTriangle className="w-5 h-5 text-white mb-3" strokeWidth={1.8} />
-              <div className="text-sm font-semibold text-white">Report incident</div>
-              <div className="text-[11px] text-white/70 mt-0.5">File a claim</div>
-            </Link>
-          </div>
+            <div>
+              <div className="text-[15px] font-bold leading-tight">Call tow<br/>truck</div>
+              <div className="text-[11px] text-background/60 mt-1.5 font-medium">24/7 emergency</div>
+            </div>
+          </button>
+          <Link
+            to="/claims/new"
+            className="group relative overflow-hidden rounded-2xl bg-primary text-primary-foreground p-5 transition-all active:scale-[0.98] block min-h-[148px] flex flex-col justify-between"
+          >
+            <div className="w-10 h-10 rounded-xl bg-primary-foreground/15 flex items-center justify-center">
+              <AlertTriangle className="w-5 h-5" strokeWidth={2} />
+            </div>
+            <div>
+              <div className="text-[15px] font-bold leading-tight">Report<br/>incident</div>
+              <div className="text-[11px] text-primary-foreground/75 mt-1.5 font-medium">File a claim</div>
+            </div>
+          </Link>
         </motion.div>
 
         {/* OVERVIEW */}
         <motion.div variants={fadeUp} className="space-y-3">
-          <p className="text-[11px] uppercase tracking-[0.18em] text-foreground font-semibold px-1">Overview</p>
+          <div className="flex items-center justify-between px-1">
+            <p className="eyebrow">Overview</p>
+          </div>
           <div className="grid grid-cols-2 gap-3">
-            <Link to="/vehicles" className="group rounded-2xl bg-card border border-border p-4 hover:border-foreground/20 transition-colors">
-              <div className="flex items-center justify-between mb-3">
-                <Car className="w-5 h-5 text-foreground" strokeWidth={1.8} />
+            <Link to="/vehicles" className="card-soft group transition-all active:scale-[0.98] hover:border-foreground/25">
+              <div className="flex items-start justify-between mb-4">
+                <div className="w-9 h-9 rounded-xl bg-muted flex items-center justify-center">
+                  <Car className="w-[18px] h-[18px] text-foreground" strokeWidth={2} />
+                </div>
                 <ArrowUpRight className="w-4 h-4 text-muted-foreground/40 group-hover:text-foreground transition-colors" />
               </div>
-              {vehiclesLoading ? <Skeleton className="h-8 w-10" /> : (
-                <div className="text-3xl font-bold tabular-nums text-foreground leading-none">{vehicles.length}</div>
+              {vehiclesLoading ? <Skeleton className="h-9 w-12" /> : (
+                <div className="text-[34px] font-extrabold tabular-nums text-foreground leading-none tracking-tight">{vehicles.length}</div>
               )}
-              <div className="flex items-center justify-between mt-2">
-                <span className="text-xs text-muted-foreground">Vehicles</span>
-                {vehicles.length > 0 && (
-                  <span className="text-[10px] font-semibold text-primary bg-primary/10 px-1.5 py-0.5 rounded">
-                    {vehicles.length} total
-                  </span>
-                )}
-              </div>
+              <div className="text-[11px] uppercase tracking-[0.14em] text-muted-foreground font-semibold mt-2">Vehicles</div>
             </Link>
-            <Link to="/claims" className="group rounded-2xl bg-card border border-border p-4 hover:border-foreground/20 transition-colors">
-              <div className="flex items-center justify-between mb-3">
-                <FileText className="w-5 h-5 text-foreground" strokeWidth={1.8} />
+            <Link to="/claims" className="card-soft group transition-all active:scale-[0.98] hover:border-foreground/25">
+              <div className="flex items-start justify-between mb-4">
+                <div className="w-9 h-9 rounded-xl bg-muted flex items-center justify-center">
+                  <FileText className="w-[18px] h-[18px] text-foreground" strokeWidth={2} />
+                </div>
                 <ArrowUpRight className="w-4 h-4 text-muted-foreground/40 group-hover:text-foreground transition-colors" />
               </div>
-              {claimsLoading ? <Skeleton className="h-8 w-10" /> : (
-                <div className="text-3xl font-bold tabular-nums text-foreground leading-none">{claims.length}</div>
+              {claimsLoading ? <Skeleton className="h-9 w-12" /> : (
+                <div className="text-[34px] font-extrabold tabular-nums text-foreground leading-none tracking-tight">{claims.length}</div>
               )}
-              <div className="flex items-center justify-between mt-2">
-                <span className="text-xs text-muted-foreground">Reports</span>
-                {claims.length > 0 && (
-                  <span className="text-[10px] font-semibold text-foreground bg-muted px-1.5 py-0.5 rounded">
-                    Active
-                  </span>
-                )}
-              </div>
+              <div className="text-[11px] uppercase tracking-[0.14em] text-muted-foreground font-semibold mt-2">Reports</div>
             </Link>
           </div>
         </motion.div>
@@ -225,15 +232,18 @@ export default function Dashboard() {
         {/* Insurance section */}
         {vehicles.filter(v => v.insuranceCompany).length > 0 && (
           <motion.div variants={fadeUp} className="space-y-3">
-            <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground font-semibold px-1">Your Insurance</p>
-            <div className="space-y-2">
+            <p className="eyebrow px-1">Your insurance</p>
+            <div className="space-y-2.5">
               {vehicles.filter(v => v.insuranceCompany).map((v) => (
                 <div
                   key={v.id}
-                  className="rounded-2xl bg-card border border-border p-4 flex items-center gap-3"
+                  className="card-soft flex items-center gap-3"
                 >
+                  <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center shrink-0">
+                    <Shield className="w-[18px] h-[18px] text-foreground" strokeWidth={2} />
+                  </div>
                   <div className="flex-1 min-w-0">
-                    <div className="text-sm font-semibold text-foreground">{v.insuranceCompany}</div>
+                    <div className="text-sm font-bold text-foreground truncate">{v.insuranceCompany}</div>
                     <div className="text-xs text-muted-foreground mt-0.5 truncate">
                       {v.year} {v.make} {v.model} · {v.regoNumber}
                     </div>
@@ -241,7 +251,7 @@ export default function Dashboard() {
                   {insurerPhones[v.insuranceCompany] && (
                     <a
                       href={`tel:${insurerPhones[v.insuranceCompany].replace(/\s/g, '')}`}
-                      className="shrink-0 inline-flex items-center gap-1.5 px-3 h-8 rounded-lg text-xs font-semibold text-foreground border border-border hover:bg-muted transition-colors"
+                      className="shrink-0 inline-flex items-center gap-1.5 px-3.5 h-9 rounded-xl text-xs font-bold bg-foreground text-background hover:bg-foreground/90 transition-colors"
                     >
                       <Phone className="w-3.5 h-3.5" />
                       Call
