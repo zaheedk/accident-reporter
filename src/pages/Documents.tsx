@@ -34,21 +34,23 @@ export default function Documents() {
     <AppLayout>
       <div className="space-y-6">
         {/* Header */}
-        <div className="space-y-4">
-          <Link
-            to="/dashboard"
-            className="inline-flex items-center justify-center w-10 h-10 -ml-2 rounded-xl bg-muted/50 hover:bg-muted transition-colors"
-            aria-label="Back to dashboard"
-          >
-            <ArrowLeft className="w-5 h-5 text-foreground" strokeWidth={1.75} />
-          </Link>
-          <div>
-            <p className="eyebrow">Secure storage</p>
-            <h1 className="display-heading mt-1.5">Document vault</h1>
-            <p className="text-sm text-muted-foreground mt-2 max-w-[320px]">
-              Keep your licence, insurance and vehicle paperwork in one safe place.
-            </p>
+        <div className="space-y-3">
+          <div className="flex items-start gap-3">
+            <Link
+              to="/dashboard"
+              className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-muted/50 hover:bg-muted transition-colors shrink-0"
+              aria-label="Back to dashboard"
+            >
+              <ArrowLeft className="w-5 h-5 text-foreground" strokeWidth={1.75} />
+            </Link>
+            <div className="min-w-0 flex-1">
+              <p className="eyebrow">Secure storage</p>
+              <h1 className="display-heading mt-1 leading-tight">Document vault</h1>
+            </div>
           </div>
+          <p className="text-sm text-muted-foreground">
+            Keep your licence, insurance and vehicle paperwork in one safe place.
+          </p>
         </div>
 
         {/* Vehicle / personal selector — hero pill */}
