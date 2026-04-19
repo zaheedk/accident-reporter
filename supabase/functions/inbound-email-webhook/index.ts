@@ -263,6 +263,9 @@ serve(async (req) => {
         await supabase.from('notifications').insert(notifications);
       }
 
+      // Auto-reply to the sender so they know to forward from their registered email
+      await sendAutoReply(from, subject, 'sender_mismatch');
+
       return new Response(JSON.stringify({ success: true, skipped: true, reason: 'Sender not verified' }), {
         status: 200,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
