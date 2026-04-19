@@ -146,12 +146,12 @@ export default function VehicleForm() {
         </div>
 
         {/* Vehicle Photo */}
-        <div className="card-surface space-y-3">
+        <div className="card-soft space-y-3">
           <h2 className="text-sm font-semibold text-foreground">Vehicle photo</h2>
           {photoPreview ? (
             <div className="relative">
-              <img src={photoPreview} alt="Vehicle" className="w-full h-48 object-cover rounded-xl" />
-              <button onClick={handleRemovePhoto} className="absolute top-2 right-2 p-1.5 rounded-full bg-foreground/70 text-background hover:bg-foreground transition-colors">
+              <img src={photoPreview} alt="Vehicle" className="w-full h-48 object-cover rounded-2xl" />
+              <button onClick={handleRemovePhoto} className="absolute top-2 right-2 p-1.5 rounded-full bg-foreground/80 text-background hover:bg-foreground transition-colors">
                 <X className="w-4 h-4" />
               </button>
             </div>
@@ -160,14 +160,17 @@ export default function VehicleForm() {
               type="button"
               onClick={() => fileInputRef.current?.click()}
               disabled={uploading}
-              className="w-full h-36 border-2 border-dashed border-border rounded-xl flex flex-col items-center justify-center gap-2 text-muted-foreground hover:border-foreground/30 hover:text-foreground transition-colors"
+              className="dashed-zone w-full px-6 py-7 flex flex-col items-center justify-center text-center"
             >
               {uploading ? (
-                <span className="text-sm">Uploading...</span>
+                <span className="text-sm text-muted-foreground">Uploading...</span>
               ) : (
                 <>
-                  <ImageIcon className="w-8 h-8" strokeWidth={1.2} />
-                  <span className="text-sm">Add a photo of your vehicle</span>
+                  <div className="w-14 h-14 rounded-2xl bg-foreground text-background flex items-center justify-center mb-3">
+                    <Camera className="w-7 h-7" strokeWidth={1.75} />
+                  </div>
+                  <span className="text-sm font-semibold text-foreground">Add a photo of your vehicle</span>
+                  <span className="text-xs text-muted-foreground mt-1">JPG, PNG up to 10MB</span>
                 </>
               )}
             </button>
@@ -177,7 +180,7 @@ export default function VehicleForm() {
               type="button"
               onClick={() => fileInputRef.current?.click()}
               disabled={uploading}
-              className="text-xs text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
+              className="inline-flex items-center justify-center gap-2 h-9 px-4 rounded-xl border border-foreground/20 bg-card text-xs font-semibold text-foreground hover:bg-foreground hover:text-background transition-all"
             >
               <Camera className="w-3.5 h-3.5" /> Change photo
             </button>
