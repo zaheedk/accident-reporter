@@ -97,7 +97,7 @@ export default function VehicleList() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.1 + i * 0.06, duration: 0.35 }}
                   whileTap={{ scale: 0.99 }}
-                  className={`group transition-colors relative overflow-hidden ${isExpired ? 'card-surface-elevated border-destructive/40 hover:border-destructive/60' : 'card-surface-elevated hover:border-foreground/20'}`}
+                  className={`group transition-colors relative overflow-hidden card-soft ${isExpired ? 'border-destructive/40 hover:border-destructive/60' : 'hover:border-foreground/20'}`}
                 >
                   <div className="flex items-stretch gap-3 pr-10">
                     <Link to={`/vehicles/${v.id}/edit`} className="flex-1 min-w-0 flex flex-col">
@@ -110,7 +110,7 @@ export default function VehicleList() {
                         <a
                           href={`tel:${insurerPhone.replace(/\s/g, '')}`}
                           onClick={(e) => e.stopPropagation()}
-                          className="inline-flex items-center gap-1.5 mt-3 px-3 py-1.5 rounded-lg text-[11px] font-semibold text-foreground border border-foreground/40 hover:bg-muted hover:border-foreground/60 whitespace-nowrap transition-colors w-fit"
+                          className="inline-flex items-center gap-1.5 mt-3 px-3 py-1.5 rounded-lg text-[11px] font-semibold text-background bg-foreground hover:bg-foreground/90 whitespace-nowrap transition-colors w-fit"
                         >
                           <Phone className="w-3 h-3" />
                           Call insurer
