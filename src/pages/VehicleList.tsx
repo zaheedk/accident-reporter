@@ -97,13 +97,6 @@ export default function VehicleList() {
                   className={`group transition-colors relative overflow-hidden ${isExpired ? 'card-surface-elevated border-destructive/40 hover:border-destructive/60' : 'card-surface-elevated hover:border-foreground/20'}`}
                 >
                   <Link to={`/vehicles/${v.id}/edit`} className="flex items-center gap-3 pr-10">
-                    {v.photoUrl ? (
-                      <img src={v.photoUrl} alt={`${v.make} ${v.model}`} className="w-14 h-14 rounded-xl object-cover ring-1 ring-border/30 shrink-0" />
-                    ) : (
-                      <div className={`w-14 h-14 rounded-xl flex items-center justify-center shrink-0 ${isExpired ? 'bg-destructive/10' : 'bg-muted'}`}>
-                        <Car className={`w-7 h-7 ${isExpired ? 'text-destructive' : 'text-foreground/70'}`} strokeWidth={1.8} />
-                      </div>
-                    )}
                     <div className="min-w-0 flex-1">
                       <div className="text-base font-bold text-foreground tabular-nums tracking-wide truncate">{v.regoNumber}</div>
                       <div className="text-xs text-muted-foreground truncate mt-0.5">{v.year} {v.make} {v.model}</div>
@@ -111,6 +104,13 @@ export default function VehicleList() {
                         <div className="text-[11px] font-semibold text-destructive mt-1">Expired documents</div>
                       )}
                     </div>
+                    {v.photoUrl ? (
+                      <img src={v.photoUrl} alt={`${v.make} ${v.model}`} className="w-20 h-20 rounded-xl object-cover ring-1 ring-border/30 shrink-0" />
+                    ) : (
+                      <div className={`w-20 h-20 rounded-xl flex items-center justify-center shrink-0 border-2 border-dashed ${isExpired ? 'bg-destructive/10 border-destructive/40' : 'bg-muted/40 border-border'}`}>
+                        <Car className={`w-10 h-10 ${isExpired ? 'text-destructive' : 'text-foreground/60'}`} strokeWidth={1.8} />
+                      </div>
+                    )}
                   </Link>
                   {insurerPhone && (
                     <a
