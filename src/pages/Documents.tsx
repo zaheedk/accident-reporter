@@ -44,8 +44,8 @@ export default function Documents() {
               <ArrowLeft className="w-5 h-5 text-foreground" strokeWidth={1.75} />
             </Link>
             <div className="min-w-0 flex-1">
-              <p className="eyebrow">Secure storage</p>
-              <h1 className="display-heading mt-1 leading-tight">Document vault</h1>
+              <h1 className="display-heading leading-tight">Document vault</h1>
+              <p className="eyebrow mt-1">Secure storage</p>
             </div>
           </div>
           <p className="text-sm text-muted-foreground">
