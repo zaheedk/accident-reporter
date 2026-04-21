@@ -69,13 +69,13 @@ export default function UserManagement() {
     enabled: isAdmin,
   });
 
-  if (!isAdmin) return <Navigate to="/dashboard" replace />;
-
   const roleMap = useMemo(() => {
     const m = new Map<string, string>();
     roles.forEach(r => m.set(r.user_id, r.role));
     return m;
   }, [roles]);
+
+  if (!isAdmin) return <Navigate to="/dashboard" replace />;
 
   const getUserRole = (userId: string) => roleMap.get(userId) || 'user';
 
