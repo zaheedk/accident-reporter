@@ -81,6 +81,7 @@ jobs:
         with:
           name: app-release-aab
           path: android/app/build/outputs/bundle/release/app-release.aab
+          retention-days: 7
 
       - name: Upload Mapping File (deobfuscation)
         uses: actions/upload-artifact@v4
@@ -88,15 +89,18 @@ jobs:
           name: app-release-mapping
           path: android/app/build/outputs/mapping/release/mapping.txt
           if-no-files-found: warn
+          retention-days: 7
 
       - name: Upload Release APK
         uses: actions/upload-artifact@v4
         with:
           name: app-release-apk
           path: android/app/build/outputs/apk/release/app-release.apk
+          retention-days: 7
 
       - name: Upload Debug APK
         uses: actions/upload-artifact@v4
         with:
           name: app-debug-apk
           path: android/app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 7
