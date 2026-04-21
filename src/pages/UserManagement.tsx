@@ -21,8 +21,10 @@ type UserProfile = {
   id: string;
   user_id: string;
   display_name: string | null;
+  email: string | null;
   phone_number: string | null;
   is_active: boolean;
+  created_at: string;
 };
 
 type UserRole = {
@@ -34,6 +36,8 @@ export default function UserManagement() {
   const { isAdmin, user } = useAuth();
   const queryClient = useQueryClient();
   const [search, setSearch] = useState('');
+  const [roleFilter, setRoleFilter] = useState<'all' | 'admin' | 'user'>('all');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'deactivated'>('all');
   const [confirmAction, setConfirmAction] = useState<{
     userId: string;
     name: string;
@@ -45,8 +49,8 @@ export default function UserManagement() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('profiles')
-        .select('id, user_id, display_name, phone_number, is_active')
-        .order('created_at', { ascending: true });
+        .select('id, user_id, display_name, email, phone_number, is_active, created_at')
+        .order('created_at', { ascending: false });
       if (error) throw error;
       return data as UserProfile[];
     },
@@ -67,16 +71,34 @@ export default function UserManagement() {
 
   if (!isAdmin) return <Navigate to="/dashboard" replace />;
 
-  const getUserRole = (userId: string) => {
-    const userRole = roles.find(r => r.user_id === userId);
-    return userRole?.role || 'user';
-  };
+  const roleMap = useMemo(() => {
+    const m = new Map<string, string>();
+    roles.forEach(r => m.set(r.user_id, r.role));
+    return m;
+  }, [roles]);
+
+  const getUserRole = (userId: string) => roleMap.get(userId) || 'user';
 
   const filtered = profiles.filter(p => {
-    const name = p.display_name || '';
-    return name.toLowerCase().includes(search.toLowerCase()) ||
-      p.user_id.toLowerCase().includes(search.toLowerCase());
+    const q = search.toLowerCase();
+    const name = (p.display_name || '').toLowerCase();
+    const email = (p.email || '').toLowerCase();
+    const phone = (p.phone_number || '').toLowerCase();
+    const matchesSearch = !q || name.includes(q) || email.includes(q) || phone.includes(q) || p.user_id.toLowerCase().includes(q);
+    const role = getUserRole(p.user_id);
+    const matchesRole = roleFilter === 'all' || role === roleFilter;
+    const matchesStatus = statusFilter === 'all'
+      || (statusFilter === 'active' && p.is_active)
+      || (statusFilter === 'deactivated' && !p.is_active);
+    return matchesSearch && matchesRole && matchesStatus;
   });
+
+  const stats = {
+    total: profiles.length,
+    admins: profiles.filter(p => getUserRole(p.user_id) === 'admin').length,
+    active: profiles.filter(p => p.is_active).length,
+    deactivated: profiles.filter(p => !p.is_active).length,
+  };
 
   const handleToggleActive = async () => {
     if (!confirmAction) return;
