@@ -122,18 +122,81 @@ export default function UserManagement() {
         <div>
           <h1 className="text-xl font-bold text-foreground">User Management</h1>
           <p className="text-sm text-muted-foreground mt-0.5">
-            Manage users and their access
+            {stats.total} total · {stats.admins} admin · {stats.active} active · {stats.deactivated} deactivated
           </p>
         </div>
 
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-          <Input
-            placeholder="Search by name..."
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            className="pl-9"
-          />
+        {/* Stat cards */}
+        <div className="grid grid-cols-4 gap-2">
+          <button
+            onClick={() => { setRoleFilter('all'); setStatusFilter('all'); }}
+            className="card-surface text-center p-3 hover:border-foreground/20 transition-colors"
+          >
+            <div className="text-lg font-extrabold tabular-nums text-foreground">{stats.total}</div>
+            <div className="text-[10px] text-muted-foreground mt-0.5">Total</div>
+          </button>
+          <button
+            onClick={() => setRoleFilter('admin')}
+            className="card-surface text-center p-3 hover:border-foreground/20 transition-colors"
+          >
+            <div className="text-lg font-extrabold tabular-nums text-foreground">{stats.admins}</div>
+            <div className="text-[10px] text-muted-foreground mt-0.5">Admins</div>
+          </button>
+          <button
+            onClick={() => setStatusFilter('active')}
+            className="card-surface text-center p-3 hover:border-foreground/20 transition-colors"
+          >
+            <div className="text-lg font-extrabold tabular-nums text-foreground">{stats.active}</div>
+            <div className="text-[10px] text-muted-foreground mt-0.5">Active</div>
+          </button>
+          <button
+            onClick={() => setStatusFilter('deactivated')}
+            className="card-surface text-center p-3 hover:border-foreground/20 transition-colors"
+          >
+            <div className="text-lg font-extrabold tabular-nums text-destructive">{stats.deactivated}</div>
+            <div className="text-[10px] text-muted-foreground mt-0.5">Inactive</div>
+          </button>
+        </div>
+
+        {/* Search + filters */}
+        <div className="space-y-2">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Input
+              placeholder="Search name, email or phone..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              className="pl-9"
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            <Select value={roleFilter} onValueChange={(v: any) => setRoleFilter(v)}>
+              <SelectTrigger><SelectValue placeholder="Role" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All roles</SelectItem>
+                <SelectItem value="admin">Admins</SelectItem>
+                <SelectItem value="user">Users</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select value={statusFilter} onValueChange={(v: any) => setStatusFilter(v)}>
+              <SelectTrigger><SelectValue placeholder="Status" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All statuses</SelectItem>
+                <SelectItem value="active">Active</SelectItem>
+                <SelectItem value="deactivated">Deactivated</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          {(search || roleFilter !== 'all' || statusFilter !== 'all') && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-7 text-xs w-full"
+              onClick={() => { setSearch(''); setRoleFilter('all'); setStatusFilter('all'); }}
+            >
+              Clear filters
+            </Button>
+          )}
         </div>
 
         {isLoading ? (
@@ -145,12 +208,13 @@ export default function UserManagement() {
             {filtered.map(profile => {
               const role = getUserRole(profile.user_id);
               const isSelf = profile.user_id === user?.id;
+              const joined = new Date(profile.created_at).toLocaleDateString();
 
               return (
                 <Card key={profile.id} className="p-4">
-                  <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 flex-wrap">
                         <span className="text-sm font-semibold text-foreground truncate">
                           {profile.display_name || 'Unnamed User'}
                         </span>
@@ -158,7 +222,7 @@ export default function UserManagement() {
                           <Badge variant="outline" className="text-[10px] shrink-0">You</Badge>
                         )}
                       </div>
-                      <div className="flex items-center gap-2 mt-1">
+                      <div className="flex items-center gap-2 mt-1 flex-wrap">
                         <Badge
                           variant={role === 'admin' ? 'default' : 'secondary'}
                           className="text-[10px] gap-1"
@@ -174,9 +238,21 @@ export default function UserManagement() {
                           {profile.is_active ? 'Active' : 'Deactivated'}
                         </Badge>
                       </div>
-                      {profile.phone_number && (
-                        <p className="text-[11px] text-muted-foreground mt-1">{profile.phone_number}</p>
-                      )}
+                      <div className="mt-2 space-y-0.5">
+                        {profile.email && (
+                          <p className="text-[11px] text-muted-foreground flex items-center gap-1.5 truncate">
+                            <Mail className="w-3 h-3 shrink-0" />{profile.email}
+                          </p>
+                        )}
+                        {profile.phone_number && (
+                          <p className="text-[11px] text-muted-foreground flex items-center gap-1.5">
+                            <Phone className="w-3 h-3 shrink-0" />{profile.phone_number}
+                          </p>
+                        )}
+                        <p className="text-[11px] text-muted-foreground flex items-center gap-1.5">
+                          <Calendar className="w-3 h-3 shrink-0" />Joined {joined}
+                        </p>
+                      </div>
                     </div>
 
                     {!isSelf && (
@@ -201,7 +277,7 @@ export default function UserManagement() {
         )}
 
         <p className="text-[10px] text-muted-foreground text-center pt-2">
-          {filtered.length} user{filtered.length !== 1 ? 's' : ''}
+          Showing {filtered.length} of {stats.total} user{stats.total !== 1 ? 's' : ''}
         </p>
       </div>
 
