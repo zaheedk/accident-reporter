@@ -92,7 +92,8 @@ export default function UserManagement() {
     const matchesStatus = statusFilter === 'all'
       || (statusFilter === 'active' && p.is_active)
       || (statusFilter === 'deactivated' && !p.is_active);
-    return matchesSearch && matchesRole && matchesStatus;
+    const matchesSource = sourceFilter === 'all' || p.source === sourceFilter;
+    return matchesSearch && matchesRole && matchesStatus && matchesSource;
   });
 
   const stats = {
@@ -100,6 +101,8 @@ export default function UserManagement() {
     admins: profiles.filter(p => getUserRole(p.user_id) === 'admin').length,
     active: profiles.filter(p => p.is_active).length,
     deactivated: profiles.filter(p => !p.is_active).length,
+    jamesblond: profiles.filter(p => p.source === 'jamesblond').length,
+    direct: profiles.filter(p => p.source !== 'jamesblond').length,
   };
 
   const handleToggleActive = async () => {
