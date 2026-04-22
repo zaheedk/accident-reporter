@@ -13,6 +13,7 @@ import insuranceRenewalHero from '@/assets/blog/insurance-renewal-hero.jpg';
 import rightOfWayHero from '@/assets/blog/right-of-way-hero.jpg';
 import youngDriverHero from '@/assets/blog/young-driver-hero.jpg';
 import talkingToInsurerHero from '@/assets/blog/talking-to-insurer-hero.jpg';
+import reportingAccidentPoliceHero from '@/assets/blog/reporting-accident-police-hero.jpg';
 
 export interface BlogArticle {
   slug: string;
@@ -1523,6 +1524,140 @@ SAVO's structured incident report gives you all the information you need before 
 When you call your insurer with a SAVO report in hand, you'll sound prepared, confident, and credible — which is exactly what leads to faster claim processing.
 
 *Create your incident report in SAVO before calling your insurer. You'll have every detail at your fingertips.*
+    `
+  },
+  {
+    slug: "how-to-report-car-accident-police-insurance-nz",
+    title: "How to Report a Car Accident to Police and Your Insurance Company in New Zealand",
+    metaDescription: "Step-by-step guide for NZ drivers on reporting a car accident to the Police (105 or 111) and your insurance company. What to say, when to call, and what to avoid.",
+    heroImage: reportingAccidentPoliceHero,
+    excerpt: "Knowing exactly when to call 111, when to use 105, and how to lodge your insurance claim can save you weeks of stress. Here's the complete NZ playbook.",
+    date: "2026-04-22",
+    readTime: "7 min read",
+    content: `
+## First Things First: Is Anyone Hurt?
+
+Before you think about insurance, paperwork, or even photos, check for injuries. If anyone is hurt, trapped, or in immediate danger — or if the road is blocked and creating a hazard — **call 111 immediately** and ask for Ambulance, Fire, or Police as needed.
+
+For everything else, the reporting process in New Zealand splits into two clear streams: **Police** and **insurance**. They're separate, but both matter, and the order you do them in can affect your claim.
+
+## When to Report a Crash to the NZ Police
+
+The New Zealand Police don't need to know about every minor bingle. Under NZ road rules, you must report a crash to Police if **any** of the following apply:
+
+- Someone was **injured or killed**
+- A vehicle had to be **towed** from the scene
+- Property was damaged and you **can't find the owner** (e.g. you hit a parked car or a fence and no one's around)
+- You suspect the other driver was **impaired** by alcohol or drugs
+- The other driver **refused to give their details** or drove off (a hit and run)
+
+If none of these apply and everyone has exchanged details, you generally don't need to file a Police report — but you still need to tell your insurer.
+
+### Which Number Do You Call?
+
+New Zealand has two Police numbers, and using the right one matters:
+
+- **111** — for emergencies happening *right now*: injuries, fire, danger, hit and run in progress, or a drunk driver still at the scene
+- **105** — for non-emergency reports: damage-only crashes, hit and runs you discovered later, or any incident where you need to file a report but no one is in danger
+
+You can also report non-emergencies online at **105.police.govt.nz**, which is often faster than waiting on the phone.
+
+## What to Tell the Police
+
+Whether you're calling 111 or 105, keep your information clear and factual:
+
+1. **Your location** — street name, suburb, nearest intersection or landmark
+2. **What happened** — a one-sentence summary ("Two-car crash at the intersection of Queen Street and Customs Street")
+3. **Injuries** — how many people, how serious
+4. **Vehicles involved** — how many, makes and registrations if known
+5. **Hazards** — fuel leaks, blocked lanes, traffic signals out
+6. **Your name and phone number**
+
+Stick to facts you actually observed. Don't speculate about fault or guess speeds. The Police will assign a **reference number** — write it down. You'll need it for your insurer.
+
+## What to Do at the Scene Before You Leave
+
+Even if Police are on their way, use the time to capture evidence. Once vehicles are moved and witnesses leave, that information is gone for good.
+
+- **Photos** — wide shots of the whole scene, close-ups of damage on every vehicle, skid marks, debris, road signs, and traffic signals
+- **Other driver's details** — full name, address, phone, driver licence number, registration, make/model/colour, and insurance company
+- **Witnesses** — name and phone number of anyone who saw what happened
+- **Conditions** — weather, light level, road surface, visibility
+- **Time and exact location**
+
+If you have the SAVO app, you can capture all of this in one place and it'll be ready to send to your insurer.
+
+## Reporting to Your Insurance Company
+
+You should contact your insurer **as soon as practically possible** — ideally the same day, and definitely within 24–48 hours. Most NZ policies require "prompt notification" of any incident that *could* lead to a claim, even if you're not sure you'll claim yet.
+
+### How to Lodge a Claim
+
+Every major NZ insurer offers at least two ways to lodge:
+
+- **Online portal or app** — fastest for most people. AA Insurance, State, Tower, AMI, Cove, Trade Me Insurance, and others all have web forms
+- **Phone** — call the claims line directly. Useful if your situation is complicated or you have questions
+- **Through your broker** — if you bought insurance through a broker, they'll often lodge for you
+
+### What Your Insurer Will Ask
+
+Have these ready before you call or open the claim form:
+
+- Your **policy number**
+- **Date, time, and location** of the incident
+- **Description of what happened** — keep it factual and chronological
+- **Other party's details** — name, contact, registration, insurer, claim number if they have one
+- **Witness details**
+- **Police reference number** (if you reported to Police)
+- **Photos** of damage and the scene
+- **Description of damage** to your vehicle and any third-party property
+- Whether anyone was **injured**
+- Whether the vehicle was **towed**, and where it is now
+
+### What *Not* to Say
+
+This is where a lot of NZ drivers accidentally weaken their own claim:
+
+- Don't **admit fault** at the scene or on the phone — just describe what happened. Fault is for insurers and Police to determine
+- Don't **apologise** in writing or in recorded calls (a polite "sorry you're having a tough day" can be misread)
+- Don't **guess** speeds, distances, or times you're not sure about — say "I'm not sure" instead
+- Don't agree to **pay for the other party's damage** privately before talking to your insurer — it can void your cover
+
+## The Order That Works Best
+
+For a typical two-car crash in New Zealand:
+
+1. **Check for injuries.** Call 111 if anyone's hurt or in danger.
+2. **Make the scene safe** — hazard lights, move out of traffic if possible.
+3. **Exchange details** with the other driver and gather witness contacts.
+4. **Take photos** of everything before vehicles are moved.
+5. **Call Police** — 111 if it's an emergency, 105 (or 105.police.govt.nz) if it's report-only.
+6. **Arrange towing** if your car isn't drivable.
+7. **Notify your insurer** the same day, with your Police reference number ready.
+8. **Lodge a formal claim** through your insurer's online portal or claims line.
+
+## Keep Records of Everything
+
+After the dust settles, hold onto:
+
+- Photos and videos from the scene
+- The other driver's written details
+- Your Police reference number and any report you receive
+- Your claim number from your insurer
+- Copies of any emails, texts, or letters about the incident
+- Tow company receipts, medical receipts, repair quotes
+
+NZ insurers can take weeks or months to settle complex claims, and disputes sometimes surface long after you thought it was done. Keep everything for at least two years.
+
+## How SAVO Helps
+
+SAVO was built specifically for the New Zealand reporting process. The app walks you through capturing every detail Police and your insurer will ask for, generates a branded PDF report you can email straight to your insurance company, and even has a one-tap call recorder so you have a transcript of your claims call.
+
+If you're standing at the side of the road right now, take a breath, check for injuries, and start with step one. The paperwork can wait a few minutes — your safety can't.
+
+---
+
+*Open SAVO and tap "New Report" to capture your accident details in the right order, every time.*
     `
   }
 ];
