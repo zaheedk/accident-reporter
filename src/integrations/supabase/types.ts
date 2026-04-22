@@ -636,6 +636,7 @@ export type Database = {
           license_expiry: string | null
           license_number: string | null
           phone_number: string | null
+          source: string
           updated_at: string
           user_id: string
         }
@@ -651,6 +652,7 @@ export type Database = {
           license_expiry?: string | null
           license_number?: string | null
           phone_number?: string | null
+          source?: string
           updated_at?: string
           user_id: string
         }
@@ -666,6 +668,7 @@ export type Database = {
           license_expiry?: string | null
           license_number?: string | null
           phone_number?: string | null
+          source?: string
           updated_at?: string
           user_id?: string
         }

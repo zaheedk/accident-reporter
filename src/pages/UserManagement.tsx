@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Search, Shield, ShieldOff, UserCheck, UserX, Mail, Phone, Calendar } from 'lucide-react';
+import { Search, Shield, ShieldOff, UserCheck, UserX, Mail, Phone, Calendar, Link2 } from 'lucide-react';
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
@@ -25,6 +25,7 @@ type UserProfile = {
   phone_number: string | null;
   is_active: boolean;
   created_at: string;
+  source: string;
 };
 
 type UserRole = {
@@ -38,6 +39,7 @@ export default function UserManagement() {
   const [search, setSearch] = useState('');
   const [roleFilter, setRoleFilter] = useState<'all' | 'admin' | 'user'>('all');
   const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'deactivated'>('all');
+  const [sourceFilter, setSourceFilter] = useState<'all' | 'direct' | 'jamesblond'>('all');
   const [confirmAction, setConfirmAction] = useState<{
     userId: string;
     name: string;
@@ -49,7 +51,7 @@ export default function UserManagement() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('profiles')
-        .select('id, user_id, display_name, email, phone_number, is_active, created_at')
+        .select('id, user_id, display_name, email, phone_number, is_active, created_at, source')
         .order('created_at', { ascending: false });
       if (error) throw error;
       return data as UserProfile[];
@@ -90,7 +92,8 @@ export default function UserManagement() {
     const matchesStatus = statusFilter === 'all'
       || (statusFilter === 'active' && p.is_active)
       || (statusFilter === 'deactivated' && !p.is_active);
-    return matchesSearch && matchesRole && matchesStatus;
+    const matchesSource = sourceFilter === 'all' || p.source === sourceFilter;
+    return matchesSearch && matchesRole && matchesStatus && matchesSource;
   });
 
   const stats = {
@@ -98,6 +101,8 @@ export default function UserManagement() {
     admins: profiles.filter(p => getUserRole(p.user_id) === 'admin').length,
     active: profiles.filter(p => p.is_active).length,
     deactivated: profiles.filter(p => !p.is_active).length,
+    jamesblond: profiles.filter(p => p.source === 'jamesblond').length,
+    direct: profiles.filter(p => p.source !== 'jamesblond').length,
   };
 
   const handleToggleActive = async () => {
@@ -122,7 +127,7 @@ export default function UserManagement() {
         <div>
           <h1 className="text-xl font-bold text-foreground">User Management</h1>
           <p className="text-sm text-muted-foreground mt-0.5">
-            {stats.total} total · {stats.admins} admin · {stats.active} active · {stats.deactivated} deactivated
+            {stats.total} total · {stats.jamesblond} via James Blond · {stats.direct} direct · {stats.admins} admin
           </p>
         </div>
 
@@ -169,7 +174,7 @@ export default function UserManagement() {
               className="pl-9"
             />
           </div>
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-3 gap-2">
             <Select value={roleFilter} onValueChange={(v: any) => setRoleFilter(v)}>
               <SelectTrigger><SelectValue placeholder="Role" /></SelectTrigger>
               <SelectContent>
@@ -186,13 +191,21 @@ export default function UserManagement() {
                 <SelectItem value="deactivated">Deactivated</SelectItem>
               </SelectContent>
             </Select>
+            <Select value={sourceFilter} onValueChange={(v: any) => setSourceFilter(v)}>
+              <SelectTrigger><SelectValue placeholder="Source" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All sources</SelectItem>
+                <SelectItem value="direct">Direct signup</SelectItem>
+                <SelectItem value="jamesblond">James Blond</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
-          {(search || roleFilter !== 'all' || statusFilter !== 'all') && (
+          {(search || roleFilter !== 'all' || statusFilter !== 'all' || sourceFilter !== 'all') && (
             <Button
               variant="ghost"
               size="sm"
               className="h-7 text-xs w-full"
-              onClick={() => { setSearch(''); setRoleFilter('all'); setStatusFilter('all'); }}
+              onClick={() => { setSearch(''); setRoleFilter('all'); setStatusFilter('all'); setSourceFilter('all'); }}
             >
               Clear filters
             </Button>
@@ -236,6 +249,10 @@ export default function UserManagement() {
                         >
                           {profile.is_active ? <UserCheck className="w-2.5 h-2.5" /> : <UserX className="w-2.5 h-2.5" />}
                           {profile.is_active ? 'Active' : 'Deactivated'}
+                        </Badge>
+                        <Badge variant="outline" className="text-[10px] gap-1">
+                          <Link2 className="w-2.5 h-2.5" />
+                          {profile.source === 'jamesblond' ? 'James Blond' : 'Direct'}
                         </Badge>
                       </div>
                       <div className="mt-2 space-y-0.5">
