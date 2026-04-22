@@ -127,7 +127,7 @@ export default function UserManagement() {
         <div>
           <h1 className="text-xl font-bold text-foreground">User Management</h1>
           <p className="text-sm text-muted-foreground mt-0.5">
-            {stats.total} total · {stats.admins} admin · {stats.active} active · {stats.deactivated} deactivated
+            {stats.total} total · {stats.jamesblond} via James Blond · {stats.direct} direct · {stats.admins} admin
           </p>
         </div>
 
@@ -174,7 +174,7 @@ export default function UserManagement() {
               className="pl-9"
             />
           </div>
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-3 gap-2">
             <Select value={roleFilter} onValueChange={(v: any) => setRoleFilter(v)}>
               <SelectTrigger><SelectValue placeholder="Role" /></SelectTrigger>
               <SelectContent>
@@ -191,13 +191,21 @@ export default function UserManagement() {
                 <SelectItem value="deactivated">Deactivated</SelectItem>
               </SelectContent>
             </Select>
+            <Select value={sourceFilter} onValueChange={(v: any) => setSourceFilter(v)}>
+              <SelectTrigger><SelectValue placeholder="Source" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All sources</SelectItem>
+                <SelectItem value="direct">Direct signup</SelectItem>
+                <SelectItem value="jamesblond">James Blond</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
-          {(search || roleFilter !== 'all' || statusFilter !== 'all') && (
+          {(search || roleFilter !== 'all' || statusFilter !== 'all' || sourceFilter !== 'all') && (
             <Button
               variant="ghost"
               size="sm"
               className="h-7 text-xs w-full"
-              onClick={() => { setSearch(''); setRoleFilter('all'); setStatusFilter('all'); }}
+              onClick={() => { setSearch(''); setRoleFilter('all'); setStatusFilter('all'); setSourceFilter('all'); }}
             >
               Clear filters
             </Button>
@@ -241,6 +249,10 @@ export default function UserManagement() {
                         >
                           {profile.is_active ? <UserCheck className="w-2.5 h-2.5" /> : <UserX className="w-2.5 h-2.5" />}
                           {profile.is_active ? 'Active' : 'Deactivated'}
+                        </Badge>
+                        <Badge variant="outline" className="text-[10px] gap-1">
+                          <Link2 className="w-2.5 h-2.5" />
+                          {profile.source === 'jamesblond' ? 'James Blond' : 'Direct'}
                         </Badge>
                       </div>
                       <div className="mt-2 space-y-0.5">
