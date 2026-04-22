@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Search, Shield, ShieldOff, UserCheck, UserX, Mail, Phone, Calendar } from 'lucide-react';
+import { Search, Shield, ShieldOff, UserCheck, UserX, Mail, Phone, Calendar, Link2 } from 'lucide-react';
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
@@ -25,6 +25,7 @@ type UserProfile = {
   phone_number: string | null;
   is_active: boolean;
   created_at: string;
+  source: string;
 };
 
 type UserRole = {
@@ -38,6 +39,7 @@ export default function UserManagement() {
   const [search, setSearch] = useState('');
   const [roleFilter, setRoleFilter] = useState<'all' | 'admin' | 'user'>('all');
   const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'deactivated'>('all');
+  const [sourceFilter, setSourceFilter] = useState<'all' | 'direct' | 'jamesblond'>('all');
   const [confirmAction, setConfirmAction] = useState<{
     userId: string;
     name: string;
@@ -49,7 +51,7 @@ export default function UserManagement() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('profiles')
-        .select('id, user_id, display_name, email, phone_number, is_active, created_at')
+        .select('id, user_id, display_name, email, phone_number, is_active, created_at, source')
         .order('created_at', { ascending: false });
       if (error) throw error;
       return data as UserProfile[];
