@@ -268,7 +268,21 @@ export default function ClaimWizard() {
     setPhotos(prev => prev.filter(p => p.id !== photo.id));
   };
 
-  const addTP = () => update('thirdParties', [...claim.thirdParties, { ...emptyTP }]);
+  const addTP = async () => {
+    // Ensure a claim id exists so photo capture (rego, license, damage) works for this party
+    if (!claim.id) {
+      const savedId = await saveClaim({ ...claim, updatedAt: new Date().toISOString() });
+      if (savedId) {
+        setClaim(prev => ({
+          ...prev,
+          id: savedId,
+          thirdParties: [...prev.thirdParties, { ...emptyTP }],
+        }));
+        return;
+      }
+    }
+    update('thirdParties', [...claim.thirdParties, { ...emptyTP }]);
+  };
   const updTP = (i: number, f: string, v: string) => { const u = [...claim.thirdParties]; (u[i] as any)[f] = v; update('thirdParties', u); };
   const rmTP = (i: number) => update('thirdParties', claim.thirdParties.filter((_, idx) => idx !== i));
   const addW = () => update('witnesses', [...claim.witnesses, { ...emptyW }]);
