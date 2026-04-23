@@ -134,6 +134,7 @@ export default function VehicleForm() {
 
   return (
     <AppLayout>
+      <div className="theme-dashboard-dark">
       <div className="space-y-5">
         <div className="flex items-center gap-3">
           <button onClick={() => navigate(-1)} aria-label="Back" className="w-10 h-10 -ml-1 rounded-xl border border-border bg-card hover:bg-muted flex items-center justify-center transition-colors shrink-0">
