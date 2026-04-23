@@ -86,7 +86,7 @@ export default function VehicleList() {
           </motion.div>
         ) : (
           <motion.div variants={fadeUp} className="space-y-3">
-            {vehicles.map((v, i) => {
+            {[...vehicles].sort((a, b) => Number(a.isActive === false) - Number(b.isActive === false)).map((v, i) => {
               const today = new Date().toISOString().slice(0, 10);
               const isExpired = (v.wofExpiry && v.wofExpiry < today) || (v.regoExpiry && v.regoExpiry < today) || (v.insuranceExpiry && v.insuranceExpiry < today);
               const insurerPhone = v.insuranceCompany ? insurerPhones[v.insuranceCompany] : '';
