@@ -148,7 +148,8 @@ export default function VehicleForm() {
         {isEdit && id && (
           <button
             onClick={() => navigate(`/claims/new?vehicleId=${id}`)}
-            className="w-full inline-flex items-center justify-center gap-2 h-12 rounded-2xl bg-destructive text-destructive-foreground text-sm font-bold hover:bg-destructive/90 active:scale-[0.99] transition-all"
+            className="w-full inline-flex items-center justify-center gap-2 h-12 rounded-2xl text-sm font-bold active:scale-[0.99] transition-all"
+            style={{ backgroundColor: 'hsl(152 76% 46%)', color: 'hsl(220 35% 7%)' }}
           >
             <AlertTriangle className="w-4 h-4" strokeWidth={2.2} />
             Report incident with this vehicle
