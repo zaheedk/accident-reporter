@@ -15,6 +15,7 @@ export interface Vehicle {
   insurancePolicyNumber: string;
   insuranceExpiry: string;
   photoUrl: string;
+  isActive: boolean;
   createdAt: string;
 }
 
