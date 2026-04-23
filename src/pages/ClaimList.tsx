@@ -216,6 +216,7 @@ export default function ClaimList() {
           </div>
         )}
       </div>
+      </div>
 
       <Dialog open={!!deleteId} onOpenChange={(open) => !open && setDeleteId(null)}>
         <DialogContent>
