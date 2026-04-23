@@ -114,7 +114,11 @@ export default function ClaimWizard() {
     getVehicles(user?.id).then(v => {
       setVehicles(v);
       const regoParam = searchParams.get('rego');
-      if (!id && regoParam) {
+      const vehicleIdParam = searchParams.get('vehicleId');
+      if (!id && vehicleIdParam) {
+        const match = v.find(veh => veh.id === vehicleIdParam);
+        if (match) setClaim(prev => ({ ...prev, vehicleId: match.id, insuranceCompany: match.insuranceCompany || '' }));
+      } else if (!id && regoParam) {
         const match = v.find(veh => veh.regoNumber?.toLowerCase() === regoParam.toLowerCase());
         if (match) setClaim(prev => ({ ...prev, vehicleId: match.id, insuranceCompany: match.insuranceCompany || '' }));
       } else if (!id && v.length === 1) {

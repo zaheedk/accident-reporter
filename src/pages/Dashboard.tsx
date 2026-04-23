@@ -183,7 +183,7 @@ export default function Dashboard() {
                   return (
                     <Link
                       key={v.id}
-                      to="/vehicles"
+                      to={`/vehicles/${v.id}/edit`}
                       className="w-[220px] shrink-0 rounded-2xl bg-card border border-border p-3 flex flex-col gap-2.5 transition-all active:scale-[0.98] hover:border-primary/40"
                     >
                       <div className="aspect-[16/10] rounded-xl bg-muted overflow-hidden flex items-center justify-center">

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, Check, Camera, X, ImageIcon, Loader2 } from 'lucide-react';
+import { ArrowLeft, Check, Camera, X, ImageIcon, Loader2, AlertTriangle } from 'lucide-react';
 import DocumentVault from '@/components/DocumentVault';
 import { getVehicles, saveVehicle } from '@/lib/storage';
 import { Vehicle } from '@/types';
@@ -139,11 +139,21 @@ export default function VehicleForm() {
           <button onClick={() => navigate(-1)} aria-label="Back" className="w-10 h-10 -ml-1 rounded-xl border border-border bg-card hover:bg-muted flex items-center justify-center transition-colors shrink-0 mt-1">
             <ArrowLeft className="w-5 h-5 text-foreground" strokeWidth={2} />
           </button>
-          <div className="min-w-0">
+          <div className="min-w-0 flex-1">
             <p className="eyebrow">Garage</p>
             <h1 className="display-heading mt-1">{isEdit ? 'Edit vehicle' : 'Add vehicle'}</h1>
           </div>
         </div>
+
+        {isEdit && id && (
+          <button
+            onClick={() => navigate(`/claims/new?vehicleId=${id}`)}
+            className="w-full inline-flex items-center justify-center gap-2 h-12 rounded-2xl bg-destructive text-destructive-foreground text-sm font-bold hover:bg-destructive/90 active:scale-[0.99] transition-all"
+          >
+            <AlertTriangle className="w-4 h-4" strokeWidth={2.2} />
+            Report incident with this vehicle
+          </button>
+        )}
 
         {/* Vehicle Photo */}
         <div className="card-soft space-y-3">
