@@ -716,6 +716,7 @@ export default function ClaimWizard() {
             </button>
           )}
         </div>
+        </div>
       </div>
     </AppLayout>
   );
