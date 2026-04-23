@@ -452,21 +452,6 @@ export default function ClaimWizard() {
                   </div>
                 </div>
 
-                {/* Usage / Journey (compact) */}
-                <div className="grid grid-cols-1 gap-3">
-                  <div>
-                    <label className="field-label">Vehicle usage</label>
-                    <input
-                      className="w-full h-12 px-3.5 rounded-2xl border border-border bg-card text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-primary/20"
-                      placeholder="Personal, business, etc." value={claim.vehicleUsage} onChange={e => update('vehicleUsage', e.target.value)} />
-                  </div>
-                  <div>
-                    <label className="field-label">Journey details</label>
-                    <textarea
-                      className="w-full min-h-[72px] px-3.5 py-3 rounded-2xl border border-border bg-card text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-primary/20"
-                      placeholder="Where were you going?" value={claim.journeyDetails} onChange={e => update('journeyDetails', e.target.value)} />
-                  </div>
-                </div>
               </div>
             )}
 
