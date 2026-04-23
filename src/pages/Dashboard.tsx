@@ -151,11 +151,8 @@ export default function Dashboard() {
 
   return (
     <AppLayout>
+      <div className="theme-dashboard-dark">
       <motion.div className="space-y-7" variants={stagger} initial="hidden" animate="visible">
-        {/* Header — eyebrow + display name + avatar */}
-        <motion.div variants={fadeUp} className="flex items-start justify-between gap-3 pt-1">
-          <div className="min-w-0">
-            <p className="eyebrow">{greeting}</p>
             <h1 className="display-heading mt-1.5 truncate">{firstName}.</h1>
           </div>
           <Link to="/profile" className="shrink-0">
