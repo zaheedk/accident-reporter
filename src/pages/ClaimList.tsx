@@ -119,16 +119,18 @@ export default function ClaimList() {
       <div className="theme-dashboard-dark">
         <motion.div className="space-y-6" variants={stagger} initial="hidden" animate="visible">
           {/* Header */}
-          <motion.div variants={fadeUp} className="flex items-start justify-between gap-3 pt-1">
-            <div className="flex items-start gap-2 min-w-0">
+          <motion.div variants={fadeUp} className="flex items-center justify-between gap-3 pt-1">
+            <div className="flex items-center gap-2 min-w-0">
               <button
                 onClick={() => window.history.back()}
-                className="w-9 h-9 -ml-1 rounded-xl flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors flex-shrink-0 mt-0.5"
+                className="w-9 h-9 -ml-1 rounded-xl flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors flex-shrink-0"
                 aria-label="Go back"
               >
                 <ArrowLeft className="w-5 h-5" />
               </button>
-              <div className="min-w-0" />
+              <h1 className="text-[15px] font-bold uppercase tracking-[0.18em] text-foreground truncate">
+                Incidents
+              </h1>
             </div>
             <Link
               to="/claims/new"
