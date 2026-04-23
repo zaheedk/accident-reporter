@@ -356,6 +356,7 @@ export default function Dashboard() {
           </motion.div>
         )}
       </motion.div>
+      </div>
 
       <Sheet open={towSheetOpen} onOpenChange={setTowSheetOpen}>
         <SheetContent side="bottom" className="h-[90vh] rounded-t-2xl p-0 flex flex-col" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
