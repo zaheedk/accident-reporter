@@ -560,16 +560,7 @@ export default function ClaimWizard() {
                         <input className="h-11 px-3.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
                           placeholder="Policy #" value={tp.claimNumber} onChange={e => updTP(i, 'claimNumber', e.target.value)} />
                       </div>
-                      <input className="w-full h-11 px-3.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
-                        placeholder="Address" value={tp.address} onChange={e => updTP(i, 'address', e.target.value)} />
-                      <div className="grid grid-cols-2 gap-2">
-                        <input className="h-11 px-3.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
-                          placeholder="Make" value={tp.make} onChange={e => updTP(i, 'make', e.target.value)} />
-                        <input className="h-11 px-3.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
-                          placeholder="Model" value={tp.model} onChange={e => updTP(i, 'model', e.target.value)} />
-                      </div>
-                      <textarea className="w-full min-h-[60px] px-3.5 py-2.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
-                        placeholder="Damage description" value={tp.damageDescription} onChange={e => updTP(i, 'damageDescription', e.target.value)} />
+                      
                       {claim.id && user && (
                         <ThirdPartyPhotos
                           tpIndex={i} claimId={claim.id} userId={user.id}
