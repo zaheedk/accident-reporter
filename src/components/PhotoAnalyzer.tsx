@@ -111,7 +111,9 @@ export function ThirdPartyPhotos({ tpIndex, claimId, userId, onRegoDetected, onL
     }
     setUploading(type);
     try {
-      const file = await compressImage(rawFile);
+      // Stamp date/time + location at capture time, then compress
+      const stamped = await watermarkImage(rawFile);
+      const file = await compressImage(stamped);
       const ext = file.name.split('.').pop();
       const path = `${userId}/${claimId}/tp${tpIndex}/${type}_${Date.now()}.${ext}`;
       const { error: uploadError } = await supabase.storage.from('tp-photos').upload(path, file);
