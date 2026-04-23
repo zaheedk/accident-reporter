@@ -186,12 +186,22 @@ export default function Dashboard() {
                       to={`/vehicles/${v.id}/edit`}
                       className="w-[220px] shrink-0 rounded-2xl bg-card border border-border p-3 flex flex-col gap-2.5 transition-all active:scale-[0.98] hover:border-primary/40"
                     >
-                      <div className="aspect-[16/10] rounded-xl bg-muted overflow-hidden flex items-center justify-center">
+                      <div className="relative aspect-[16/10] rounded-xl bg-muted overflow-hidden flex items-center justify-center">
                         {v.photoUrl ? (
                           <img src={v.photoUrl} alt={`${v.make} ${v.model}`} className="w-full h-full object-cover" loading="lazy" />
                         ) : (
                           <Car className="w-8 h-8 text-muted-foreground" strokeWidth={1.5} />
                         )}
+                        <Link
+                          to={`/claims/new?vehicleId=${v.id}`}
+                          onClick={(e) => e.stopPropagation()}
+                          aria-label={`Report incident for ${v.regoNumber}`}
+                          title="Report incident"
+                          className="absolute top-2 right-2 w-8 h-8 rounded-full flex items-center justify-center shadow-md active:scale-95 transition-transform"
+                          style={{ backgroundColor: 'hsl(152 76% 46%)', color: 'hsl(220 35% 7%)' }}
+                        >
+                          <AlertTriangle className="w-4 h-4" strokeWidth={2.4} />
+                        </Link>
                       </div>
                       <div className="min-w-0">
                         <div className="text-[13px] font-bold text-foreground truncate">{v.year} {v.make}</div>
