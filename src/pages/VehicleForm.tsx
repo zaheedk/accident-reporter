@@ -140,18 +140,17 @@ export default function VehicleForm() {
             <ArrowLeft className="w-5 h-5 text-foreground" strokeWidth={2} />
           </button>
           {!isEdit && <h1 className="display-heading">Add vehicle</h1>}
+          {isEdit && id && (
+            <button
+              onClick={() => navigate(`/claims/new?vehicleId=${id}`)}
+              className="flex-1 inline-flex items-center justify-center gap-2 h-10 rounded-2xl text-sm font-bold active:scale-[0.99] transition-all"
+              style={{ backgroundColor: 'hsl(152 76% 46%)', color: 'hsl(220 35% 7%)' }}
+            >
+              <AlertTriangle className="w-4 h-4" strokeWidth={2.2} />
+              Report incident with this vehicle
+            </button>
+          )}
         </div>
-
-        {isEdit && id && (
-          <button
-            onClick={() => navigate(`/claims/new?vehicleId=${id}`)}
-            className="w-full inline-flex items-center justify-center gap-2 h-12 rounded-2xl text-sm font-bold active:scale-[0.99] transition-all"
-            style={{ backgroundColor: 'hsl(152 76% 46%)', color: 'hsl(220 35% 7%)' }}
-          >
-            <AlertTriangle className="w-4 h-4" strokeWidth={2.2} />
-            Report incident with this vehicle
-          </button>
-        )}
 
         {/* Vehicle Photo */}
         <div className="card-soft space-y-3">
