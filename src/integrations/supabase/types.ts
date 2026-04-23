@@ -919,6 +919,7 @@ export type Database = {
           insurance_company: string
           insurance_expiry: string
           insurance_policy_number: string
+          is_active: boolean
           make: string
           model: string
           modification_details: string | null
@@ -940,6 +941,7 @@ export type Database = {
           insurance_company?: string
           insurance_expiry?: string
           insurance_policy_number?: string
+          is_active?: boolean
           make?: string
           model?: string
           modification_details?: string | null
@@ -961,6 +963,7 @@ export type Database = {
           insurance_company?: string
           insurance_expiry?: string
           insurance_policy_number?: string
+          is_active?: boolean
           make?: string
           model?: string
           modification_details?: string | null
