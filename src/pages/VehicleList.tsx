@@ -154,6 +154,7 @@ export default function VehicleList() {
           </AlertDialogContent>
         </AlertDialog>
       </motion.div>
+      </div>
     </AppLayout>
   );
 }
