@@ -28,11 +28,12 @@ export default function Dashboard() {
   const [userLat, setUserLat] = useState<number | null>(null);
   const [userLng, setUserLng] = useState<number | null>(null);
 
-  const { data: vehicles = [], isLoading: vehiclesLoading } = useOfflineQuery<Vehicle[]>(
+  const { data: allVehicles = [], isLoading: vehiclesLoading } = useOfflineQuery<Vehicle[]>(
     ['vehicles', user?.id ?? ''],
     () => getVehicles(user!.id),
     { enabled: !!user }
   );
+  const vehicles = allVehicles.filter(v => v.isActive !== false);
 
   const { data: claims = [], isLoading: claimsLoading } = useOfflineQuery<ClaimReport[]>(
     ['claims', user?.id ?? ''],
