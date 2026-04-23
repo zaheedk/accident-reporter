@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { Search, MapPin, Phone, Navigation, Loader2 } from 'lucide-react';
 import { useNearbySort } from '@/hooks/use-nearby-sort';
+import { useAuth } from '@/contexts/AuthContext';
 
 type TowCompany = {
   id: string; name: string; address: string; phone: string;
@@ -14,6 +15,7 @@ type TowCompany = {
 };
 
 export default function TowCompanies() {
+  const { session } = useAuth();
   const [search, setSearch] = useState('');
   const [selectedRegion, setSelectedRegion] = useState('All');
   const [showAll, setShowAll] = useState(false);
@@ -45,6 +47,7 @@ export default function TowCompanies() {
 
   return (
     <AppLayout>
+      <div className={session ? "theme-dashboard-dark" : ""}>
       <div className="space-y-5">
         <div>
           <h1 className="text-xl font-bold text-foreground">Tow Companies</h1>
@@ -134,6 +137,7 @@ export default function TowCompanies() {
         <p className="text-[10px] text-muted-foreground text-center pt-2">
           Showing {displayed.length} of {afterNearby.length} {`${afterNearby.length} companies found`}
         </p>
+      </div>
       </div>
     </AppLayout>
   );
