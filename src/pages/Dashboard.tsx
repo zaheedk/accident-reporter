@@ -260,39 +260,6 @@ export default function Dashboard() {
           </Link>
         </motion.div>
 
-        {/* Insurance section */}
-        {vehicles.filter(v => v.insuranceCompany).length > 0 && (
-          <motion.div variants={fadeUp} className="space-y-3">
-            <p className="eyebrow px-1">Your insurance</p>
-            <div className="space-y-2.5">
-              {vehicles.filter(v => v.insuranceCompany).map((v) => (
-                <div
-                  key={v.id}
-                  className="card-soft flex items-center gap-3"
-                >
-                  <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center shrink-0">
-                    <Shield className="w-[18px] h-[18px] text-foreground" strokeWidth={2} />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="text-sm font-bold text-foreground truncate">{v.insuranceCompany}</div>
-                    <div className="text-xs text-muted-foreground mt-0.5 truncate">
-                      {v.year} {v.make} {v.model} · {v.regoNumber}
-                    </div>
-                  </div>
-                  {insurerPhones[v.insuranceCompany] && (
-                    <a
-                      href={`tel:${insurerPhones[v.insuranceCompany].replace(/\s/g, '')}`}
-                      className="shrink-0 inline-flex items-center gap-1.5 px-3.5 h-9 rounded-xl text-xs font-bold bg-foreground text-background hover:bg-foreground/90 transition-colors"
-                    >
-                      <Phone className="w-3.5 h-3.5" />
-                      Call
-                    </a>
-                  )}
-                </div>
-              ))}
-            </div>
-          </motion.div>
-        )}
 
         {recentMessages.length > 0 && (
           <motion.div variants={fadeUp} className="rounded-2xl bg-card border border-border p-4 space-y-2">
