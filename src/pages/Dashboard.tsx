@@ -255,19 +255,8 @@ export default function Dashboard() {
           <div className="flex items-center justify-between px-1">
             <p className="eyebrow">Overview</p>
           </div>
-          <div className="grid grid-cols-2 gap-3">
-            <Link to="/vehicles" className="card-soft group transition-all active:scale-[0.98] hover:border-foreground/25">
-              <div className="flex items-start justify-between mb-4">
-                <div className="w-9 h-9 rounded-xl bg-muted flex items-center justify-center">
-                  <Car className="w-[18px] h-[18px] text-foreground" strokeWidth={2} />
-                </div>
-                <ArrowUpRight className="w-4 h-4 text-muted-foreground/40 group-hover:text-foreground transition-colors" />
-              </div>
-              {vehiclesLoading ? <Skeleton className="h-9 w-12" /> : (
-                <div className="text-[34px] font-extrabold tabular-nums text-foreground leading-none tracking-tight">{vehicles.length}</div>
-              )}
-              <div className="text-[11px] uppercase tracking-[0.14em] text-muted-foreground font-semibold mt-2">Vehicles</div>
-            </Link>
+          <div className="grid grid-cols-1 gap-3">
+
             <Link to="/claims" className="card-soft group transition-all active:scale-[0.98] hover:border-foreground/25">
               <div className="flex items-start justify-between mb-4">
                 <div className="w-9 h-9 rounded-xl bg-muted flex items-center justify-center">
