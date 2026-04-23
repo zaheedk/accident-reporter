@@ -134,6 +134,7 @@ export default function VehicleForm() {
 
   return (
     <AppLayout>
+      <div className="theme-dashboard-dark">
       <div className="space-y-5">
         <div className="flex items-center gap-3">
           <button onClick={() => navigate(-1)} aria-label="Back" className="w-10 h-10 -ml-1 rounded-xl border border-border bg-card hover:bg-muted flex items-center justify-center transition-colors shrink-0">
@@ -269,6 +270,7 @@ export default function VehicleForm() {
         <button onClick={handleSave} disabled={saving || !form.make || !form.model || !form.regoNumber} className="w-full h-12 rounded-xl text-sm font-semibold bg-foreground text-background hover:bg-foreground/90 active:scale-[0.99] disabled:opacity-40 disabled:pointer-events-none inline-flex items-center justify-center gap-2 transition-all">
           {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />} {isEdit ? 'Update vehicle' : 'Save vehicle'}
         </button>
+      </div>
       </div>
     </AppLayout>
   );
