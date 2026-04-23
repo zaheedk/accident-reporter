@@ -21,7 +21,7 @@ export default function VehicleList() {
   const { user } = useAuth();
   const [deleteTarget, setDeleteTarget] = useState<Vehicle | null>(null);
   const [deleting, setDeleting] = useState(false);
-  const [filter, setFilter] = useState<FilterType>('all');
+  const [filter, setFilter] = useState<FilterType>('active');
   const [search, setSearch] = useState('');
   const queryClient = useQueryClient();
 
