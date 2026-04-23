@@ -16,6 +16,7 @@ const emptyVehicle: Omit<Vehicle, 'id' | 'createdAt'> = {
   financeArrangement: false, financeDetails: '', modified: false, modificationDetails: '',
   insuranceCompany: '', insurancePolicyNumber: '', insuranceExpiry: '',
   photoUrl: '',
+  isActive: true,
 };
 
 export default function VehicleForm() {
@@ -254,6 +255,13 @@ export default function VehicleForm() {
           <Toggle active={form.modified} onToggle={() => update('modified', !form.modified)} label="Modified from standard specs" />
           {form.modified && (
             <div className="pl-14"><label className="form-label">Modification details</label><input className="form-input" placeholder="Describe modifications" value={form.modificationDetails} onChange={e => update('modificationDetails', e.target.value)} /></div>
+          )}
+        </div>
+
+        <div className="card-soft space-y-2">
+          <Toggle active={form.isActive} onToggle={() => update('isActive', !form.isActive)} label="Vehicle is active (still in your possession)" />
+          {!form.isActive && (
+            <p className="text-xs text-muted-foreground pl-14">Inactive vehicles are hidden from incident reporting but kept on file for your records.</p>
           )}
         </div>
 
