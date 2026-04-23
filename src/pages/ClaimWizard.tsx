@@ -308,49 +308,55 @@ export default function ClaimWizard() {
 
   return (
     <AppLayout>
-      <div className="space-y-5 pb-24">
-        {/* Header */}
-        <div className="flex items-start justify-between gap-3">
-          <button onClick={async () => { if (shouldSave()) await autoSave(); navigate(-1); }}
-            className="w-9 h-9 -ml-1 rounded-xl bg-muted/60 hover:bg-muted flex items-center justify-center transition-colors shrink-0"
-            aria-label="Back">
-            <ArrowLeft className="w-4 h-4 text-foreground" strokeWidth={2} />
-          </button>
+      <div className="theme-dashboard-dark">
+        <div className="space-y-5 pb-24">
+          {/* Header — matches Garage style */}
+          <div className="flex items-center justify-between gap-3 pt-1">
+            <div className="flex items-center gap-2 min-w-0">
+              <button onClick={async () => { if (shouldSave()) await autoSave(); navigate(-1); }}
+                className="w-9 h-9 -ml-1 rounded-xl flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors flex-shrink-0"
+                aria-label="Back">
+                <ArrowLeft className="w-5 h-5" />
+              </button>
+              <h1 className="text-[15px] font-bold uppercase tracking-[0.18em] text-foreground truncate">
+                Report Incident
+              </h1>
+            </div>
 
-          {claim.id && (
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <button type="button" disabled={deleting}
-                  className="w-9 h-9 rounded-xl hover:bg-muted transition-colors disabled:opacity-50 flex items-center justify-center"
-                  title="Delete report">
-                  <Trash2 className="w-4 h-4 text-muted-foreground" strokeWidth={2} />
-                </button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Delete report?</AlertDialogTitle>
-                  <AlertDialogDescription>This action cannot be undone.</AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel disabled={deleting}>Cancel</AlertDialogCancel>
-                  <AlertDialogAction onClick={handleDeleteReport} disabled={deleting}
-                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-                    {deleting ? 'Deleting…' : 'Delete'}
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
+            {claim.id && (
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <button type="button" disabled={deleting}
+                    className="w-9 h-9 rounded-xl hover:bg-muted/50 transition-colors disabled:opacity-50 flex items-center justify-center flex-shrink-0"
+                    title="Delete report">
+                    <Trash2 className="w-4 h-4 text-muted-foreground" strokeWidth={2} />
+                  </button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Delete report?</AlertDialogTitle>
+                    <AlertDialogDescription>This action cannot be undone.</AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel disabled={deleting}>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleDeleteReport} disabled={deleting}
+                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                      {deleting ? 'Deleting…' : 'Delete'}
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            )}
+          </div>
+
+          {(reportRef || !isEdit) && (
+            <div className="-mt-2 flex items-center justify-between gap-2">
+              <p className="eyebrow">{isEdit ? 'Edit claim' : 'New claim'}{reportRef ? ` · ${reportRef}` : ''}</p>
+              <p className="text-[11px] text-muted-foreground flex items-center gap-1.5">
+                <Save className="w-3 h-3" /> Auto-saved
+              </p>
+            </div>
           )}
-        </div>
-
-        {/* Eyebrow + display heading */}
-        <div className="space-y-1.5 -mt-2">
-          <p className="eyebrow">{isEdit ? 'Edit claim' : 'New claim'}{reportRef ? ` · ${reportRef}` : ''}</p>
-          <h1 className="display-heading">Report incident</h1>
-          <p className="text-xs text-muted-foreground flex items-center gap-1.5 pt-0.5">
-            <Save className="w-3 h-3" /> Auto-saved as draft
-          </p>
-        </div>
 
         {/* 4-step pill bar */}
         <div className="flex items-center">
@@ -709,6 +715,7 @@ export default function ClaimWizard() {
               {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Save className="w-4 h-4" /> Submit report</>}
             </button>
           )}
+        </div>
         </div>
       </div>
     </AppLayout>
