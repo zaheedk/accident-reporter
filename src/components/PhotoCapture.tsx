@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { Camera, X, Loader2, Upload, Check, CloudOff, RefreshCw } from 'lucide-react';
 import { compressImage } from '@/lib/image-compress';
+import { watermarkImage } from '@/lib/image-watermark';
 import { supabase } from '@/integrations/supabase/client';
 import {
   enqueuePhoto,
@@ -112,21 +113,23 @@ export function PhotoCapture({
         toast.error(`${f.name} is too large (max 10MB)`);
         continue;
       }
+      // Stamp date/time + location at capture time
+      const stamped = await watermarkImage(f);
       const id = `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
-      const previewUrl = URL.createObjectURL(f);
+      const previewUrl = URL.createObjectURL(stamped);
       previewMapRef.current.set(id, previewUrl);
       // Persist to IndexedDB immediately so it survives reloads / offline
       const queued: QueuedPhoto = {
         id,
         claimId: claimId || null,
         userId,
-        fileName: f.name,
-        fileType: f.type,
-        blob: f,
+        fileName: stamped.name,
+        fileType: stamped.type,
+        blob: stamped,
         createdAt: Date.now(),
       };
       await enqueuePhoto(queued);
-      newItems.push({ id, previewUrl, fileName: f.name, status: 'ready' });
+      newItems.push({ id, previewUrl, fileName: stamped.name, status: 'ready' });
     }
     if (newItems.length) setPending((prev) => [...prev, ...newItems]);
   };
