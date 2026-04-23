@@ -2,6 +2,7 @@ import { useState, useRef } from 'react';
 import { Camera, Loader2, X, Sparkles, ScanLine, CreditCard } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { compressImage } from '@/lib/image-compress';
+import { watermarkImage } from '@/lib/image-watermark';
 import { toast } from 'sonner';
 
 interface DamagePhotoAnalyzerProps {
