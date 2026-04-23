@@ -56,6 +56,7 @@ export default function VehicleList() {
 
   return (
     <AppLayout>
+      <div className="theme-dashboard-dark">
       <motion.div className="space-y-5" variants={stagger} initial="hidden" animate="visible">
         <motion.div variants={fadeUp} className="flex items-start justify-between gap-3">
           <div className="flex items-start gap-3 min-w-0">
