@@ -185,22 +185,22 @@
 
   /* === Scoped dark + green theme for the dashboard page === */
   .theme-dashboard-dark {
-    --background: 220 35% 7%;
+    --background: 220 20% 16%;
     --foreground: 0 0% 98%;
-    --card: 220 28% 11%;
+    --card: 220 16% 21%;
     --card-foreground: 0 0% 98%;
-    --popover: 220 28% 11%;
+    --popover: 220 16% 21%;
     --popover-foreground: 0 0% 98%;
     --primary: 152 76% 46%;
     --primary-foreground: 220 35% 7%;
-    --secondary: 220 22% 16%;
+    --secondary: 220 14% 26%;
     --secondary-foreground: 0 0% 98%;
-    --muted: 220 22% 14%;
-    --muted-foreground: 220 12% 65%;
+    --muted: 220 14% 24%;
+    --muted-foreground: 220 10% 72%;
     --accent: 152 76% 46%;
     --accent-foreground: 220 35% 7%;
-    --border: 220 18% 18%;
-    --input: 220 18% 18%;
+    --border: 220 12% 30%;
+    --input: 220 12% 30%;
     --ring: 152 76% 46%;
     background: hsl(var(--background));
     color: hsl(var(--foreground));
