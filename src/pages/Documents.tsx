@@ -32,7 +32,8 @@ export default function Documents() {
 
   return (
     <AppLayout>
-      <div className="space-y-6">
+      <div className="theme-dashboard-dark">
+        <div className="space-y-6">
         {/* Header */}
         <div className="space-y-3">
           <div className="flex items-start gap-3">
@@ -104,6 +105,7 @@ export default function Documents() {
             showCategories={['insurance_policy', 'registration', 'wof_certificate', 'purchase_receipt', 'service_record', 'other']}
           />
         ) : null}
+        </div>
       </div>
     </AppLayout>
   );
