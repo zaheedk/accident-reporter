@@ -135,13 +135,11 @@ export default function VehicleForm() {
   return (
     <AppLayout>
       <div className="space-y-5">
-        <div className="flex items-start gap-3">
-          <button onClick={() => navigate(-1)} aria-label="Back" className="w-10 h-10 -ml-1 rounded-xl border border-border bg-card hover:bg-muted flex items-center justify-center transition-colors shrink-0 mt-1">
+        <div className="flex items-center gap-3">
+          <button onClick={() => navigate(-1)} aria-label="Back" className="w-10 h-10 -ml-1 rounded-xl border border-border bg-card hover:bg-muted flex items-center justify-center transition-colors shrink-0">
             <ArrowLeft className="w-5 h-5 text-foreground" strokeWidth={2} />
           </button>
-          <div className="min-w-0 flex-1">
-            {!isEdit && <h1 className="display-heading mt-1">Add vehicle</h1>}
-          </div>
+          {!isEdit && <h1 className="display-heading">Add vehicle</h1>}
         </div>
 
         {isEdit && id && (
