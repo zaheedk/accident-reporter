@@ -154,7 +154,7 @@ export default function VehicleForm() {
 
         {/* Vehicle Photo */}
         <div className="card-soft space-y-3">
-          <h2 className="text-sm font-semibold text-foreground">Vehicle photo</h2>
+          <h2 className="eyebrow">Vehicle photo</h2>
           {photoPreview ? (
             <div className="relative">
               <img src={photoPreview} alt="Vehicle" className="w-full h-48 object-cover rounded-2xl" />
@@ -210,7 +210,7 @@ export default function VehicleForm() {
         </div>
 
         <div className="card-soft space-y-4">
-          <h2 className="text-sm font-semibold text-foreground">Insurance details</h2>
+          <h2 className="eyebrow">Insurance details</h2>
           <div>
             <label className="form-label">Insurance company</label>
             <Select value={form.insuranceCompany === '__other__' ? '__other__' : form.insuranceCompany} onValueChange={val => {
