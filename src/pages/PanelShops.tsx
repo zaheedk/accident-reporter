@@ -178,6 +178,7 @@ export default function PanelShops() {
           {displayed.length} shop{displayed.length !== 1 ? 's' : ''} found
         </p>
       </div>
+      </div>
 
       <PanelShopForm open={formOpen} onOpenChange={(open) => { setFormOpen(open); if (!open) setEditShop(null); }} shop={editShop} onSave={editShop ? handleEdit : handleAdd} />
 
