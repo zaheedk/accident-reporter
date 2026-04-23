@@ -207,14 +207,36 @@ export default function Dashboard() {
                         <div className="text-[13px] font-bold text-foreground truncate">{v.year} {v.make}</div>
                         <div className="text-[11px] text-muted-foreground truncate uppercase tracking-wider mt-0.5">{v.regoNumber} · {v.model}</div>
                       </div>
+                      {(v.regoExpiry || v.wofExpiry || v.insuranceExpiry) && (
+                        <div className="space-y-1 pt-1 border-t border-border/60">
+                          {v.regoExpiry && (
+                            <div className="flex items-center justify-between text-[10.5px]">
+                              <span className="uppercase tracking-wider text-muted-foreground font-semibold">Rego</span>
+                              <span className={`tabular-nums font-semibold ${v.regoExpiry < new Date().toISOString().slice(0,10) ? 'text-destructive' : 'text-foreground'}`}>{v.regoExpiry}</span>
+                            </div>
+                          )}
+                          {v.wofExpiry && (
+                            <div className="flex items-center justify-between text-[10.5px]">
+                              <span className="uppercase tracking-wider text-muted-foreground font-semibold">WOF</span>
+                              <span className={`tabular-nums font-semibold ${v.wofExpiry < new Date().toISOString().slice(0,10) ? 'text-destructive' : 'text-foreground'}`}>{v.wofExpiry}</span>
+                            </div>
+                          )}
+                          {v.insuranceExpiry && (
+                            <div className="flex items-center justify-between text-[10.5px]">
+                              <span className="uppercase tracking-wider text-muted-foreground font-semibold">Policy</span>
+                              <span className={`tabular-nums font-semibold ${v.insuranceExpiry < new Date().toISOString().slice(0,10) ? 'text-destructive' : 'text-foreground'}`}>{v.insuranceExpiry}</span>
+                            </div>
+                          )}
+                        </div>
+                      )}
                       {insurerPhone && (
                         <a
                           href={`tel:${insurerPhone.replace(/\s/g, '')}`}
                           onClick={(e) => e.stopPropagation()}
-                          className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-foreground/80 hover:text-primary"
+                          className="inline-flex items-center justify-center gap-1.5 mt-1 h-8 px-3 rounded-lg text-[11px] font-bold bg-foreground text-background hover:bg-foreground/90 transition-colors"
                         >
                           <Phone className="w-3 h-3" />
-                          {insurerPhone}
+                          Call insurance
                         </a>
                       )}
                     </Link>
