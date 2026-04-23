@@ -151,6 +151,7 @@ export default function Dashboard() {
 
   return (
     <AppLayout>
+      <div className="theme-dashboard-dark">
       <motion.div className="space-y-7" variants={stagger} initial="hidden" animate="visible">
         {/* Header — eyebrow + display name + avatar */}
         <motion.div variants={fadeUp} className="flex items-start justify-between gap-3 pt-1">
@@ -167,6 +168,59 @@ export default function Dashboard() {
             </Avatar>
           </Link>
         </motion.div>
+
+        {/* Vehicle cards rail — horizontal scroll */}
+        {vehicles.length > 0 && (
+          <motion.div variants={fadeUp} className="space-y-3">
+            <div className="flex items-center justify-between px-1">
+              <p className="eyebrow">Vehicle cards</p>
+              <Link to="/vehicles" className="text-[12px] font-semibold text-primary hover:opacity-80">See all</Link>
+            </div>
+            <div className="-mx-4 px-4 overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
+              <div className="flex gap-3 pb-1 w-max">
+                {vehicles.map((v) => {
+                  const insurerPhone = v.insuranceCompany ? insurerPhones[v.insuranceCompany] : '';
+                  return (
+                    <Link
+                      key={v.id}
+                      to="/vehicles"
+                      className="w-[220px] shrink-0 rounded-2xl bg-card border border-border p-3 flex flex-col gap-2.5 transition-all active:scale-[0.98] hover:border-primary/40"
+                    >
+                      <div className="aspect-[16/10] rounded-xl bg-muted overflow-hidden flex items-center justify-center">
+                        {v.photoUrl ? (
+                          <img src={v.photoUrl} alt={`${v.make} ${v.model}`} className="w-full h-full object-cover" loading="lazy" />
+                        ) : (
+                          <Car className="w-8 h-8 text-muted-foreground" strokeWidth={1.5} />
+                        )}
+                      </div>
+                      <div className="min-w-0">
+                        <div className="text-[13px] font-bold text-foreground truncate">{v.year} {v.make}</div>
+                        <div className="text-[11px] text-muted-foreground truncate uppercase tracking-wider mt-0.5">{v.regoNumber} · {v.model}</div>
+                      </div>
+                      {insurerPhone && (
+                        <a
+                          href={`tel:${insurerPhone.replace(/\s/g, '')}`}
+                          onClick={(e) => e.stopPropagation()}
+                          className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-foreground/80 hover:text-primary"
+                        >
+                          <Phone className="w-3 h-3" />
+                          {insurerPhone}
+                        </a>
+                      )}
+                    </Link>
+                  );
+                })}
+                <Link
+                  to="/vehicles/new"
+                  className="w-[140px] shrink-0 rounded-2xl border-2 border-dashed border-border flex flex-col items-center justify-center gap-2 text-muted-foreground hover:text-primary hover:border-primary/40 transition-colors"
+                >
+                  <Plus className="w-6 h-6" strokeWidth={1.8} />
+                  <span className="text-[11px] font-semibold">Add vehicle</span>
+                </Link>
+              </div>
+            </div>
+          </motion.div>
+        )}
 
         {/* Hero action tiles */}
         <motion.div variants={fadeUp} className="grid grid-cols-2 gap-3">
@@ -302,6 +356,7 @@ export default function Dashboard() {
           </motion.div>
         )}
       </motion.div>
+      </div>
 
       <Sheet open={towSheetOpen} onOpenChange={setTowSheetOpen}>
         <SheetContent side="bottom" className="h-[90vh] rounded-t-2xl p-0 flex flex-col" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
