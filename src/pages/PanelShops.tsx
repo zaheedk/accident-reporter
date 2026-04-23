@@ -82,7 +82,8 @@ export default function PanelShops() {
 
   return (
     <AppLayout>
-      <div className="space-y-5">
+      <div className="theme-dashboard-dark">
+        <div className="space-y-5">
         <div className="flex items-start justify-between gap-2">
           <div>
             <h1 className="text-xl font-bold text-foreground">Panel Shops</h1>
