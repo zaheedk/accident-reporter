@@ -94,6 +94,20 @@ serve(async (req) => {
     const payload = await req.json();
     const emailData = (payload?.data || payload || {}) as Record<string, unknown>;
 
+    const fromCheck = firstNonEmpty(
+      emailData.from,
+      emailData.sender,
+      emailData.from_email,
+      (emailData.envelope as Record<string, unknown> | undefined)?.from,
+    ).toLowerCase();
+    if (fromCheck.includes('info@savo.co.nz')) {
+      // Ignore emails from our own support address to avoid loops.
+      return new Response(JSON.stringify({ success: true, skipped: true, reason: 'self-loop' }), {
+        status: 200,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
     const from = firstNonEmpty(
       emailData.from,
       emailData.sender,
