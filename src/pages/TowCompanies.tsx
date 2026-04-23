@@ -138,6 +138,7 @@ export default function TowCompanies() {
           Showing {displayed.length} of {afterNearby.length} {`${afterNearby.length} companies found`}
         </p>
       </div>
+      </div>
     </AppLayout>
   );
 }
