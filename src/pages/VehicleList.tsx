@@ -91,6 +91,7 @@ export default function VehicleList() {
               const isExpired = (v.wofExpiry && v.wofExpiry < today) || (v.regoExpiry && v.regoExpiry < today) || (v.insuranceExpiry && v.insuranceExpiry < today);
               const insurerPhone = v.insuranceCompany ? insurerPhones[v.insuranceCompany] : '';
 
+              const isInactive = v.isActive === false;
               return (
                 <motion.div
                   key={v.id}
@@ -98,16 +99,21 @@ export default function VehicleList() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.1 + i * 0.06, duration: 0.35 }}
                   whileTap={{ scale: 0.99 }}
-                  className={`group transition-colors relative overflow-hidden card-soft ${isExpired ? 'border-destructive/40 hover:border-destructive/60' : 'hover:border-foreground/20'}`}
+                  className={`group transition-colors relative overflow-hidden card-soft ${isInactive ? 'opacity-60 bg-muted/30 border-dashed border-border' : isExpired ? 'border-destructive/40 hover:border-destructive/60' : 'hover:border-foreground/20'}`}
                 >
-                  <div className="flex items-stretch gap-3 pr-10">
+                  {isInactive && (
+                    <span className="absolute top-3 left-3 z-10 inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-muted text-muted-foreground border border-border">
+                      Inactive
+                    </span>
+                  )}
+                  <div className={`flex items-stretch gap-3 pr-10 ${isInactive ? 'pt-6' : ''}`}>
                     <Link to={`/vehicles/${v.id}/edit`} className="flex-1 min-w-0 flex flex-col">
                       <div className="text-base font-bold text-foreground tabular-nums tracking-wide truncate">{v.regoNumber}</div>
                       <div className="text-xs text-muted-foreground truncate mt-0.5">{v.year} {v.make} {v.model}</div>
                       <div className="text-[11px] font-semibold text-destructive mt-1 min-h-[16px]">
-                        {isExpired ? 'Expired documents' : '\u00A0'}
+                        {isInactive ? '\u00A0' : isExpired ? 'Expired documents' : '\u00A0'}
                       </div>
-                      {insurerPhone && (
+                      {insurerPhone && !isInactive && (
                         <a
                           href={`tel:${insurerPhone.replace(/\s/g, '')}`}
                           onClick={(e) => e.stopPropagation()}
@@ -119,10 +125,10 @@ export default function VehicleList() {
                       )}
                     </Link>
                     {v.photoUrl ? (
-                      <img src={v.photoUrl} alt={`${v.make} ${v.model}`} className="w-24 self-stretch rounded-xl object-cover ring-1 ring-border/30 shrink-0" />
+                      <img src={v.photoUrl} alt={`${v.make} ${v.model}`} className={`w-24 self-stretch rounded-xl object-cover ring-1 ring-border/30 shrink-0 ${isInactive ? 'grayscale' : ''}`} />
                     ) : (
-                      <div className={`w-24 self-stretch rounded-xl flex items-center justify-center shrink-0 border-2 border-dashed ${isExpired ? 'bg-destructive/10 border-destructive/40' : 'bg-muted/40 border-border'}`}>
-                        <Car className={`w-10 h-10 ${isExpired ? 'text-destructive' : 'text-foreground/60'}`} strokeWidth={1.8} />
+                      <div className={`w-24 self-stretch rounded-xl flex items-center justify-center shrink-0 border-2 border-dashed ${isExpired && !isInactive ? 'bg-destructive/10 border-destructive/40' : 'bg-muted/40 border-border'}`}>
+                        <Car className={`w-10 h-10 ${isExpired && !isInactive ? 'text-destructive' : 'text-foreground/60'}`} strokeWidth={1.8} />
                       </div>
                     )}
                   </div>
