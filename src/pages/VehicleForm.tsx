@@ -271,6 +271,7 @@ export default function VehicleForm() {
           {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />} {isEdit ? 'Update vehicle' : 'Save vehicle'}
         </button>
       </div>
+      </div>
     </AppLayout>
   );
 }
