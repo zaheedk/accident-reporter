@@ -104,10 +104,7 @@ export default function ClaimList() {
             <button onClick={() => window.history.back()} className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors flex-shrink-0">
               <ArrowLeft className="w-5 h-5" />
             </button>
-            <div className="min-w-0">
-              <p className="eyebrow">Reports</p>
-              <h1 className="display-heading mt-1">Accident reports</h1>
-            </div>
+            <div className="min-w-0" />
           </div>
           <Link to="/claims/new" className="inline-flex items-center gap-1.5 h-9 px-3.5 text-xs font-semibold rounded-xl bg-foreground text-background active:scale-[0.99] transition-transform flex-shrink-0">
             <Plus className="w-3.5 h-3.5" /> New
