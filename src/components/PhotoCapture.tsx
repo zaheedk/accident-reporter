@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { Camera, X, Loader2, Upload, Check, CloudOff, RefreshCw } from 'lucide-react';
 import { compressImage } from '@/lib/image-compress';
+import { watermarkImage } from '@/lib/image-watermark';
 import { supabase } from '@/integrations/supabase/client';
 import {
   enqueuePhoto,
