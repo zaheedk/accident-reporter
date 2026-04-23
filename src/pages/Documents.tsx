@@ -35,23 +35,19 @@ export default function Documents() {
       <div className="theme-dashboard-dark">
         <div className="space-y-6">
         {/* Header */}
-        <div className="space-y-3">
-          <div className="flex items-start gap-3">
+        <div className="flex items-center justify-between gap-3 pt-1">
+          <div className="flex items-center gap-2 min-w-0">
             <Link
               to="/dashboard"
-              className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-muted/50 hover:bg-muted transition-colors shrink-0"
-              aria-label="Back to dashboard"
+              aria-label="Back"
+              className="w-9 h-9 -ml-1 rounded-xl flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors flex-shrink-0"
             >
-              <ArrowLeft className="w-5 h-5 text-foreground" strokeWidth={1.75} />
+              <ArrowLeft className="w-5 h-5" />
             </Link>
-            <div className="min-w-0 flex-1">
-              <h1 className="display-heading leading-tight">Document vault</h1>
-              <p className="eyebrow mt-1">Secure storage</p>
-            </div>
+            <h1 className="text-[15px] font-bold uppercase tracking-[0.18em] text-foreground truncate">
+              Document Vault
+            </h1>
           </div>
-          <p className="text-sm text-muted-foreground">
-            Keep your licence, insurance and vehicle paperwork in one safe place.
-          </p>
         </div>
 
         {/* Vehicle / personal selector — hero pill */}
