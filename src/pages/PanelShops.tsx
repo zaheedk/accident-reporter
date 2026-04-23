@@ -23,7 +23,7 @@ type PanelShop = {
 };
 
 export default function PanelShops() {
-  const { isAdmin } = useAuth();
+  const { isAdmin, session } = useAuth();
   const queryClient = useQueryClient();
   const [search, setSearch] = useState('');
   const [selectedRegion, setSelectedRegion] = useState('All');
@@ -82,7 +82,7 @@ export default function PanelShops() {
 
   return (
     <AppLayout>
-      <div className={useAuth().session ? "theme-dashboard-dark" : ""}>
+      <div className={session ? "theme-dashboard-dark" : ""}>
         <div className="space-y-5">
         <div className="flex items-start justify-between gap-2">
           <div>
