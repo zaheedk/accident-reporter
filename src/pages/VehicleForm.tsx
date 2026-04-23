@@ -140,7 +140,6 @@ export default function VehicleForm() {
             <ArrowLeft className="w-5 h-5 text-foreground" strokeWidth={2} />
           </button>
           <div className="min-w-0 flex-1">
-            <p className="eyebrow">Garage</p>
             {!isEdit && <h1 className="display-heading mt-1">Add vehicle</h1>}
           </div>
         </div>
