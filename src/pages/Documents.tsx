@@ -105,6 +105,7 @@ export default function Documents() {
             showCategories={['insurance_policy', 'registration', 'wof_certificate', 'purchase_receipt', 'service_record', 'other']}
           />
         ) : null}
+        </div>
       </div>
     </AppLayout>
   );
