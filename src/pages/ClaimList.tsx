@@ -98,6 +98,7 @@ export default function ClaimList() {
 
   return (
     <AppLayout>
+      <div className="theme-dashboard-dark">
       <div className="space-y-5">
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
@@ -214,6 +215,7 @@ export default function ClaimList() {
             })}
           </div>
         )}
+      </div>
       </div>
 
       <Dialog open={!!deleteId} onOpenChange={(open) => !open && setDeleteId(null)}>
