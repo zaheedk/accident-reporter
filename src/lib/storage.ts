@@ -39,6 +39,7 @@ export async function saveVehicle(vehicle: Omit<Vehicle, 'id' | 'createdAt'> & {
     insurance_policy_number: vehicle.insurancePolicyNumber || '',
     insurance_expiry: vehicle.insuranceExpiry || '',
     photo_url: vehicle.photoUrl || '',
+    is_active: vehicle.isActive ?? true,
   };
 
   if (vehicle.id) {
@@ -72,6 +73,7 @@ function dbVehicleToVehicle(row: any): Vehicle {
     insurancePolicyNumber: row.insurance_policy_number || '',
     insuranceExpiry: row.insurance_expiry || '',
     photoUrl: row.photo_url || '',
+    isActive: row.is_active ?? true,
     createdAt: row.created_at,
   };
 }
