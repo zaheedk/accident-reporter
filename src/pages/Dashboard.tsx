@@ -261,18 +261,18 @@ export default function Dashboard() {
               <div className="text-[11px] text-background/60 mt-1.5 font-medium">24/7 emergency</div>
             </div>
           </button>
-          <Link
-            to="/claims/new"
+          <a
+            href="tel:111"
             className="group relative overflow-hidden rounded-2xl bg-primary text-primary-foreground p-5 transition-all active:scale-[0.98] block min-h-[148px] flex flex-col justify-between"
           >
             <div className="w-10 h-10 rounded-xl bg-primary-foreground/15 flex items-center justify-center">
-              <AlertTriangle className="w-5 h-5" strokeWidth={2} />
+              <Shield className="w-5 h-5" strokeWidth={2} />
             </div>
             <div>
-              <div className="text-[15px] font-bold leading-tight">Report<br/>incident</div>
-              <div className="text-[11px] text-primary-foreground/75 mt-1.5 font-medium">File a claim</div>
+              <div className="text-[15px] font-bold leading-tight">Call<br/>police</div>
+              <div className="text-[11px] text-primary-foreground/75 mt-1.5 font-medium">Emergency 111</div>
             </div>
-          </Link>
+          </a>
         </motion.div>
 
 
