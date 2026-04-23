@@ -505,30 +505,6 @@ export default function ClaimWizard() {
                     placeholder="e.g. 50" value={claim.speedBeforeBraking} onChange={e => update('speedBeforeBraking', e.target.value)} />
                 </div>
 
-                {/* Toggles */}
-                <div className="card-soft space-y-3">
-                  <ToggleRow id="policeAttended" label="Police attended" checked={claim.policeAttended}
-                    onChange={v => update('policeAttended', v)} />
-                  {claim.policeAttended && (
-                    <input className="w-full h-11 px-3.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
-                      placeholder="Officer name / badge"
-                      value={claim.policeOfficerDetails} onChange={e => update('policeOfficerDetails', e.target.value)} />
-                  )}
-                  <ToggleRow id="anyoneHurt" label="Anyone injured" checked={claim.anyoneHurt}
-                    onChange={v => update('anyoneHurt', v)} />
-                  {claim.anyoneHurt && (
-                    <textarea className="w-full min-h-[60px] px-3.5 py-2.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
-                      placeholder="Injury details"
-                      value={claim.injuryDetails} onChange={e => update('injuryDetails', e.target.value)} />
-                  )}
-                  <ToggleRow id="substance" label="Driver consumed alcohol or drugs" checked={claim.driverConsumedSubstance}
-                    onChange={v => update('driverConsumedSubstance', v)} />
-                  {claim.driverConsumedSubstance && (
-                    <input className="w-full h-11 px-3.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
-                      placeholder="Substance details"
-                      value={claim.substanceDetails} onChange={e => update('substanceDetails', e.target.value)} />
-                  )}
-                </div>
               </div>
             )}
 
