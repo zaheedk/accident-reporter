@@ -141,7 +141,7 @@ export default function VehicleForm() {
           </button>
           <div className="min-w-0 flex-1">
             <p className="eyebrow">Garage</p>
-            <h1 className="display-heading mt-1">{isEdit ? 'Edit vehicle' : 'Add vehicle'}</h1>
+            {!isEdit && <h1 className="display-heading mt-1">Add vehicle</h1>}
           </div>
         </div>
 
