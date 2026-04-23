@@ -458,14 +458,6 @@ export default function ClaimWizard() {
             {/* ===== STEP 2: SCENE ===== */}
             {step === 1 && (
               <div className="space-y-5">
-                {/* Description */}
-                <div>
-                  <label className="field-label">What happened?</label>
-                  <textarea
-                    className="w-full min-h-[110px] px-3.5 py-3 rounded-2xl border border-border bg-card text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-primary/20"
-                    placeholder="Describe the incident in your own words" value={claim.description} onChange={e => update('description', e.target.value)} />
-                </div>
-
                 {/* Photos grid */}
                 <div>
                   <label className="field-label flex items-center gap-1.5"><Camera className="w-3 h-3" /> Photos</label>
