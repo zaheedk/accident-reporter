@@ -9,51 +9,10 @@ const corsHeaders = {
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
 const SUPPORT_FROM = 'SAVO Support <info@savo.co.nz>';
 
-async function sendAutoReply(toEmail: string, originalSubject: string, reason: 'no_claim_ref' | 'sender_mismatch') {
-  if (!RESEND_API_KEY || !toEmail || toEmail === 'unknown@unknown') return;
-
-  const subject = `Re: ${originalSubject || 'Your forwarded email'} — action needed`;
-
-  const intro = reason === 'sender_mismatch'
-    ? `We received your forwarded email, but it was sent from an address that doesn't match the email registered on your SAVO account. Please forward it again from your registered email address.`
-    : `We received your forwarded email, but we couldn't tell which incident it relates to. Please forward it again and include your claim reference (e.g. <strong>CLM-0001</strong>) anywhere in the subject line.`;
-
-  const html = `
-    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #1e3a5f;">
-      <div style="padding: 24px;">
-        <h2 style="margin: 0 0 12px; font-size: 18px;">We couldn't file your email</h2>
-        <p style="font-size: 14px; line-height: 1.5; color: #333;">${intro}</p>
-        <p style="font-size: 14px; line-height: 1.5; color: #333; margin-top: 16px;">
-          You can find your claim reference (CLM-XXXX) in the SAVO app under your incident report.
-        </p>
-        <p style="font-size: 14px; line-height: 1.5; color: #333;">
-          Once forwarded correctly, the email will appear in the <strong>Messages</strong> tab of that incident automatically.
-        </p>
-      </div>
-      <div style="border-top: 1px solid #e5e5e5; padding: 15px 24px;">
-        <p style="color: #999; font-size: 12px; margin: 0;">
-          This is an automated reply from <strong>SAVO</strong> — Vehicle Claims Assistant.
-        </p>
-      </div>
-    </div>`;
-
-  try {
-    await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${RESEND_API_KEY}`,
-      },
-      body: JSON.stringify({
-        from: SUPPORT_FROM,
-        to: [toEmail],
-        subject,
-        html,
-      }),
-    });
-  } catch (err) {
-    console.error('Auto-reply send failed:', err);
-  }
+async function sendAutoReply(_toEmail: string, _originalSubject: string, _reason: 'no_claim_ref' | 'sender_mismatch') {
+  // Auto-replies disabled to prevent reply loops with mail systems that
+  // re-deliver our notification back into the inbound webhook.
+  return;
 }
 
 function extractString(value: unknown): string {
