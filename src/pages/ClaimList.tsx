@@ -128,10 +128,7 @@ export default function ClaimList() {
               >
                 <ArrowLeft className="w-5 h-5" />
               </button>
-              <div className="min-w-0">
-                <p className="eyebrow">Incidents</p>
-                <h1 className="display-heading mt-1.5">Reports</h1>
-              </div>
+              <div className="min-w-0" />
             </div>
             <Link
               to="/claims/new"
