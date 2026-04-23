@@ -207,28 +207,20 @@ export default function Dashboard() {
                         <div className="text-[13px] font-bold text-foreground truncate">{v.year} {v.make}</div>
                         <div className="text-[11px] text-muted-foreground truncate uppercase tracking-wider mt-0.5">{v.regoNumber} · {v.model}</div>
                       </div>
-                      {(v.regoExpiry || v.wofExpiry || v.insuranceExpiry) && (
-                        <div className="space-y-1 pt-1 border-t border-border/60">
-                          {v.regoExpiry && (
-                            <div className="flex items-center justify-between text-[10.5px]">
-                              <span className="uppercase tracking-wider text-muted-foreground font-semibold">Rego</span>
-                              <span className={`tabular-nums font-semibold ${v.regoExpiry < new Date().toISOString().slice(0,10) ? 'text-destructive' : 'text-foreground'}`}>{v.regoExpiry}</span>
-                            </div>
-                          )}
-                          {v.wofExpiry && (
-                            <div className="flex items-center justify-between text-[10.5px]">
-                              <span className="uppercase tracking-wider text-muted-foreground font-semibold">WOF</span>
-                              <span className={`tabular-nums font-semibold ${v.wofExpiry < new Date().toISOString().slice(0,10) ? 'text-destructive' : 'text-foreground'}`}>{v.wofExpiry}</span>
-                            </div>
-                          )}
-                          {v.insuranceExpiry && (
-                            <div className="flex items-center justify-between text-[10.5px]">
-                              <span className="uppercase tracking-wider text-muted-foreground font-semibold">Policy</span>
-                              <span className={`tabular-nums font-semibold ${v.insuranceExpiry < new Date().toISOString().slice(0,10) ? 'text-destructive' : 'text-foreground'}`}>{v.insuranceExpiry}</span>
-                            </div>
-                          )}
+                      <div className="space-y-1 pt-1 border-t border-border/60">
+                        <div className="flex items-center justify-between text-[10.5px]">
+                          <span className="uppercase tracking-wider text-muted-foreground font-semibold">Rego</span>
+                          <span className={`tabular-nums font-semibold ${v.regoExpiry && v.regoExpiry < new Date().toISOString().slice(0,10) ? 'text-destructive' : 'text-foreground'}`}>{v.regoExpiry || '—'}</span>
                         </div>
-                      )}
+                        <div className="flex items-center justify-between text-[10.5px]">
+                          <span className="uppercase tracking-wider text-muted-foreground font-semibold">WOF</span>
+                          <span className={`tabular-nums font-semibold ${v.wofExpiry && v.wofExpiry < new Date().toISOString().slice(0,10) ? 'text-destructive' : 'text-foreground'}`}>{v.wofExpiry || '—'}</span>
+                        </div>
+                        <div className="flex items-center justify-between text-[10.5px]">
+                          <span className="uppercase tracking-wider text-muted-foreground font-semibold">Policy</span>
+                          <span className={`tabular-nums font-semibold ${v.insuranceExpiry && v.insuranceExpiry < new Date().toISOString().slice(0,10) ? 'text-destructive' : 'text-foreground'}`}>{v.insuranceExpiry || '—'}</span>
+                        </div>
+                      </div>
                       {insurerPhone && (
                         <a
                           href={`tel:${insurerPhone.replace(/\s/g, '')}`}
