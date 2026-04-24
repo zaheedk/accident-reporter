@@ -296,18 +296,13 @@ export default function VehicleList() {
                     return (
                       <div
                         key={v.id}
-                        className={`group relative rounded-xl overflow-hidden bg-card border transition-colors ${
-                          isInactive
-                            ? 'border-dashed border-border opacity-65 hover:border-foreground/20'
-                            : isExpired
-                              ? 'border-destructive/30 hover:border-foreground/20'
-                              : 'border-border hover:border-foreground/20'
+                        className={`rounded-xl bg-card border overflow-hidden hover:border-foreground/20 transition-colors group ${
+                          isInactive ? 'border-dashed border-border opacity-65' : 'border-border'
                         }`}
                       >
-                        <div className="flex items-stretch">
-                          <Link to={`/vehicles/${v.slug || v.id}/edit`} className="flex flex-1 min-w-0 gap-3.5 p-3.5">
-                            {/* Squircle thumbnail */}
-                            <div className="w-14 h-14 flex-shrink-0 rounded-xl bg-muted overflow-hidden border border-border/60 relative">
+                        <Link to={`/vehicles/${v.slug || v.id}/edit`} className="block p-3">
+                          <div className="flex items-center gap-3">
+                            <div className="w-14 h-14 rounded-xl bg-muted overflow-hidden flex items-center justify-center shrink-0">
                               {v.photoUrl ? (
                                 <img
                                   src={v.photoUrl}
@@ -316,78 +311,56 @@ export default function VehicleList() {
                                   loading="lazy"
                                 />
                               ) : (
-                                <div className="w-full h-full flex items-center justify-center">
-                                  <Car className="w-6 h-6 text-muted-foreground/40" strokeWidth={1.4} />
-                                </div>
+                                <Car className="w-6 h-6 text-muted-foreground" strokeWidth={1.5} />
                               )}
                             </div>
-
-                            {/* Content */}
-                            <div className="flex-1 min-w-0 flex flex-col justify-center gap-1.5">
-                              <div className="flex items-baseline gap-2 min-w-0">
-                                <p className="text-[15px] font-semibold text-foreground tracking-tight truncate tabular-nums">
-                                  {v.regoNumber}
-                                </p>
-                                <p className="text-[12px] text-muted-foreground truncate min-w-0">
-                                  {v.year} {v.make} {v.model}
-                                </p>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2">
+                                <div className="text-[13px] font-semibold text-foreground truncate tabular-nums">{v.regoNumber}</div>
                                 {isInactive && (
-                                  <span className="text-[10px] font-medium text-muted-foreground border border-border rounded px-1.5 py-px ml-auto flex-shrink-0">Inactive</span>
+                                  <span className="text-[10px] font-medium text-muted-foreground border border-border rounded px-1.5 py-px flex-shrink-0">Inactive</span>
                                 )}
                               </div>
-
-                              {!isInactive && (
-                                <div className="flex flex-wrap gap-1">
-                                  <StatusChip label="WOF" days={wofDays} />
-                                  <StatusChip label="Rego" days={regoDays} />
-                                  <StatusChip label="Insurance" days={insDays} />
-                                </div>
-                              )}
+                              <div className="text-[12px] text-muted-foreground truncate">{v.year} {v.make} {v.model}</div>
                             </div>
-                          </Link>
-
-                          <button
-                            onClick={(e) => { e.preventDefault(); e.stopPropagation(); setDeleteTarget(v); }}
-                            aria-label="Delete vehicle"
-                            className="flex items-center justify-center w-10 border-l border-border text-muted-foreground/60 hover:text-destructive hover:bg-destructive/5 transition-colors"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
-                        </div>
-
-                        {/* Footer actions — quiet, Linear-style */}
+                            <button
+                              onClick={(e) => { e.preventDefault(); e.stopPropagation(); setDeleteTarget(v); }}
+                              aria-label="Delete vehicle"
+                              className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground/60 hover:text-destructive hover:bg-destructive/10 transition-colors shrink-0"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                          {!isInactive && (
+                            <div className="flex flex-wrap gap-1.5 mt-3">
+                              <StatusChip label="WOF" days={wofDays} />
+                              <StatusChip label="Rego" days={regoDays} />
+                              <StatusChip label="Insurance" days={insDays} />
+                            </div>
+                          )}
+                        </Link>
                         {!isInactive && (
-                          <div className="flex items-stretch border-t border-border text-[12px] font-medium bg-muted/30">
-                            <Link
-                              to={`/vehicles/${v.slug || v.id}/edit`}
-                              className="flex-1 inline-flex items-center justify-center gap-1.5 py-2 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-                            >
-                              <Pencil className="w-3.5 h-3.5" strokeWidth={2} /> Edit
-                            </Link>
-                            <Link
-                              to="/documents"
-                              className="flex-1 inline-flex items-center justify-center gap-1.5 py-2 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors border-l border-border"
-                            >
-                              <FileText className="w-3.5 h-3.5" strokeWidth={2} /> Docs
-                            </Link>
+                          <div className="flex border-t border-border divide-x divide-border">
                             <Link
                               to="/claims/new"
-                              className="flex-1 inline-flex items-center justify-center gap-1.5 py-2 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors border-l border-border"
+                              className="flex-1 flex items-center justify-center gap-1.5 py-2 text-[12px] font-medium text-foreground hover:bg-muted/50 transition-colors"
                             >
-                              <AlertOctagon className="w-3.5 h-3.5" strokeWidth={2} /> Lodge
+                              <AlertOctagon className="w-3.5 h-3.5" strokeWidth={2} /> Report
                             </Link>
                             {insurerPhone ? (
                               <a
                                 href={`tel:${insurerPhone.replace(/\s/g, '')}`}
-                                onClick={(e) => e.stopPropagation()}
-                                className="flex-1 inline-flex items-center justify-center gap-1.5 py-2 text-foreground hover:bg-muted transition-colors border-l border-border"
+                                className="flex-1 flex items-center justify-center gap-1.5 py-2 text-[12px] font-medium text-foreground hover:bg-muted/50 transition-colors"
                               >
-                                <Phone className="w-3.5 h-3.5" strokeWidth={2.2} /> Call
+                                <Phone className="w-3.5 h-3.5" strokeWidth={2} /> Insurer
                               </a>
                             ) : (
-                              <span className="flex-1 inline-flex items-center justify-center gap-1.5 py-2 text-muted-foreground/40 border-l border-border">
-                                <Phone className="w-3.5 h-3.5" /> Call
-                              </span>
+                              <Link
+                                to={`/vehicles/${v.slug || v.id}/edit`}
+                                className="flex-1 flex items-center justify-center gap-1.5 py-2 text-[12px] font-medium text-muted-foreground hover:bg-muted/50 transition-colors"
+                              >
+                                <Plus className="w-3.5 h-3.5" strokeWidth={2} /> Insurer
+                              </Link>
                             )}
                           </div>
                         )}
