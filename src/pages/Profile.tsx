@@ -145,11 +145,12 @@ export default function Profile() {
     ? profile.display_name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : '?';
 
   if (loading) {
-    return <AppLayout><div className="flex items-center justify-center py-20"><Loader2 className="w-6 h-6 animate-spin text-muted-foreground" /></div></AppLayout>;
+    return <AppLayout><div className="theme-dashboard-dark"><div className="flex items-center justify-center py-20"><Loader2 className="w-6 h-6 animate-spin text-muted-foreground" /></div></div></AppLayout>;
   }
 
   return (
     <AppLayout>
+      <div className="theme-dashboard-dark">
       <div className="space-y-5">
         <div className="flex items-start gap-3">
           <Link to="/dashboard" aria-label="Back" className="w-10 h-10 -ml-1 rounded-xl border border-border bg-card hover:bg-muted flex items-center justify-center transition-colors shrink-0 mt-1">
