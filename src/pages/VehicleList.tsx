@@ -256,7 +256,6 @@ export default function VehicleList() {
                 </span>
               </div>
               {filteredVehicles.map((v) => {
-                const today = new Date().toISOString().slice(0, 10);
                 const isExpired = (v.wofExpiry && v.wofExpiry < today) || (v.regoExpiry && v.regoExpiry < today) || (v.insuranceExpiry && v.insuranceExpiry < today);
                 const insurerPhone = v.insuranceCompany ? insurerPhones[v.insuranceCompany] : '';
                 const isInactive = v.isActive === false;
