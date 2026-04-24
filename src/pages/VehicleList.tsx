@@ -106,74 +106,117 @@ export default function VehicleList() {
             </Link>
           </motion.div>
 
-          {/* Stat tiles */}
-          {vehicles.length > 0 && (
-            <motion.div variants={fadeUp} className="grid grid-cols-2 gap-3">
-              <button
-                onClick={() => setFilter(filter === 'active' ? 'all' : 'active')}
-                className={`text-left rounded-2xl p-4 border transition-all active:scale-[0.98] ${
-                  filter === 'active'
-                    ? 'bg-primary text-primary-foreground border-primary'
-                    : 'bg-card border-border hover:border-primary/40'
-                }`}
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${
-                    filter === 'active' ? 'bg-primary-foreground/15' : 'bg-muted'
-                  }`}>
-                    <CheckCircle2 className="w-4 h-4" strokeWidth={2} />
+          {/* Body: stacks on mobile, two-column rail+content on desktop */}
+          <div className="lg:grid lg:grid-cols-[280px_1fr] lg:gap-6 space-y-6 lg:space-y-0">
+            {/* Left rail (desktop) / stacked block (mobile) */}
+            <motion.aside variants={fadeUp} className="space-y-3">
+              {vehicles.length > 0 && (
+                <>
+                  {/* Status filters: 2-col on mobile, 1-col stacked on desktop */}
+                  <div className="grid grid-cols-2 lg:grid-cols-1 gap-3">
+                    <button
+                      onClick={() => setFilter(filter === 'active' ? 'all' : 'active')}
+                      className={`text-left rounded-2xl p-4 border transition-all active:scale-[0.98] ${
+                        filter === 'active'
+                          ? 'bg-primary text-primary-foreground border-primary'
+                          : 'bg-card border-border hover:border-primary/40'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${
+                          filter === 'active' ? 'bg-primary-foreground/15' : 'bg-muted'
+                        }`}>
+                          <CheckCircle2 className="w-4 h-4" strokeWidth={2} />
+                        </div>
+                        <span className={`text-[10px] uppercase tracking-wider font-semibold ${
+                          filter === 'active' ? 'text-primary-foreground/70' : 'text-muted-foreground'
+                        }`}>Active</span>
+                      </div>
+                      <div className="text-2xl font-extrabold tabular-nums leading-none">{activeCount}</div>
+                    </button>
+                    <button
+                      onClick={() => setFilter(filter === 'inactive' ? 'all' : 'inactive')}
+                      className={`text-left rounded-2xl p-4 border transition-all active:scale-[0.98] ${
+                        filter === 'inactive'
+                          ? 'bg-foreground text-background border-foreground'
+                          : 'bg-card border-border hover:border-foreground/30'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${
+                          filter === 'inactive' ? 'bg-background/10' : 'bg-muted'
+                        }`}>
+                          <PowerOff className="w-4 h-4" strokeWidth={2} />
+                        </div>
+                        <span className={`text-[10px] uppercase tracking-wider font-semibold ${
+                          filter === 'inactive' ? 'text-background/60' : 'text-muted-foreground'
+                        }`}>Inactive</span>
+                      </div>
+                      <div className="text-2xl font-extrabold tabular-nums leading-none">{inactiveCount}</div>
+                    </button>
                   </div>
-                  <span className={`text-[10px] uppercase tracking-wider font-semibold ${
-                    filter === 'active' ? 'text-primary-foreground/70' : 'text-muted-foreground'
-                  }`}>Active</span>
-                </div>
-                <div className="text-2xl font-extrabold tabular-nums leading-none">{activeCount}</div>
-              </button>
-              <button
-                onClick={() => setFilter(filter === 'inactive' ? 'all' : 'inactive')}
-                className={`text-left rounded-2xl p-4 border transition-all active:scale-[0.98] ${
-                  filter === 'inactive'
-                    ? 'bg-foreground text-background border-foreground'
-                    : 'bg-card border-border hover:border-foreground/30'
-                }`}
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${
-                    filter === 'inactive' ? 'bg-background/10' : 'bg-muted'
-                  }`}>
-                    <PowerOff className="w-4 h-4" strokeWidth={2} />
-                  </div>
-                  <span className={`text-[10px] uppercase tracking-wider font-semibold ${
-                    filter === 'inactive' ? 'text-background/60' : 'text-muted-foreground'
-                  }`}>Inactive</span>
-                </div>
-                <div className="text-2xl font-extrabold tabular-nums leading-none">{inactiveCount}</div>
-              </button>
-            </motion.div>
-          )}
 
-          {/* Search */}
-          {vehicles.length > 0 && (
-            <motion.div variants={fadeUp} className="relative">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <input
-                type="text"
-                placeholder="Search rego, make, model..."
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-                className="w-full pl-10 pr-10 h-11 rounded-xl border border-border bg-card text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/40 transition-all"
-              />
-              {search && (
-                <button
-                  onClick={() => setSearch('')}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full hover:bg-muted flex items-center justify-center"
-                  aria-label="Clear search"
-                >
-                  <X className="w-3.5 h-3.5 text-muted-foreground" />
-                </button>
+                  {/* Extended metrics — desktop only */}
+                  <div className="hidden lg:block rounded-2xl border border-border bg-card overflow-hidden">
+                    <div className="px-4 pt-3.5 pb-2 eyebrow">Alerts</div>
+                    <div className="divide-y divide-border">
+                      <div className="flex items-center gap-3 px-4 py-3">
+                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${wofExpiredCount > 0 ? 'bg-destructive/15 text-destructive' : 'bg-muted text-muted-foreground'}`}>
+                          <FileWarning className="w-4 h-4" strokeWidth={2} />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-[12px] font-semibold text-foreground">WOF expired</p>
+                        </div>
+                        <span className={`text-base font-extrabold tabular-nums ${wofExpiredCount > 0 ? 'text-destructive' : 'text-muted-foreground'}`}>{wofExpiredCount}</span>
+                      </div>
+                      <div className="flex items-center gap-3 px-4 py-3">
+                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${regoExpiredCount > 0 ? 'bg-destructive/15 text-destructive' : 'bg-muted text-muted-foreground'}`}>
+                          <ShieldAlert className="w-4 h-4" strokeWidth={2} />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-[12px] font-semibold text-foreground">Rego expired</p>
+                        </div>
+                        <span className={`text-base font-extrabold tabular-nums ${regoExpiredCount > 0 ? 'text-destructive' : 'text-muted-foreground'}`}>{regoExpiredCount}</span>
+                      </div>
+                      <div className="flex items-center gap-3 px-4 py-3">
+                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${insuranceExpiringCount > 0 ? 'bg-amber-500/15 text-amber-500' : 'bg-muted text-muted-foreground'}`}>
+                          <CalendarClock className="w-4 h-4" strokeWidth={2} />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-[12px] font-semibold text-foreground">Insurance &lt; 30d</p>
+                        </div>
+                        <span className={`text-base font-extrabold tabular-nums ${insuranceExpiringCount > 0 ? 'text-amber-500' : 'text-muted-foreground'}`}>{insuranceExpiringCount}</span>
+                      </div>
+                    </div>
+                  </div>
+                </>
               )}
-            </motion.div>
-          )}
+            </motion.aside>
+
+            {/* Right column: search + list */}
+            <div className="space-y-4">
+              {/* Search */}
+              {vehicles.length > 0 && (
+                <motion.div variants={fadeUp} className="relative">
+                  <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <input
+                    type="text"
+                    placeholder="Search rego, make, model..."
+                    value={search}
+                    onChange={e => setSearch(e.target.value)}
+                    className="w-full pl-10 pr-10 h-11 rounded-xl border border-border bg-card text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/40 transition-all"
+                  />
+                  {search && (
+                    <button
+                      onClick={() => setSearch('')}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full hover:bg-muted flex items-center justify-center"
+                      aria-label="Clear search"
+                    >
+                      <X className="w-3.5 h-3.5 text-muted-foreground" />
+                    </button>
+                  )}
+                </motion.div>
+              )}
 
           {/* List */}
           {vehicles.length === 0 ? (
