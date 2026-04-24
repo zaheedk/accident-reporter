@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
 import { Plus, Car, Trash2, ArrowLeft, Phone, CheckCircle2, PowerOff, Search, X, ShieldAlert, FileWarning, CalendarClock, Pencil, FileText, AlertOctagon } from 'lucide-react';
+// (ProgressRing removed — Apple/Linear style favours flat squircle thumbnails)
 import { getVehicles, deleteVehicle } from '@/lib/storage';
 import { supabase } from '@/integrations/supabase/client';
 import AppLayout from '@/components/AppLayout';
@@ -26,52 +27,31 @@ function daysUntil(dateStr?: string | null): number | null {
   return Math.round((d.getTime() - today.getTime()) / 86400000);
 }
 
-// Status chip — color-coded by days remaining.
+// Status chip — Apple/Linear style: soft pill, no uppercase shouting.
 function StatusChip({ label, days }: { label: string; days: number | null }) {
   if (days === null) {
     return (
-      <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-muted/40 text-[9.5px] font-bold uppercase tracking-wider text-muted-foreground">
-        {label} —
+      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium text-muted-foreground bg-muted/60">
+        <span className="opacity-60">{label}</span>
+        <span className="opacity-40">—</span>
       </span>
     );
   }
   const tone =
-    days < 0 ? 'bg-destructive/10 text-destructive ring-1 ring-destructive/25' :
-    days <= 30 ? 'bg-amber-500/15 text-amber-700 dark:text-amber-700 dark:text-amber-400 ring-1 ring-amber-500/30' :
-    'bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 ring-1 ring-emerald-500/30';
-  const display = days < 0 ? `${Math.abs(days)}d ago` : days === 0 ? 'today' : `${days}d`;
+    days < 0 ? 'text-destructive bg-destructive/10' :
+    days <= 30 ? 'text-amber-700 dark:text-amber-400 bg-amber-500/10' :
+    'text-foreground/70 bg-muted/60';
+  const dot =
+    days < 0 ? 'bg-destructive' :
+    days <= 30 ? 'bg-amber-500' :
+    'bg-emerald-500';
+  const display = days < 0 ? `${Math.abs(days)}d overdue` : days === 0 ? 'today' : `${days}d`;
   return (
-    <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[9.5px] font-bold uppercase tracking-wider ${tone}`}>
-      {label} {display}
+    <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-medium ${tone}`}>
+      <span className={`w-1.5 h-1.5 rounded-full ${dot}`} />
+      <span className="opacity-70">{label}</span>
+      <span className="tabular-nums">{display}</span>
     </span>
-  );
-}
-
-// Circular progress ring. `progress` 0–1.
-function ProgressRing({ progress, tone }: { progress: number; tone: 'good' | 'warn' | 'bad' | 'none' }) {
-  const r = 44;
-  const c = 2 * Math.PI * r;
-  const dash = Math.max(0, Math.min(1, progress)) * c;
-  const stroke =
-    tone === 'good' ? 'hsl(var(--primary))' :
-    tone === 'warn' ? 'rgb(245 158 11)' :
-    tone === 'bad' ? 'hsl(var(--destructive))' :
-    'hsl(var(--muted))';
-  return (
-    <svg viewBox="0 0 100 100" className="absolute inset-0 w-full h-full -rotate-90 pointer-events-none">
-      <circle cx="50" cy="50" r={r} fill="none" stroke="hsl(var(--border))" strokeWidth="3" opacity="0.5" />
-      {tone !== 'none' && (
-        <circle
-          cx="50" cy="50" r={r}
-          fill="none"
-          stroke={stroke}
-          strokeWidth="3"
-          strokeLinecap="round"
-          strokeDasharray={`${dash} ${c}`}
-          style={{ transition: 'stroke-dasharray 0.6s ease' }}
-        />
-      )}
-    </svg>
   );
 }
 
@@ -154,128 +134,92 @@ export default function VehicleList() {
   return (
     <AppLayout>
       <div className="theme-garage relative">
-        {/* Ambient glow backdrop — subtle in light, richer in dark */}
-        <div aria-hidden className="pointer-events-none absolute inset-x-0 -top-10 h-[480px] overflow-hidden">
-          <div className="absolute -top-32 left-1/4 w-[560px] h-[560px] rounded-full blur-[130px] opacity-40 dark:opacity-60"
-               style={{ background: 'hsl(var(--garage-tint-a) / 0.45)' }} />
-          <div className="absolute -top-24 right-1/4 w-[460px] h-[460px] rounded-full blur-[130px] opacity-35 dark:opacity-50"
-               style={{ background: 'hsl(var(--garage-tint-b) / 0.35)' }} />
-        </div>
-
-        <motion.div className="relative space-y-6" variants={stagger} initial="hidden" animate="visible">
-          {/* Header */}
-          <motion.div variants={fadeUp} className="flex items-center justify-between gap-3 pt-1">
-            <div className="flex items-center gap-2 min-w-0">
+        <motion.div className="relative space-y-8" variants={stagger} initial="hidden" animate="visible">
+          {/* Header — Apple/Linear: large display title, fine eyebrow, no uppercase shouting */}
+          <motion.div variants={fadeUp} className="flex items-end justify-between gap-3 pt-2">
+            <div className="flex items-start gap-2 min-w-0">
               <button
                 onClick={() => navigate('/dashboard')}
                 aria-label="Back"
-                className="w-9 h-9 -ml-1 rounded-xl flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors flex-shrink-0"
+                className="w-9 h-9 -ml-1 mt-1 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex-shrink-0"
               >
-                <ArrowLeft className="w-5 h-5" />
+                <ArrowLeft className="w-[18px] h-[18px]" strokeWidth={2} />
               </button>
               <div className="min-w-0">
-                <h1 className="text-[15px] font-bold uppercase tracking-[0.18em] text-foreground truncate">
-                  {garageEyebrow}
+                {firstName && (
+                  <p className="text-[12px] text-muted-foreground mb-0.5 truncate">{firstName}</p>
+                )}
+                <h1 className="text-[28px] leading-tight font-semibold text-foreground tracking-[-0.02em] truncate">
+                  Garage
                 </h1>
                 {vehicles.length > 0 && (
-                  <p className="text-[11px] text-muted-foreground tabular-nums mt-0.5">
-                    {vehicles.length} {vehicles.length === 1 ? 'vehicle' : 'vehicles'} registered
+                  <p className="text-[13px] text-muted-foreground tabular-nums mt-1">
+                    {vehicles.length} {vehicles.length === 1 ? 'vehicle' : 'vehicles'}
                   </p>
                 )}
               </div>
             </div>
             <Link
               to="/vehicles/new"
-              className="inline-flex items-center gap-1.5 h-10 px-4 text-[13px] font-semibold rounded-xl bg-primary text-primary-foreground active:scale-[0.98] hover:shadow-[0_8px_30px_-8px_hsl(var(--primary)/0.6)] transition-all flex-shrink-0 shadow-sm"
+              className="inline-flex items-center gap-1.5 h-9 px-3.5 text-[13px] font-medium rounded-lg bg-primary text-primary-foreground hover:opacity-90 active:scale-[0.98] transition-all flex-shrink-0"
             >
-              <Plus className="w-4 h-4" strokeWidth={2.4} /> New
+              <Plus className="w-4 h-4" strokeWidth={2.2} /> New
             </Link>
           </motion.div>
 
-          {/* Body: stacks on mobile, two-column rail+content on desktop */}
-          <div className="lg:grid lg:grid-cols-[280px_1fr] lg:gap-6 space-y-6 lg:space-y-0">
-            {/* Left rail */}
-            <motion.aside variants={fadeUp} className="space-y-3">
+          {/* Body */}
+          <div className="lg:grid lg:grid-cols-[260px_1fr] lg:gap-8 space-y-6 lg:space-y-0">
+            {/* Left rail — clean cards, hairline borders */}
+            <motion.aside variants={fadeUp} className="space-y-4">
               {vehicles.length > 0 && (
                 <>
-                  {/* Status filter tiles — glass */}
-                  <div className="grid grid-cols-2 lg:grid-cols-1 gap-3">
+                  {/* Filter tiles */}
+                  <div className="grid grid-cols-2 lg:grid-cols-1 gap-2">
                     <button
                       onClick={() => setFilter(filter === 'active' ? 'all' : 'active')}
-                      className={`relative overflow-hidden text-left rounded-2xl p-4 border backdrop-blur-xl transition-all active:scale-[0.98] ${
+                      className={`text-left rounded-xl p-3.5 border transition-all ${
                         filter === 'active'
-                          ? 'bg-primary/90 text-primary-foreground border-primary shadow-[0_10px_40px_-10px_hsl(var(--primary)/0.6)]'
-                          : 'garage-glass hover:border-primary/50 hover:bg-[hsl(var(--garage-glass)/0.95)]'
+                          ? 'bg-foreground text-background border-foreground'
+                          : 'bg-card border-border hover:border-foreground/20'
                       }`}
                     >
-                      {filter === 'active' && (
-                        <div aria-hidden className="absolute -top-12 -right-12 w-32 h-32 rounded-full bg-white/20 blur-2xl pointer-events-none" />
-                      )}
-                      <div className="relative flex items-center justify-between mb-2">
-                        <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${
-                          filter === 'active' ? 'bg-primary-foreground/15' : 'bg-muted/60'
-                        }`}>
-                          <CheckCircle2 className="w-4 h-4" strokeWidth={2} />
-                        </div>
-                        <span className={`text-[10px] uppercase tracking-wider font-semibold ${
-                          filter === 'active' ? 'text-primary-foreground/80' : 'text-muted-foreground'
-                        }`}>Active</span>
+                      <div className="flex items-center justify-between">
+                        <span className={`text-[12px] font-medium ${filter === 'active' ? 'text-background/70' : 'text-muted-foreground'}`}>Active</span>
+                        <CheckCircle2 className={`w-3.5 h-3.5 ${filter === 'active' ? 'text-background/60' : 'text-muted-foreground/60'}`} strokeWidth={2} />
                       </div>
-                      <div className="relative text-2xl font-extrabold tabular-nums leading-none">{activeCount}</div>
+                      <div className="text-[22px] font-semibold tabular-nums leading-none mt-2 tracking-tight">{activeCount}</div>
                     </button>
                     <button
                       onClick={() => setFilter(filter === 'inactive' ? 'all' : 'inactive')}
-                      className={`relative overflow-hidden text-left rounded-2xl p-4 border backdrop-blur-xl transition-all active:scale-[0.98] ${
+                      className={`text-left rounded-xl p-3.5 border transition-all ${
                         filter === 'inactive'
-                          ? 'bg-foreground/95 text-background border-foreground'
-                          : 'garage-glass hover:border-foreground/30 hover:bg-[hsl(var(--garage-glass)/0.95)]'
+                          ? 'bg-foreground text-background border-foreground'
+                          : 'bg-card border-border hover:border-foreground/20'
                       }`}
                     >
-                      <div className="flex items-center justify-between mb-2">
-                        <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${
-                          filter === 'inactive' ? 'bg-background/10' : 'bg-muted/60'
-                        }`}>
-                          <PowerOff className="w-4 h-4" strokeWidth={2} />
-                        </div>
-                        <span className={`text-[10px] uppercase tracking-wider font-semibold ${
-                          filter === 'inactive' ? 'text-background/60' : 'text-muted-foreground'
-                        }`}>Inactive</span>
+                      <div className="flex items-center justify-between">
+                        <span className={`text-[12px] font-medium ${filter === 'inactive' ? 'text-background/70' : 'text-muted-foreground'}`}>Inactive</span>
+                        <PowerOff className={`w-3.5 h-3.5 ${filter === 'inactive' ? 'text-background/60' : 'text-muted-foreground/60'}`} strokeWidth={2} />
                       </div>
-                      <div className="text-2xl font-extrabold tabular-nums leading-none">{inactiveCount}</div>
+                      <div className="text-[22px] font-semibold tabular-nums leading-none mt-2 tracking-tight">{inactiveCount}</div>
                     </button>
                   </div>
 
-                  {/* Alerts panel — desktop only */}
-                  <div className="hidden lg:block rounded-2xl garage-glass overflow-hidden shadow-[0_8px_30px_-12px_rgba(0,0,0,0.5)]">
-                    <div className="px-4 pt-3.5 pb-2 eyebrow">Alerts</div>
-                    <div className="garage-divide">
-                      <div className="flex items-center gap-3 px-4 py-3">
-                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${wofExpiredCount > 0 ? 'bg-destructive/20 text-destructive ring-1 ring-destructive/30' : 'bg-muted/40 text-muted-foreground'}`}>
-                          <FileWarning className="w-4 h-4" strokeWidth={2} />
+                  {/* Alerts panel — desktop */}
+                  <div className="hidden lg:block rounded-xl bg-card border border-border overflow-hidden">
+                    <div className="px-3.5 pt-3 pb-2 text-[11px] font-medium text-muted-foreground">Alerts</div>
+                    <div className="divide-y divide-border">
+                      {[
+                        { label: 'WOF expired', count: wofExpiredCount, icon: FileWarning, urgent: wofExpiredCount > 0, tone: 'destructive' as const },
+                        { label: 'Rego expired', count: regoExpiredCount, icon: ShieldAlert, urgent: regoExpiredCount > 0, tone: 'destructive' as const },
+                        { label: 'Insurance < 30d', count: insuranceExpiringCount, icon: CalendarClock, urgent: insuranceExpiringCount > 0, tone: 'warn' as const },
+                      ].map(({ label, count, icon: Icon, urgent, tone }) => (
+                        <div key={label} className="flex items-center gap-3 px-3.5 py-2.5">
+                          <Icon className={`w-3.5 h-3.5 ${urgent ? (tone === 'destructive' ? 'text-destructive' : 'text-amber-600 dark:text-amber-400') : 'text-muted-foreground/60'}`} strokeWidth={2} />
+                          <p className="flex-1 min-w-0 text-[13px] text-foreground">{label}</p>
+                          <span className={`text-[13px] font-medium tabular-nums ${urgent ? (tone === 'destructive' ? 'text-destructive' : 'text-amber-700 dark:text-amber-400') : 'text-muted-foreground'}`}>{count}</span>
                         </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-[12px] font-semibold text-foreground">WOF expired</p>
-                        </div>
-                        <span className={`text-base font-extrabold tabular-nums ${wofExpiredCount > 0 ? 'text-destructive' : 'text-muted-foreground'}`}>{wofExpiredCount}</span>
-                      </div>
-                      <div className="flex items-center gap-3 px-4 py-3">
-                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${regoExpiredCount > 0 ? 'bg-destructive/20 text-destructive ring-1 ring-destructive/30' : 'bg-muted/40 text-muted-foreground'}`}>
-                          <ShieldAlert className="w-4 h-4" strokeWidth={2} />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-[12px] font-semibold text-foreground">Rego expired</p>
-                        </div>
-                        <span className={`text-base font-extrabold tabular-nums ${regoExpiredCount > 0 ? 'text-destructive' : 'text-muted-foreground'}`}>{regoExpiredCount}</span>
-                      </div>
-                      <div className="flex items-center gap-3 px-4 py-3">
-                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${insuranceExpiringCount > 0 ? 'bg-amber-500/20 text-amber-700 dark:text-amber-400 ring-1 ring-amber-500/30' : 'bg-muted/40 text-muted-foreground'}`}>
-                          <CalendarClock className="w-4 h-4" strokeWidth={2} />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-[12px] font-semibold text-foreground">Insurance &lt; 30d</p>
-                        </div>
-                        <span className={`text-base font-extrabold tabular-nums ${insuranceExpiringCount > 0 ? 'text-amber-700 dark:text-amber-400' : 'text-muted-foreground'}`}>{insuranceExpiringCount}</span>
-                      </div>
+                      ))}
                     </div>
                   </div>
                 </>
@@ -283,22 +227,22 @@ export default function VehicleList() {
             </motion.aside>
 
             {/* Right column */}
-            <div className="space-y-4">
-              {/* Search — glass */}
+            <div className="space-y-3">
+              {/* Search */}
               {vehicles.length > 0 && (
                 <motion.div variants={fadeUp} className="relative">
-                  <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/70" />
                   <input
                     type="text"
-                    placeholder="Search rego, make, model..."
+                    placeholder="Search rego, make, model"
                     value={search}
                     onChange={e => setSearch(e.target.value)}
-                    className="w-full pl-10 pr-10 h-11 rounded-xl garage-glass text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/40 transition-all"
+                    className="w-full pl-9 pr-9 h-10 rounded-lg bg-card border border-border text-[13px] placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-ring/30 focus:border-ring/40 transition-all"
                   />
                   {search && (
                     <button
                       onClick={() => setSearch('')}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full hover:bg-muted flex items-center justify-center"
+                      className="absolute right-2.5 top-1/2 -translate-y-1/2 w-6 h-6 rounded-md hover:bg-muted flex items-center justify-center"
                       aria-label="Clear search"
                     >
                       <X className="w-3.5 h-3.5 text-muted-foreground" />
@@ -309,39 +253,39 @@ export default function VehicleList() {
 
               {/* List */}
               {vehicles.length === 0 ? (
-                <motion.div variants={fadeUp} className="rounded-2xl garage-glass p-8 text-center">
-                  <div className="w-14 h-14 rounded-2xl bg-primary/10 text-primary mx-auto mb-4 flex items-center justify-center">
-                    <Car className="w-7 h-7" strokeWidth={1.5} />
+                <motion.div variants={fadeUp} className="rounded-xl bg-card border border-border p-10 text-center">
+                  <div className="w-12 h-12 rounded-xl bg-muted text-muted-foreground mx-auto mb-4 flex items-center justify-center">
+                    <Car className="w-6 h-6" strokeWidth={1.6} />
                   </div>
-                  <p className="text-base font-bold text-foreground">No vehicles yet</p>
-                  <p className="text-[13px] text-muted-foreground mt-1.5 max-w-[260px] mx-auto leading-relaxed">
+                  <p className="text-[15px] font-semibold text-foreground">No vehicles yet</p>
+                  <p className="text-[13px] text-muted-foreground mt-1.5 max-w-[280px] mx-auto leading-relaxed">
                     Add your vehicles to speed up incident reporting.
                   </p>
                   <Link
                     to="/vehicles/new"
-                    className="inline-flex items-center gap-1.5 h-10 px-5 mt-5 text-[13px] font-semibold rounded-xl bg-primary text-primary-foreground active:scale-[0.98] transition-transform"
+                    className="inline-flex items-center gap-1.5 h-9 px-4 mt-5 text-[13px] font-medium rounded-lg bg-primary text-primary-foreground hover:opacity-90 active:scale-[0.98] transition-all"
                   >
-                    <Plus className="w-4 h-4" strokeWidth={2.4} /> Add first vehicle
+                    <Plus className="w-4 h-4" strokeWidth={2.2} /> Add first vehicle
                   </Link>
                 </motion.div>
               ) : filteredVehicles.length === 0 ? (
-                <motion.div variants={fadeUp} className="rounded-2xl garage-glass p-8 text-center">
-                  <p className="text-sm text-muted-foreground">No vehicles match your filters</p>
+                <motion.div variants={fadeUp} className="rounded-xl bg-card border border-border p-10 text-center">
+                  <p className="text-[13px] text-muted-foreground">No vehicles match your filters</p>
                   <button
                     onClick={() => { setSearch(''); setFilter('all'); }}
-                    className="mt-3 text-xs font-semibold text-primary hover:opacity-80"
+                    className="mt-3 text-[12px] font-medium text-accent hover:opacity-80"
                   >
                     Clear filters
                   </button>
                 </motion.div>
               ) : (
-                <motion.div variants={fadeUp} className="space-y-3">
-                  <div className="flex items-center justify-between px-1">
-                    <p className="eyebrow">
+                <motion.div variants={fadeUp} className="space-y-2">
+                  <div className="flex items-center justify-between px-1 pb-1">
+                    <p className="text-[11px] font-medium text-muted-foreground">
                       {filter === 'all' ? 'All vehicles' : filter === 'active' ? 'Active' : 'Inactive'}
                     </p>
-                    <span className="text-[11px] font-semibold text-muted-foreground tabular-nums">
-                      {filteredVehicles.length} {filteredVehicles.length === 1 ? 'vehicle' : 'vehicles'}
+                    <span className="text-[11px] text-muted-foreground tabular-nums">
+                      {filteredVehicles.length}
                     </span>
                   </div>
                   {filteredVehicles.map((v) => {
@@ -352,69 +296,54 @@ export default function VehicleList() {
                     const insurerPhone = v.insuranceCompany ? insurerPhones[v.insuranceCompany] : '';
                     const isInactive = v.isActive === false;
 
-                    // Progress ring: based on most-urgent expiry within next 365d.
-                    // Tone: bad if any expired, warn if any <=30d, good otherwise.
-                    const allDays = [wofDays, regoDays, insDays].filter((d): d is number => d !== null);
-                    const minDays = allDays.length ? Math.min(...allDays) : null;
-                    const ringTone: 'good' | 'warn' | 'bad' | 'none' =
-                      minDays === null ? 'none' :
-                      minDays < 0 ? 'bad' :
-                      minDays <= 30 ? 'warn' : 'good';
-                    const ringProgress = minDays === null ? 0 : Math.max(0, Math.min(1, minDays / 365));
-
                     return (
                       <div
                         key={v.id}
-                        className={`group relative rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-0.5 ${
+                        className={`group relative rounded-xl overflow-hidden bg-card border transition-all duration-200 hover:shadow-[0_1px_3px_rgba(0,0,0,0.04),0_8px_24px_-12px_rgba(0,0,0,0.12)] ${
                           isInactive
-                            ? 'bg-muted/40 border border-dashed garage-hairline opacity-70'
+                            ? 'border-dashed border-border opacity-65'
                             : isExpired
-                              ? 'garage-glass !border-destructive/40 hover:!border-destructive/60 hover:shadow-[0_12px_40px_-12px_hsl(var(--destructive)/0.4)]'
-                              : 'garage-glass hover:border-primary/50 hover:shadow-[0_12px_40px_-12px_hsl(var(--primary)/0.35)]'
+                              ? 'border-destructive/30 hover:border-destructive/50'
+                              : 'border-border hover:border-foreground/20'
                         }`}
                       >
                         <div className="flex items-stretch">
-                          <Link to={`/vehicles/${v.slug || v.id}/edit`} className="flex flex-1 min-w-0 gap-3.5 p-3">
-                            {/* Photo with progress ring */}
-                            <div className="w-[92px] h-[92px] flex-shrink-0 relative">
-                              <ProgressRing progress={ringProgress} tone={isInactive ? 'none' : ringTone} />
-                              <div className="absolute inset-[6px] bg-muted overflow-hidden rounded-full">
-                                {v.photoUrl ? (
-                                  <img
-                                    src={v.photoUrl}
-                                    alt={`${v.make} ${v.model}`}
-                                    className={`w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 ${isInactive ? 'grayscale' : ''}`}
-                                    loading="lazy"
-                                  />
-                                ) : (
-                                  <div className="w-full h-full flex items-center justify-center">
-                                    <Car className="w-9 h-9 text-muted-foreground/30" strokeWidth={1.2} />
-                                  </div>
-                                )}
-                              </div>
-                              {isInactive && (
-                                <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 px-1.5 py-0.5 rounded-md bg-background/90 backdrop-blur-sm text-[9px] font-bold uppercase tracking-wider text-foreground ring-1 garage-hairline">
-                                  Inactive
+                          <Link to={`/vehicles/${v.slug || v.id}/edit`} className="flex flex-1 min-w-0 gap-3.5 p-3.5">
+                            {/* Squircle thumbnail */}
+                            <div className="w-14 h-14 flex-shrink-0 rounded-xl bg-muted overflow-hidden border border-border/60 relative">
+                              {v.photoUrl ? (
+                                <img
+                                  src={v.photoUrl}
+                                  alt={`${v.make} ${v.model}`}
+                                  className={`w-full h-full object-cover ${isInactive ? 'grayscale' : ''}`}
+                                  loading="lazy"
+                                />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center">
+                                  <Car className="w-6 h-6 text-muted-foreground/40" strokeWidth={1.4} />
                                 </div>
                               )}
                             </div>
 
                             {/* Content */}
-                            <div className="flex-1 min-w-0 py-0.5 flex flex-col justify-between gap-2">
-                              <div className="min-w-0">
-                                <p className="text-[17px] font-extrabold text-foreground tracking-wide leading-tight truncate tabular-nums">
+                            <div className="flex-1 min-w-0 flex flex-col justify-center gap-1.5">
+                              <div className="flex items-baseline gap-2 min-w-0">
+                                <p className="text-[15px] font-semibold text-foreground tracking-tight truncate tabular-nums">
                                   {v.regoNumber}
                                 </p>
-                                <p className="text-[12px] text-muted-foreground truncate mt-0.5">
+                                <p className="text-[12px] text-muted-foreground truncate min-w-0">
                                   {v.year} {v.make} {v.model}
                                 </p>
+                                {isInactive && (
+                                  <span className="text-[10px] font-medium text-muted-foreground border border-border rounded px-1.5 py-px ml-auto flex-shrink-0">Inactive</span>
+                                )}
                               </div>
 
                               {!isInactive && (
                                 <div className="flex flex-wrap gap-1">
                                   <StatusChip label="WOF" days={wofDays} />
-                                  <StatusChip label="REGO" days={regoDays} />
-                                  <StatusChip label="INS" days={insDays} />
+                                  <StatusChip label="Rego" days={regoDays} />
+                                  <StatusChip label="Insurance" days={insDays} />
                                 </div>
                               )}
                             </div>
@@ -423,43 +352,43 @@ export default function VehicleList() {
                           <button
                             onClick={(e) => { e.preventDefault(); e.stopPropagation(); setDeleteTarget(v); }}
                             aria-label="Delete vehicle"
-                            className="flex items-center justify-center w-11 border-l garage-hairline text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                            className="flex items-center justify-center w-10 border-l border-border text-muted-foreground/60 hover:text-destructive hover:bg-destructive/5 transition-colors"
                           >
-                            <Trash2 className="w-4 h-4" />
+                            <Trash2 className="w-3.5 h-3.5" />
                           </button>
                         </div>
 
-                        {/* Multi-action footer */}
+                        {/* Footer actions — quiet, Linear-style */}
                         {!isInactive && (
-                          <div className="flex items-stretch border-t garage-hairline divide-x garage-divide text-[11px] font-semibold">
+                          <div className="flex items-stretch border-t border-border text-[12px] font-medium bg-muted/30">
                             <Link
                               to={`/vehicles/${v.slug || v.id}/edit`}
-                              className="flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 text-muted-foreground hover:text-foreground hover:bg-foreground/5 transition-colors"
+                              className="flex-1 inline-flex items-center justify-center gap-1.5 py-2 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
                             >
-                              <Pencil className="w-3.5 h-3.5" /> Edit
+                              <Pencil className="w-3.5 h-3.5" strokeWidth={2} /> Edit
                             </Link>
                             <Link
                               to="/documents"
-                              className="flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 text-muted-foreground hover:text-foreground hover:bg-foreground/5 transition-colors"
+                              className="flex-1 inline-flex items-center justify-center gap-1.5 py-2 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors border-l border-border"
                             >
-                              <FileText className="w-3.5 h-3.5" /> Docs
+                              <FileText className="w-3.5 h-3.5" strokeWidth={2} /> Docs
                             </Link>
                             <Link
                               to="/claims/new"
-                              className="flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 text-muted-foreground hover:text-amber-700 dark:text-amber-400 hover:bg-amber-500/5 transition-colors"
+                              className="flex-1 inline-flex items-center justify-center gap-1.5 py-2 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors border-l border-border"
                             >
-                              <AlertOctagon className="w-3.5 h-3.5" /> Lodge
+                              <AlertOctagon className="w-3.5 h-3.5" strokeWidth={2} /> Lodge
                             </Link>
                             {insurerPhone ? (
                               <a
                                 href={`tel:${insurerPhone.replace(/\s/g, '')}`}
                                 onClick={(e) => e.stopPropagation()}
-                                className="flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 text-foreground bg-foreground/5 hover:bg-foreground/10 transition-colors"
+                                className="flex-1 inline-flex items-center justify-center gap-1.5 py-2 text-foreground hover:bg-muted transition-colors border-l border-border"
                               >
-                                <Phone className="w-3.5 h-3.5" strokeWidth={2.4} /> Call
+                                <Phone className="w-3.5 h-3.5" strokeWidth={2.2} /> Call
                               </a>
                             ) : (
-                              <span className="flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 text-muted-foreground/50">
+                              <span className="flex-1 inline-flex items-center justify-center gap-1.5 py-2 text-muted-foreground/40 border-l border-border">
                                 <Phone className="w-3.5 h-3.5" /> Call
                               </span>
                             )}
