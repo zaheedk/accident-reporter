@@ -20,10 +20,11 @@ const emptyVehicle: Omit<Vehicle, 'id' | 'createdAt'> = {
 };
 
 export default function VehicleForm() {
-  const { id } = useParams();
+  const { id: routeParam } = useParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const isEdit = Boolean(id);
+  const isEdit = Boolean(routeParam);
+  const [vehicleUuid, setVehicleUuid] = useState<string | null>(null);
   const [form, setForm] = useState(emptyVehicle);
   const [insuranceCompanies, setInsuranceCompanies] = useState<{ id: string; name: string }[]>([]);
   const [photoPreview, setPhotoPreview] = useState<string>('');
@@ -39,11 +40,13 @@ export default function VehicleForm() {
   }, []);
 
   useEffect(() => {
-    if (id) {
+    if (routeParam) {
       getVehicles(undefined).then(vehicles => {
-        const existing = vehicles.find(v => v.id === id);
+        const upper = routeParam.toUpperCase();
+        const existing = vehicles.find(v => v.id === routeParam || (v.slug && v.slug.toUpperCase() === upper));
         if (existing) {
-          const { id: _, createdAt: __, ...rest } = existing;
+          setVehicleUuid(existing.id);
+          const { id: _, slug: __, createdAt: ___, ...rest } = existing as any;
           // Check if insurance company is in the known list
           const knownNames = insuranceCompanies.map(c => c.name);
           if (rest.insuranceCompany && knownNames.length > 0 && !knownNames.includes(rest.insuranceCompany)) {
@@ -55,7 +58,7 @@ export default function VehicleForm() {
         }
       });
     }
-  }, [id, insuranceCompanies]);
+  }, [routeParam, insuranceCompanies]);
 
   const update = (field: string, value: string | boolean) => setForm(prev => ({ ...prev, [field]: value }));
 
