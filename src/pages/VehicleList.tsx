@@ -206,7 +206,7 @@ export default function VehicleList() {
                   </div>
 
                   {/* Alerts panel — desktop */}
-                  <div className="hidden lg:block rounded-xl bg-card border border-border overflow-hidden">
+                  <div className="hidden md:block rounded-xl bg-card border border-border overflow-hidden">
                     <div className="px-3.5 pt-3 pb-2 text-[11px] font-medium text-muted-foreground">Alerts</div>
                     <div className="divide-y divide-border">
                       {[
