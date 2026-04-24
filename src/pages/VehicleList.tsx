@@ -36,9 +36,9 @@ function StatusChip({ label, days }: { label: string; days: number | null }) {
     );
   }
   const tone =
-    days < 0 ? 'bg-destructive/15 text-destructive ring-1 ring-destructive/30' :
-    days <= 30 ? 'bg-amber-500/15 text-amber-400 ring-1 ring-amber-500/30' :
-    'bg-emerald-500/15 text-emerald-400 ring-1 ring-emerald-500/30';
+    days < 0 ? 'bg-destructive/10 text-destructive ring-1 ring-destructive/25' :
+    days <= 30 ? 'bg-amber-500/15 text-amber-700 dark:text-amber-400 ring-1 ring-amber-500/30' :
+    'bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 ring-1 ring-emerald-500/30';
   const display = days < 0 ? `${Math.abs(days)}d ago` : days === 0 ? 'today' : `${days}d`;
   return (
     <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[9.5px] font-bold uppercase tracking-wider ${tone}`}>
@@ -153,11 +153,13 @@ export default function VehicleList() {
 
   return (
     <AppLayout>
-      <div className="theme-dashboard-dark relative">
-        {/* Ambient glow backdrop */}
-        <div aria-hidden className="pointer-events-none absolute inset-x-0 -top-10 h-[420px] overflow-hidden">
-          <div className="absolute -top-32 left-1/4 w-[520px] h-[520px] rounded-full bg-primary/20 blur-[120px] opacity-60" />
-          <div className="absolute -top-24 right-1/4 w-[420px] h-[420px] rounded-full bg-blue-500/15 blur-[120px] opacity-50" />
+      <div className="theme-garage relative">
+        {/* Ambient glow backdrop — subtle in light, richer in dark */}
+        <div aria-hidden className="pointer-events-none absolute inset-x-0 -top-10 h-[480px] overflow-hidden">
+          <div className="absolute -top-32 left-1/4 w-[560px] h-[560px] rounded-full blur-[130px] opacity-40 dark:opacity-60"
+               style={{ background: 'hsl(var(--garage-tint-a) / 0.45)' }} />
+          <div className="absolute -top-24 right-1/4 w-[460px] h-[460px] rounded-full blur-[130px] opacity-35 dark:opacity-50"
+               style={{ background: 'hsl(var(--garage-tint-b) / 0.35)' }} />
         </div>
 
         <motion.div className="relative space-y-6" variants={stagger} initial="hidden" animate="visible">
