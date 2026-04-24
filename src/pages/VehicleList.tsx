@@ -367,7 +367,7 @@ export default function VehicleList() {
                         key={v.id}
                         className={`group relative rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-0.5 ${
                           isInactive
-                            ? 'bg-muted/20 border-dashed garage-hairline opacity-70'
+                            ? 'bg-muted/40 border border-dashed garage-hairline opacity-70'
                             : isExpired
                               ? 'garage-glass !border-destructive/40 hover:!border-destructive/60 hover:shadow-[0_12px_40px_-12px_hsl(var(--destructive)/0.4)]'
                               : 'garage-glass hover:border-primary/50 hover:shadow-[0_12px_40px_-12px_hsl(var(--primary)/0.35)]'
