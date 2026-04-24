@@ -146,11 +146,8 @@ export default function VehicleList() {
                 <ArrowLeft className="w-[18px] h-[18px]" strokeWidth={2} />
               </button>
               <div className="min-w-0">
-                {firstName && (
-                  <p className="text-[12px] text-muted-foreground mb-0.5 truncate">{firstName}</p>
-                )}
                 <h1 className="text-[28px] leading-tight font-semibold text-foreground tracking-[-0.02em] truncate">
-                  Garage
+                  {firstName ? `${firstName}’s Garage` : 'Garage'}
                 </h1>
                 {vehicles.length > 0 && (
                   <p className="text-[13px] text-muted-foreground tabular-nums mt-1">
