@@ -1,9 +1,14 @@
 ---
-name: Vehicle Garage UI Layout
-description: Apple/Linear style — sidebar + list, near-white surfaces, hairline borders, no glass/glow, dot-prefixed status pills
+name: Garage + Dashboard UI Layout
+description: Apple/Linear style — sidebar + main, near-white surfaces, hairline borders, no glass/glow, dot-prefixed status pills. Shared by Garage and Dashboard pages.
 type: design
 ---
 
-The Garage page uses an Apple/Linear inspired aesthetic. Scoped via `.theme-garage` in `src/index.css` with a near-white background (#F8F8FA light / #111113 dark), white/near-black solid card surfaces, and hairline `border` tokens. **No glassmorphism, no ambient glow, no progress rings.** Layout is a 260px left rail (Active/Inactive filter tiles + Alerts panel) and a main column (search + list). Header uses a personal eyebrow ("Tony") above a large semibold "Garage" display title (28px, `tracking-[-0.02em]`), not uppercase shouting.
+The Garage and Dashboard pages share an Apple/Linear inspired aesthetic. Scoped via `.theme-garage` and `.theme-dashboard` in `src/index.css` (identical palettes) — near-white background (#F8F8FA light / #111113 dark), white/near-black solid card surfaces, and hairline `border` tokens. **No glassmorphism, no ambient glow, no progress rings.**
 
-Each vehicle row is a single rounded-xl card with a 56px squircle thumbnail, rego + year/make/model on one line, and rounded-full status pills with a coloured leading dot (green/amber/destructive) for WOF / Rego / Insurance days-left. Footer has a quiet 4-action bar (Edit, Docs, Lodge, Call) with hairline dividers. Hover lifts only via subtle layered shadow — no translate or scale.
+Layout on tablet+ (≥768px) is a left rail (~260–280px) + main column. Mobile (<768px) stays single-column with the original hero action tiles.
+
+**Garage left rail:** Active/Inactive filter tiles + Alerts panel.
+**Dashboard left rail:** Quick actions (Tow / Police / Report / Add vehicle), Upcoming expiries (next 60 days, sorted), Recent activity (latest claims), and a Profile + Admin shortcut block.
+
+Header on both pages uses a thin eyebrow above a large semibold display title (28px, `tracking-[-0.02em]`), not uppercase shouting. Status pills are rounded-full with a coloured leading dot (green ≥30d, amber ≤30d, destructive overdue) and tabular-nums for the days value. Hover lifts only via subtle border darkening — no translate or scale.
