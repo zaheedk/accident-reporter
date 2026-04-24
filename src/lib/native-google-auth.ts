@@ -35,7 +35,7 @@ export async function signInWithGoogleNative() {
   try {
     result = await SocialLogin.login({
       provider: 'google',
-      options: { scopes: ['profile', 'email'] },
+      options: {},
     });
     console.log('[GoogleAuth] login raw result:', JSON.stringify(result, null, 2));
   } catch (err: any) {
