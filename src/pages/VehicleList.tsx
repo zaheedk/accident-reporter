@@ -365,7 +365,7 @@ export default function VehicleList() {
                     return (
                       <div
                         key={v.id}
-                        className={`group relative rounded-2xl border overflow-hidden backdrop-blur-xl transition-all duration-300 hover:-translate-y-0.5 ${
+                        className={`group relative rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-0.5 ${
                           isInactive
                             ? 'bg-muted/20 border-dashed garage-hairline opacity-70'
                             : isExpired
