@@ -1,8 +1,9 @@
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Car, FileText, Plus, Wrench, Truck, Info, HelpCircle, BookOpen, Shield, Menu, X, LogOut, Newspaper, Home, Phone, FolderOpen } from 'lucide-react';
+import { LayoutDashboard, Car, FileText, Plus, Wrench, Truck, Info, HelpCircle, BookOpen, Shield, Menu, X, LogOut, Newspaper, Home, Phone, FolderOpen, Sun, Moon } from 'lucide-react';
 import NotificationBell from '@/components/NotificationBell';
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useTheme } from '@/contexts/ThemeContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
@@ -10,6 +11,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
   const { user, signOut } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const [profile, setProfile] = useState<{ display_name: string | null; avatar_url: string | null } | null>(null);
 
   useEffect(() => {
@@ -103,6 +105,18 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               </Link>
             </>
           )}
+          <div className="border-t border-border/50 my-2" />
+          <button
+            onClick={() => { toggleTheme(); }}
+            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors text-muted-foreground hover:bg-muted/50 hover:text-foreground w-full text-left"
+            aria-label="Toggle theme"
+          >
+            {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            <span className="flex-1">Theme</span>
+            <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              {theme === 'dark' ? 'Dark' : 'Light'}
+            </span>
+          </button>
           {user ? (
             <>
               <div className="border-t border-border/50 my-2" />

@@ -5,6 +5,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 import { Loader2 } from "lucide-react";
 import { Capacitor } from "@capacitor/core";
 import InstallPrompt from "@/components/InstallPrompt";
@@ -92,8 +93,9 @@ function NativeHomeRedirect() {
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <AuthProvider>
-      <TooltipProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <TooltipProvider>
         <Toaster />
         <Sonner />
         <OnboardingTour />
@@ -132,8 +134,9 @@ const App = () => (
             
           </Suspense>
         </BrowserRouter>
-      </TooltipProvider>
-    </AuthProvider>
+        </TooltipProvider>
+      </AuthProvider>
+    </ThemeProvider>
   </QueryClientProvider>
 );
 

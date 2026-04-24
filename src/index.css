@@ -205,7 +205,6 @@
     background: hsl(var(--background));
     color: hsl(var(--foreground));
     border-radius: 0;
-    /* Break out of centered container so the dark surface fills the viewport edge-to-edge */
     width: 100vw;
     position: relative;
     left: 50%;
@@ -218,11 +217,102 @@
     min-height: calc(100vh - 53px);
   }
 
-  /* Constrain inner content of the dark theme to a comfortable reading width */
   .theme-dashboard-dark > * {
     max-width: 80rem;
     margin-left: auto;
     margin-right: auto;
+  }
+
+  /* === Garage page scoped theme — cool light blue-grey === */
+  .theme-garage {
+    /* Light (default) — cool blue-grey */
+    --background: 218 30% 96%;        /* #F2F5FA */
+    --foreground: 220 30% 14%;        /* deep navy ink */
+    --card: 0 0% 100%;
+    --card-foreground: 220 30% 14%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 30% 14%;
+    --primary: 217 91% 53%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 218 25% 92%;
+    --secondary-foreground: 220 30% 20%;
+    --muted: 218 25% 92%;
+    --muted-foreground: 220 12% 42%;
+    --accent: 217 91% 53%;
+    --accent-foreground: 0 0% 100%;
+    --border: 218 22% 86%;
+    --input: 218 22% 86%;
+    --ring: 217 91% 53%;
+    /* Soft surface tint used as glass base behind the page */
+    --garage-tint-a: 218 90% 60%;     /* subtle blue glow */
+    --garage-tint-b: 152 76% 46%;     /* brand green glow */
+    --garage-glass: 0 0% 100%;        /* glass card base */
+    --garage-glass-alpha: 0.7;
+    --garage-hairline: 220 30% 14%;
+    --garage-hairline-alpha: 0.08;
+
+    background: hsl(var(--background));
+    color: hsl(var(--foreground));
+    border-radius: 0;
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    margin-top: -1.25rem;
+    margin-bottom: -8rem;
+    padding: 1.25rem 1rem 8rem 1rem;
+    min-height: calc(100vh - 53px);
+  }
+
+  .theme-garage > * {
+    max-width: 80rem;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* Dark variant of the Garage scope, applied when html.dark is set */
+  .dark .theme-garage {
+    --background: 220 22% 11%;
+    --foreground: 0 0% 98%;
+    --card: 220 18% 15%;
+    --card-foreground: 0 0% 98%;
+    --popover: 220 18% 15%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 152 76% 46%;
+    --primary-foreground: 220 35% 7%;
+    --secondary: 220 14% 20%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 220 14% 20%;
+    --muted-foreground: 220 10% 72%;
+    --accent: 152 76% 46%;
+    --accent-foreground: 220 35% 7%;
+    --border: 220 12% 26%;
+    --input: 220 12% 26%;
+    --ring: 152 76% 46%;
+    --garage-tint-a: 218 90% 50%;
+    --garage-tint-b: 152 76% 46%;
+    --garage-glass: 220 18% 18%;
+    --garage-glass-alpha: 0.55;
+    --garage-hairline: 0 0% 100%;
+    --garage-hairline-alpha: 0.08;
+  }
+
+  /* Reusable glass surface used inside .theme-garage */
+  .garage-glass {
+    background: hsl(var(--garage-glass) / var(--garage-glass-alpha));
+    border: 1px solid hsl(var(--garage-hairline) / var(--garage-hairline-alpha));
+    backdrop-filter: blur(14px) saturate(140%);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
+  }
+
+  .garage-hairline {
+    border-color: hsl(var(--garage-hairline) / var(--garage-hairline-alpha));
+  }
+
+  .garage-divide > * + * {
+    border-top: 1px solid hsl(var(--garage-hairline) / var(--garage-hairline-alpha));
   }
 }
 
