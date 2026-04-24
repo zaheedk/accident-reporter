@@ -168,7 +168,7 @@ export default function VehicleList() {
           </motion.div>
 
           {/* Body */}
-          <div className="lg:grid lg:grid-cols-[260px_1fr] lg:gap-8 space-y-6 lg:space-y-0">
+          <div className="md:grid md:grid-cols-[240px_1fr] md:gap-6 lg:grid-cols-[260px_1fr] lg:gap-8 space-y-6 md:space-y-0">
             {/* Left rail — clean cards, hairline borders */}
             <motion.aside variants={fadeUp} className="space-y-4">
               {vehicles.length > 0 && (
