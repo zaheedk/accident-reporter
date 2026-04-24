@@ -223,32 +223,31 @@
     margin-right: auto;
   }
 
-  /* === Garage page scoped theme — cool light blue-grey === */
+  /* === Garage page scoped theme — Apple / Linear inspired === */
   .theme-garage {
-    /* Light (default) — cool blue-grey */
-    --background: 218 30% 96%;        /* #F2F5FA */
-    --foreground: 220 30% 14%;        /* deep navy ink */
+    /* Light (default) — soft neutral grey, near-white cards */
+    --background: 240 10% 98%;        /* #F8F8FA */
+    --foreground: 240 10% 8%;         /* near-black ink */
     --card: 0 0% 100%;
-    --card-foreground: 220 30% 14%;
+    --card-foreground: 240 10% 8%;
     --popover: 0 0% 100%;
-    --popover-foreground: 220 30% 14%;
-    --primary: 217 91% 53%;
+    --popover-foreground: 240 10% 8%;
+    --primary: 240 8% 12%;            /* near-black primary (Linear-style) */
     --primary-foreground: 0 0% 100%;
-    --secondary: 218 25% 92%;
-    --secondary-foreground: 220 30% 20%;
-    --muted: 218 25% 92%;
-    --muted-foreground: 220 12% 42%;
-    --accent: 217 91% 53%;
+    --secondary: 240 6% 95%;
+    --secondary-foreground: 240 10% 12%;
+    --muted: 240 6% 95%;
+    --muted-foreground: 240 4% 46%;
+    --accent: 217 91% 53%;            /* iOS blue accent for links */
     --accent-foreground: 0 0% 100%;
-    --border: 218 22% 86%;
-    --input: 218 22% 86%;
+    --border: 240 6% 90%;
+    --input: 240 6% 90%;
     --ring: 217 91% 53%;
-    /* Soft surface tint used as glass base behind the page */
-    --garage-tint-a: 218 90% 60%;     /* subtle blue glow */
-    --garage-tint-b: 152 76% 46%;     /* brand green glow */
-    --garage-glass: 0 0% 100%;        /* glass card base */
-    --garage-glass-alpha: 0.7;
-    --garage-hairline: 220 30% 14%;
+    --garage-tint-a: 218 90% 60%;
+    --garage-tint-b: 152 76% 46%;
+    --garage-glass: 0 0% 100%;
+    --garage-glass-alpha: 1;          /* solid for Apple/Linear feel */
+    --garage-hairline: 240 10% 8%;
     --garage-hairline-alpha: 0.08;
 
     background: hsl(var(--background));
