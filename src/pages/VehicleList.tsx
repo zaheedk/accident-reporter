@@ -26,52 +26,31 @@ function daysUntil(dateStr?: string | null): number | null {
   return Math.round((d.getTime() - today.getTime()) / 86400000);
 }
 
-// Status chip — color-coded by days remaining.
+// Status chip — Apple/Linear style: soft pill, no uppercase shouting.
 function StatusChip({ label, days }: { label: string; days: number | null }) {
   if (days === null) {
     return (
-      <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-muted/40 text-[9.5px] font-bold uppercase tracking-wider text-muted-foreground">
-        {label} —
+      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium text-muted-foreground bg-muted/60">
+        <span className="opacity-60">{label}</span>
+        <span className="opacity-40">—</span>
       </span>
     );
   }
   const tone =
-    days < 0 ? 'bg-destructive/10 text-destructive ring-1 ring-destructive/25' :
-    days <= 30 ? 'bg-amber-500/15 text-amber-700 dark:text-amber-700 dark:text-amber-400 ring-1 ring-amber-500/30' :
-    'bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 ring-1 ring-emerald-500/30';
-  const display = days < 0 ? `${Math.abs(days)}d ago` : days === 0 ? 'today' : `${days}d`;
+    days < 0 ? 'text-destructive bg-destructive/10' :
+    days <= 30 ? 'text-amber-700 dark:text-amber-400 bg-amber-500/10' :
+    'text-foreground/70 bg-muted/60';
+  const dot =
+    days < 0 ? 'bg-destructive' :
+    days <= 30 ? 'bg-amber-500' :
+    'bg-emerald-500';
+  const display = days < 0 ? `${Math.abs(days)}d overdue` : days === 0 ? 'today' : `${days}d`;
   return (
-    <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[9.5px] font-bold uppercase tracking-wider ${tone}`}>
-      {label} {display}
+    <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-medium ${tone}`}>
+      <span className={`w-1.5 h-1.5 rounded-full ${dot}`} />
+      <span className="opacity-70">{label}</span>
+      <span className="tabular-nums">{display}</span>
     </span>
-  );
-}
-
-// Circular progress ring. `progress` 0–1.
-function ProgressRing({ progress, tone }: { progress: number; tone: 'good' | 'warn' | 'bad' | 'none' }) {
-  const r = 44;
-  const c = 2 * Math.PI * r;
-  const dash = Math.max(0, Math.min(1, progress)) * c;
-  const stroke =
-    tone === 'good' ? 'hsl(var(--primary))' :
-    tone === 'warn' ? 'rgb(245 158 11)' :
-    tone === 'bad' ? 'hsl(var(--destructive))' :
-    'hsl(var(--muted))';
-  return (
-    <svg viewBox="0 0 100 100" className="absolute inset-0 w-full h-full -rotate-90 pointer-events-none">
-      <circle cx="50" cy="50" r={r} fill="none" stroke="hsl(var(--border))" strokeWidth="3" opacity="0.5" />
-      {tone !== 'none' && (
-        <circle
-          cx="50" cy="50" r={r}
-          fill="none"
-          stroke={stroke}
-          strokeWidth="3"
-          strokeLinecap="round"
-          strokeDasharray={`${dash} ${c}`}
-          style={{ transition: 'stroke-dasharray 0.6s ease' }}
-        />
-      )}
-    </svg>
   );
 }
 
