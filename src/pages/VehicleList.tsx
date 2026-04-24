@@ -174,7 +174,7 @@ export default function VehicleList() {
               {vehicles.length > 0 && (
                 <>
                   {/* Filter tiles */}
-                  <div className="grid grid-cols-2 lg:grid-cols-1 gap-2">
+                  <div className="grid grid-cols-2 md:grid-cols-1 gap-2">
                     <button
                       onClick={() => setFilter(filter === 'active' ? 'all' : 'active')}
                       className={`text-left rounded-xl p-3.5 border transition-all ${
