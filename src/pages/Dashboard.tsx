@@ -378,7 +378,7 @@ export default function Dashboard() {
                     <div className="text-[11px] text-background/60 mt-1.5">24/7 emergency</div>
                   </div>
                 </button>
-                <a href="tel:111" className="rounded-2xl bg-destructive text-destructive-foreground p-5 transition-all active:scale-[0.98] flex flex-col justify-between min-h-[140px]">
+                <a href="tel:111" className="rounded-2xl text-destructive-foreground p-5 transition-all active:scale-[0.98] flex flex-col justify-between min-h-[140px] bg-accent">
                   <div className="w-10 h-10 rounded-xl bg-destructive-foreground/15 flex items-center justify-center">
                     <Shield className="w-5 h-5" strokeWidth={2} />
                   </div>
