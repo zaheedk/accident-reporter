@@ -296,11 +296,11 @@ export default function VehicleList() {
                     return (
                       <div
                         key={v.id}
-                        className={`group relative rounded-xl overflow-hidden bg-card border transition-all duration-200 hover:shadow-[0_1px_3px_rgba(0,0,0,0.04),0_8px_24px_-12px_rgba(0,0,0,0.12)] ${
+                        className={`group relative rounded-xl overflow-hidden bg-card border transition-colors ${
                           isInactive
-                            ? 'border-dashed border-border opacity-65'
+                            ? 'border-dashed border-border opacity-65 hover:border-foreground/20'
                             : isExpired
-                              ? 'border-destructive/30 hover:border-destructive/50'
+                              ? 'border-destructive/30 hover:border-foreground/20'
                               : 'border-border hover:border-foreground/20'
                         }`}
                       >
