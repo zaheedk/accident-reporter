@@ -50,6 +50,13 @@ export default function Profile() {
 
   // Detect if user signed in via phone (fake email pattern)
   const isPhoneUser = user?.email?.endsWith('@savo.phone.local(') || false;
+  // Detect OAuth users (e.g. Google, Apple) — they don't have a password to change
+  const isOAuthUser = (() => {
+    const provider = (user as any)?.app_metadata?.provider;
+    const providers: string[] = (user as any)?.app_metadata?.providers || [];
+    const all = [provider, ...providers].filter(Boolean);
+    return all.some(p => p && p !== 'email' && p !== 'phone');
+  })();
 
   useEffect(() => {
     if (!user) return;
@@ -286,7 +293,7 @@ export default function Profile() {
           </div>
         )}
 
-        {!isPhoneUser && (
+        {!isPhoneUser && !isOAuthUser && (
           <div className="card-soft space-y-4">
             <h2 className="text-sm font-semibold text-foreground flex items-center gap-1.5">
               <Lock className="w-3.5 h-3.5" strokeWidth={1.5} /> Change password
