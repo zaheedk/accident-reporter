@@ -1,25 +1,39 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { Car, FileText, Plus, AlertTriangle, ChevronRight, ArrowUpRight, LogOut, User, Shield, Phone, Search, MapPin, X, MessageSquare, ArrowDownRight, FolderOpen } from 'lucide-react';
-import crashIcon from '@/assets/crash-icon.png';
+import { Car, Plus, AlertTriangle, ChevronRight, User, Shield, Phone, Search, MapPin, X, MessageSquare, FileWarning, ShieldAlert, CalendarClock, ArrowUpRight, Activity } from 'lucide-react';
 import { getVehicles, getClaims } from '@/lib/storage';
 import { useAuth } from '@/contexts/AuthContext';
 import AppLayout from '@/components/AppLayout';
 import { Vehicle, ClaimReport } from '@/types';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { supabase } from '@/integrations/supabase/client';
-
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { formatDistanceToNow } from 'date-fns';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 import { useOfflineQuery } from '@/hooks/use-offline-query';
-import { Loader2 } from 'lucide-react';
-import { Skeleton } from '@/components/ui/skeleton';
+
+function daysUntil(dateStr?: string | null): number | null {
+  if (!dateStr) return null;
+  const d = new Date(dateStr + 'T00:00:00');
+  if (isNaN(d.getTime())) return null;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return Math.round((d.getTime() - today.getTime()) / 86400000);
+}
+
+function StatusDot({ days }: { days: number | null }) {
+  const tone =
+    days === null ? 'bg-muted-foreground/40' :
+    days < 0 ? 'bg-destructive' :
+    days <= 30 ? 'bg-amber-500' :
+    'bg-emerald-500';
+  return <span className={`w-1.5 h-1.5 rounded-full ${tone}`} />;
+}
 
 export default function Dashboard() {
-  const { user, signOut, isAdmin } = useAuth();
-  
+  const { user, isAdmin } = useAuth();
+
   const [towSheetOpen, setTowSheetOpen] = useState(false);
   const [towCompanies, setTowCompanies] = useState<any[]>([]);
   const [towSearch, setTowSearch] = useState('');
@@ -28,14 +42,14 @@ export default function Dashboard() {
   const [userLat, setUserLat] = useState<number | null>(null);
   const [userLng, setUserLng] = useState<number | null>(null);
 
-  const { data: allVehicles = [], isLoading: vehiclesLoading } = useOfflineQuery<Vehicle[]>(
+  const { data: allVehicles = [] } = useOfflineQuery<Vehicle[]>(
     ['vehicles', user?.id ?? ''],
     () => getVehicles(user!.id),
     { enabled: !!user }
   );
   const vehicles = allVehicles.filter(v => v.isActive !== false);
 
-  const { data: claims = [], isLoading: claimsLoading } = useOfflineQuery<ClaimReport[]>(
+  const { data: claims = [] } = useOfflineQuery<ClaimReport[]>(
     ['claims', user?.id ?? ''],
     () => getClaims(user!.id),
     { enabled: !!user }
@@ -63,6 +77,33 @@ export default function Dashboard() {
 
   const avatarUrl = profile?.avatar_url || '';
   const displayName = profile?.display_name || '';
+  const firstName = displayName ? displayName.split(' ')[0] : 'there';
+
+  // Upcoming expiries from vehicle WOF/Rego/Insurance
+  const upcomingExpiries = useMemo(() => {
+    const items: { vehicleId: string; slug?: string; rego: string; label: string; date: string; days: number }[] = [];
+    vehicles.forEach(v => {
+      const fields: [string, string | undefined][] = [
+        ['WOF', v.wofExpiry],
+        ['Rego', v.regoExpiry],
+        ['Insurance', v.insuranceExpiry],
+      ];
+      fields.forEach(([label, date]) => {
+        const d = daysUntil(date);
+        if (d !== null && d <= 60) {
+          items.push({ vehicleId: v.id, slug: v.slug, rego: v.regoNumber, label, date: date!, days: d });
+        }
+      });
+    });
+    return items.sort((a, b) => a.days - b.days).slice(0, 5);
+  }, [vehicles]);
+
+  // Recent activity from claims
+  const recentActivity = useMemo(() => {
+    return [...claims]
+      .sort((a, b) => new Date(b.updatedAt || b.createdAt).getTime() - new Date(a.updatedAt || a.createdAt).getTime())
+      .slice(0, 4);
+  }, [claims]);
 
   const haversineDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
     const R = 6371;
@@ -122,13 +163,9 @@ export default function Dashboard() {
       return sortByDistance(filtered.length > 0 ? filtered : towCompanies);
     }
     if (userCity || userRegion) {
-      const byCity = towCompanies.filter(tc =>
-        tc.address.toLowerCase().includes(userCity.toLowerCase())
-      );
+      const byCity = towCompanies.filter(tc => tc.address.toLowerCase().includes(userCity.toLowerCase()));
       if (byCity.length > 0) return sortByDistance(byCity);
-      const byRegion = towCompanies.filter(tc =>
-        tc.address.toLowerCase().includes(userRegion.toLowerCase())
-      );
+      const byRegion = towCompanies.filter(tc => tc.address.toLowerCase().includes(userRegion.toLowerCase()));
       if (byRegion.length > 0) return sortByDistance(byRegion);
     }
     return sortByDistance(towCompanies);
@@ -136,12 +173,8 @@ export default function Dashboard() {
 
   const displayedTowCompanies = getDisplayedTowCompanies();
 
-  const firstName = displayName ? displayName.split(' ')[0] : 'there';
-
-  const stagger = { hidden: {}, visible: { transition: { staggerChildren: 0.08 } } };
-  const fadeUp = { hidden: { opacity: 0, y: 16 }, visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: 'easeOut' as const } } };
-
-  const recentMessages: any[] = [];
+  const stagger = { hidden: {}, visible: { transition: { staggerChildren: 0.06 } } };
+  const fadeUp = { hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0, transition: { duration: 0.35, ease: 'easeOut' as const } } };
 
   const greeting = (() => {
     const h = new Date().getHours();
@@ -150,179 +183,372 @@ export default function Dashboard() {
     return 'Good evening';
   })();
 
+  // Sidebar — quick actions for tablet/desktop
+  const QuickActions = () => (
+    <div className="rounded-xl bg-card border border-border overflow-hidden">
+      <div className="px-3.5 pt-3 pb-2 text-[11px] font-medium text-muted-foreground">Quick actions</div>
+      <div className="divide-y divide-border">
+        <button
+          onClick={handleOpenTowSheet}
+          className="w-full flex items-center gap-3 px-3.5 py-2.5 hover:bg-muted/50 transition-colors text-left"
+        >
+          <div className="w-7 h-7 rounded-lg bg-foreground text-background flex items-center justify-center shrink-0">
+            <Phone className="w-3.5 h-3.5" strokeWidth={2} />
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="text-[13px] font-medium text-foreground">Call tow truck</div>
+            <div className="text-[11px] text-muted-foreground">24/7 nearby companies</div>
+          </div>
+          <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/40" />
+        </button>
+        <a href="tel:111" className="w-full flex items-center gap-3 px-3.5 py-2.5 hover:bg-muted/50 transition-colors">
+          <div className="w-7 h-7 rounded-lg bg-destructive/10 text-destructive flex items-center justify-center shrink-0">
+            <Shield className="w-3.5 h-3.5" strokeWidth={2} />
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="text-[13px] font-medium text-foreground">Call police</div>
+            <div className="text-[11px] text-muted-foreground">Emergency 111</div>
+          </div>
+          <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/40" />
+        </a>
+        <Link to="/claims/new" className="w-full flex items-center gap-3 px-3.5 py-2.5 hover:bg-muted/50 transition-colors">
+          <div className="w-7 h-7 rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
+            <AlertTriangle className="w-3.5 h-3.5" strokeWidth={2} />
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="text-[13px] font-medium text-foreground">Report incident</div>
+            <div className="text-[11px] text-muted-foreground">Start a new claim</div>
+          </div>
+          <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/40" />
+        </Link>
+        <Link to="/vehicles/new" className="w-full flex items-center gap-3 px-3.5 py-2.5 hover:bg-muted/50 transition-colors">
+          <div className="w-7 h-7 rounded-lg bg-muted text-foreground flex items-center justify-center shrink-0">
+            <Plus className="w-3.5 h-3.5" strokeWidth={2} />
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="text-[13px] font-medium text-foreground">Add vehicle</div>
+            <div className="text-[11px] text-muted-foreground">Speeds up reporting</div>
+          </div>
+          <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/40" />
+        </Link>
+      </div>
+    </div>
+  );
+
+  const UpcomingPanel = () => (
+    <div className="rounded-xl bg-card border border-border overflow-hidden">
+      <div className="px-3.5 pt-3 pb-2 flex items-center justify-between">
+        <span className="text-[11px] font-medium text-muted-foreground">Upcoming expiries</span>
+        <Link to="/vehicles" className="text-[11px] font-medium text-accent hover:opacity-80">All</Link>
+      </div>
+      {upcomingExpiries.length === 0 ? (
+        <div className="px-3.5 pb-3.5 text-[12px] text-muted-foreground">Nothing due in the next 60 days.</div>
+      ) : (
+        <div className="divide-y divide-border">
+          {upcomingExpiries.map((it, i) => (
+            <Link
+              key={i}
+              to={`/vehicles/${it.slug || it.vehicleId}/edit`}
+              className="flex items-center gap-3 px-3.5 py-2.5 hover:bg-muted/50 transition-colors"
+            >
+              <StatusDot days={it.days} />
+              <div className="flex-1 min-w-0">
+                <div className="text-[13px] font-medium text-foreground truncate">
+                  <span className="opacity-60">{it.label}</span> · {it.rego}
+                </div>
+                <div className="text-[11px] text-muted-foreground tabular-nums">{it.date}</div>
+              </div>
+              <span className={`text-[12px] font-medium tabular-nums ${
+                it.days < 0 ? 'text-destructive' : it.days <= 30 ? 'text-amber-700 dark:text-amber-400' : 'text-muted-foreground'
+              }`}>
+                {it.days < 0 ? `${Math.abs(it.days)}d over` : it.days === 0 ? 'today' : `${it.days}d`}
+              </span>
+            </Link>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+
+  const ActivityPanel = () => (
+    <div className="rounded-xl bg-card border border-border overflow-hidden">
+      <div className="px-3.5 pt-3 pb-2 flex items-center justify-between">
+        <span className="text-[11px] font-medium text-muted-foreground">Recent activity</span>
+        <Link to="/claims" className="text-[11px] font-medium text-accent hover:opacity-80">All</Link>
+      </div>
+      {recentActivity.length === 0 ? (
+        <div className="px-3.5 pb-3.5 text-[12px] text-muted-foreground">No claims yet.</div>
+      ) : (
+        <div className="divide-y divide-border">
+          {recentActivity.map(c => (
+            <Link key={c.id} to={`/claims/${c.id}`} className="flex items-center gap-3 px-3.5 py-2.5 hover:bg-muted/50 transition-colors">
+              <Activity className="w-3.5 h-3.5 text-muted-foreground/70 shrink-0" strokeWidth={2} />
+              <div className="flex-1 min-w-0">
+                <div className="text-[13px] font-medium text-foreground truncate">
+                  {c.reportNumber ? `#${c.reportNumber}` : 'Draft'} · <span className="opacity-70 capitalize">{c.status}</span>
+                </div>
+                <div className="text-[11px] text-muted-foreground truncate">
+                  {formatDistanceToNow(new Date(c.updatedAt || c.createdAt), { addSuffix: true })}
+                </div>
+              </div>
+              <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/40" />
+            </Link>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+
+  const ProfilePanel = () => (
+    <div className="rounded-xl bg-card border border-border overflow-hidden">
+      <Link to="/profile" className="flex items-center gap-3 px-3.5 py-3 hover:bg-muted/50 transition-colors">
+        <Avatar className="w-9 h-9">
+          <AvatarImage src={avatarUrl} alt={displayName} />
+          <AvatarFallback className="bg-muted text-foreground text-[11px] font-semibold">
+            {displayName ? displayName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : <User className="w-4 h-4" />}
+          </AvatarFallback>
+        </Avatar>
+        <div className="flex-1 min-w-0">
+          <div className="text-[13px] font-medium text-foreground truncate">{displayName || 'Your profile'}</div>
+          <div className="text-[11px] text-muted-foreground truncate">View & edit details</div>
+        </div>
+        <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/40" />
+      </Link>
+      {isAdmin && (
+        <Link to="/admin" className="flex items-center gap-3 px-3.5 py-2.5 border-t border-border hover:bg-muted/50 transition-colors">
+          <div className="w-7 h-7 rounded-lg bg-foreground text-background flex items-center justify-center shrink-0">
+            <Shield className="w-3.5 h-3.5" strokeWidth={2} />
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="text-[13px] font-medium text-foreground">Admin overview</div>
+            <div className="text-[11px] text-muted-foreground">Users, vehicles, reports</div>
+          </div>
+          <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/40" />
+        </Link>
+      )}
+    </div>
+  );
+
   return (
     <AppLayout>
-      <div className="theme-dashboard-dark">
-      <motion.div className="space-y-7" variants={stagger} initial="hidden" animate="visible">
-        {/* Header — eyebrow + display name + avatar */}
-        <motion.div variants={fadeUp} className="flex items-start justify-between gap-3 pt-1">
-          <div className="min-w-0">
-            <p className="eyebrow">{greeting}</p>
-            <h1 className="display-heading mt-1.5 truncate">{firstName}.</h1>
-          </div>
-          <Link to="/profile" className="shrink-0">
-            <Avatar className="w-12 h-12 ring-2 ring-border">
-              <AvatarImage src={avatarUrl} alt={displayName} />
-              <AvatarFallback className="bg-muted text-foreground text-xs font-bold">
-                {displayName ? displayName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : <User className="w-4 h-4" />}
-              </AvatarFallback>
-            </Avatar>
-          </Link>
-        </motion.div>
-
-        {/* Vehicle cards rail — horizontal scroll */}
-        {vehicles.length > 0 && (
-          <motion.div variants={fadeUp} className="space-y-3">
-            <div className="flex items-center justify-between px-1">
-              <p className="eyebrow">Vehicle cards</p>
-              <Link to="/vehicles" className="text-[12px] font-semibold text-primary hover:opacity-80">See all</Link>
+      <div className="theme-dashboard relative">
+        <motion.div className="relative space-y-8" variants={stagger} initial="hidden" animate="visible">
+          {/* Header — Apple/Linear style */}
+          <motion.div variants={fadeUp} className="flex items-end justify-between gap-3 pt-2">
+            <div className="min-w-0">
+              <p className="text-[12px] text-muted-foreground">{greeting}</p>
+              <h1 className="text-[28px] leading-tight font-semibold text-foreground tracking-[-0.02em] truncate mt-1">
+                {firstName}.
+              </h1>
             </div>
-            <div className="-mx-4 px-4 overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
-              <div className="flex gap-3 pb-1 w-max">
-                {vehicles.map((v) => {
-                  const insurerPhone = v.insuranceCompany ? insurerPhones[v.insuranceCompany] : '';
-                  return (
-                    <Link
-                      key={v.id}
-                      to={`/vehicles/${v.slug || v.id}/edit`}
-                      className="w-[220px] shrink-0 rounded-2xl bg-card border border-border p-3 flex flex-col gap-2.5 transition-all active:scale-[0.98] hover:border-primary/40"
-                    >
-                      <div className="relative aspect-[16/10] rounded-xl bg-muted overflow-hidden flex items-center justify-center">
-                        {v.photoUrl ? (
-                          <img src={v.photoUrl} alt={`${v.make} ${v.model}`} className="w-full h-full object-cover" loading="lazy" />
-                        ) : (
-                          <Car className="w-8 h-8 text-muted-foreground" strokeWidth={1.5} />
-                        )}
-                        <Link
-                          to={`/claims/new?vehicleId=${v.id}`}
-                          onClick={(e) => e.stopPropagation()}
-                          aria-label={`Report incident for ${v.regoNumber}`}
-                          title="Report incident"
-                          className="absolute top-2 right-2 w-8 h-8 rounded-full flex items-center justify-center shadow-md active:scale-95 transition-transform"
-                          style={{ backgroundColor: 'hsl(152 76% 46%)', color: 'hsl(220 35% 7%)' }}
-                        >
-                          <AlertTriangle className="w-4 h-4" strokeWidth={2.4} />
-                        </Link>
-                      </div>
-                      <div className="min-w-0">
-                        <div className="text-[13px] font-bold text-foreground truncate">{v.year} {v.make}</div>
-                        <div className="text-[11px] text-muted-foreground truncate uppercase tracking-wider mt-0.5">{v.regoNumber} · {v.model}</div>
-                      </div>
-                      <div className="space-y-1 pt-1 border-t border-border/60">
-                        <div className="flex items-center justify-between text-[10.5px]">
-                          <span className="uppercase tracking-wider text-muted-foreground font-semibold">Rego</span>
-                          <span className={`tabular-nums font-semibold ${v.regoExpiry && v.regoExpiry < new Date().toISOString().slice(0,10) ? 'text-destructive' : 'text-foreground'}`}>{v.regoExpiry || '—'}</span>
-                        </div>
-                        <div className="flex items-center justify-between text-[10.5px]">
-                          <span className="uppercase tracking-wider text-muted-foreground font-semibold">WOF</span>
-                          <span className={`tabular-nums font-semibold ${v.wofExpiry && v.wofExpiry < new Date().toISOString().slice(0,10) ? 'text-destructive' : 'text-foreground'}`}>{v.wofExpiry || '—'}</span>
-                        </div>
-                        <div className="flex items-center justify-between text-[10.5px]">
-                          <span className="uppercase tracking-wider text-muted-foreground font-semibold">Policy</span>
-                          <span className={`tabular-nums font-semibold ${v.insuranceExpiry && v.insuranceExpiry < new Date().toISOString().slice(0,10) ? 'text-destructive' : 'text-foreground'}`}>{v.insuranceExpiry || '—'}</span>
-                        </div>
-                      </div>
-                      {insurerPhone && (
-                        <a
-                          href={`tel:${insurerPhone.replace(/\s/g, '')}`}
-                          onClick={(e) => e.stopPropagation()}
-                          className="inline-flex items-center justify-center gap-1.5 mt-1 h-8 px-3 rounded-lg text-[11px] font-bold bg-foreground text-background hover:bg-foreground/90 transition-colors"
-                        >
-                          <Phone className="w-3 h-3" />
-                          Call insurance
-                        </a>
-                      )}
-                    </Link>
-                  );
-                })}
-                <Link
-                  to="/vehicles/new"
-                  className="w-[140px] shrink-0 rounded-2xl border-2 border-dashed border-border flex flex-col items-center justify-center gap-2 text-muted-foreground hover:text-primary hover:border-primary/40 transition-colors"
-                >
-                  <Plus className="w-6 h-6" strokeWidth={1.8} />
-                  <span className="text-[11px] font-semibold">Add vehicle</span>
-                </Link>
-              </div>
-            </div>
-          </motion.div>
-        )}
-
-        {/* Hero action tiles */}
-        <motion.div variants={fadeUp} className="grid grid-cols-2 gap-3 lg:max-w-2xl">
-          <button
-            onClick={handleOpenTowSheet}
-            className="group relative overflow-hidden rounded-2xl bg-foreground text-background p-5 text-left transition-all active:scale-[0.98] min-h-[148px] flex flex-col justify-between"
-          >
-            <div className="w-10 h-10 rounded-xl bg-background/10 flex items-center justify-center">
-              <Phone className="w-5 h-5" strokeWidth={2} />
-            </div>
-            <div>
-              <div className="text-[15px] font-bold leading-tight">Call tow<br/>truck</div>
-              <div className="text-[11px] text-background/60 mt-1.5 font-medium">24/7 emergency</div>
-            </div>
-          </button>
-          <a
-            href="tel:111"
-            className="group relative overflow-hidden rounded-2xl bg-primary text-primary-foreground p-5 transition-all active:scale-[0.98] block min-h-[148px] flex flex-col justify-between"
-          >
-            <div className="w-10 h-10 rounded-xl bg-primary-foreground/15 flex items-center justify-center">
-              <Shield className="w-5 h-5" strokeWidth={2} />
-            </div>
-            <div>
-              <div className="text-[15px] font-bold leading-tight">Call<br/>police</div>
-              <div className="text-[11px] text-primary-foreground/75 mt-1.5 font-medium">Emergency 111</div>
-            </div>
-          </a>
-        </motion.div>
-
-
-        {recentMessages.length > 0 && (
-          <motion.div variants={fadeUp} className="rounded-2xl bg-card border border-border p-4 space-y-2">
-            <div className="flex items-center gap-2 mb-1">
-              <MessageSquare className="w-4 h-4 text-foreground" />
-              <span className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground font-semibold">Recent Messages</span>
-            </div>
-            {recentMessages.map(msg => (
-              <Link key={msg.id} to={`/claims/${msg.claim_id}`}
-                className="flex items-start gap-2.5 p-2.5 rounded-xl hover:bg-muted/50 transition-colors -mx-1">
-                <ArrowDownRight className={`w-3.5 h-3.5 mt-0.5 shrink-0 ${msg.direction === 'inbound' ? 'text-primary' : 'text-foreground'}`} />
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs font-medium text-foreground truncate">{msg.subject || '(No subject)'}</p>
-                  <p className="text-[11px] text-muted-foreground truncate mt-0.5">{msg.body?.slice(0, 80)}</p>
-                  <p className="text-[10px] text-muted-foreground/60 mt-0.5">
-                    {msg.direction === 'inbound' ? msg.from_email : 'You'} · {formatDistanceToNow(new Date(msg.created_at), { addSuffix: true })}
-                  </p>
-                </div>
-                <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/30 mt-1 shrink-0" />
-              </Link>
-            ))}
-          </motion.div>
-        )}
-
-        {/* Admin */}
-        {isAdmin && (
-          <motion.div variants={fadeUp}>
-            <Link to="/admin" className="rounded-2xl bg-card border border-border p-4 flex items-center gap-3 group hover:border-foreground/20 transition-colors">
-              <div className="w-10 h-10 rounded-xl bg-foreground flex items-center justify-center shrink-0">
-                <Shield className="w-5 h-5 text-background" strokeWidth={1.8} />
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="text-sm font-semibold text-foreground">Admin Overview</div>
-                <div className="text-xs text-muted-foreground mt-0.5">Manage users, vehicles & reports</div>
-              </div>
-              <ChevronRight className="w-4 h-4 text-muted-foreground/40 group-hover:text-foreground transition-colors shrink-0" strokeWidth={1.8} />
+            {/* Mobile-only avatar (sidebar shows it on tablet+) */}
+            <Link to="/profile" className="md:hidden shrink-0">
+              <Avatar className="w-11 h-11 ring-1 ring-border">
+                <AvatarImage src={avatarUrl} alt={displayName} />
+                <AvatarFallback className="bg-muted text-foreground text-[11px] font-semibold">
+                  {displayName ? displayName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : <User className="w-4 h-4" />}
+                </AvatarFallback>
+              </Avatar>
             </Link>
           </motion.div>
-        )}
-      </motion.div>
+
+          {/* Body — sidebar + main on tablet+ */}
+          <div className="md:grid md:grid-cols-[260px_1fr] md:gap-6 lg:grid-cols-[280px_1fr] lg:gap-8 space-y-6 md:space-y-0">
+            {/* Left rail — tablet & desktop only */}
+            <motion.aside variants={fadeUp} className="hidden md:block space-y-4">
+              <QuickActions />
+              <UpcomingPanel />
+              <ActivityPanel />
+              <ProfilePanel />
+            </motion.aside>
+
+            {/* Main column */}
+            <div className="space-y-6">
+              {/* Mobile hero action tiles — kept as-is for mobile */}
+              <motion.div variants={fadeUp} className="grid grid-cols-2 gap-3 md:hidden">
+                <button
+                  onClick={handleOpenTowSheet}
+                  className="rounded-2xl bg-foreground text-background p-5 text-left transition-all active:scale-[0.98] min-h-[140px] flex flex-col justify-between"
+                >
+                  <div className="w-10 h-10 rounded-xl bg-background/10 flex items-center justify-center">
+                    <Phone className="w-5 h-5" strokeWidth={2} />
+                  </div>
+                  <div>
+                    <div className="text-[15px] font-semibold leading-tight">Call tow<br/>truck</div>
+                    <div className="text-[11px] text-background/60 mt-1.5">24/7 emergency</div>
+                  </div>
+                </button>
+                <a href="tel:111" className="rounded-2xl bg-destructive text-destructive-foreground p-5 transition-all active:scale-[0.98] flex flex-col justify-between min-h-[140px]">
+                  <div className="w-10 h-10 rounded-xl bg-destructive-foreground/15 flex items-center justify-center">
+                    <Shield className="w-5 h-5" strokeWidth={2} />
+                  </div>
+                  <div>
+                    <div className="text-[15px] font-semibold leading-tight">Call<br/>police</div>
+                    <div className="text-[11px] text-destructive-foreground/75 mt-1.5">Emergency 111</div>
+                  </div>
+                </a>
+              </motion.div>
+
+              {/* Vehicle cards — Apple/Linear flat thumbnails */}
+              {vehicles.length > 0 && (
+                <motion.div variants={fadeUp} className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-[15px] font-semibold text-foreground tracking-[-0.01em]">Your vehicles</h2>
+                    <Link to="/vehicles" className="text-[12px] font-medium text-accent hover:opacity-80 inline-flex items-center gap-0.5">
+                      See all <ArrowUpRight className="w-3 h-3" />
+                    </Link>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-3">
+                    {vehicles.map(v => {
+                      const insurerPhone = v.insuranceCompany ? insurerPhones[v.insuranceCompany] : '';
+                      const wofD = daysUntil(v.wofExpiry);
+                      const regoD = daysUntil(v.regoExpiry);
+                      const insD = daysUntil(v.insuranceExpiry);
+                      return (
+                        <div key={v.id} className="rounded-xl bg-card border border-border overflow-hidden hover:border-foreground/20 transition-colors group">
+                          <Link to={`/vehicles/${v.slug || v.id}/edit`} className="block p-3">
+                            <div className="flex items-center gap-3">
+                              <div className="w-14 h-14 rounded-xl bg-muted overflow-hidden flex items-center justify-center shrink-0">
+                                {v.photoUrl ? (
+                                  <img src={v.photoUrl} alt={`${v.make} ${v.model}`} className="w-full h-full object-cover" loading="lazy" />
+                                ) : (
+                                  <Car className="w-6 h-6 text-muted-foreground" strokeWidth={1.5} />
+                                )}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <div className="text-[13px] font-semibold text-foreground truncate tabular-nums">{v.regoNumber}</div>
+                                <div className="text-[12px] text-muted-foreground truncate">{v.year} {v.make} {v.model}</div>
+                              </div>
+                            </div>
+                            <div className="flex flex-wrap gap-1.5 mt-3">
+                              {[
+                                { label: 'WOF', d: wofD },
+                                { label: 'Rego', d: regoD },
+                                { label: 'Ins.', d: insD },
+                              ].map(({ label, d }) => {
+                                const tone = d === null ? 'text-muted-foreground bg-muted/60'
+                                  : d < 0 ? 'text-destructive bg-destructive/10'
+                                  : d <= 30 ? 'text-amber-700 dark:text-amber-400 bg-amber-500/10'
+                                  : 'text-foreground/70 bg-muted/60';
+                                const display = d === null ? '—' : d < 0 ? `${Math.abs(d)}d over` : d === 0 ? 'today' : `${d}d`;
+                                return (
+                                  <span key={label} className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-medium ${tone}`}>
+                                    <StatusDot days={d} />
+                                    <span className="opacity-70">{label}</span>
+                                    <span className="tabular-nums">{display}</span>
+                                  </span>
+                                );
+                              })}
+                            </div>
+                          </Link>
+                          <div className="flex border-t border-border divide-x divide-border">
+                            <Link
+                              to={`/claims/new?vehicleId=${v.id}`}
+                              className="flex-1 flex items-center justify-center gap-1.5 py-2 text-[12px] font-medium text-foreground hover:bg-muted/50 transition-colors"
+                            >
+                              <AlertTriangle className="w-3.5 h-3.5" strokeWidth={2} /> Report
+                            </Link>
+                            {insurerPhone ? (
+                              <a
+                                href={`tel:${insurerPhone.replace(/\s/g, '')}`}
+                                className="flex-1 flex items-center justify-center gap-1.5 py-2 text-[12px] font-medium text-foreground hover:bg-muted/50 transition-colors"
+                              >
+                                <Phone className="w-3.5 h-3.5" strokeWidth={2} /> Insurer
+                              </a>
+                            ) : (
+                              <Link
+                                to={`/vehicles/${v.slug || v.id}/edit`}
+                                className="flex-1 flex items-center justify-center gap-1.5 py-2 text-[12px] font-medium text-muted-foreground hover:bg-muted/50 transition-colors"
+                              >
+                                <Plus className="w-3.5 h-3.5" strokeWidth={2} /> Insurer
+                              </Link>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                    <Link
+                      to="/vehicles/new"
+                      className="rounded-xl border border-dashed border-border flex flex-col items-center justify-center gap-2 py-8 text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-colors min-h-[140px]"
+                    >
+                      <Plus className="w-5 h-5" strokeWidth={1.8} />
+                      <span className="text-[12px] font-medium">Add vehicle</span>
+                    </Link>
+                  </div>
+                </motion.div>
+              )}
+
+              {vehicles.length === 0 && (
+                <motion.div variants={fadeUp} className="rounded-xl bg-card border border-border p-10 text-center">
+                  <div className="w-12 h-12 rounded-xl bg-muted text-muted-foreground mx-auto mb-4 flex items-center justify-center">
+                    <Car className="w-6 h-6" strokeWidth={1.6} />
+                  </div>
+                  <p className="text-[15px] font-semibold text-foreground">No vehicles yet</p>
+                  <p className="text-[13px] text-muted-foreground mt-1.5 max-w-[280px] mx-auto leading-relaxed">
+                    Add your vehicles to speed up incident reporting.
+                  </p>
+                  <Link
+                    to="/vehicles/new"
+                    className="inline-flex items-center gap-1.5 h-9 px-3.5 mt-4 text-[13px] font-medium rounded-lg bg-primary text-primary-foreground hover:opacity-90 active:scale-[0.98] transition-all"
+                  >
+                    <Plus className="w-4 h-4" strokeWidth={2.2} /> Add vehicle
+                  </Link>
+                </motion.div>
+              )}
+
+              {/* Mobile-only quick links list (sidebar replaces this on tablet+) */}
+              <motion.div variants={fadeUp} className="md:hidden space-y-3">
+                {upcomingExpiries.length > 0 && (
+                  <div className="rounded-xl bg-card border border-border overflow-hidden">
+                    <div className="px-3.5 pt-3 pb-2 flex items-center justify-between">
+                      <span className="text-[11px] font-medium text-muted-foreground">Upcoming expiries</span>
+                      <Link to="/vehicles" className="text-[11px] font-medium text-accent">All</Link>
+                    </div>
+                    <div className="divide-y divide-border">
+                      {upcomingExpiries.slice(0, 3).map((it, i) => (
+                        <Link key={i} to={`/vehicles/${it.slug || it.vehicleId}/edit`} className="flex items-center gap-3 px-3.5 py-2.5">
+                          <StatusDot days={it.days} />
+                          <div className="flex-1 min-w-0">
+                            <div className="text-[13px] font-medium text-foreground truncate">
+                              <span className="opacity-60">{it.label}</span> · {it.rego}
+                            </div>
+                          </div>
+                          <span className={`text-[12px] font-medium tabular-nums ${
+                            it.days < 0 ? 'text-destructive' : it.days <= 30 ? 'text-amber-700 dark:text-amber-400' : 'text-muted-foreground'
+                          }`}>
+                            {it.days < 0 ? `${Math.abs(it.days)}d over` : it.days === 0 ? 'today' : `${it.days}d`}
+                          </span>
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {isAdmin && (
+                  <Link to="/admin" className="rounded-xl bg-card border border-border p-4 flex items-center gap-3 hover:border-foreground/20 transition-colors">
+                    <div className="w-9 h-9 rounded-xl bg-foreground flex items-center justify-center shrink-0">
+                      <Shield className="w-4 h-4 text-background" strokeWidth={1.8} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-[13px] font-semibold text-foreground">Admin overview</div>
+                      <div className="text-[11px] text-muted-foreground mt-0.5">Manage users, vehicles & reports</div>
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-muted-foreground/40 shrink-0" strokeWidth={1.8} />
+                  </Link>
+                )}
+              </motion.div>
+            </div>
+          </div>
+        </motion.div>
       </div>
 
       <Sheet open={towSheetOpen} onOpenChange={setTowSheetOpen}>
         <SheetContent side="bottom" className="h-[90vh] rounded-t-2xl p-0 flex flex-col" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
           <SheetHeader className="px-5 pt-5 pb-3 shrink-0">
             <SheetTitle className="text-left flex items-center gap-2">
-                <Phone className="w-5 h-5 text-foreground" />
-                Tow Companies Near You
+              <Phone className="w-5 h-5 text-foreground" />
+              Tow Companies Near You
             </SheetTitle>
           </SheetHeader>
           <div className="px-5 pb-3 shrink-0">
