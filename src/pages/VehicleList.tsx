@@ -168,13 +168,13 @@ export default function VehicleList() {
           </motion.div>
 
           {/* Body */}
-          <div className="lg:grid lg:grid-cols-[260px_1fr] lg:gap-8 space-y-6 lg:space-y-0">
+          <div className="md:grid md:grid-cols-[240px_1fr] md:gap-6 lg:grid-cols-[260px_1fr] lg:gap-8 space-y-6 md:space-y-0">
             {/* Left rail — clean cards, hairline borders */}
             <motion.aside variants={fadeUp} className="space-y-4">
               {vehicles.length > 0 && (
                 <>
                   {/* Filter tiles */}
-                  <div className="grid grid-cols-2 lg:grid-cols-1 gap-2">
+                  <div className="grid grid-cols-2 md:grid-cols-1 gap-2">
                     <button
                       onClick={() => setFilter(filter === 'active' ? 'all' : 'active')}
                       className={`text-left rounded-xl p-3.5 border transition-all ${
@@ -206,7 +206,7 @@ export default function VehicleList() {
                   </div>
 
                   {/* Alerts panel — desktop */}
-                  <div className="hidden lg:block rounded-xl bg-card border border-border overflow-hidden">
+                  <div className="hidden md:block rounded-xl bg-card border border-border overflow-hidden">
                     <div className="px-3.5 pt-3 pb-2 text-[11px] font-medium text-muted-foreground">Alerts</div>
                     <div className="divide-y divide-border">
                       {[
