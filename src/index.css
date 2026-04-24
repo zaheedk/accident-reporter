@@ -309,6 +309,67 @@
   .garage-divide > * + * {
     border-top: 1px solid hsl(var(--garage-hairline) / var(--garage-hairline-alpha));
   }
+
+  /* === Dashboard page — shares Apple/Linear palette with Garage === */
+  .theme-dashboard {
+    --background: 240 10% 98%;
+    --foreground: 240 10% 8%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 8%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 8%;
+    --primary: 240 8% 12%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 240 6% 95%;
+    --secondary-foreground: 240 10% 12%;
+    --muted: 240 6% 95%;
+    --muted-foreground: 240 4% 46%;
+    --accent: 217 91% 53%;
+    --accent-foreground: 0 0% 100%;
+    --border: 240 6% 90%;
+    --input: 240 6% 90%;
+    --ring: 217 91% 53%;
+
+    background: hsl(var(--background));
+    color: hsl(var(--foreground));
+    border-radius: 0;
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    margin-top: -1.25rem;
+    margin-bottom: -8rem;
+    padding: 1.25rem 1rem 8rem 1rem;
+    min-height: calc(100vh - 53px);
+  }
+
+  .theme-dashboard > * {
+    max-width: 80rem;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .dark .theme-dashboard {
+    --background: 240 6% 7%;
+    --foreground: 0 0% 96%;
+    --card: 240 5% 10%;
+    --card-foreground: 0 0% 96%;
+    --popover: 240 5% 10%;
+    --popover-foreground: 0 0% 96%;
+    --primary: 0 0% 96%;
+    --primary-foreground: 240 6% 7%;
+    --secondary: 240 4% 14%;
+    --secondary-foreground: 0 0% 96%;
+    --muted: 240 4% 14%;
+    --muted-foreground: 240 5% 60%;
+    --accent: 217 91% 60%;
+    --accent-foreground: 0 0% 100%;
+    --border: 240 4% 18%;
+    --input: 240 4% 18%;
+    --ring: 217 91% 60%;
+  }
 }
 
 /* Print styles for claim report */
