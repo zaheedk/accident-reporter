@@ -248,7 +248,7 @@ export default function VehicleList() {
                   {/* Alerts panel — desktop only */}
                   <div className="hidden lg:block rounded-2xl garage-glass overflow-hidden shadow-[0_8px_30px_-12px_rgba(0,0,0,0.5)]">
                     <div className="px-4 pt-3.5 pb-2 eyebrow">Alerts</div>
-                    <div className="divide-y garage-divide">
+                    <div className="garage-divide">
                       <div className="flex items-center gap-3 px-4 py-3">
                         <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${wofExpiredCount > 0 ? 'bg-destructive/20 text-destructive ring-1 ring-destructive/30' : 'bg-muted/40 text-muted-foreground'}`}>
                           <FileWarning className="w-4 h-4" strokeWidth={2} />
@@ -370,7 +370,7 @@ export default function VehicleList() {
                             ? 'bg-muted/20 border-dashed garage-hairline opacity-70'
                             : isExpired
                               ? 'garage-glass !border-destructive/40 hover:!border-destructive/60 hover:shadow-[0_12px_40px_-12px_hsl(var(--destructive)/0.4)]'
-                              : 'bg-card/40 garage-hairline hover:border-primary/40 hover:shadow-[0_12px_40px_-12px_hsl(var(--primary)/0.35)]'
+                              : 'garage-glass hover:border-primary/50 hover:shadow-[0_12px_40px_-12px_hsl(var(--primary)/0.35)]'
                         }`}
                       >
                         <div className="flex items-stretch">
