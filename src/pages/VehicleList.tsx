@@ -338,6 +338,8 @@ export default function VehicleList() {
               })}
             </motion.div>
           )}
+            </div>
+          </div>
         </motion.div>
       </div>
 
