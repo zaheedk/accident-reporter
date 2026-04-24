@@ -293,7 +293,7 @@ export default function Profile() {
           </div>
         )}
 
-        {!isPhoneUser && (
+        {!isPhoneUser && !isOAuthUser && (
           <div className="card-soft space-y-4">
             <h2 className="text-sm font-semibold text-foreground flex items-center gap-1.5">
               <Lock className="w-3.5 h-3.5" strokeWidth={1.5} /> Change password
