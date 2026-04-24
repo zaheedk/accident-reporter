@@ -14,9 +14,10 @@ const generateOtp = () =>
 function normalizePhone(phone: string): string {
   let cleaned = phone.replace(/[\s\-()]/g, "");
   if (cleaned.startsWith("+")) return cleaned;
-  if (cleaned.startsWith("0")) {
-    return "+64" + cleaned.slice(1); // NZ default
-  }
+  if (cleaned.startsWith("00")) return "+" + cleaned.slice(2);
+  if (cleaned.startsWith("0")) return "+64" + cleaned.slice(1); // NZ default
+  // No country code and no leading 0 — assume NZ mobile
+  if (/^\d{8,10}$/.test(cleaned)) return "+64" + cleaned;
   return "+" + cleaned;
 }
 
@@ -100,9 +101,10 @@ serve(async (req) => {
       const smsData = await smsResponse.json();
       if (!smsResponse.ok) {
         console.error("Twilio error:", smsData);
+        const twilioMsg = smsData?.message || "Failed to send SMS";
         return new Response(
-          JSON.stringify({ error: "Failed to send SMS" }),
-          { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          JSON.stringify({ error: twilioMsg, code: smsData?.code }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
 

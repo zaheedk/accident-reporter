@@ -24,7 +24,19 @@ export default function PhoneAuth({ onError }: PhoneAuthProps) {
       const { data, error } = await supabase.functions.invoke('phone-otp', {
         body: { action: 'send', phone },
       });
-      if (error) throw new Error(error.message || 'Failed to send OTP');
+      // When the function returns a non-2xx, supabase-js wraps it in error.
+      // The actual JSON body is on error.context (a Response). Surface it.
+      if (error) {
+        let detail = '';
+        try {
+          const ctx: any = (error as any).context;
+          if (ctx && typeof ctx.json === 'function') {
+            const body = await ctx.json();
+            detail = body?.error || '';
+          }
+        } catch { /* ignore */ }
+        throw new Error(detail || error.message || 'Failed to send verification code');
+      }
       if (data?.error) throw new Error(data.error);
       setOtpSent(true);
     } catch (err: any) {
@@ -45,7 +57,17 @@ export default function PhoneAuth({ onError }: PhoneAuthProps) {
       const { data, error } = await supabase.functions.invoke('phone-otp', {
         body: { action: 'verify', phone, otp },
       });
-      if (error) throw new Error(error.message || 'Verification failed');
+      if (error) {
+        let detail = '';
+        try {
+          const ctx: any = (error as any).context;
+          if (ctx && typeof ctx.json === 'function') {
+            const body = await ctx.json();
+            detail = body?.error || '';
+          }
+        } catch { /* ignore */ }
+        throw new Error(detail || error.message || 'Verification failed');
+      }
       if (data?.error) throw new Error(data.error);
 
       if (data?.actionLink) {
