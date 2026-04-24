@@ -54,8 +54,14 @@ export default function VehicleList() {
     }
   };
 
+  const today = new Date().toISOString().slice(0, 10);
+  const soon = new Date(Date.now() + 30 * 86400000).toISOString().slice(0, 10);
+
   const activeCount = useMemo(() => vehicles.filter(v => v.isActive !== false).length, [vehicles]);
   const inactiveCount = useMemo(() => vehicles.filter(v => v.isActive === false).length, [vehicles]);
+  const wofExpiredCount = useMemo(() => vehicles.filter(v => v.isActive !== false && v.wofExpiry && v.wofExpiry < today).length, [vehicles, today]);
+  const regoExpiredCount = useMemo(() => vehicles.filter(v => v.isActive !== false && v.regoExpiry && v.regoExpiry < today).length, [vehicles, today]);
+  const insuranceExpiringCount = useMemo(() => vehicles.filter(v => v.isActive !== false && v.insuranceExpiry && v.insuranceExpiry >= today && v.insuranceExpiry <= soon).length, [vehicles, today, soon]);
 
   const filteredVehicles = useMemo(() => {
     let list = [...vehicles].sort((a, b) => Number(a.isActive === false) - Number(b.isActive === false));
