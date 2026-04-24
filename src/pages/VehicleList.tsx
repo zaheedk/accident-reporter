@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
-import { Plus, Car, Trash2, ArrowLeft, Phone, CheckCircle2, PowerOff, Search, X } from 'lucide-react';
+import { Plus, Car, Trash2, ArrowLeft, Phone, CheckCircle2, PowerOff, Search, X, ShieldAlert, FileWarning, CalendarClock } from 'lucide-react';
 import { getVehicles, deleteVehicle } from '@/lib/storage';
 import { supabase } from '@/integrations/supabase/client';
 import AppLayout from '@/components/AppLayout';
