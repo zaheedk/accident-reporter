@@ -308,55 +308,56 @@ export default function ClaimWizard() {
 
   return (
     <AppLayout>
-      <div className="theme-dashboard-dark">
-        <div className="space-y-5 pb-24">
-          {/* Header — matches Garage style */}
-          <div className="flex items-center justify-between gap-3 pt-1">
-            <div className="flex items-center gap-2 min-w-0">
+      <div className="theme-dashboard">
+        <div className="space-y-6 pb-24">
+          {/* Header — Apple/Linear */}
+          <div className="flex items-end justify-between gap-3 pt-2">
+            <div className="flex items-start gap-2 min-w-0">
               <button onClick={async () => { if (shouldSave()) await autoSave(); navigate(-1); }}
-                className="w-9 h-9 -ml-1 rounded-xl flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors flex-shrink-0"
+                className="w-9 h-9 -ml-1 mt-1 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex-shrink-0"
                 aria-label="Back">
-                <ArrowLeft className="w-5 h-5" />
+                <ArrowLeft className="w-[18px] h-[18px]" strokeWidth={2} />
               </button>
-              <h1 className="text-[15px] font-bold uppercase tracking-[0.18em] text-foreground truncate">
-                Report Incident
-              </h1>
+              <div className="min-w-0">
+                <p className="text-[12px] text-muted-foreground">
+                  {isEdit ? 'Edit claim' : 'New claim'}{reportRef ? ` · ${reportRef}` : ''}
+                </p>
+                <h1 className="text-[28px] leading-tight font-semibold text-foreground tracking-[-0.02em] truncate mt-1">
+                  Report incident
+                </h1>
+              </div>
             </div>
 
-            {claim.id && (
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <button type="button" disabled={deleting}
-                    className="w-9 h-9 rounded-xl hover:bg-muted/50 transition-colors disabled:opacity-50 flex items-center justify-center flex-shrink-0"
-                    title="Delete report">
-                    <Trash2 className="w-4 h-4 text-muted-foreground" strokeWidth={2} />
-                  </button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Delete report?</AlertDialogTitle>
-                    <AlertDialogDescription>This action cannot be undone.</AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel disabled={deleting}>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleDeleteReport} disabled={deleting}
-                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-                      {deleting ? 'Deleting…' : 'Delete'}
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            )}
-          </div>
-
-          {(reportRef || !isEdit) && (
-            <div className="-mt-2 flex items-center justify-between gap-2">
-              <p className="eyebrow">{isEdit ? 'Edit claim' : 'New claim'}{reportRef ? ` · ${reportRef}` : ''}</p>
-              <p className="text-[11px] text-muted-foreground flex items-center gap-1.5">
+            <div className="flex items-center gap-2 flex-shrink-0">
+              <span className="hidden sm:inline-flex items-center gap-1.5 text-[11px] text-muted-foreground">
                 <Save className="w-3 h-3" /> Auto-saved
-              </p>
+              </span>
+              {claim.id && (
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <button type="button" disabled={deleting}
+                      className="w-9 h-9 rounded-lg hover:bg-muted transition-colors disabled:opacity-50 flex items-center justify-center"
+                      title="Delete report">
+                      <Trash2 className="w-4 h-4 text-muted-foreground" strokeWidth={2} />
+                    </button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Delete report?</AlertDialogTitle>
+                      <AlertDialogDescription>This action cannot be undone.</AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel disabled={deleting}>Cancel</AlertDialogCancel>
+                      <AlertDialogAction onClick={handleDeleteReport} disabled={deleting}
+                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                        {deleting ? 'Deleting…' : 'Delete'}
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              )}
             </div>
-          )}
+          </div>
 
         {/* 4-step pill bar */}
         <div className="flex items-center">
@@ -391,7 +392,7 @@ export default function ClaimWizard() {
                   <label className="field-label">Vehicle</label>
                   {vehicles.length === 0 ? (
                     <button onClick={async () => { await autoSave(); navigate('/vehicles/new'); }}
-                      className="w-full p-4 rounded-2xl border border-dashed border-border bg-muted/30 text-sm text-muted-foreground hover:bg-muted/50 transition-colors">
+                      className="w-full p-4 rounded-xl border border-dashed border-border bg-muted/30 text-sm text-muted-foreground hover:bg-muted/50 transition-colors">
                       No vehicles yet — <span className="text-primary font-semibold">Add one</span>
                     </button>
                   ) : (
@@ -404,7 +405,7 @@ export default function ClaimWizard() {
                           const v = vehicles.find(x => x.id === vid);
                           setClaim(prev => ({ ...prev, vehicleId: vid, insuranceCompany: v?.insuranceCompany || prev.insuranceCompany }));
                         }}
-                        className="w-full h-12 pl-10 pr-3 rounded-2xl border border-border bg-card text-sm font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 appearance-none">
+                        className="w-full h-12 pl-10 pr-3 rounded-xl border border-border bg-card text-sm font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-ring/30 appearance-none">
                         <option value="">Select your vehicle</option>
                         {vehicles.map(v => (
                           <option key={v.id} value={v.id}>{v.regoNumber} — {v.year} {v.make} {v.model}</option>
@@ -419,13 +420,13 @@ export default function ClaimWizard() {
                   <div>
                     <label className="field-label">Date</label>
                     <input type="date"
-                      className="w-full h-12 px-3.5 rounded-2xl border border-border bg-card text-sm font-semibold text-foreground tabular-nums focus:outline-none focus:ring-2 focus:ring-primary/20"
+                      className="w-full h-12 px-3.5 rounded-xl border border-border bg-card text-sm font-semibold text-foreground tabular-nums focus:outline-none focus:ring-2 focus:ring-ring/30"
                       value={claim.incidentDate} onChange={e => update('incidentDate', e.target.value)} />
                   </div>
                   <div>
                     <label className="field-label">Time</label>
                     <input type="time"
-                      className="w-full h-12 px-3.5 rounded-2xl border border-border bg-card text-sm font-semibold text-foreground tabular-nums focus:outline-none focus:ring-2 focus:ring-primary/20"
+                      className="w-full h-12 px-3.5 rounded-xl border border-border bg-card text-sm font-semibold text-foreground tabular-nums focus:outline-none focus:ring-2 focus:ring-ring/30"
                       value={claim.incidentTime} onChange={e => update('incidentTime', e.target.value)} />
                   </div>
                 </div>
@@ -449,7 +450,7 @@ export default function ClaimWizard() {
                 {/* Location with mini preview */}
                 <div>
                   <label className="field-label">Location</label>
-                  <div className="rounded-2xl border border-border overflow-hidden bg-card">
+                  <div className="rounded-xl border border-border overflow-hidden bg-card">
                     {/* Static map-style preview band */}
                     <div className="relative h-24 bg-gradient-to-br from-muted to-muted/50 flex items-center justify-center"
                       style={{ backgroundImage: 'repeating-linear-gradient(45deg, transparent 0 12px, hsl(var(--border) / .35) 12px 13px), repeating-linear-gradient(-45deg, transparent 0 12px, hsl(var(--border) / .35) 12px 13px)' }}>
@@ -502,7 +503,7 @@ export default function ClaimWizard() {
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <label className="field-label">Weather</label>
-                    <select className="w-full h-12 px-3.5 rounded-2xl border border-border bg-card text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 appearance-none"
+                    <select className="w-full h-12 px-3.5 rounded-xl border border-border bg-card text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring/30 appearance-none"
                       value={claim.weatherCondition} onChange={e => update('weatherCondition', e.target.value)}>
                       <option value="">Select…</option>
                       {WEATHER_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
@@ -510,7 +511,7 @@ export default function ClaimWizard() {
                   </div>
                   <div>
                     <label className="field-label">Road</label>
-                    <select className="w-full h-12 px-3.5 rounded-2xl border border-border bg-card text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 appearance-none"
+                    <select className="w-full h-12 px-3.5 rounded-xl border border-border bg-card text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring/30 appearance-none"
                       value={claim.roadCondition} onChange={e => update('roadCondition', e.target.value)}>
                       <option value="">Select…</option>
                       {ROAD_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
@@ -521,7 +522,7 @@ export default function ClaimWizard() {
                 {/* Speed */}
                 <div>
                   <label className="field-label">Speed before braking (km/h)</label>
-                  <input className="w-full h-12 px-3.5 rounded-2xl border border-border bg-card text-sm text-foreground tabular-nums placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-primary/20"
+                  <input className="w-full h-12 px-3.5 rounded-xl border border-border bg-card text-sm text-foreground tabular-nums placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-ring/30"
                     placeholder="e.g. 50" value={claim.speedBeforeBraking} onChange={e => update('speedBeforeBraking', e.target.value)} />
                 </div>
 
@@ -552,18 +553,18 @@ export default function ClaimWizard() {
                         <span className="eyebrow">Vehicle {i + 1}</span>
                         <button onClick={() => rmTP(i)} className="text-xs text-destructive hover:underline font-semibold">Remove</button>
                       </div>
-                      <input className="w-full h-11 px-3.5 rounded-xl border border-border bg-background text-base font-bold tabular-nums tracking-wide focus:outline-none focus:ring-2 focus:ring-primary/20"
+                      <input className="w-full h-11 px-3.5 rounded-xl border border-border bg-background text-base font-bold tabular-nums tracking-wide focus:outline-none focus:ring-2 focus:ring-ring/30"
                         placeholder="REGO" value={tp.regoNumber} onChange={e => updTP(i, 'regoNumber', e.target.value.toUpperCase())} />
                       <div className="grid grid-cols-2 gap-2">
-                        <input className="h-11 px-3.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+                        <input className="h-11 px-3.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring/30"
                           placeholder="Driver name" value={tp.ownerName} onChange={e => updTP(i, 'ownerName', e.target.value)} />
-                        <input className="h-11 px-3.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+                        <input className="h-11 px-3.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring/30"
                           type="tel" placeholder="Phone" value={tp.phone} onChange={e => updTP(i, 'phone', e.target.value)} />
                       </div>
                       <div className="grid grid-cols-2 gap-2">
-                        <input className="h-11 px-3.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+                        <input className="h-11 px-3.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring/30"
                           placeholder="Insurer" value={tp.insurer} onChange={e => updTP(i, 'insurer', e.target.value)} />
-                        <input className="h-11 px-3.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+                        <input className="h-11 px-3.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring/30"
                           placeholder="Policy #" value={tp.claimNumber} onChange={e => updTP(i, 'claimNumber', e.target.value)} />
                       </div>
                       
@@ -604,12 +605,12 @@ export default function ClaimWizard() {
                         <button onClick={() => rmW(i)} className="text-xs text-destructive hover:underline font-semibold">Remove</button>
                       </div>
                       <div className="grid grid-cols-2 gap-2">
-                        <input className="h-11 px-3.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+                        <input className="h-11 px-3.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring/30"
                           placeholder="Full name" value={w.name} onChange={e => updW(i, 'name', e.target.value)} />
-                        <input className="h-11 px-3.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+                        <input className="h-11 px-3.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring/30"
                           placeholder="Phone" value={w.phone} onChange={e => updW(i, 'phone', e.target.value)} />
                       </div>
-                      <input className="w-full h-11 px-3.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+                      <input className="w-full h-11 px-3.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring/30"
                         placeholder="Address" value={w.address} onChange={e => updW(i, 'address', e.target.value)} />
                       <ToggleRow id={`passenger-${i}`} label="Was a passenger" checked={!!w.isPassenger}
                         onChange={v => updW(i, 'isPassenger', v)} />
@@ -620,7 +621,7 @@ export default function ClaimWizard() {
                 {/* Fault */}
                 <div className="card-soft space-y-3">
                   <label className="field-label">Who is at fault?</label>
-                  <select className="w-full h-12 px-3.5 rounded-xl border border-border bg-background text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-primary/20 appearance-none"
+                  <select className="w-full h-12 px-3.5 rounded-xl border border-border bg-background text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-ring/30 appearance-none"
                     value={claim.atFault} onChange={e => update('atFault', e.target.value)}>
                     <option value="">Select…</option>
                     <option value="me">I am at fault</option>
@@ -636,14 +637,14 @@ export default function ClaimWizard() {
                           <p className="text-xs text-muted-foreground">You may be entitled to one while yours is repaired.</p>
                         </div>
                         <label className="flex items-center gap-2 text-sm font-medium text-foreground cursor-pointer">
-                          <input type="checkbox" className="w-4 h-4 rounded border-border text-primary focus:ring-primary/20"
+                          <input type="checkbox" className="w-4 h-4 rounded border-border text-primary focus:ring-ring/30"
                             checked={claim.courtesyCarRequested} onChange={e => update('courtesyCarRequested', e.target.checked)} />
                           Request a courtesy car
                         </label>
                       </div>
                     </div>
                   )}
-                  <textarea className="w-full min-h-[72px] px-3.5 py-2.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+                  <textarea className="w-full min-h-[72px] px-3.5 py-2.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring/30"
                     placeholder="Who is to blame and why?" value={claim.blameDescription} onChange={e => update('blameDescription', e.target.value)} />
                 </div>
               </div>
