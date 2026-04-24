@@ -281,7 +281,7 @@ export default function Dashboard() {
       ) : (
         <div className="divide-y divide-border">
           {recentActivity.map(c => (
-            <Link key={c.id} to={`/claims/${c.id}`} className="flex items-center gap-3 px-3.5 py-2.5 hover:bg-muted/50 transition-colors">
+            <Link key={c.id} to={`/claims/${(c as any).reportNumber || c.id}`} className="flex items-center gap-3 px-3.5 py-2.5 hover:bg-muted/50 transition-colors">
               <Activity className="w-3.5 h-3.5 text-muted-foreground/70 shrink-0" strokeWidth={2} />
               <div className="flex-1 min-w-0">
                 <div className="text-[13px] font-medium text-foreground truncate">
