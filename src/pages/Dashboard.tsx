@@ -248,7 +248,7 @@ export default function Dashboard() {
         )}
 
         {/* Hero action tiles */}
-        <motion.div variants={fadeUp} className="grid grid-cols-2 gap-3">
+        <motion.div variants={fadeUp} className="grid grid-cols-2 gap-3 lg:max-w-2xl">
           <button
             onClick={handleOpenTowSheet}
             className="group relative overflow-hidden rounded-2xl bg-foreground text-background p-5 text-left transition-all active:scale-[0.98] min-h-[148px] flex flex-col justify-between"
