@@ -20,10 +20,11 @@ const emptyVehicle: Omit<Vehicle, 'id' | 'createdAt'> = {
 };
 
 export default function VehicleForm() {
-  const { id } = useParams();
+  const { id: routeParam } = useParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const isEdit = Boolean(id);
+  const isEdit = Boolean(routeParam);
+  const [vehicleUuid, setVehicleUuid] = useState<string | null>(null);
   const [form, setForm] = useState(emptyVehicle);
   const [insuranceCompanies, setInsuranceCompanies] = useState<{ id: string; name: string }[]>([]);
   const [photoPreview, setPhotoPreview] = useState<string>('');
@@ -39,11 +40,13 @@ export default function VehicleForm() {
   }, []);
 
   useEffect(() => {
-    if (id) {
+    if (routeParam) {
       getVehicles(undefined).then(vehicles => {
-        const existing = vehicles.find(v => v.id === id);
+        const upper = routeParam.toUpperCase();
+        const existing = vehicles.find(v => v.id === routeParam || (v.slug && v.slug.toUpperCase() === upper));
         if (existing) {
-          const { id: _, createdAt: __, ...rest } = existing;
+          setVehicleUuid(existing.id);
+          const { id: _, slug: __, createdAt: ___, ...rest } = existing as any;
           // Check if insurance company is in the known list
           const knownNames = insuranceCompanies.map(c => c.name);
           if (rest.insuranceCompany && knownNames.length > 0 && !knownNames.includes(rest.insuranceCompany)) {
@@ -55,7 +58,7 @@ export default function VehicleForm() {
         }
       });
     }
-  }, [id, insuranceCompanies]);
+  }, [routeParam, insuranceCompanies]);
 
   const update = (field: string, value: string | boolean) => setForm(prev => ({ ...prev, [field]: value }));
 
@@ -109,7 +112,7 @@ export default function VehicleForm() {
       if (finalForm.insuranceCompany === '__other__') {
         finalForm.insuranceCompany = customInsurer.trim();
       }
-      await saveVehicle({ ...finalForm, id: id || undefined });
+      await saveVehicle({ ...finalForm, id: vehicleUuid || undefined });
       queryClient.invalidateQueries({ queryKey: ['vehicles'] });
       navigate('/vehicles');
     } catch (err: any) {
@@ -142,9 +145,9 @@ export default function VehicleForm() {
             <ArrowLeft className="w-5 h-5 text-foreground" strokeWidth={2} />
           </button>
           {!isEdit && <h1 className="display-heading">Add vehicle</h1>}
-          {isEdit && id && (
+          {isEdit && vehicleUuid && (
             <button
-              onClick={() => navigate(`/claims/new?vehicleId=${id}`)}
+              onClick={() => navigate(`/claims/new?vehicleId=${vehicleUuid}`)}
               className="flex-1 inline-flex items-center justify-center gap-2 h-10 rounded-2xl text-sm font-bold active:scale-[0.99] transition-all"
               style={{ backgroundColor: 'hsl(152 76% 46%)', color: 'hsl(220 35% 7%)' }}
             >
@@ -265,10 +268,10 @@ export default function VehicleForm() {
           )}
         </div>
 
-        {isEdit && id && (
+        {isEdit && vehicleUuid && (
           <div className="card-soft">
             <DocumentVault
-              vehicleId={id}
+              vehicleId={vehicleUuid}
               title="Vehicle Documents"
               showCategories={['insurance_policy', 'registration', 'wof_certificate', 'purchase_receipt', 'service_record', 'other']}
             />

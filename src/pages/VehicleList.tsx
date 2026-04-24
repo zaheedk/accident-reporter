@@ -224,7 +224,7 @@ export default function VehicleList() {
                     }`}
                   >
                     <div className="flex items-stretch">
-                      <Link to={`/vehicles/${v.id}/edit`} className="flex flex-1 min-w-0 gap-3.5 p-2.5">
+                      <Link to={`/vehicles/${v.slug || v.id}/edit`} className="flex flex-1 min-w-0 gap-3.5 p-2.5">
                         {/* Photo */}
                         <div className="w-[88px] h-[88px] flex-shrink-0 bg-muted overflow-hidden rounded-xl relative">
                           {v.photoUrl ? (

@@ -58,6 +58,7 @@ export async function deleteVehicle(id: string): Promise<void> {
 function dbVehicleToVehicle(row: any): Vehicle {
   return {
     id: row.id,
+    slug: row.slug || '',
     year: row.year,
     make: row.make,
     model: row.model,
