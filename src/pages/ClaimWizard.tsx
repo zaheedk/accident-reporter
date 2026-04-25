@@ -914,7 +914,7 @@ export default function ClaimWizard() {
           ) : (
             <button onClick={submit} disabled={submitting}
               className="flex-1 h-12 rounded-2xl bg-foreground text-background text-sm font-semibold transition-all active:scale-[0.98] disabled:opacity-40 inline-flex items-center justify-center gap-2">
-              {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Save className="w-4 h-4" /> Submit report</>}
+              {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Save className="w-4 h-4" /> Save report</>}
             </button>
           )}
         </div>
