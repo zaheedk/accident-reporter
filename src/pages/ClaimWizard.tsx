@@ -683,19 +683,6 @@ export default function ClaimWizard() {
                         placeholder="Owner name / contact"
                         value={claim.otherPropertyOwner} onChange={e => update('otherPropertyOwner', e.target.value)} />
                     </div>
-
-                    {/* Liability */}
-                    <div className="card-soft space-y-3">
-                      <ToggleRow id="liability" label="Liability admitted at scene"
-                        checked={!!claim.liabilityAdmitted}
-                        onChange={v => update('liabilityAdmitted', v)} />
-                      {claim.liabilityAdmitted && (
-                        <textarea className="w-full min-h-[64px] px-3.5 py-2.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring/30"
-                          placeholder="Who admitted, what was said"
-                          value={claim.liabilityDetails} onChange={e => update('liabilityDetails', e.target.value)} />
-                      )}
-                    </div>
-
                     {/* Repairer */}
                     <div className="card-soft space-y-3">
                       <label className="field-label mb-0">Repairer (if known)</label>
