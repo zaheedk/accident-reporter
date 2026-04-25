@@ -334,6 +334,7 @@ export default function ClaimList() {
                     const statusTone = isDraft
                       ? 'text-amber-700 dark:text-amber-400 bg-amber-500/10'
                       : 'text-foreground/70 bg-muted/60';
+                    const ref = getDisplayRef(c);
                     return (
                       <div
                         key={c.id}
@@ -351,13 +352,13 @@ export default function ClaimList() {
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2">
                                 <div className="text-[13px] font-semibold text-foreground truncate tabular-nums">
-                                  {rego || (reportNum ? `#${reportNum}` : 'No vehicle')}
+                                  {rego || (ref.value ? `${ref.label} #${ref.value}` : 'No vehicle')}
                                 </div>
                               </div>
                               <div className="text-[12px] text-muted-foreground truncate flex items-center gap-1.5">
                                 <Calendar className="w-3 h-3" strokeWidth={2} />
                                 {c.incidentDate || 'No date'}
-                                {reportNum && rego && <span className="opacity-50">· #{reportNum}</span>}
+                                {ref.value && rego && <span className="opacity-50">· {ref.label} #{ref.value}</span>}
                               </div>
                             </div>
                             <button
