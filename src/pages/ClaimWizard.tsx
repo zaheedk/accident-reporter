@@ -725,7 +725,7 @@ export default function ClaimWizard() {
               </div>
             )}
 
-            {/* ===== STEP 3: PARTIES ===== */}
+            {/* ===== STEP 3: VEHICLES ===== */}
             {step === 2 && (
               <div className="space-y-5">
                 {/* Other vehicles */}
@@ -778,7 +778,12 @@ export default function ClaimWizard() {
                     </div>
                   ))}
                 </div>
+              </div>
+            )}
 
+            {/* ===== STEP 4: WITNESSES & FAULT ===== */}
+            {step === 3 && (
+              <div className="space-y-5">
                 {/* Witnesses */}
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
@@ -846,8 +851,8 @@ export default function ClaimWizard() {
               </div>
             )}
 
-            {/* ===== STEP 4: REVIEW ===== */}
-            {step === 3 && (
+            {/* ===== STEP 5: REVIEW ===== */}
+            {step === 4 && (
               <div className="space-y-3">
                 <RSection title="Incident">
                   <RRow label="Date" value={claim.incidentDate} />
