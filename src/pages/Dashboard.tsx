@@ -386,7 +386,7 @@ export default function Dashboard() {
           <div className="md:grid md:grid-cols-[260px_1fr] md:gap-6 lg:grid-cols-[280px_1fr] lg:gap-8 space-y-6 md:space-y-0">
             {/* Left rail — tablet & desktop only; greeting moves into this column to fill the empty space */}
             <motion.aside variants={fadeUp} className="hidden md:block space-y-4">
-              <div className="pt-1 pb-1">
+              <div>
                 <p className="text-[12px] text-muted-foreground">{greeting}</p>
                 <h1 className="text-[24px] leading-tight font-semibold text-foreground tracking-[-0.02em] truncate mt-1">
                   {firstName}.
