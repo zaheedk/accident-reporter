@@ -123,8 +123,10 @@ export default function Family() {
     load();
   };
 
-  const removeMember = async (id: string) => {
+  const removeMember = async (id: string, name: string) => {
+    if (!confirm(`Remove ${name} from your family? They'll lose access to your shared vehicles, claims and documents.`)) return;
     await supabase.from('family_members').delete().eq('id', id);
+    toast({ title: 'Member removed' });
     load();
   };
 
