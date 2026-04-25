@@ -127,161 +127,240 @@ export default function VehicleForm() {
   };
 
   const Toggle = ({ active, onToggle, label }: { active: boolean; onToggle: () => void; label: string }) => (
-    <div className="flex items-center gap-3 py-1">
-      <button type="button" onClick={onToggle}
-        className={`w-11 h-6 rounded-full transition-colors relative ${active ? 'bg-foreground' : 'bg-border'}`}>
-        <span className={`absolute top-[3px] w-[18px] h-[18px] rounded-full bg-card transition-transform shadow-sm ${active ? 'left-[23px]' : 'left-[3px]'}`} />
+    <label className="flex items-center justify-between gap-3 cursor-pointer" onClick={onToggle}>
+      <span className="text-sm font-medium text-foreground">{label}</span>
+      <button
+        type="button"
+        role="switch"
+        aria-checked={active}
+        onClick={(e) => { e.stopPropagation(); onToggle(); }}
+        className={`relative w-11 h-6 rounded-full transition-colors shrink-0 ${active ? 'bg-foreground' : 'bg-muted border border-border'}`}>
+        <span className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-background shadow transition-transform ${active ? 'translate-x-5' : ''}`} />
       </button>
-      <span className="text-sm text-foreground">{label}</span>
-    </div>
+    </label>
   );
+
+  const inputCls = "w-full h-12 px-3.5 rounded-xl border border-border bg-card text-sm font-semibold text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-ring/30";
+  const labelCls = "block text-[12px] font-medium text-muted-foreground mb-1.5";
 
   return (
     <AppLayout>
-      <div className="theme-dashboard-dark">
-      <div className="space-y-5">
-        <div className="flex items-center gap-3">
-          <button onClick={() => navigate(-1)} aria-label="Back" className="w-10 h-10 -ml-1 rounded-xl border border-border bg-card hover:bg-muted flex items-center justify-center transition-colors shrink-0">
-            <ArrowLeft className="w-5 h-5 text-foreground" strokeWidth={2} />
-          </button>
-          {!isEdit && <h1 className="display-heading">Add vehicle</h1>}
+      <div className="theme-dashboard">
+        <div className="space-y-6 pb-24">
+          {/* Header — Apple/Linear */}
+          <div className="flex items-end justify-between gap-3 pt-2">
+            <div className="flex items-start gap-2 min-w-0">
+              <button onClick={() => navigate(-1)} aria-label="Back"
+                className="w-9 h-9 -ml-1 mt-1 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex-shrink-0">
+                <ArrowLeft className="w-[18px] h-[18px]" strokeWidth={2} />
+              </button>
+              <div className="min-w-0">
+                <p className="text-[12px] text-muted-foreground">
+                  {isEdit ? 'Edit vehicle' : 'New vehicle'}{form.regoNumber ? ` · ${form.regoNumber}` : ''}
+                </p>
+                <h1 className="text-[28px] leading-tight font-semibold text-foreground tracking-[-0.02em] truncate mt-1">
+                  {isEdit ? `${form.year} ${form.make} ${form.model}`.trim() || 'Vehicle' : 'Add vehicle'}
+                </h1>
+              </div>
+            </div>
+
+            {isEdit && vehicleUuid && (
+              <button
+                onClick={() => navigate(`/claims/new?vehicleId=${vehicleUuid}`)}
+                className="hidden sm:inline-flex items-center justify-center gap-1.5 h-9 px-3.5 rounded-xl bg-destructive text-destructive-foreground text-[12px] font-semibold transition-all active:scale-[0.98] shrink-0"
+              >
+                <AlertTriangle className="w-3.5 h-3.5" strokeWidth={2.2} />
+                Report incident
+              </button>
+            )}
+          </div>
+
           {isEdit && vehicleUuid && (
             <button
               onClick={() => navigate(`/claims/new?vehicleId=${vehicleUuid}`)}
-              className="flex-1 inline-flex items-center justify-center gap-2 h-10 rounded-2xl text-sm font-bold active:scale-[0.99] transition-all"
-              style={{ backgroundColor: 'hsl(152 76% 46%)', color: 'hsl(220 35% 7%)' }}
+              className="sm:hidden w-full inline-flex items-center justify-center gap-2 h-11 rounded-xl bg-destructive text-destructive-foreground text-sm font-semibold transition-all active:scale-[0.98]"
             >
               <AlertTriangle className="w-4 h-4" strokeWidth={2.2} />
               Report incident with this vehicle
             </button>
           )}
-        </div>
 
-        {/* Vehicle Photo */}
-        <div className="card-soft space-y-3">
-          <h2 className="eyebrow">Vehicle photo</h2>
-          {photoPreview ? (
-            <div className="relative">
-              <img src={photoPreview} alt="Vehicle" className="w-full h-48 object-cover rounded-2xl" />
-              <button onClick={handleRemovePhoto} className="absolute top-2 right-2 p-1.5 rounded-full bg-foreground/80 text-background hover:bg-foreground transition-colors">
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-          ) : (
-            <button
-              type="button"
-              onClick={() => fileInputRef.current?.click()}
-              disabled={uploading}
-              className="dashed-zone w-full px-6 py-7 flex flex-col items-center justify-center text-center"
-            >
-              {uploading ? (
-                <span className="text-sm text-muted-foreground">Uploading...</span>
-              ) : (
-                <>
-                  <div className="w-14 h-14 rounded-2xl bg-foreground text-background flex items-center justify-center mb-3">
-                    <Camera className="w-7 h-7" strokeWidth={1.75} />
-                  </div>
-                  <span className="text-sm font-semibold text-foreground">Add a photo of your vehicle</span>
-                  <span className="text-xs text-muted-foreground mt-1">JPG, PNG up to 10MB</span>
-                </>
-              )}
-            </button>
-          )}
-          {photoPreview && (
-            <button
-              type="button"
-              onClick={() => fileInputRef.current?.click()}
-              disabled={uploading}
-              className="inline-flex items-center justify-center gap-2 h-9 px-4 rounded-xl border border-foreground/20 bg-card text-xs font-semibold text-foreground hover:bg-foreground hover:text-background transition-all"
-            >
-              <Camera className="w-3.5 h-3.5" /> Change photo
-            </button>
-          )}
-          <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handlePhotoUpload} />
-        </div>
-
-        <div className="card-soft space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div><label className="form-label">Year</label><input className="form-input" placeholder="2024" value={form.year} onChange={e => update('year', e.target.value)} /></div>
-            <div><label className="form-label">Rego number</label><input className="form-input tabular-nums" placeholder="ABC123" value={form.regoNumber} onChange={e => update('regoNumber', e.target.value.toUpperCase())} /></div>
-          </div>
-          <div><label className="form-label">Make</label><input className="form-input" placeholder="Toyota" value={form.make} onChange={e => update('make', e.target.value)} /></div>
-          <div><label className="form-label">Model</label><input className="form-input" placeholder="Corolla" value={form.model} onChange={e => update('model', e.target.value)} /></div>
-          <div><label className="form-label">Colour</label><input className="form-input" placeholder="Silver" value={form.color} onChange={e => update('color', e.target.value)} /></div>
-          <div className="grid grid-cols-2 gap-4">
-            <div><label className="form-label">WOF expiry</label><input type="date" className="form-input tabular-nums" value={form.wofExpiry} onChange={e => update('wofExpiry', e.target.value)} /></div>
-            <div><label className="form-label">Rego expiry</label><input type="date" className="form-input tabular-nums" value={form.regoExpiry} onChange={e => update('regoExpiry', e.target.value)} /></div>
-          </div>
-        </div>
-
-        <div className="card-soft space-y-4">
-          <h2 className="eyebrow">Insurance details</h2>
+          {/* Vehicle Photo */}
           <div>
-            <label className="form-label">Insurance company</label>
-            <Select value={form.insuranceCompany === '__other__' ? '__other__' : form.insuranceCompany} onValueChange={val => {
-              if (val === '__other__') {
-                update('insuranceCompany', '__other__');
-                setCustomInsurer('');
-              } else {
-                update('insuranceCompany', val);
-                setCustomInsurer('');
-              }
-            }}>
-              <SelectTrigger className="form-input">
-                <SelectValue placeholder="Select insurance company" />
-              </SelectTrigger>
-              <SelectContent>
-                {insuranceCompanies.map(c => (
-                  <SelectItem key={c.id} value={c.name}>{c.name}</SelectItem>
-                ))}
-                <SelectItem value="__other__">Other (enter manually)</SelectItem>
-              </SelectContent>
-            </Select>
-            {form.insuranceCompany === '__other__' && (
-              <input
-                className="form-input mt-2"
-                placeholder="Enter insurance company name"
-                value={customInsurer}
-                onChange={e => setCustomInsurer(e.target.value)}
-              />
+            <label className={labelCls}>Vehicle photo</label>
+            {photoPreview ? (
+              <div className="relative rounded-xl overflow-hidden border border-border bg-card">
+                <img src={photoPreview} alt="Vehicle" className="w-full h-48 object-cover" />
+                <button onClick={handleRemovePhoto}
+                  className="absolute top-2 right-2 w-8 h-8 rounded-full bg-foreground/85 backdrop-blur text-background hover:bg-foreground transition-colors flex items-center justify-center"
+                  aria-label="Remove photo">
+                  <X className="w-4 h-4" strokeWidth={2.2} />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploading}
+                  className="absolute bottom-2 right-2 inline-flex items-center gap-1.5 h-8 px-3 rounded-lg bg-background/90 backdrop-blur text-[12px] font-semibold text-foreground hover:bg-background transition-colors"
+                >
+                  <Camera className="w-3.5 h-3.5" /> Change
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={uploading}
+                className="w-full px-6 py-7 rounded-xl border border-dashed border-border bg-muted/30 hover:bg-muted/50 transition-colors flex flex-col items-center justify-center text-center"
+              >
+                {uploading ? (
+                  <span className="inline-flex items-center gap-2 text-sm text-muted-foreground">
+                    <Loader2 className="w-4 h-4 animate-spin" /> Uploading…
+                  </span>
+                ) : (
+                  <>
+                    <div className="w-11 h-11 rounded-xl bg-foreground text-background flex items-center justify-center mb-2.5">
+                      <Camera className="w-5 h-5" strokeWidth={1.8} />
+                    </div>
+                    <span className="text-sm font-semibold text-foreground">Add a photo of your vehicle</span>
+                    <span className="text-[12px] text-muted-foreground mt-0.5">JPG or PNG, up to 10 MB</span>
+                  </>
+                )}
+              </button>
+            )}
+            <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handlePhotoUpload} />
+          </div>
+
+          {/* Identity */}
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className={labelCls}>Year</label>
+                <input className={`${inputCls} tabular-nums`} placeholder="2024" value={form.year} onChange={e => update('year', e.target.value)} />
+              </div>
+              <div>
+                <label className={labelCls}>Rego number</label>
+                <input className={`${inputCls} tabular-nums tracking-wide`} placeholder="ABC123" value={form.regoNumber} onChange={e => update('regoNumber', e.target.value.toUpperCase())} />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className={labelCls}>Make</label>
+                <input className={inputCls} placeholder="Toyota" value={form.make} onChange={e => update('make', e.target.value)} />
+              </div>
+              <div>
+                <label className={labelCls}>Model</label>
+                <input className={inputCls} placeholder="Corolla" value={form.model} onChange={e => update('model', e.target.value)} />
+              </div>
+            </div>
+            <div>
+              <label className={labelCls}>Colour</label>
+              <input className={inputCls} placeholder="Silver" value={form.color} onChange={e => update('color', e.target.value)} />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className={labelCls}>WOF expiry</label>
+                <input type="date" className={`${inputCls} tabular-nums`} value={form.wofExpiry} onChange={e => update('wofExpiry', e.target.value)} />
+              </div>
+              <div>
+                <label className={labelCls}>Rego expiry</label>
+                <input type="date" className={`${inputCls} tabular-nums`} value={form.regoExpiry} onChange={e => update('regoExpiry', e.target.value)} />
+              </div>
+            </div>
+          </div>
+
+          {/* Insurance */}
+          <div className="card-soft space-y-4">
+            <h2 className="eyebrow">Insurance</h2>
+            <div>
+              <label className={labelCls}>Insurance company</label>
+              <Select value={form.insuranceCompany === '__other__' ? '__other__' : form.insuranceCompany} onValueChange={val => {
+                if (val === '__other__') {
+                  update('insuranceCompany', '__other__');
+                  setCustomInsurer('');
+                } else {
+                  update('insuranceCompany', val);
+                  setCustomInsurer('');
+                }
+              }}>
+                <SelectTrigger className={inputCls}>
+                  <SelectValue placeholder="Select insurance company" />
+                </SelectTrigger>
+                <SelectContent>
+                  {insuranceCompanies.map(c => (
+                    <SelectItem key={c.id} value={c.name}>{c.name}</SelectItem>
+                  ))}
+                  <SelectItem value="__other__">Other (enter manually)</SelectItem>
+                </SelectContent>
+              </Select>
+              {form.insuranceCompany === '__other__' && (
+                <input
+                  className={`${inputCls} mt-2`}
+                  placeholder="Insurance company name"
+                  value={customInsurer}
+                  onChange={e => setCustomInsurer(e.target.value)}
+                />
+              )}
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className={labelCls}>Policy number</label>
+                <input className={`${inputCls} tabular-nums`} placeholder="POL-123456" value={form.insurancePolicyNumber} onChange={e => update('insurancePolicyNumber', e.target.value)} />
+              </div>
+              <div>
+                <label className={labelCls}>Policy expiry</label>
+                <input type="date" className={`${inputCls} tabular-nums`} value={form.insuranceExpiry} onChange={e => update('insuranceExpiry', e.target.value)} />
+              </div>
+            </div>
+          </div>
+
+          {/* Conditions */}
+          <div className="card-soft space-y-4">
+            <h2 className="eyebrow">Status & extras</h2>
+            <Toggle active={form.financeArrangement} onToggle={() => update('financeArrangement', !form.financeArrangement)} label="Subject to finance arrangement" />
+            {form.financeArrangement && (
+              <div>
+                <label className={labelCls}>Finance details</label>
+                <input className={inputCls} placeholder="Finance company and reference" value={form.financeDetails} onChange={e => update('financeDetails', e.target.value)} />
+              </div>
+            )}
+            <div className="h-px bg-border" />
+            <Toggle active={form.modified} onToggle={() => update('modified', !form.modified)} label="Modified from standard specs" />
+            {form.modified && (
+              <div>
+                <label className={labelCls}>Modification details</label>
+                <input className={inputCls} placeholder="Describe modifications" value={form.modificationDetails} onChange={e => update('modificationDetails', e.target.value)} />
+              </div>
+            )}
+            <div className="h-px bg-border" />
+            <Toggle active={form.isActive} onToggle={() => update('isActive', !form.isActive)} label="Still in your possession" />
+            {!form.isActive && (
+              <p className="text-[12px] text-muted-foreground">Inactive vehicles are hidden from incident reporting but kept on file.</p>
             )}
           </div>
-          <div><label className="form-label">Policy number</label><input className="form-input tabular-nums" placeholder="POL-123456" value={form.insurancePolicyNumber} onChange={e => update('insurancePolicyNumber', e.target.value)} /></div>
-          <div><label className="form-label">Policy expiry</label><input type="date" className="form-input tabular-nums" value={form.insuranceExpiry} onChange={e => update('insuranceExpiry', e.target.value)} /></div>
-        </div>
 
-        <div className="card-soft space-y-3">
-          <Toggle active={form.financeArrangement} onToggle={() => update('financeArrangement', !form.financeArrangement)} label="Subject to finance arrangement" />
-          {form.financeArrangement && (
-            <div className="pl-14"><label className="form-label">Finance details</label><input className="form-input" placeholder="Finance company and details" value={form.financeDetails} onChange={e => update('financeDetails', e.target.value)} /></div>
+          {/* Documents */}
+          {isEdit && vehicleUuid && (
+            <div className="card-soft">
+              <DocumentVault
+                vehicleId={vehicleUuid}
+                title="Vehicle documents"
+                showCategories={['insurance_policy', 'registration', 'wof_certificate', 'purchase_receipt', 'service_record', 'other']}
+              />
+            </div>
           )}
-          <Toggle active={form.modified} onToggle={() => update('modified', !form.modified)} label="Modified from standard specs" />
-          {form.modified && (
-            <div className="pl-14"><label className="form-label">Modification details</label><input className="form-input" placeholder="Describe modifications" value={form.modificationDetails} onChange={e => update('modificationDetails', e.target.value)} /></div>
-          )}
-        </div>
 
-        <div className="card-soft space-y-2">
-          <Toggle active={form.isActive} onToggle={() => update('isActive', !form.isActive)} label="Vehicle is active (still in your possession)" />
-          {!form.isActive && (
-            <p className="text-xs text-muted-foreground pl-14">Inactive vehicles are hidden from incident reporting but kept on file for your records.</p>
-          )}
-        </div>
-
-        {isEdit && vehicleUuid && (
-          <div className="card-soft">
-            <DocumentVault
-              vehicleId={vehicleUuid}
-              title="Vehicle Documents"
-              showCategories={['insurance_policy', 'registration', 'wof_certificate', 'purchase_receipt', 'service_record', 'other']}
-            />
+          {/* Sticky-feel footer action */}
+          <div className="pt-2">
+            <button
+              onClick={handleSave}
+              disabled={saving || !form.make || !form.model || !form.regoNumber}
+              className="w-full h-12 rounded-2xl bg-foreground text-background text-sm font-semibold transition-all active:scale-[0.98] disabled:opacity-40 disabled:pointer-events-none inline-flex items-center justify-center gap-2"
+            >
+              {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" strokeWidth={2.2} />}
+              {isEdit ? 'Update vehicle' : 'Save vehicle'}
+            </button>
           </div>
-        )}
-
-        <button onClick={handleSave} disabled={saving || !form.make || !form.model || !form.regoNumber} className="w-full h-12 rounded-xl text-sm font-semibold bg-foreground text-background hover:bg-foreground/90 active:scale-[0.99] disabled:opacity-40 disabled:pointer-events-none inline-flex items-center justify-center gap-2 transition-all">
-          {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />} {isEdit ? 'Update vehicle' : 'Save vehicle'}
-        </button>
-      </div>
+        </div>
       </div>
     </AppLayout>
   );
