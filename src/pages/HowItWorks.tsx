@@ -1,5 +1,6 @@
 import AppLayout from '@/components/AppLayout';
 import { Car, FileText, Wrench, CheckCircle2, ArrowRight } from 'lucide-react';
+import SEO from '@/components/SEO';
 
 const steps = [
   {
