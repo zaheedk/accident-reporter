@@ -98,8 +98,7 @@ export default function Dashboard() {
         .select('id, name, city, region, phone, google_rating')
         .gte('google_rating', 4.7)
         .order('google_rating', { ascending: false })
-        .limit: undefined as any;
-      // fallback shape
+        .limit(4);
       return data || [];
     },
     { enabled: !!user }
