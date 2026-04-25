@@ -11,7 +11,7 @@ import { Users, Mail, Copy, X, Loader2, LogOut } from 'lucide-react';
 
 interface Family { id: string; head_user_id: string; name: string }
 interface Member { id: string; user_id: string; role: string; joined_at: string; display_name?: string; email?: string }
-interface Invite { id: string; code: string; email: string | null; status: string; created_at: string; expires_at: string }
+interface Invite { id: string; code: string; email: string | null; status: string; created_at: string; expires_at: string; accepted_at: string | null }
 
 export default function Family() {
   const { user } = useAuth();
