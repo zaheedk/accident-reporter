@@ -58,7 +58,7 @@ type ClaimPhoto = {
 };
 
 // Step labels for the new 4-step polished wizard
-const STEPS = ['Details', 'Scene', 'Parties', 'Review'] as const;
+const STEPS = ['Details', 'Scene', 'Vehicles', 'Witnesses', 'Review'] as const;
 
 const INCIDENT_TYPES = [
   { value: 'collision', label: 'Collision', icon: CarFront },
