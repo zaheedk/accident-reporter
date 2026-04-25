@@ -232,7 +232,7 @@ export default function VehicleForm() {
             {isEdit && vehicleUuid && (
               <button
                 onClick={() => navigate(`/claims/new?vehicleId=${vehicleUuid}`)}
-                className="hidden sm:inline-flex items-center justify-center gap-1.5 h-9 px-3.5 rounded-xl bg-destructive text-destructive-foreground text-[12px] font-semibold transition-all active:scale-[0.98] shrink-0"
+                className="hidden sm:inline-flex md:hidden items-center justify-center gap-1.5 h-9 px-3.5 rounded-xl bg-destructive text-destructive-foreground text-[12px] font-semibold transition-all active:scale-[0.98] shrink-0"
               >
                 <AlertTriangle className="w-3.5 h-3.5" strokeWidth={2.2} />
                 Report incident
