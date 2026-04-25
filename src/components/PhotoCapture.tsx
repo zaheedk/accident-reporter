@@ -131,7 +131,11 @@ export function PhotoCapture({
       await enqueuePhoto(queued);
       newItems.push({ id, previewUrl, fileName: stamped.name, status: 'ready' });
     }
-    if (newItems.length) setPending((prev) => [...prev, ...newItems]);
+    if (newItems.length) {
+      setPending((prev) => [...prev, ...newItems]);
+      // Auto-upload immediately (will fall back to offline queue if no internet)
+      setTimeout(() => { uploadAll(); }, 0);
+    }
   };
 
   const removePending = async (id: string) => {
