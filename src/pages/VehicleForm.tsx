@@ -146,7 +146,72 @@ export default function VehicleForm() {
   return (
     <AppLayout>
       <div className="theme-dashboard">
-        <div className="space-y-6 pb-24">
+        <div className="md:grid md:grid-cols-[260px_1fr] md:gap-6 lg:grid-cols-[280px_1fr] lg:gap-8">
+          {/* Left rail — tablet & desktop only */}
+          <aside className="hidden md:block space-y-3 md:sticky md:top-20 md:self-start">
+            <button
+              onClick={() => navigate(-1)}
+              className="w-full inline-flex items-center gap-2 h-10 px-3 rounded-xl border border-border bg-card text-[13px] font-medium text-foreground hover:bg-muted/50 transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4" strokeWidth={2} />
+              Back
+            </button>
+
+            <Link
+              to="/vehicles"
+              className="w-full inline-flex items-center gap-3 px-3.5 py-3 rounded-xl border border-border bg-card hover:bg-muted/50 transition-colors"
+            >
+              <div className="w-8 h-8 rounded-lg bg-foreground text-background flex items-center justify-center shrink-0">
+                <Car className="w-4 h-4" strokeWidth={2} />
+              </div>
+              <div className="min-w-0">
+                <div className="text-[13px] font-medium text-foreground">All vehicles</div>
+                <div className="text-[11px] text-muted-foreground">Back to garage</div>
+              </div>
+            </Link>
+
+            {isEdit && vehicleUuid && (
+              <>
+                <button
+                  onClick={() => navigate(`/claims/new?vehicleId=${vehicleUuid}`)}
+                  className="w-full inline-flex items-center gap-3 px-3.5 py-3 rounded-xl bg-destructive text-destructive-foreground hover:opacity-95 transition-opacity text-left"
+                >
+                  <div className="w-8 h-8 rounded-lg bg-destructive-foreground/15 flex items-center justify-center shrink-0">
+                    <AlertTriangle className="w-4 h-4" strokeWidth={2.2} />
+                  </div>
+                  <div className="min-w-0">
+                    <div className="text-[13px] font-semibold">Report incident</div>
+                    <div className="text-[11px] opacity-80">Start a new claim</div>
+                  </div>
+                </button>
+
+                <a
+                  href="tel:111"
+                  className="w-full inline-flex items-center gap-3 px-3.5 py-3 rounded-xl border border-border bg-card hover:bg-muted/50 transition-colors"
+                >
+                  <div className="w-8 h-8 rounded-lg bg-foreground text-background flex items-center justify-center shrink-0">
+                    <Phone className="w-4 h-4" strokeWidth={2} />
+                  </div>
+                  <div className="min-w-0">
+                    <div className="text-[13px] font-medium text-foreground">Call police</div>
+                    <div className="text-[11px] text-muted-foreground">Emergency 111</div>
+                  </div>
+                </a>
+              </>
+            )}
+
+            <div className="rounded-xl border border-border bg-card p-3.5">
+              <div className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-2">Vehicle</div>
+              <div className="space-y-1.5 text-[12px]">
+                <div className="flex justify-between gap-2"><span className="text-muted-foreground">Rego</span><span className="font-semibold text-foreground truncate">{form.regoNumber || '—'}</span></div>
+                <div className="flex justify-between gap-2"><span className="text-muted-foreground">Make</span><span className="font-semibold text-foreground truncate">{form.make || '—'}</span></div>
+                <div className="flex justify-between gap-2"><span className="text-muted-foreground">Model</span><span className="font-semibold text-foreground truncate">{form.model || '—'}</span></div>
+                <div className="flex justify-between gap-2"><span className="text-muted-foreground">Year</span><span className="font-semibold text-foreground truncate">{form.year || '—'}</span></div>
+              </div>
+            </div>
+          </aside>
+
+          <div className="space-y-6 pb-24">
           {/* Header — Apple/Linear */}
           <div className="flex items-end justify-between gap-3 pt-2">
             <div className="flex items-start gap-2 min-w-0">
