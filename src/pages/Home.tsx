@@ -99,15 +99,19 @@ export default function Home() {
               </div>
             </motion.div>
             <motion.div variants={fadeUp} className="flex-shrink-0 w-64 md:w-80 lg:w-96">
-              <img
-                src={heroScene}
-                alt="Person documenting car accident with smartphone"
-                className="w-full rounded-2xl border border-white/10"
-                width={800}
-                height={800}
-                loading="eager"
-                fetchPriority="high"
-              />
+              <picture>
+                <source srcSet="/hero-scene.webp" type="image/webp" />
+                <img
+                  src={heroScene}
+                  alt="Person documenting car accident with smartphone"
+                  className="w-full rounded-2xl border border-white/10"
+                  width={800}
+                  height={800}
+                  loading="eager"
+                  fetchPriority="high"
+                  decoding="async"
+                />
+              </picture>
             </motion.div>
           </div>
         </motion.section>
