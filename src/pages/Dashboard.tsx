@@ -76,6 +76,37 @@ export default function Dashboard() {
     { enabled: !!user }
   );
 
+  const { data: recentDocuments = [] } = useOfflineQuery<any[]>(
+    ['recent-documents', user?.id ?? ''],
+    async () => {
+      const { data } = await supabase
+        .from('user_documents')
+        .select('id, file_name, category, created_at')
+        .eq('user_id', user!.id)
+        .order('created_at', { ascending: false })
+        .limit(3);
+      return data || [];
+    },
+    { enabled: !!user }
+  );
+
+  const { data: nearbyShops = [] } = useOfflineQuery<any[]>(
+    ['top-panel-shops'],
+    async () => {
+      const { data } = await supabase
+        .from('panel_shops')
+        .select('id, name, city, region, phone, google_rating')
+        .gte('google_rating', 4.7)
+        .order('google_rating', { ascending: false })
+        .limit: undefined as any;
+      // fallback shape
+      return data || [];
+    },
+    { enabled: !!user }
+  );
+
+  const featuredArticles = useMemo(() => blogArticles.slice(0, 2), []);
+
   const avatarUrl = profile?.avatar_url || '';
   const displayName = profile?.display_name || '';
   const firstName = displayName ? displayName.split(' ')[0] : 'there';
