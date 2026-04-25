@@ -428,7 +428,14 @@ export default function ClaimDetail() {
     }
   };
 
-  const reportTitle = reportNumber ? `Report #${reportNumber}` : 'Incident report';
+  const policyNumber = (vehicle as any)?.insurancePolicyNumber || '';
+  const displayRef = claim.userClaimNumber || policyNumber || reportNumber || '';
+  const displayRefLabel = claim.userClaimNumber
+    ? 'Claim'
+    : policyNumber
+      ? 'Policy'
+      : 'Report';
+  const reportTitle = displayRef ? `${displayRefLabel} #${displayRef}` : 'Incident report';
   const vehicleSummary = vehicle ? `${vehicle.year} ${vehicle.make} ${vehicle.model}`.trim() : '';
 
   return (
