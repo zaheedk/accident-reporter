@@ -528,7 +528,44 @@ serve(async (req) => {
       }
     }
 
-    const res = await fetch('https://api.resend.com/emails', {
+    // Attach damage photos as individual image files
+    if (type === 'damage_photos' && data?.claimId) {
+      try {
+        const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+        const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+        const sb = createClient(supabaseUrl, supabaseKey);
+        const { data: claimPhotos } = await sb.from('claim_photos').select('file_path, file_name').eq('claim_id', data.claimId);
+        const attachments: { filename: string; content: string }[] = [];
+        if (claimPhotos) {
+          for (let i = 0; i < claimPhotos.length; i++) {
+            const p = claimPhotos[i];
+            try {
+              const { data: fileData, error: dlErr } = await sb.storage.from('claim-photos').download(p.file_path);
+              if (dlErr || !fileData) { console.error('Failed to download photo:', p.file_path, dlErr); continue; }
+              const buf = await fileData.arrayBuffer();
+              const base64 = arrayBufferToBase64(buf);
+              const ext = (p.file_name?.split('.').pop() || 'jpg').toLowerCase();
+              const safeName = p.file_name && p.file_name.includes('.') ? p.file_name : `damage-photo-${i + 1}.${ext}`;
+              attachments.push({ filename: safeName, content: base64 });
+            } catch (e) { console.error('Failed to attach photo:', e); }
+          }
+        }
+        if (attachments.length > 0) {
+          emailPayload.attachments = attachments;
+          console.log(`Attached ${attachments.length} damage photos`);
+        } else {
+          throw new Error('No damage photos available to send for this report.');
+        }
+      } catch (photoErr) {
+        const msg = photoErr instanceof Error ? photoErr.message : 'Failed to load damage photos';
+        return new Response(JSON.stringify({ success: false, error: msg }), {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+    }
+
+
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
