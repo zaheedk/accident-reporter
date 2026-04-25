@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import SEO from '@/components/SEO';
 import { supabase } from '@/integrations/supabase/client';
 import AppLayout from '@/components/AppLayout';
 import { Search, MapPin, Phone, Navigation, Loader2, ArrowLeft } from 'lucide-react';
