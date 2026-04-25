@@ -45,6 +45,20 @@ const faqs = [
 export default function FAQ() {
   return (
     <AppLayout>
+      <SEO
+        title="FAQ — Car Insurance Claims & SAVO Help | NZ"
+        description="Answers to the most common questions about SAVO, car accident reporting in New Zealand, lodging insurance claims, and using courtesy cars and panel shops."
+        path="/faq"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: faqs.map((f) => ({
+            "@type": "Question",
+            name: f.q,
+            acceptedAnswer: { "@type": "Answer", text: f.a },
+          })),
+        }}
+      />
       <div className="space-y-6">
         <div>
           <h1 className="text-2xl font-bold text-foreground mb-2">FAQ & Help Centre</h1>
