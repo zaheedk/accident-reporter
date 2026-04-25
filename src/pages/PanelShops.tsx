@@ -84,6 +84,11 @@ export default function PanelShops() {
 
   return (
     <AppLayout>
+      <SEO
+        title="Panel Beaters Directory NZ — Find Trusted Repair Shops | SAVO"
+        description="Browse over 200 highly rated panel beaters across New Zealand. Find local collision repair specialists by region, get directions and contact details fast."
+        path="/panel-shops"
+      />
       <div className="theme-garage relative">
         <div className="relative space-y-7">
         {/* Header — Apple/Linear: back arrow + large display title */}
