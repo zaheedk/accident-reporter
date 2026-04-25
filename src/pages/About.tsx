@@ -3,6 +3,7 @@ import { Mail, Phone, MapPin, Send } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
+import SEO from '@/components/SEO';
 
 export default function About() {
   const [form, setForm] = useState({ name: '', email: '', message: '' });
