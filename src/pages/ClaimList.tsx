@@ -115,8 +115,10 @@ export default function ClaimList() {
       const meta = claimMeta[c.id];
       const claimNumStr = meta?.claimNumber ? String(meta.claimNumber) : '';
       const reportNum = (meta?.reportNumber || '').toLowerCase();
+      const userClaim = (c.userClaimNumber || '').toLowerCase();
+      const policy = ((vehicleMap[c.vehicleId] as any)?.insurancePolicyNumber || '').toLowerCase();
       const location = (c.incidentLocation || '').toLowerCase();
-      return rego.includes(q) || date.includes(q) || claimNumStr.includes(q) || reportNum.includes(q) || location.includes(q);
+      return rego.includes(q) || date.includes(q) || claimNumStr.includes(q) || reportNum.includes(q) || userClaim.includes(q) || policy.includes(q) || location.includes(q);
     });
   }, [claims, search, vehicleMap, claimMeta, filter]);
 
