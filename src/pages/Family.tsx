@@ -13,6 +13,25 @@ interface Family { id: string; head_user_id: string; name: string }
 interface Member { id: string; user_id: string; role: string; joined_at: string; display_name?: string; email?: string }
 interface Invite { id: string; code: string; email: string | null; status: string; created_at: string; expires_at: string; accepted_at: string | null }
 
+const getInviteStatus = (invite: Invite) => {
+  if (invite.status === 'pending' && new Date(invite.expires_at) < new Date()) return 'expired';
+  return invite.status;
+};
+
+const inviteStatusStyles: Record<string, string> = {
+  pending: 'bg-amber-500/15 text-amber-600 dark:text-amber-400',
+  accepted: 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400',
+  revoked: 'bg-muted text-muted-foreground',
+  expired: 'bg-destructive/15 text-destructive',
+};
+
+const inviteStatusLabel: Record<string, string> = {
+  pending: 'Pending invite',
+  accepted: 'Joined',
+  revoked: 'Revoked',
+  expired: 'Expired',
+};
+
 export default function Family() {
   const { user } = useAuth();
   const { toast } = useToast();
@@ -229,6 +248,30 @@ export default function Family() {
                       )}
                     </div>
                   ))}
+                  {isHead && invites.filter(inv => getInviteStatus(inv) === 'pending').map(inv => {
+                    const effectiveStatus = getInviteStatus(inv);
+                    return (
+                      <div key={inv.id} className="flex items-center justify-between gap-2 p-3 rounded-lg bg-muted/40 border border-dashed border-border">
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="text-sm font-medium truncate">{inv.email || 'Share code invite'}</span>
+                            <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${inviteStatusStyles[effectiveStatus]}`}>
+                              {inviteStatusLabel[effectiveStatus]}
+                            </span>
+                          </div>
+                          <div className="text-xs text-muted-foreground font-mono">{inv.code}</div>
+                        </div>
+                        <div className="flex items-center shrink-0">
+                          <Button variant="ghost" size="sm" onClick={() => copyCode(inv.code)} title="Copy code">
+                            <Copy className="w-4 h-4" />
+                          </Button>
+                          <Button variant="ghost" size="sm" onClick={() => revokeInvite(inv.id)} title="Revoke">
+                            <X className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </Card>
             )}
