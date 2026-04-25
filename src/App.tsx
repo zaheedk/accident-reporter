@@ -11,8 +11,11 @@ import { Capacitor } from "@capacitor/core";
 import InstallPrompt from "@/components/InstallPrompt";
 import OnboardingTour from "@/components/OnboardingTour";
 
+// Home is eagerly imported so the public landing page paints on first render (improves LCP)
+import Home from "./pages/Home";
+
 // Lazy-loaded pages for code splitting
-const Home = lazy(() => import("./pages/Home"));
+
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const VehicleList = lazy(() => import("./pages/VehicleList"));
 const VehicleForm = lazy(() => import("./pages/VehicleForm"));
