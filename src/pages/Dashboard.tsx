@@ -36,6 +36,7 @@ export default function Dashboard() {
   const { user, isAdmin } = useAuth();
 
   const [towSheetOpen, setTowSheetOpen] = useState(false);
+  const [accidentSheetOpen, setAccidentSheetOpen] = useState(false);
   const [towCompanies, setTowCompanies] = useState<any[]>([]);
   const [towSearch, setTowSearch] = useState('');
   const [userCity, setUserCity] = useState('');
