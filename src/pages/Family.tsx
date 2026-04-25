@@ -11,7 +11,7 @@ import { Users, Mail, Copy, X, Loader2, LogOut } from 'lucide-react';
 
 interface Family { id: string; head_user_id: string; name: string }
 interface Member { id: string; user_id: string; role: string; joined_at: string; display_name?: string; email?: string }
-interface Invite { id: string; code: string; email: string | null; status: string; created_at: string; expires_at: string }
+interface Invite { id: string; code: string; email: string | null; status: string; created_at: string; expires_at: string; accepted_at: string | null }
 
 export default function Family() {
   const { user } = useAuth();
@@ -123,8 +123,10 @@ export default function Family() {
     load();
   };
 
-  const removeMember = async (id: string) => {
+  const removeMember = async (id: string, name: string) => {
+    if (!confirm(`Remove ${name} from your family? They'll lose access to your shared vehicles, claims and documents.`)) return;
     await supabase.from('family_members').delete().eq('id', id);
+    toast({ title: 'Member removed' });
     load();
   };
 
@@ -221,7 +223,7 @@ export default function Family() {
                         {m.email && <div className="text-xs text-muted-foreground">{m.email}</div>}
                       </div>
                       {isHead && m.role !== 'head' && (
-                        <Button variant="ghost" size="sm" onClick={() => removeMember(m.id)}>
+                        <Button variant="ghost" size="sm" onClick={() => removeMember(m.id, m.display_name || m.email || 'this member')}>
                           <X className="w-4 h-4" />
                         </Button>
                       )}
@@ -254,24 +256,52 @@ export default function Family() {
 
                 {invites.length > 0 && (
                   <Card className="p-5 space-y-3">
-                    <h2 className="font-semibold">Pending invites</h2>
-                    {invites.filter(i => i.status === 'pending').map(inv => (
-                      <div key={inv.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/40">
-                        <div className="flex-1 min-w-0">
-                          <div className="text-sm font-medium truncate">{inv.email || 'Share code'}</div>
-                          <div className="text-xs text-muted-foreground font-mono">{inv.code}</div>
+                    <h2 className="font-semibold">Invitation history</h2>
+                    {invites.map(inv => {
+                      const isExpired = inv.status === 'pending' && new Date(inv.expires_at) < new Date();
+                      const effectiveStatus = isExpired ? 'expired' : inv.status;
+                      const statusStyles: Record<string, string> = {
+                        pending: 'bg-amber-500/15 text-amber-600 dark:text-amber-400',
+                        accepted: 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400',
+                        revoked: 'bg-muted text-muted-foreground',
+                        expired: 'bg-destructive/15 text-destructive',
+                      };
+                      const statusLabel: Record<string, string> = {
+                        pending: 'Pending',
+                        accepted: 'Joined',
+                        revoked: 'Revoked',
+                        expired: 'Expired',
+                      };
+                      return (
+                        <div key={inv.id} className="flex items-center justify-between gap-2 p-3 rounded-lg bg-muted/40">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <span className="text-sm font-medium truncate">{inv.email || 'Share code'}</span>
+                              <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${statusStyles[effectiveStatus]}`}>
+                                {statusLabel[effectiveStatus]}
+                              </span>
+                            </div>
+                            <div className="text-xs text-muted-foreground font-mono">{inv.code}</div>
+                            <div className="text-[11px] text-muted-foreground mt-0.5">
+                              {effectiveStatus === 'pending' && `Expires ${new Date(inv.expires_at).toLocaleDateString()}`}
+                              {effectiveStatus === 'accepted' && inv.accepted_at && `Joined ${new Date(inv.accepted_at).toLocaleDateString()}`}
+                              {effectiveStatus === 'expired' && `Expired ${new Date(inv.expires_at).toLocaleDateString()}`}
+                              {effectiveStatus === 'revoked' && 'Invite cancelled'}
+                            </div>
+                          </div>
+                          {effectiveStatus === 'pending' && (
+                            <>
+                              <Button variant="ghost" size="sm" onClick={() => copyCode(inv.code)} title="Copy code">
+                                <Copy className="w-4 h-4" />
+                              </Button>
+                              <Button variant="ghost" size="sm" onClick={() => revokeInvite(inv.id)} title="Revoke">
+                                <X className="w-4 h-4" />
+                              </Button>
+                            </>
+                          )}
                         </div>
-                        <Button variant="ghost" size="sm" onClick={() => copyCode(inv.code)}>
-                          <Copy className="w-4 h-4" />
-                        </Button>
-                        <Button variant="ghost" size="sm" onClick={() => revokeInvite(inv.id)}>
-                          <X className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    ))}
-                    {invites.filter(i => i.status === 'pending').length === 0 && (
-                      <p className="text-sm text-muted-foreground">No pending invites.</p>
-                    )}
+                      );
+                    })}
                   </Card>
                 )}
               </>
