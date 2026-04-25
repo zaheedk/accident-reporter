@@ -1,11 +1,9 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import AppLayout from '@/components/AppLayout';
-import { Input } from '@/components/ui/input';
-import { Card } from '@/components/ui/card';
-import { Search, MapPin, Phone, Navigation, Loader2 } from 'lucide-react';
+import { Search, MapPin, Phone, Navigation, Loader2, ArrowLeft } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { useNearbySort } from '@/hooks/use-nearby-sort';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -47,97 +45,140 @@ export default function TowCompanies() {
 
   return (
     <AppLayout>
-      <div className={session ? "theme-dashboard-dark" : ""}>
-      <div className="space-y-5">
-        <div>
-          <h1 className="text-xl font-bold text-foreground">Tow Companies</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">Towing services across New Zealand</p>
-        </div>
-
-        <div className="flex gap-2">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <Input placeholder="Search by name, address..." value={search} onChange={e => setSearch(e.target.value)} className="pl-9" />
+      <div className="theme-garage relative">
+        <div className="relative space-y-7">
+          {/* Header — Apple/Linear: back arrow + large display title */}
+          <div className="flex items-end justify-between gap-3 pt-2">
+            <div className="flex items-start gap-2 min-w-0">
+              <Link
+                to={session ? '/dashboard' : '/'}
+                aria-label="Back"
+                className="w-9 h-9 -ml-1 mt-1 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex-shrink-0"
+              >
+                <ArrowLeft className="w-[18px] h-[18px]" strokeWidth={2} />
+              </Link>
+              <div className="min-w-0">
+                <h1 className="text-[28px] leading-tight font-semibold text-foreground tracking-[-0.02em] truncate">
+                  Tow Companies
+                </h1>
+                <p className="text-[13px] text-muted-foreground tabular-nums mt-1">
+                  Towing services across New Zealand
+                </p>
+              </div>
+            </div>
           </div>
-          <Button
-            variant={nearbyActive ? 'default' : 'outline'}
-            size="sm"
-            onClick={toggleNearby}
-            disabled={locating}
-            className="shrink-0 gap-1.5 h-10"
-          >
-            {locating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Navigation className="w-4 h-4" />}
-            Near me
-          </Button>
-        </div>
 
-        <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1">
-          {regions.map(region => (
-            <button key={region} onClick={() => setSelectedRegion(region)}
-              className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-colors ${
-                selectedRegion === region ? 'bg-foreground text-background' : 'bg-muted text-muted-foreground hover:bg-muted/80'
-              }`}>{region}</button>
-          ))}
-        </div>
+          {/* Search + Near me */}
+          <div className="flex gap-2">
+            <div className="relative flex-1">
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" strokeWidth={2} />
+              <input
+                placeholder="Search by name, address…"
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                className="w-full h-11 pl-10 pr-3 rounded-xl border border-border bg-card text-sm font-medium text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/30 focus:border-foreground/30 transition-colors"
+              />
+            </div>
+            <button
+              onClick={toggleNearby}
+              disabled={locating}
+              className={`shrink-0 inline-flex items-center gap-1.5 h-11 px-3.5 rounded-xl text-[13px] font-medium transition-all ${
+                nearbyActive
+                  ? 'bg-foreground text-background border border-foreground'
+                  : 'bg-card border border-border text-foreground hover:border-foreground/30'
+              } disabled:opacity-50`}
+            >
+              {locating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Navigation className="w-4 h-4" strokeWidth={2} />}
+              Near me
+            </button>
+          </div>
 
-        {isLoading ? (
-          <div className="text-center py-10 text-muted-foreground text-sm">Loading...</div>
-        ) : displayed.length === 0 ? (
-          <div className="text-center py-10 text-muted-foreground text-sm">No tow companies found</div>
-        ) : (
-          <div className="space-y-3">
-            {displayed.map(company => {
-              const dist = getDistance(company.latitude, company.longitude);
-              const distLabel = formatDistance(dist);
-              return (
-                <Card key={company.id} className="p-4 rounded-2xl border-border shadow-none hover:border-foreground/20 transition-colors">
-                  <div className="flex items-start gap-3">
-                    <div className="flex-1 space-y-2.5 min-w-0">
-                      <h3 className="text-sm font-semibold text-foreground leading-tight">{company.name}</h3>
-                      <div className="space-y-1.5 text-xs text-muted-foreground">
-                        {company.address && (
-                          <div className="flex items-start gap-2"><MapPin className="w-3.5 h-3.5 mt-0.5 shrink-0" /><span>{company.address}</span></div>
-                        )}
-                        {company.phone && (
-                          <div className="flex items-center gap-2">
-                            <Phone className="w-3.5 h-3.5 shrink-0" />
-                            <a href={`tel:${company.phone}`} className="text-foreground underline-offset-2 hover:underline font-medium">{company.phone}</a>
-                          </div>
-                        )}
-                        {nearbyActive && distLabel && (
-                          <div className="flex items-center gap-2 font-medium text-primary">
-                            <Navigation className="w-3.5 h-3.5 shrink-0" />
-                            <span>{distLabel}</span>
-                          </div>
-                        )}
+          {/* Region filter chips */}
+          <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-none">
+            {regions.map(region => (
+              <button
+                key={region}
+                onClick={() => setSelectedRegion(region)}
+                className={`px-3 py-1.5 rounded-full text-[12px] font-medium whitespace-nowrap border transition-colors ${
+                  selectedRegion === region
+                    ? 'bg-foreground text-background border-foreground'
+                    : 'bg-card text-muted-foreground border-border hover:border-foreground/20 hover:text-foreground'
+                }`}
+              >
+                {region}
+              </button>
+            ))}
+          </div>
+
+          {/* Results */}
+          {isLoading ? (
+            <div className="flex items-center justify-center py-12 text-muted-foreground">
+              <Loader2 className="w-5 h-5 animate-spin" />
+            </div>
+          ) : displayed.length === 0 ? (
+            <div className="card-soft text-center py-12">
+              <p className="text-[15px] font-semibold text-foreground tracking-tight">No tow companies found</p>
+              <p className="text-xs text-muted-foreground mt-1">Try a different region or search term</p>
+            </div>
+          ) : (
+            <div className="space-y-2.5">
+              {displayed.map(company => {
+                const dist = getDistance(company.latitude, company.longitude);
+                const distLabel = formatDistance(dist);
+                return (
+                  <div key={company.id} className="rounded-2xl border border-border bg-card p-4 hover:border-foreground/20 transition-colors">
+                    <div className="flex items-start gap-3">
+                      <div className="flex-1 min-w-0 space-y-2.5">
+                        <h3 className="text-[15px] font-semibold text-foreground leading-tight tracking-tight">{company.name}</h3>
+                        <div className="space-y-1.5 text-[12px] text-muted-foreground">
+                          {company.address && (
+                            <div className="flex items-start gap-2"><MapPin className="w-3.5 h-3.5 mt-0.5 shrink-0" strokeWidth={1.75} /><span>{company.address}</span></div>
+                          )}
+                          {company.phone && (
+                            <div className="flex items-center gap-2">
+                              <Phone className="w-3.5 h-3.5 shrink-0" strokeWidth={1.75} />
+                              <a href={`tel:${company.phone}`} className="text-foreground font-medium underline-offset-2 hover:underline">{company.phone}</a>
+                            </div>
+                          )}
+                          {nearbyActive && distLabel && (
+                            <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-medium bg-emerald-500/10 text-emerald-700 dark:text-emerald-400">
+                              <Navigation className="w-3 h-3" strokeWidth={2} />
+                              <span className="tabular-nums">{distLabel}</span>
+                            </div>
+                          )}
+                        </div>
                       </div>
+                      {company.phone && (
+                        <a
+                          href={`tel:${company.phone}`}
+                          aria-label={`Call ${company.name}`}
+                          className="shrink-0 self-center w-10 h-10 rounded-full bg-foreground text-background inline-flex items-center justify-center hover:opacity-90 active:scale-[0.98] transition-all"
+                        >
+                          <Phone className="w-4 h-4" strokeWidth={2} />
+                        </a>
+                      )}
                     </div>
-                    {company.phone && (
-                      <a href={`tel:${company.phone}`} className="shrink-0 self-center">
-                        <Button size="sm" variant="default" className="gap-1.5 rounded-full h-9 w-9 p-0">
-                          <Phone className="w-4 h-4" />
-                        </Button>
-                      </a>
-                    )}
                   </div>
-                </Card>
-              );
-            })}
-          </div>
-        )}
+                );
+              })}
+            </div>
+          )}
 
-        {hasMore && (
-          <div className="text-center pt-2">
-            <Button variant="outline" size="sm" onClick={() => setShowAll(true)} className="text-xs">
-              Show all {afterNearby.length} companies
-            </Button>
-          </div>
-        )}
+          {hasMore && (
+            <div className="text-center pt-1">
+              <button
+                onClick={() => setShowAll(true)}
+                className="inline-flex items-center h-9 px-4 rounded-lg border border-border bg-card text-[13px] font-medium text-foreground hover:border-foreground/30 transition-colors"
+              >
+                Show all {afterNearby.length} companies
+              </button>
+            </div>
+          )}
 
-        <p className="text-[10px] text-muted-foreground text-center pt-2">
-          Showing {displayed.length} of {afterNearby.length} {`${afterNearby.length} companies found`}
-        </p>
-      </div>
+          <p className="text-[11px] text-muted-foreground text-center pt-2 tabular-nums">
+            Showing {displayed.length} of {afterNearby.length} companies
+          </p>
+        </div>
       </div>
     </AppLayout>
   );
