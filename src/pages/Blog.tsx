@@ -3,6 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { blogArticles } from '@/lib/blog-data';
 import { Calendar, Clock, ChevronRight } from 'lucide-react';
 import AppLayout from '@/components/AppLayout';
+import SEO from '@/components/SEO';
 import {
   Pagination,
   PaginationContent,
