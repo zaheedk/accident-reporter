@@ -1100,6 +1100,7 @@ export type Database = {
         Args: { _owner: string; _viewer: string }
         Returns: boolean
       }
+      current_user_family_id: { Args: never; Returns: string }
       delete_email: {
         Args: { message_id: number; queue_name: string }
         Returns: boolean
