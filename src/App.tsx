@@ -41,6 +41,7 @@ const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const DeleteAccount = lazy(() => import("./pages/DeleteAccount"));
 const DeleteDataRequest = lazy(() => import("./pages/DeleteDataRequest"));
 const Documents = lazy(() => import("./pages/Documents"));
+const Family = lazy(() => import("./pages/Family"));
 
 const PageLoader = () => (
   <div className="min-h-screen bg-background flex items-center justify-center">
@@ -124,6 +125,7 @@ const App = () => (
               <Route path="/admin/insurance-companies" element={<ProtectedRoute><InsuranceCompanies /></ProtectedRoute>} />
               <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
               <Route path="/documents" element={<ProtectedRoute><Documents /></ProtectedRoute>} />
+              <Route path="/family" element={<ProtectedRoute><Family /></ProtectedRoute>} />
               <Route path="/about" element={<About />} />
               <Route path="/how-it-works" element={<HowItWorks />} />
               <Route path="/faq" element={<FAQ />} />
