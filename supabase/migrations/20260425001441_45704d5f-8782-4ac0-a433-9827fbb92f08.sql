@@ -1,0 +1,1 @@
+ALTER TABLE public.claims ADD COLUMN IF NOT EXISTS incident_type text NOT NULL DEFAULT '';
