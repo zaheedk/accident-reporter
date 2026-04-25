@@ -86,6 +86,12 @@ export default function Auth() {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
+      <SEO
+        title="Sign In or Create Account | SAVO"
+        description="Sign in to SAVO or create a free account to start documenting accidents, lodging insurance claims and managing your vehicles."
+        path="/auth"
+        noIndex
+      />
       {/* Top bar */}
       <header className="px-5 py-4 flex items-center justify-between border-b border-border">
         <Link to="/" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors">
