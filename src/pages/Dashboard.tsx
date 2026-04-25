@@ -56,6 +56,20 @@ export default function Dashboard() {
     { enabled: !!user }
   );
 
+  const { data: familyInfo } = useOfflineQuery<{ inFamily: boolean; isHead: boolean; memberCount: number }>(
+    ['family-info', user?.id ?? ''],
+    async () => {
+      if (!user) return { inFamily: false, isHead: false, memberCount: 0 };
+      const { data: m } = await supabase
+        .from('family_members').select('family_id, role').eq('user_id', user.id).maybeSingle();
+      if (!m) return { inFamily: false, isHead: false, memberCount: 0 };
+      const { count } = await supabase
+        .from('family_members').select('*', { count: 'exact', head: true }).eq('family_id', m.family_id);
+      return { inFamily: true, isHead: m.role === 'head', memberCount: count ?? 1 };
+    },
+    { enabled: !!user }
+  );
+
   const { data: profile } = useOfflineQuery(
     ['profile', user?.id ?? ''],
     async () => {
