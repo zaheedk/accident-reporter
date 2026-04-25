@@ -209,13 +209,14 @@ export function ThirdPartyPhotos({ tpIndex, claimId, userId, onRegoDetected, onL
           </button>
         </div>
         {typePhotos.length > 0 && (
-          <div className="flex gap-2 flex-wrap">
+          <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
             {typePhotos.map(p => (
-              <div key={p.id} className="relative w-16 h-16 rounded-lg overflow-hidden bg-muted">
+              <div key={p.id} className="relative aspect-square rounded-xl overflow-hidden bg-muted ring-1 ring-border shadow-sm">
                 <img src={p.url} alt={type} className="w-full h-full object-cover" />
                 <button onClick={() => removePhoto(p)}
-                  className="absolute top-0.5 right-0.5 w-5 h-5 rounded-full bg-foreground/80 text-card flex items-center justify-center">
-                  <X className="w-2.5 h-2.5" />
+                  aria-label="Remove photo"
+                  className="absolute top-1 right-1 w-6 h-6 rounded-full bg-foreground/80 text-card flex items-center justify-center hover:bg-foreground transition-colors">
+                  <X className="w-3.5 h-3.5" />
                 </button>
               </div>
             ))}
