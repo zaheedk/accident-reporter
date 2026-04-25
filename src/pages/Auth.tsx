@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Navigate, Link } from 'react-router-dom';
 import { Mail, Lock, User, Loader2, LogIn, Phone, Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import SEO from '@/components/SEO';
 
 import { useAuth } from '@/contexts/AuthContext';
 import PhoneAuth from '@/components/PhoneAuth';
