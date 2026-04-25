@@ -705,6 +705,52 @@ export default function ClaimDetail() {
           </div>
         </DialogContent>
       </Dialog>
+
+      <Dialog open={photosDialogOpen} onOpenChange={setPhotosDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Email Damage Photos</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Send {photos.length} damage photo{photos.length === 1 ? '' : 's'} as attachments to any email address.
+            </p>
+            <div>
+              <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Recipient email</label>
+              <input
+                type="email"
+                value={photosEmailTo}
+                onChange={(e) => setPhotosEmailTo(e.target.value)}
+                placeholder="name@example.com"
+                maxLength={255}
+                autoFocus
+                className="w-full px-3 py-2 text-sm rounded-lg border border-border bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring/30"
+              />
+            </div>
+            <div>
+              <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Message (optional)</label>
+              <textarea
+                value={photosMessage}
+                onChange={(e) => setPhotosMessage(e.target.value.slice(0, 1000))}
+                placeholder="Add a short note to include with the photos…"
+                rows={3}
+                maxLength={1000}
+                className="w-full px-3 py-2 text-sm rounded-lg border border-border bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring/30 resize-none"
+              />
+              <p className="text-[11px] text-muted-foreground mt-1 text-right">{photosMessage.length}/1000</p>
+            </div>
+            <Button
+              onClick={sendDamagePhotosEmail}
+              disabled={sendingPhotos || !photosEmailTo.trim() || photos.length === 0}
+              className="w-full"
+            >
+              {sendingPhotos ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Send className="w-4 h-4 mr-2" />}
+              {sendingPhotos ? 'Sending…' : `Send ${photos.length} photo${photos.length === 1 ? '' : 's'}`}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent>
           <DialogHeader>
