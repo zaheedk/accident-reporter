@@ -12,7 +12,7 @@ const FROM_EMAIL = 'SAVO <info@savo.co.nz>';
 const REPLY_DOMAIN = 'replies.savo.co.nz';
 
 interface EmailRequest {
-  type: 'contact_confirmation' | 'claim_submitted' | 'welcome' | 'rego_expiry_reminder' | 'wof_expiry_reminder' | 'insurance_expiry_reminder';
+  type: 'contact_confirmation' | 'claim_submitted' | 'welcome' | 'rego_expiry_reminder' | 'wof_expiry_reminder' | 'insurance_expiry_reminder' | 'damage_photos';
   to: string;
   data?: Record<string, string>;
 }
