@@ -131,7 +131,11 @@ export function PhotoCapture({
       await enqueuePhoto(queued);
       newItems.push({ id, previewUrl, fileName: stamped.name, status: 'ready' });
     }
-    if (newItems.length) setPending((prev) => [...prev, ...newItems]);
+    if (newItems.length) {
+      setPending((prev) => [...prev, ...newItems]);
+      // Auto-upload immediately (will fall back to offline queue if no internet)
+      setTimeout(() => { uploadAll(); }, 0);
+    }
   };
 
   const removePending = async (id: string) => {
@@ -349,25 +353,17 @@ export function PhotoCapture({
         </button>
       </div>
 
-      {pending.length > 0 && (
+      {pending.some((p) => p.status === 'failed') && (
         <button
           type="button"
           onClick={uploadAll}
           disabled={uploading}
           className="btn-primary w-full h-10 gap-2 text-xs font-semibold"
         >
-          {uploading ? (
-            <Loader2 className="w-4 h-4 animate-spin" />
-          ) : pending.some((p) => p.status === 'failed') ? (
-            <RefreshCw className="w-4 h-4" />
-          ) : (
-            <Upload className="w-4 h-4" />
-          )}
+          {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
           {uploading
             ? `Uploading ${pending.length} photo${pending.length > 1 ? 's' : ''}...`
-            : pending.some((p) => p.status === 'failed')
-            ? `Retry — ${pending.length} photo${pending.length > 1 ? 's' : ''}`
-            : `Done — Upload ${pending.length} photo${pending.length > 1 ? 's' : ''}`}
+            : `Retry — ${pending.filter(p => p.status === 'failed').length} failed`}
         </button>
       )}
 
