@@ -363,7 +363,7 @@ export default function Dashboard() {
   return (
     <AppLayout>
       <div className="theme-dashboard relative">
-        <motion.div className="relative space-y-6 md:space-y-8" variants={stagger} initial="hidden" animate="visible">
+        <motion.div className="relative space-y-6 md:space-y-6 md:-mt-2" variants={stagger} initial="hidden" animate="visible">
           {/* Mobile-only header */}
           <motion.div variants={fadeUp} className="flex items-end justify-between gap-3 pt-2 md:hidden">
             <div className="min-w-0">
