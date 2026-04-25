@@ -3,6 +3,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import AppLayout from '@/components/AppLayout';
+import SEO from '@/components/SEO';
 import PanelShopForm from '@/components/PanelShopForm';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
