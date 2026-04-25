@@ -156,7 +156,8 @@ export default function ClaimWizard() {
             repairerAddress: claimRow.repairer_address, insuranceCompany: claimRow.insurance_company || '',
             selectedPanelShopId: claimRow.selected_panel_shop_id || '',
             userClaimNumber: (claimRow as any).user_claim_number || '',
-          };
+            incidentType: (claimRow as any).incident_type || '',
+          } as any;
           setClaim(loaded);
         }
         if (claimNumData?.claim_number) setClaimNumber(claimNumData.claim_number);
