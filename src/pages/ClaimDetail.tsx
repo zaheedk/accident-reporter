@@ -233,7 +233,7 @@ export default function ClaimDetail() {
     const addSection = (title: string, rows: [string, string][]) => {
       const section = document.createElement('div');
       section.style.marginBottom = '20px';
-      section.innerHTML = `<h2 style="font-size:14px;font-weight:700;color:#374151;margin:0 0 8px 0;text-transform:uppercase;letter-spacing:0.05em;">${title}</h2>`;
+      section.innerHTML = `<h2 style="font-size:13px;font-weight:700;color:#1e3a5f;margin:0 0 8px 0;text-transform:uppercase;letter-spacing:0.05em;">${title}</h2>`;
       rows.forEach(([label, value]) => {
         if (!value || value === '—') return;
         const row = document.createElement('div');
