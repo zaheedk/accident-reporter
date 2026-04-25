@@ -267,7 +267,7 @@ export default function ClaimList() {
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/70" />
                   <input
                     type="text"
-                    placeholder="Search rego, date, report #..."
+                    placeholder="Search rego, claim #, policy, date..."
                     value={search}
                     onChange={e => setSearch(e.target.value)}
                     className="w-full pl-9 pr-9 h-10 rounded-lg bg-card border border-border text-[13px] placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-ring/30 focus:border-ring/40 transition-all"
