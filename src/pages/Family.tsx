@@ -296,44 +296,6 @@ export default function Family() {
                     Generate share code only
                   </Button>
                 </Card>
-
-                {invites.length > 0 && (
-                  <Card className="p-5 space-y-3">
-                    <h2 className="font-semibold">Invitation history</h2>
-                    {invites.map(inv => {
-                      const effectiveStatus = getInviteStatus(inv);
-                      return (
-                        <div key={inv.id} className="flex items-center justify-between gap-2 p-3 rounded-lg bg-muted/40">
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 flex-wrap">
-                              <span className="text-sm font-medium truncate">{inv.email || 'Share code'}</span>
-                              <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${inviteStatusStyles[effectiveStatus]}`}>
-                                {inviteStatusLabel[effectiveStatus]}
-                              </span>
-                            </div>
-                            <div className="text-xs text-muted-foreground font-mono">{inv.code}</div>
-                            <div className="text-[11px] text-muted-foreground mt-0.5">
-                              {effectiveStatus === 'pending' && `Expires ${new Date(inv.expires_at).toLocaleDateString()}`}
-                              {effectiveStatus === 'accepted' && inv.accepted_at && `Joined ${new Date(inv.accepted_at).toLocaleDateString()}`}
-                              {effectiveStatus === 'expired' && `Expired ${new Date(inv.expires_at).toLocaleDateString()}`}
-                              {effectiveStatus === 'revoked' && 'Invite cancelled'}
-                            </div>
-                          </div>
-                          {effectiveStatus === 'pending' && (
-                            <>
-                              <Button variant="ghost" size="sm" onClick={() => copyCode(inv.code)} title="Copy code">
-                                <Copy className="w-4 h-4" />
-                              </Button>
-                              <Button variant="ghost" size="sm" onClick={() => revokeInvite(inv.id)} title="Revoke">
-                                <X className="w-4 h-4" />
-                              </Button>
-                            </>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </Card>
-                )}
               </>
             )}
           </>
