@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, Save, Camera, Loader2, MapPin, Car, Trash2, Check, CarFront, Ban, ParkingSquare, Plus, User, Users } from 'lucide-react';
+import { useNavigate, useParams, useSearchParams, Link } from 'react-router-dom';
+import { ArrowLeft, ArrowRight, Save, Camera, Loader2, MapPin, Car, Trash2, Check, CarFront, Ban, ParkingSquare, Plus, User, Users, Phone, AlertTriangle, FileText } from 'lucide-react';
 import { DamagePhotoAnalyzer, ThirdPartyPhotos } from '@/components/PhotoAnalyzer';
 import { PhotoCapture } from '@/components/PhotoCapture';
 import { motion, AnimatePresence } from 'framer-motion';
