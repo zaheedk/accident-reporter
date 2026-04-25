@@ -46,6 +46,11 @@ export default function TowCompanies() {
 
   return (
     <AppLayout>
+      <SEO
+        title="Tow Truck Companies NZ — 24/7 Towing Directory | SAVO"
+        description="Find tow truck operators across New Zealand. Browse 200+ towing companies by region with contact numbers, address and directions for fast roadside help."
+        path="/tow-companies"
+      />
       <div className="theme-garage relative">
         <div className="relative space-y-7">
           {/* Header — Apple/Linear: back arrow + large display title */}
