@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Shield, Camera, FileText, Clock, Phone, Wrench, Truck, ChevronRight, ArrowRight, CheckCircle2, BookOpen, HelpCircle, Newspaper, Menu, X, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
+import SEO from '@/components/SEO';
 const heroScene = '/hero-scene.jpg';
 
 const stagger = { hidden: {}, visible: { transition: { staggerChildren: 0.1 } } };
@@ -22,6 +23,23 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO
+        title="SAVO — Car Accident Claims, Courtesy Cars & Insurance Help | NZ"
+        description="Had a car accident in New Zealand? SAVO helps you document damage, lodge insurance claims, request a courtesy car, find panel beaters and tow trucks — all free."
+        path="/"
+        image="/hero-scene.jpg"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          name: "SAVO",
+          url: "https://savo.co.nz",
+          potentialAction: {
+            "@type": "SearchAction",
+            target: "https://savo.co.nz/blog?q={search_term_string}",
+            "query-input": "required name=search_term_string",
+          },
+        }}
+      />
       {/* Nav */}
       <header className="bg-card sticky top-0 z-30 border-b border-border/50">
         <div className="max-w-5xl mx-auto px-4 py-3 pt-[max(0.75rem,env(safe-area-inset-top))] flex items-center justify-between">

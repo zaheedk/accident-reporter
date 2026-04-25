@@ -3,6 +3,7 @@ import { getArticleBySlug } from '@/lib/blog-data';
 import { ArrowLeft, Calendar, Clock } from 'lucide-react';
 import AppLayout from '@/components/AppLayout';
 import ReactMarkdown from 'react-markdown';
+import SEO from '@/components/SEO';
 
 export default function BlogPost() {
   const { slug } = useParams<{ slug: string }>();
@@ -10,8 +11,37 @@ export default function BlogPost() {
 
   if (!article) return <Navigate to="/blog" replace />;
 
+  const articleJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: article.title,
+    description: article.metaDescription,
+    image: `https://savo.co.nz${article.heroImage}`,
+    datePublished: article.date,
+    dateModified: article.date,
+    author: { "@type": "Organization", name: "SAVO" },
+    publisher: {
+      "@type": "Organization",
+      name: "SAVO",
+      logo: { "@type": "ImageObject", url: "https://savo.co.nz/app-icon-512.png" },
+    },
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": `https://savo.co.nz/blog/${article.slug}`,
+    },
+  };
+
   return (
     <AppLayout>
+      <SEO
+        title={`${article.title} | SAVO`}
+        description={article.metaDescription}
+        path={`/blog/${article.slug}`}
+        type="article"
+        publishedTime={article.date}
+        jsonLd={articleJsonLd}
+      />
+
       <div className="max-w-2xl mx-auto px-4 py-6 pb-24">
         <Link to="/blog" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-4">
           <ArrowLeft className="w-4 h-4" />

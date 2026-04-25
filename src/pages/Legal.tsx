@@ -1,9 +1,15 @@
 import AppLayout from '@/components/AppLayout';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import SEO from '@/components/SEO';
 
 export default function Legal() {
   return (
     <AppLayout>
+      <SEO
+        title="Terms of Service & Privacy Policy | SAVO"
+        description="Read SAVO's Terms of Service and Privacy Policy. Learn how we handle your accident, vehicle and personal data in line with New Zealand privacy law."
+        path="/legal"
+      />
       <div className="space-y-6">
         <h1 className="text-2xl font-bold text-foreground">Legal</h1>
 

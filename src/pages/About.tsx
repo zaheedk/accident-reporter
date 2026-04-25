@@ -3,6 +3,7 @@ import { Mail, Phone, MapPin, Send } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
+import SEO from '@/components/SEO';
 
 export default function About() {
   const [form, setForm] = useState({ name: '', email: '', message: '' });
@@ -30,6 +31,11 @@ export default function About() {
 
   return (
     <AppLayout>
+      <SEO
+        title="About SAVO — NZ's Free Car Accident & Claims Helper"
+        description="Learn about SAVO, the free New Zealand app helping drivers document accidents, lodge insurance claims and find trusted panel shops and tow companies."
+        path="/about"
+      />
       <div className="space-y-8">
         <div>
           <h1 className="text-2xl font-bold text-foreground mb-2">About SAVO</h1>

@@ -3,6 +3,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import AppLayout from '@/components/AppLayout';
+import SEO from '@/components/SEO';
 import PanelShopForm from '@/components/PanelShopForm';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -83,6 +84,11 @@ export default function PanelShops() {
 
   return (
     <AppLayout>
+      <SEO
+        title="Panel Beaters Directory NZ — Find Trusted Repair Shops | SAVO"
+        description="Browse over 200 highly rated panel beaters across New Zealand. Find local collision repair specialists by region, get directions and contact details fast."
+        path="/panel-shops"
+      />
       <div className="theme-garage relative">
         <div className="relative space-y-7">
         {/* Header — Apple/Linear: back arrow + large display title */}

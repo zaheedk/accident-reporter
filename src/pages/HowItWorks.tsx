@@ -1,5 +1,6 @@
 import AppLayout from '@/components/AppLayout';
 import { Car, FileText, Wrench, CheckCircle2, ArrowRight } from 'lucide-react';
+import SEO from '@/components/SEO';
 
 const steps = [
   {
@@ -27,6 +28,11 @@ const steps = [
 export default function HowItWorks() {
   return (
     <AppLayout>
+      <SEO
+        title="How SAVO Works — Document, Lodge & Track Car Accident Claims | NZ"
+        description="See how SAVO walks NZ drivers through documenting an accident, lodging an insurance claim, requesting a courtesy car and choosing a panel beater — step by step."
+        path="/how-it-works"
+      />
       <div className="space-y-8">
         <div>
           <h1 className="text-2xl font-bold text-foreground mb-2">How It Works</h1>

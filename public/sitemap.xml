@@ -7,7 +7,7 @@
   <url><loc>https://savo.co.nz/legal</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
   <url><loc>https://savo.co.nz/panel-shops</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://savo.co.nz/tow-companies</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://savo.co.nz/auth</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+  
   <url><loc>https://savo.co.nz/blog</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://savo.co.nz/blog/why-capturing-accident-details-matters-nz</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://savo.co.nz/blog/step-by-step-guide-filing-car-insurance-claim-nz</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
