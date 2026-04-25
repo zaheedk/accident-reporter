@@ -171,6 +171,7 @@ export type Database = {
           incident_date: string
           incident_location: string
           incident_time: string
+          incident_type: string
           injury_details: string
           insurance_company: string
           journey_details: string
@@ -215,6 +216,7 @@ export type Database = {
           incident_date?: string
           incident_location?: string
           incident_time?: string
+          incident_type?: string
           injury_details?: string
           insurance_company?: string
           journey_details?: string
@@ -259,6 +261,7 @@ export type Database = {
           incident_date?: string
           incident_location?: string
           incident_time?: string
+          incident_type?: string
           injury_details?: string
           insurance_company?: string
           journey_details?: string

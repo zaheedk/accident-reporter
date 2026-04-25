@@ -220,14 +220,12 @@ export default function ClaimDetail() {
     printDiv.style.color = '#1a1a1a';
     printDiv.style.maxWidth = '800px';
     
-    // Header
+    // Header — dark navy band matching email branding
     const header = document.createElement('div');
-    header.style.marginBottom = '24px';
-    header.style.borderBottom = '2px solid #e5e7eb';
-    header.style.paddingBottom = '16px';
+    header.style.cssText = 'margin:-20px -20px 24px -20px;padding:24px 20px;background:linear-gradient(135deg,#1e3a5f,#162d4a);color:#ffffff;border-radius:0;';
     header.innerHTML = `
-      <h1 style="font-size:22px;font-weight:700;margin:0 0 4px 0;">Incident Report</h1>
-      <p style="font-size:13px;color:#6b7280;margin:0;">Date: ${claim.incidentDate} · Time: ${claim.incidentTime} · Status: ${claim.status === 'draft' ? 'Draft' : 'Saved'}${claimNumber ? ` · CLM-${claimNumber.padStart(4, '0')}` : ''}</p>
+      <h1 style="font-size:22px;font-weight:700;margin:0 0 6px 0;color:#ffffff;letter-spacing:-0.01em;">Incident Report</h1>
+      <p style="font-size:12px;color:#cbd5e1;margin:0;">Date: ${claim.incidentDate} · Time: ${claim.incidentTime} · Status: ${claim.status === 'draft' ? 'Draft' : 'Saved'}${claimNumber ? ` · CLM-${claimNumber.padStart(4, '0')}` : ''}</p>
     `;
     printDiv.appendChild(header);
 
@@ -235,7 +233,7 @@ export default function ClaimDetail() {
     const addSection = (title: string, rows: [string, string][]) => {
       const section = document.createElement('div');
       section.style.marginBottom = '20px';
-      section.innerHTML = `<h2 style="font-size:14px;font-weight:700;color:#374151;margin:0 0 8px 0;text-transform:uppercase;letter-spacing:0.05em;">${title}</h2>`;
+      section.innerHTML = `<h2 style="font-size:13px;font-weight:700;color:#1e3a5f;margin:0 0 8px 0;text-transform:uppercase;letter-spacing:0.05em;">${title}</h2>`;
       rows.forEach(([label, value]) => {
         if (!value || value === '—') return;
         const row = document.createElement('div');
