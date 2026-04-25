@@ -1664,6 +1664,615 @@ If you're standing at the side of the road right now, take a breath, check for i
 
 *Open SAVO and tap "New Report" to capture your accident details in the right order, every time.*
     `
+  },
+  {
+    slug: "car-written-off-nz-what-happens-next",
+    title: "Your Car Has Been Written Off in NZ — What Happens Next?",
+    metaDescription: "Step-by-step guide to what happens when your car is declared a total loss in New Zealand. Payouts, market value disputes, and your rights explained.",
+    heroImage: writtenOffCarHero,
+    excerpt: "Hearing your car has been 'written off' is a gut punch. Here's exactly what that means in New Zealand, how insurers calculate your payout, and how to push back if the offer feels too low.",
+    date: "2026-04-20",
+    readTime: "8 min read",
+    content: `
+## What "Written Off" Actually Means in New Zealand
+
+A vehicle is **written off** (or declared a "total loss") when your insurer decides the cost to repair it — plus any additional risks like hidden structural damage — is more than the car is worth, or close enough that repair isn't worth the risk.
+
+In New Zealand, there are two common categories:
+
+- **Repairable write-off** — the car can technically be fixed, but it's uneconomic for the insurer. You may be able to buy it back as salvage.
+- **Statutory write-off** — the damage is severe enough that the vehicle can never be re-registered for road use in NZ. These are recorded against the VIN on the **Written-Off Vehicle Register**.
+
+Both outcomes end the same way for you: a cash payout instead of a repair.
+
+## How Insurers Calculate Your Payout
+
+Most NZ comprehensive policies pay one of two values, depending on what you signed up for:
+
+### Agreed Value
+You and the insurer agreed on a fixed sum when you took out the policy (common for classic, modified, or higher-value vehicles). If your car is written off, that's what you're paid — minus your excess.
+
+### Market Value
+The insurer pays what your vehicle was worth **immediately before** the accident. They'll typically look at:
+
+- Recent sales of the same make, model, year, and trim on Trade Me and dealer listings
+- Your odometer reading
+- Service history and condition
+- Any aftermarket additions you declared
+
+Market value is the most common setup in NZ, and it's also where most disputes arise.
+
+## The Step-by-Step Process
+
+1. **Lodge your claim** with photos, your Police reference number, and any third-party details.
+2. **Assessor inspection** — the insurer sends an assessor (or uses photos for minor cases) to inspect the damage.
+3. **Repair quote vs market value** — the assessor compares repair cost to the vehicle's pre-accident value.
+4. **Total loss decision** — if repairs exceed the threshold (often 60–80% of market value in NZ), the insurer declares it a write-off.
+5. **Settlement offer** — you receive a written offer with the proposed payout and any deductions.
+6. **Accept or negotiate** — you don't have to accept the first offer.
+7. **Payout and ownership transfer** — once accepted, the insurer pays you (less excess) and takes ownership of the wreck.
+
+The whole process typically takes **2–6 weeks** in New Zealand, depending on parts availability and how quickly assessors can attend.
+
+## What's Deducted From Your Payout?
+
+Don't expect the full market value to land in your bank account. Insurers usually subtract:
+
+- **Your excess** (often $400–$1,200 depending on your policy and age)
+- **Outstanding premium** if you pay monthly and haven't completed the year
+- **GST** in some scenarios for business-owned vehicles
+- **Salvage value** if you choose to keep the wreck
+
+## How to Challenge a Low Offer
+
+If your insurer's offer feels low, you have every right to push back. Here's how to do it well:
+
+### 1. Get Independent Comparable Listings
+Pull at least **5–10 active Trade Me listings** for the same year, make, model, trim, and similar mileage. Screenshot them with the date visible. Asking prices are usually higher than sale prices, so adjust by ~5–10%.
+
+### 2. Get an Independent Valuation
+A licensed motor vehicle dealer or assessor can provide a written valuation for $100–$300. NZ insurers take these seriously.
+
+### 3. Highlight Recent Investments
+Receipts for new tyres, a recent cambelt, fresh WOF, full service history, or aftermarket parts (provided they were declared) all push value up.
+
+### 4. Put It in Writing
+Email your insurer a clear summary: "I disagree with the offer of $X because [evidence]. I'd like you to revise the offer to $Y." Insurers respond more carefully to written requests.
+
+### 5. Escalate if Needed
+If you can't agree, you can escalate to the **Insurance & Financial Services Ombudsman (IFSO)** — a free, independent dispute service for NZ consumers.
+
+## Buying Back Your Written-Off Car
+
+If you have an emotional attachment or want to repair it yourself, you can often buy back a **repairable write-off** as salvage. The insurer deducts the salvage value from your payout. Just remember:
+
+- A repairable write-off can be re-registered after a **vehicle identity inspection** (VII) and full WOF check
+- A **statutory write-off cannot** be re-registered for road use in NZ — full stop
+- Future insurance and resale value will be significantly lower
+
+## What About Finance Owing on the Car?
+
+If your vehicle has finance against it, the payout goes to the lender first. If the payout is less than what you owe, you're left with a **shortfall** — you still owe the lender the difference. **Gap insurance** is the only product that covers this in NZ, and it's worth considering for newer, financed vehicles.
+
+## How SAVO Helps Total-Loss Claims
+
+When every dollar of your payout matters, evidence is everything. SAVO captures:
+
+- Pre-incident vehicle photos and odometer readings stored in your garage
+- Service history and document vault entries you can hand straight to the assessor
+- Branded PDF incident reports that demonstrate exactly how the damage occurred
+
+The clearer your records, the harder it is for an assessor to lowball you.
+
+---
+
+*Already had your car written off? Open SAVO, head to your incident, and export the full PDF report to back up your settlement negotiation.*
+    \`
+  },
+  {
+    slug: "comprehensive-vs-third-party-insurance-nz",
+    title: "Comprehensive vs Third Party Car Insurance in NZ — Which One Do You Need?",
+    metaDescription: "Compare comprehensive, third party fire & theft, and third party only car insurance in New Zealand. Pros, cons, and which policy suits your situation.",
+    heroImage: comprehensiveVsThirdPartyHero,
+    excerpt: "Comprehensive sounds expensive. Third party sounds cheap. But the right choice depends on your car's value, your finances, and how much risk you can stomach. Here's the honest breakdown.",
+    date: "2026-04-22",
+    readTime: "7 min read",
+    content: `
+## The Three Types of Car Insurance in NZ
+
+Unlike many countries, **New Zealand doesn't legally require you to carry car insurance**. But once you have an accident and damage someone else's $80,000 ute, the bill lands squarely on you. That's why almost every NZ driver carries one of three policies:
+
+1. **Third Party Only** — covers damage you cause to other people's property
+2. **Third Party, Fire & Theft** — adds cover if your own car is stolen or burnt
+3. **Comprehensive** — covers your own car as well, regardless of fault
+
+Let's break each one down.
+
+## Third Party Only — The Basics
+
+This is the cheapest cover available. It pays out when **you cause damage to someone else's vehicle or property**, but pays nothing toward repairing your own car.
+
+**You'd consider it if:**
+- Your car is worth under ~$3,000 and you can afford to lose it
+- You're a low-risk driver with savings to repair your own car
+- You only need protection from the worst-case scenario (writing off a Tesla)
+
+**You'd avoid it if:**
+- Your car is your only way to get to work
+- You can't afford to replace it from savings
+- You're financing the vehicle (most lenders require comprehensive)
+
+## Third Party, Fire & Theft — The Middle Ground
+
+This adds two specific extras: **fire damage** and **theft of the vehicle**. It still doesn't cover at-fault accident damage to your own car.
+
+**You'd consider it if:**
+- You park on the street or in higher-theft areas (Auckland CBD, Hamilton, Christchurch suburbs)
+- Your car is older but still worth $3,000–$10,000
+- You want protection against the most common total-loss scenarios beyond accidents
+
+**Watch out for:**
+- "Theft" usually doesn't include items stolen *from* the car — that's contents
+- Fire from a mechanical fault may be excluded — read the policy
+
+## Comprehensive — Full Cover
+
+Comprehensive pays for:
+
+- Damage to other people's property
+- Damage to your own vehicle (including at-fault accidents)
+- Theft and fire
+- Storm, flood, hail, and natural disaster damage
+- Vandalism
+- Often includes a courtesy car, towing, and windscreen cover
+
+**You'd choose it if:**
+- Your car is newer or worth more than ~$10,000
+- You're financing or leasing the car (almost always required)
+- You drive in busy urban areas with high collision risk
+- You can't easily afford to replace your car from savings
+
+**The trade-off:**
+- Premiums can be 2–4× higher than third party
+- You still pay an excess on every claim
+- Some natural disaster claims (e.g. earthquake) sit with EQC and Toka Tū Ake, not your insurer
+
+## Real-World Cost Comparison (NZ averages)
+
+Premiums vary by age, claims history, vehicle, and region, but as a rough guide for a 35-year-old Auckland driver with a clean record and a $15,000 vehicle:
+
+| Cover Type | Annual Premium | What's Covered |
+|---|---|---|
+| Third Party Only | $250 – $450 | Damage to others |
+| Third Party Fire & Theft | $400 – $700 | Above + fire & theft |
+| Comprehensive | $900 – $1,800 | Full cover |
+
+Younger drivers (under 25) often pay 2–3× these amounts, especially on comprehensive.
+
+## How to Decide — A Simple Framework
+
+Ask yourself three questions:
+
+### 1. If my car was written off tomorrow, could I replace it from savings?
+**Yes** → Third party may be enough.
+**No** → You probably need comprehensive.
+
+### 2. Do I owe money on the car?
+**Yes** → Comprehensive is almost always required by your lender.
+
+### 3. Where do I park and drive?
+- **Locked garage, low-crime area** → Theft risk is lower, third party may suffice
+- **Street parking, urban area, high-traffic commute** → Comprehensive is safer
+
+## Common NZ Insurance Add-Ons Worth Considering
+
+Once you've picked your base cover, these extras matter:
+
+- **Windscreen cover** — NZ roads chip windscreens fast (gravel, contractors). Often $50/year, well worth it.
+- **No-claim bonus protection** — keep your discount even after one at-fault claim.
+- **Roadside assistance** — bundled with AA, AMI, State, and others. Often cheaper than standalone AA membership.
+- **Rental/courtesy car** — saves $40–$80 per day during repairs.
+- **Driving overseas** — most NZ policies don't cover Australia or the Pacific by default.
+
+## The Mistake Most NZ Drivers Make
+
+People shop on **price first** and only compare excesses and inclusions when they need to claim. By then it's too late.
+
+Before you renew or switch:
+
+1. Check your **excess** — a low premium with a $2,000 excess is rarely a bargain
+2. Confirm whether your policy is **agreed value** or **market value** (see our [written-off article](/blog/car-written-off-nz-what-happens-next))
+3. Verify **driver age restrictions** — many policies hike excess for drivers under 25
+4. Look for **modification exclusions** if your car has aftermarket parts
+5. Check whether you get a **courtesy car** when not at fault
+
+## How SAVO Fits In
+
+Whatever cover you choose, you still need to lodge claims fast and provide solid evidence. SAVO walks you through the exact information your insurer needs — same day, same level of detail, regardless of policy type. And our [insurance directory](/insurance-companies) lists every major NZ insurer's claims line and direct claims email so you're not hunting through PDFs at the side of the road.
+
+---
+
+*Not sure which policy you're currently on? Add your vehicle to SAVO's garage and store your policy document so it's one tap away when something goes wrong.*
+    \`
+  },
+  {
+    slug: "hit-and-run-accident-nz-what-to-do",
+    title: "Hit and Run in New Zealand — What to Do When the Other Driver Takes Off",
+    metaDescription: "A practical guide for NZ drivers on what to do after a hit and run. Police reporting, insurance claims, dashcam evidence, and how to protect your no-claim bonus.",
+    heroImage: hitAndRunHero,
+    excerpt: "Walking back to your car to find a fresh dent and no note is infuriating — and it's surprisingly common in New Zealand. Here's exactly what to do in the next 24 hours to protect your insurance claim.",
+    date: "2026-04-23",
+    readTime: "7 min read",
+    content: `
+## Hit and Runs Are More Common Than You Think
+
+In New Zealand, **leaving the scene of an accident** is an offence under the Land Transport Act 1998. Drivers must stop, exchange details, and report any crash that involves injury or significant damage. Yet thousands of Kiwi drivers each year return to their car to find fresh damage and no note — usually in supermarket carparks, suburban streets, and inner-city parking buildings.
+
+Whether the other driver fled at the scene of a moving collision or quietly drove off after a parking bump, the playbook is the same.
+
+## Step 1 — Don't Touch Anything Yet
+
+Before you drive away or move your vehicle:
+
+- Take **wide-angle photos** showing your car's position relative to lane markings, parking lines, and nearby vehicles
+- Get **close-ups of the damage** with something for scale (a coin, your hand)
+- Photograph any **paint transfer** — even a smear of colour can identify the other vehicle
+- Check the ground for **broken plastic, glass, or trim** — manufacturers stamp part numbers that can identify make and model
+- Look for **CCTV cameras** on nearby buildings, lamp posts, and ATMs
+
+If it just happened and the offending driver is still visible, **safely note their registration**, direction of travel, and vehicle description (colour, make, body type). Do not chase them — police prefer you stay put.
+
+## Step 2 — Look for Witnesses Immediately
+
+In carparks especially, the right witness can make or break your claim.
+
+- Ask people walking past if they saw anything
+- Check with **shop staff** — many supermarkets and malls have CCTV reviewable on request
+- Look for **delivery drivers** or contractors nearby who may have dashcams
+- Note any car with a **forward-facing dashcam** parked in line of sight
+
+Get names, phone numbers, and a one-line description of what they saw. Even "I saw a white SUV reverse into your bumper around 2:15pm" is gold.
+
+## Step 3 — Report to Police
+
+For a hit and run in New Zealand, you have two reporting options:
+
+### 105 Non-Emergency
+Call **105** or use **105.police.govt.nz** for any hit and run where:
+- No one was injured
+- The other driver has left the scene
+- You don't need urgent police attendance
+
+You'll be given a **Police reference number** — keep this safe. Insurers require it for hit-and-run claims.
+
+### 111 Emergency
+Call **111** if:
+- Anyone is injured
+- The collision involves a serious crash on a road
+- You believe the other driver is impaired or driving dangerously
+
+## Step 4 — Lodge the Claim Quickly
+
+Most NZ comprehensive policies cover hit and runs, but the rules vary:
+
+- **You'll usually pay your full excess** — even though you weren't at fault — unless the offending driver is identified
+- Your **no-claim bonus may be protected** if you have a comprehensive policy with bonus protection (or you provide a Police reference number that supports the claim)
+- **Third party only policies** generally won't help unless the other driver is identified
+
+Have ready when you call your insurer:
+
+1. Police reference number
+2. Photos of damage and scene
+3. Witness contact details
+4. Your vehicle's pre-incident photos (if available)
+5. Any dashcam or nearby CCTV footage
+
+## Step 5 — Hunt the Footage
+
+This is where most people give up too early. Within 24–48 hours:
+
+- **Request CCTV** from nearby retailers and councils — many systems overwrite within 7 days
+- **Ask neighbours** with doorbell cameras or driveway cameras
+- **Post in local Facebook groups** describing the time, place, and any vehicle details
+- Check **NZTA traffic cameras** for nearby motorway footage (police can request this)
+
+A surprising number of hit and runs in NZ are solved this way. Once the offending driver is identified and confirmed by Police or your insurer, your **excess is usually refunded** and your no-claim bonus restored.
+
+## What If You're the One Who Hit a Parked Car?
+
+If you've damaged an unattended vehicle in NZ, the law requires you to:
+
+- Leave a **note with your name, address, phone number, and registration**
+- Notify the owner **as soon as reasonably possible**
+- Report to Police within **48 hours** if you can't find the owner
+
+Failing to do so is a hit and run — even if no one was hurt and the damage looks minor. Penalties can include fines, demerit points, and even disqualification from driving.
+
+## Protecting Yourself Against Hit and Runs
+
+You can't stop someone fleeing the scene, but you can stack the deck:
+
+- **Park face-out** in carparks so dashcams cover the front of your car
+- Use a **dashcam with parking mode** that records on impact even when the engine is off
+- Avoid parking next to dented or scraped vehicles — they're statistically more likely to bump you
+- Choose **end-of-row spots** away from trolley collection points
+
+## How SAVO Helps
+
+When you report a hit and run through SAVO, the app:
+
+- Time-stamps and geo-tags every photo automatically
+- Walks you through the exact details Police and your insurer will ask for
+- Generates a branded PDF you can email straight to your insurer with the Police reference attached
+- Stores your evidence permanently — even if CCTV gets overwritten, your record remains
+
+Read more about [dashcam evidence](/blog/dashcam-phone-evidence-insurance-claims-nz) and [parking lot accidents](/blog/parking-lot-accidents-nz-what-to-do) for related guides.
+
+---
+
+*Just been hit and the other driver took off? Open SAVO, tap "New Report", and capture the scene before anything moves.*
+    \`
+  },
+  {
+    slug: "towing-rights-nz-choosing-tow-company",
+    title: "Towing in NZ — Your Rights and How to Choose the Right Tow Company",
+    metaDescription: "Know your rights when your car needs towing in New Zealand. How to avoid storage fee traps, who pays, and how to pick the right tow company after an accident.",
+    heroImage: towTruckNzHero,
+    excerpt: "When a tow truck shows up after a crash, you have more rights than you think — and more financial risk if you sign the wrong piece of paper. Here's what every NZ driver should know before that truck loads your car.",
+    date: "2026-04-24",
+    readTime: "7 min read",
+    content: `
+## You Are Not Obligated to Use the First Tow Truck on the Scene
+
+In New Zealand, tow operators sometimes monitor police scanners or simply patrol busy roads. After a crash, more than one tow truck may arrive — and the driver who turns up first will often hand you a clipboard and ask you to sign.
+
+**Don't sign anything until you understand what you're agreeing to.**
+
+You have the right to:
+
+- **Choose your own tow company** (or one nominated by your insurer)
+- **Refuse the first operator** who arrives unsolicited
+- **Ask for a written quote** before the car is loaded
+- **Request your car be towed to your address or a specific repairer**, not the operator's yard
+
+Police on the scene may suggest a tow operator if traffic needs to be cleared, but you're still entitled to direct where the vehicle goes once it's safe.
+
+## Why "Free" Tows Often Aren't Free
+
+The classic scam works like this:
+
+1. The tow operator offers a "free tow" because "your insurance will cover it"
+2. They tow your car to **their own storage yard**
+3. Each day your car sits there, **storage fees accumulate** — often $50–$150 per day
+4. Your insurer pays the tow but disputes the storage fees
+5. You're left arguing with the operator, who can lien your vehicle until paid
+
+In a worst case, drivers have been hit with **$3,000+ in storage fees** for a vehicle that sat for two weeks while insurance assessed the claim.
+
+## How to Protect Yourself
+
+### 1. Call Your Insurer First
+Most major NZ insurers — AA Insurance, AMI, State, Tower, Cove, Trade Me Insurance — have **24/7 claims and towing lines**. They have preferred tow networks with capped rates and no storage surprises.
+
+If your car is drivable, drive it home and arrange the tow yourself.
+If it's not drivable, **make the insurer's claims line your first call** before any tow truck arrives. Ten minutes on hold can save you thousands.
+
+### 2. Ask These Questions Before You Sign
+
+Before any vehicle is loaded:
+
+- "What is the **tow fee** to my address or repairer?"
+- "Are there any **after-hours surcharges**?"
+- "If you store the vehicle, what is the **daily storage fee**?"
+- "Is this fee **invoiced to my insurer directly** or to me?"
+- "Can I have a **written quote** before you load?"
+
+A reputable operator will answer all five without hesitation. If they push back or say "we'll sort it later," call someone else.
+
+### 3. Know Where Your Car Is Going
+Insist on a tow destination you control:
+
+- Your home or off-street parking
+- A nominated panel beater
+- Your insurer's preferred holding facility
+
+Avoid letting the car go to "the operator's yard" unless your insurer has confirmed they cover the storage.
+
+## Who Pays for the Tow?
+
+| Scenario | Who Pays |
+|---|---|
+| You have **comprehensive** insurance | Your insurer (subject to excess) |
+| You have **third party** + the other driver is at fault | Their insurer (you may need to recover later) |
+| **Hit and run** with comprehensive cover | Your insurer (with Police reference) |
+| **Mechanical breakdown** with roadside cover | Your roadside provider (AA, etc.) |
+| No cover, your fault | You |
+
+For non-fault accidents, ask your insurer about a **third-party recovery service** — some NZ insurers will recover the tow cost from the at-fault driver's insurer on your behalf, at no cost to you.
+
+## What to Do at the Scene
+
+1. **Call 111** if anyone is injured or 105 to report the crash
+2. **Call your insurer's claims line** before anyone touches your car
+3. **Photograph your car** in its post-crash position before any tow operator arrives
+4. **Refuse unsolicited tow operators** politely — "I'm waiting for my insurer's recommendation"
+5. **Get a written quote** before signing anything
+6. **Take a photo of the tow truck** and the driver's ID/company details
+
+## Recovering Storage Fee Disputes
+
+If you've already been stung, you have options in New Zealand:
+
+- **Disputes Tribunal** — claims up to $30,000 for a small filing fee, no lawyer needed
+- **Commerce Commission complaint** for misleading practices under the Fair Trading Act
+- **Insurance & Financial Services Ombudsman** if your insurer refused fair recovery
+- Refuse to pay disputed fees in writing while keeping a copy of every email
+
+Most operators will settle quickly once a Disputes Tribunal claim is filed.
+
+## How to Choose a Good Tow Operator Proactively
+
+Before you ever need a tow:
+
+- Save your **insurer's claims line** in your phone contacts
+- Note the **AA Roadside number** if you're a member: 0800 500 222
+- Find a **local family-owned tow company** with strong Google reviews
+- Add their number to your glove box document folder
+
+SAVO's [tow company directory](/tow-companies) lists vetted operators across New Zealand with phone numbers and service areas, sorted by your current location.
+
+## How SAVO Helps After a Tow
+
+Once your car is on the truck, SAVO helps you:
+
+- Record the tow operator's details and quoted rate
+- Photograph the vehicle's condition before loading (so any *new* damage is yours to claim)
+- Track the tow destination and assessor visits
+- Generate a branded PDF report combining the incident, the tow, and the repairer
+
+---
+
+*If a tow truck just pulled up to your accident, take a breath, call your insurer, and check our [tow directory](/tow-companies) for verified operators near you.*
+    \`
+  },
+  {
+    slug: "multi-vehicle-pile-up-nz-fault-claims",
+    title: "Multi-Vehicle Pile-Ups in NZ — Who's at Fault and How Claims Work",
+    metaDescription: "Multi-car pile-up in New Zealand? Learn how fault is determined, how claims work between insurers, and how to protect your claim with strong evidence.",
+    heroImage: multiVehiclePileupHero,
+    excerpt: "A motorway pile-up can involve five, ten, or twenty vehicles in seconds. Untangling fault and claims afterwards can take months. Here's how it actually works in New Zealand.",
+    date: "2026-04-25",
+    readTime: "8 min read",
+    content: `
+## Why Pile-Ups Are Different
+
+A two-car nose-to-tail in a suburban street is usually settled in days. A multi-vehicle pile-up — the kind that closes a section of SH1 or the Waikato Expressway in fog — can take **months** to fully resolve. The reasons are practical:
+
+- Multiple drivers, multiple insurers, multiple versions of events
+- Liability often splits between two or more parties
+- Police investigations can take weeks before a final report
+- Some cars are written off, others repairable, others undamaged but blocking the lane
+
+If you've just been involved in one, the next 24 hours matter enormously for your claim.
+
+## Step 1 — Safety First, Always
+
+If you're physically able to:
+
+1. **Stay in the vehicle with seatbelts on** if you're on a high-speed road and there's risk of further collisions
+2. Turn on **hazard lights** immediately
+3. **Call 111** for any injuries — pile-ups produce the highest injury rates of any crash type
+4. Only **exit the vehicle** when traffic is stopped and you can move to a safe shoulder or barrier
+5. **Do not stand between vehicles** or in the live traffic lane
+
+In foggy, icy, or low-visibility conditions, secondary collisions are a real risk. Get behind the barrier as soon as it's safe.
+
+## Step 2 — Document Before Vehicles Are Moved
+
+This is the single most important window. Once tow trucks and police clear the scene, the original layout is gone forever.
+
+Capture, in this order:
+
+1. **Wide-angle photos** showing the full chain of vehicles and their positions
+2. **Skid marks, debris, and broken glass** patterns showing direction of travel
+3. **Weather and road conditions** — fog, rain, surface water, ice
+4. **Traffic signs, speed limits, and lane markings** approaching the scene
+5. **Each vehicle's damage** from multiple angles
+6. **Number plates** of every involved vehicle
+7. **The vehicle in front of you and behind you** specifically
+
+Use SAVO's photo capture so each image is automatically time-stamped and geo-tagged — crucial when six insurers later argue about who hit whom first.
+
+## Step 3 — Gather Witnesses Aggressively
+
+In a pile-up, witnesses are everything. Your dashcam may show what hit you, but only an outside witness can describe the full chain. Try to capture:
+
+- Drivers from **uninvolved vehicles** that stopped to help
+- **Truck drivers** — they often have multiple cameras and a clear view from height
+- **Passengers** in your own and other involved vehicles
+- **Following drivers** with dashcams who saw the moments before impact
+
+Get names, phone numbers, and a one-sentence summary on the spot.
+
+## How Fault Is Determined in NZ Pile-Ups
+
+New Zealand uses a **comparative fault** system for insurance purposes. There's rarely a single "fault" finding in a pile-up. Instead, insurers and (occasionally) the courts apportion percentages.
+
+Common patterns:
+
+### Rear-End Chain Reaction
+The general rule: each driver is responsible for maintaining a safe following distance. So:
+
+- Car A brakes
+- Car B fails to stop and hits A → Car B at fault for damage to A
+- Car C fails to stop and hits B → Car C at fault for damage to B
+- And so on down the line
+
+But this gets complicated when:
+- Car B was pushed into A by C — then C may be responsible for both
+- Conditions made stopping impossible — fault may shift to road authority or weather
+- A vehicle stopped suddenly without cause — that driver may carry partial fault
+
+### Lane-Change Cascade
+If the trigger event was an unsafe lane change or merge, the merging driver often carries primary fault, with following drivers carrying secondary fault for following too closely.
+
+### Weather-Triggered Pile-Ups
+NZ pile-ups in fog, black ice, or heavy rain often produce **shared fault** findings. Each driver is expected to drive to the conditions — even if that means 40 km/h on a 100 km/h road.
+
+## Police Reports Matter More in Pile-Ups
+
+For pile-ups involving injury, road closure, or significant damage, NZ Police will file a **Traffic Crash Report** (TCR). This report is:
+
+- Used by all insurers as a primary fault reference
+- Not always definitive — insurers can dispute findings
+- Available to involved parties on request, usually 4–8 weeks after the crash
+
+Always get the **Police reference number** at the scene and follow up if you haven't been contacted within two weeks.
+
+## How Insurance Claims Actually Work
+
+Each driver lodges a claim with **their own insurer**. The insurers then work through a multi-step process:
+
+1. **Initial liability assessment** based on each driver's statement and evidence
+2. **Insurer-to-insurer recovery** — each insurer tries to recover costs from the at-fault driver's insurer
+3. **Final apportionment** once the Police TCR and all evidence is reviewed
+4. **Excess refunds** for not-at-fault drivers once recovery is successful
+
+For complex pile-ups, NZ insurers often use the **Insurance Council of New Zealand's General Insurance Code of Practice** to share information and resolve disputes.
+
+## What This Means for Your Excess and No-Claim Bonus
+
+- **If you're clearly not at fault** — most insurers refund your excess once they recover from the at-fault party's insurer (can take 3–9 months)
+- **If you're partially at fault** — you may pay full excess and lose your no-claim bonus
+- **If fault is disputed** — you'll usually pay excess upfront and wait for a refund
+
+Comprehensive cover is the safer position here. Third-party drivers in pile-ups often have to pursue the at-fault driver directly, which can be very slow.
+
+## Protecting Yourself in the Aftermath
+
+For the next few weeks:
+
+1. **Don't admit fault** to anyone — including other drivers, police, or insurers
+2. **Don't post about the crash** on social media — insurers and lawyers monitor public posts
+3. **Keep all medical receipts and notes** even for minor injuries (whiplash often shows up days later)
+4. **Document time off work** if injured — ACC and insurance both need this
+5. **Save every email, letter, and call note** with insurers in one place
+
+## How SAVO Helps Multi-Vehicle Claims
+
+Pile-ups are exactly the scenario SAVO was built for:
+
+- The structured form ensures every detail an insurer or police officer needs is captured
+- Geo-tagged, time-stamped photos provide tamper-proof evidence
+- Witness details and other vehicle records are stored together
+- The branded PDF can be sent to your insurer the same day, often before other involved drivers have even called theirs
+
+When fault is being argued months later, the driver with the cleanest evidence almost always comes out best.
+
+---
+
+*Involved in a multi-vehicle crash? Open SAVO, capture the full scene before anything moves, and email the report to your insurer the same day to get ahead of the queue.*
+    \`
   }
 ];
 
