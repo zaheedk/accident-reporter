@@ -12,7 +12,7 @@ const FROM_EMAIL = 'SAVO <info@savo.co.nz>';
 const REPLY_DOMAIN = 'replies.savo.co.nz';
 
 interface EmailRequest {
-  type: 'contact_confirmation' | 'claim_submitted' | 'welcome' | 'rego_expiry_reminder' | 'wof_expiry_reminder' | 'insurance_expiry_reminder';
+  type: 'contact_confirmation' | 'claim_submitted' | 'welcome' | 'rego_expiry_reminder' | 'wof_expiry_reminder' | 'insurance_expiry_reminder' | 'damage_photos';
   to: string;
   data?: Record<string, string>;
 }
@@ -287,6 +287,30 @@ function getEmailContent(type: string, data: Record<string, string> = {}) {
       return { subject: subjectLine, html: bodyHtml };
     }
 
+    case 'damage_photos': {
+      const claimRef = data.claimNumber ? `CLM-${String(data.claimNumber).padStart(4, '0')}` : '';
+      const subject = `Vehicle damage photos${claimRef ? ` – ${claimRef}` : ''}${data.rego ? ` (${data.rego})` : ''}`;
+      const html = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <div style="background: linear-gradient(135deg, #1e3a5f, #162d4a); padding: 30px; border-radius: 12px 12px 0 0;">
+            <h1 style="color: white; margin: 0; font-size: 24px;">SAVO</h1>
+          </div>
+          <div style="background: #ffffff; padding: 30px; border: 1px solid #e5e5e5; border-top: none; border-radius: 0 0 12px 12px;">
+            <h2 style="color: #1a1a1a; margin-top: 0;">Vehicle Damage Photos</h2>
+            <p style="color: #555; line-height: 1.6;">Please find attached the damage photos${claimRef ? ` for incident <strong>${claimRef}</strong>` : ''}${data.rego ? ` involving vehicle <strong>${data.rego}</strong>` : ''}.</p>
+            <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+              ${data.date ? `<tr><td style="padding: 8px 0; color: #999; width: 120px;">Incident Date</td><td style="padding: 8px 0; color: #333; font-weight: 500;">${data.date}</td></tr>` : ''}
+              ${data.location ? `<tr><td style="padding: 8px 0; color: #999;">Location</td><td style="padding: 8px 0; color: #333; font-weight: 500;">${data.location}</td></tr>` : ''}
+              ${data.vehicle ? `<tr><td style="padding: 8px 0; color: #999;">Vehicle</td><td style="padding: 8px 0; color: #333; font-weight: 500;">${data.vehicle}</td></tr>` : ''}
+              ${data.photoCount ? `<tr><td style="padding: 8px 0; color: #999;">Photos</td><td style="padding: 8px 0; color: #333; font-weight: 500;">${data.photoCount} attached</td></tr>` : ''}
+            </table>
+            ${data.message ? `<div style="background: #f5f5f5; padding: 15px; border-radius: 8px; margin: 20px 0;"><p style="color: #555; margin: 0; line-height: 1.6; white-space: pre-wrap;">${data.message}</p></div>` : ''}
+            <p style="color: #999; font-size: 12px; margin-top: 30px;">— Sent via SAVO</p>
+          </div>
+        </div>`;
+      return { subject, html };
+    }
+
     case 'welcome':
       return {
         subject: 'Welcome to SAVO – Your claims assistant',
@@ -501,6 +525,43 @@ serve(async (req) => {
         console.log(`PDF generated with ${photoImages.length} photos and attached successfully`);
       } catch (pdfErr) {
         console.error('PDF generation failed, sending without attachment:', pdfErr);
+      }
+    }
+
+    // Attach damage photos as individual image files
+    if (type === 'damage_photos' && data?.claimId) {
+      try {
+        const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+        const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+        const sb = createClient(supabaseUrl, supabaseKey);
+        const { data: claimPhotos } = await sb.from('claim_photos').select('file_path, file_name').eq('claim_id', data.claimId);
+        const attachments: { filename: string; content: string }[] = [];
+        if (claimPhotos) {
+          for (let i = 0; i < claimPhotos.length; i++) {
+            const p = claimPhotos[i];
+            try {
+              const { data: fileData, error: dlErr } = await sb.storage.from('claim-photos').download(p.file_path);
+              if (dlErr || !fileData) { console.error('Failed to download photo:', p.file_path, dlErr); continue; }
+              const buf = await fileData.arrayBuffer();
+              const base64 = arrayBufferToBase64(buf);
+              const ext = (p.file_name?.split('.').pop() || 'jpg').toLowerCase();
+              const safeName = p.file_name && p.file_name.includes('.') ? p.file_name : `damage-photo-${i + 1}.${ext}`;
+              attachments.push({ filename: safeName, content: base64 });
+            } catch (e) { console.error('Failed to attach photo:', e); }
+          }
+        }
+        if (attachments.length > 0) {
+          emailPayload.attachments = attachments;
+          console.log(`Attached ${attachments.length} damage photos`);
+        } else {
+          throw new Error('No damage photos available to send for this report.');
+        }
+      } catch (photoErr) {
+        const msg = photoErr instanceof Error ? photoErr.message : 'Failed to load damage photos';
+        return new Response(JSON.stringify({ success: false, error: msg }), {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
       }
     }
 

@@ -44,6 +44,10 @@ export default function ClaimDetail() {
   const [emailDialogOpen, setEmailDialogOpen] = useState(false);
   const [emailTo, setEmailTo] = useState('');
   const [sendingEmail, setSendingEmail] = useState(false);
+  const [photosDialogOpen, setPhotosDialogOpen] = useState(false);
+  const [photosEmailTo, setPhotosEmailTo] = useState('');
+  const [photosMessage, setPhotosMessage] = useState('');
+  const [sendingPhotos, setSendingPhotos] = useState(false);
   const [claimNumber, setClaimNumber] = useState('');
   const [reportNumber, setReportNumber] = useState('');
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -388,6 +392,42 @@ export default function ClaimDetail() {
     }
   };
 
+  const sendDamagePhotosEmail = async () => {
+    const recipient = photosEmailTo.trim();
+    if (!recipient) { toast.error('Please enter a recipient email'); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(recipient)) { toast.error('Please enter a valid email address'); return; }
+    if (photos.length === 0) { toast.error('No damage photos to send'); return; }
+    setSendingPhotos(true);
+    try {
+      const veh = vehicles.find(v => v.id === claim.vehicleId);
+      const { error } = await supabase.functions.invoke('send-email', {
+        body: {
+          type: 'damage_photos',
+          to: recipient,
+          data: {
+            claimId: claim.id,
+            claimNumber: claimNumber,
+            date: claim.incidentDate,
+            location: claim.incidentLocation,
+            vehicle: veh ? `${veh.year} ${veh.make} ${veh.model}` : '',
+            rego: veh?.regoNumber || '',
+            photoCount: String(photos.length),
+            message: photosMessage.trim().slice(0, 1000),
+          },
+        },
+      });
+      if (error) throw error;
+      toast.success(`${photos.length} photo${photos.length > 1 ? 's' : ''} sent to ${recipient}`);
+      setPhotosDialogOpen(false);
+      setPhotosEmailTo('');
+      setPhotosMessage('');
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to send photos');
+    } finally {
+      setSendingPhotos(false);
+    }
+  };
+
   return (
     <AppLayout>
       <div className="space-y-4 overflow-x-hidden" id="claim-report" ref={printRef}>
@@ -585,7 +625,17 @@ export default function ClaimDetail() {
 
               {photos.length > 0 && (
                 <>
-                  <SubHeading>Damage Photos</SubHeading>
+                  <div className="flex items-center justify-between gap-2">
+                    <SubHeading>Damage Photos</SubHeading>
+                    <button
+                      type="button"
+                      onClick={() => { setPhotosEmailTo(''); setPhotosMessage(''); setPhotosDialogOpen(true); }}
+                      className="print:hidden inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:underline"
+                    >
+                      <Mail className="w-3.5 h-3.5" />
+                      Email photos
+                    </button>
+                  </div>
                   <div className="grid grid-cols-3 gap-2">
                     {photos.map(p => (
                       <button key={p.id} onClick={() => setLightboxUrl(p.fullUrl)} className="rounded-xl overflow-hidden aspect-square bg-muted">
@@ -655,6 +705,52 @@ export default function ClaimDetail() {
           </div>
         </DialogContent>
       </Dialog>
+
+      <Dialog open={photosDialogOpen} onOpenChange={setPhotosDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Email Damage Photos</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Send {photos.length} damage photo{photos.length === 1 ? '' : 's'} as attachments to any email address.
+            </p>
+            <div>
+              <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Recipient email</label>
+              <input
+                type="email"
+                value={photosEmailTo}
+                onChange={(e) => setPhotosEmailTo(e.target.value)}
+                placeholder="name@example.com"
+                maxLength={255}
+                autoFocus
+                className="w-full px-3 py-2 text-sm rounded-lg border border-border bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring/30"
+              />
+            </div>
+            <div>
+              <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Message (optional)</label>
+              <textarea
+                value={photosMessage}
+                onChange={(e) => setPhotosMessage(e.target.value.slice(0, 1000))}
+                placeholder="Add a short note to include with the photos…"
+                rows={3}
+                maxLength={1000}
+                className="w-full px-3 py-2 text-sm rounded-lg border border-border bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring/30 resize-none"
+              />
+              <p className="text-[11px] text-muted-foreground mt-1 text-right">{photosMessage.length}/1000</p>
+            </div>
+            <Button
+              onClick={sendDamagePhotosEmail}
+              disabled={sendingPhotos || !photosEmailTo.trim() || photos.length === 0}
+              className="w-full"
+            >
+              {sendingPhotos ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Send className="w-4 h-4 mr-2" />}
+              {sendingPhotos ? 'Sending…' : `Send ${photos.length} photo${photos.length === 1 ? '' : 's'}`}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent>
           <DialogHeader>
