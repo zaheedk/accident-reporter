@@ -145,94 +145,31 @@ export default function VehicleForm() {
 
   return (
     <AppLayout>
-      <div className="theme-dashboard">
-        <div className="md:grid md:grid-cols-[260px_1fr] md:gap-6 lg:grid-cols-[280px_1fr] lg:gap-8">
-          {/* Left rail — tablet & desktop only */}
-          <aside className="hidden md:block space-y-3 md:sticky md:top-20 md:self-start">
-            <button
-              onClick={() => navigate(-1)}
-              className="w-full inline-flex items-center gap-2 h-10 px-3 rounded-xl border border-border bg-card text-[13px] font-medium text-foreground hover:bg-muted/50 transition-colors"
-            >
-              <ArrowLeft className="w-4 h-4" strokeWidth={2} />
-              Back
-            </button>
-
-            <Link
-              to="/vehicles"
-              className="w-full inline-flex items-center gap-3 px-3.5 py-3 rounded-xl border border-border bg-card hover:bg-muted/50 transition-colors"
-            >
-              <div className="w-8 h-8 rounded-lg bg-foreground text-background flex items-center justify-center shrink-0">
-                <Car className="w-4 h-4" strokeWidth={2} />
-              </div>
-              <div className="min-w-0">
-                <div className="text-[13px] font-medium text-foreground">All vehicles</div>
-                <div className="text-[11px] text-muted-foreground">Back to garage</div>
-              </div>
-            </Link>
-
-            {isEdit && vehicleUuid && (
-              <>
-                <button
-                  onClick={() => navigate(`/claims/new?vehicleId=${vehicleUuid}`)}
-                  className="w-full inline-flex items-center gap-3 px-3.5 py-3 rounded-xl bg-destructive text-destructive-foreground hover:opacity-95 transition-opacity text-left"
-                >
-                  <div className="w-8 h-8 rounded-lg bg-destructive-foreground/15 flex items-center justify-center shrink-0">
-                    <AlertTriangle className="w-4 h-4" strokeWidth={2.2} />
-                  </div>
-                  <div className="min-w-0">
-                    <div className="text-[13px] font-semibold">Report incident</div>
-                    <div className="text-[11px] opacity-80">Start a new claim</div>
-                  </div>
-                </button>
-
-                <a
-                  href="tel:111"
-                  className="w-full inline-flex items-center gap-3 px-3.5 py-3 rounded-xl border border-border bg-card hover:bg-muted/50 transition-colors"
-                >
-                  <div className="w-8 h-8 rounded-lg bg-foreground text-background flex items-center justify-center shrink-0">
-                    <Phone className="w-4 h-4" strokeWidth={2} />
-                  </div>
-                  <div className="min-w-0">
-                    <div className="text-[13px] font-medium text-foreground">Call police</div>
-                    <div className="text-[11px] text-muted-foreground">Emergency 111</div>
-                  </div>
-                </a>
-              </>
-            )}
-
-            <div className="rounded-xl border border-border bg-card p-3.5">
-              <div className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-2">Vehicle</div>
-              <div className="space-y-1.5 text-[12px]">
-                <div className="flex justify-between gap-2"><span className="text-muted-foreground">Rego</span><span className="font-semibold text-foreground truncate">{form.regoNumber || '—'}</span></div>
-                <div className="flex justify-between gap-2"><span className="text-muted-foreground">Make</span><span className="font-semibold text-foreground truncate">{form.make || '—'}</span></div>
-                <div className="flex justify-between gap-2"><span className="text-muted-foreground">Model</span><span className="font-semibold text-foreground truncate">{form.model || '—'}</span></div>
-                <div className="flex justify-between gap-2"><span className="text-muted-foreground">Year</span><span className="font-semibold text-foreground truncate">{form.year || '—'}</span></div>
-              </div>
-            </div>
-          </aside>
-
-          <div className="space-y-6 pb-24">
-          {/* Header — Apple/Linear */}
+      <div className="theme-garage relative">
+        <div className="space-y-8">
+          {/* Header — Apple/Linear: matches Garage page */}
           <div className="flex items-end justify-between gap-3 pt-2">
             <div className="flex items-start gap-2 min-w-0">
-              <button onClick={() => navigate(-1)} aria-label="Back"
-                className="w-9 h-9 -ml-1 mt-1 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex-shrink-0">
+              <button
+                onClick={() => navigate(-1)}
+                aria-label="Back"
+                className="w-9 h-9 -ml-1 mt-1 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex-shrink-0"
+              >
                 <ArrowLeft className="w-[18px] h-[18px]" strokeWidth={2} />
               </button>
               <div className="min-w-0">
-                <p className="text-[12px] text-muted-foreground">
-                  {isEdit ? 'Edit vehicle' : 'New vehicle'}{form.regoNumber ? ` · ${form.regoNumber}` : ''}
-                </p>
-                <h1 className="text-[28px] leading-tight font-semibold text-foreground tracking-[-0.02em] truncate mt-1">
+                <h1 className="text-[28px] leading-tight font-semibold text-foreground tracking-[-0.02em] truncate">
                   {isEdit ? `${form.year} ${form.make} ${form.model}`.trim() || 'Vehicle' : 'Add vehicle'}
                 </h1>
+                <p className="text-[13px] text-muted-foreground mt-1">
+                  {isEdit ? 'Edit vehicle' : 'New vehicle'}{form.regoNumber ? ` · ${form.regoNumber}` : ''}
+                </p>
               </div>
             </div>
-
             {isEdit && vehicleUuid && (
               <button
                 onClick={() => navigate(`/claims/new?vehicleId=${vehicleUuid}`)}
-                className="hidden sm:inline-flex md:hidden items-center justify-center gap-1.5 h-9 px-3.5 rounded-xl bg-destructive text-destructive-foreground text-[12px] font-semibold transition-all active:scale-[0.98] shrink-0"
+                className="hidden sm:inline-flex md:hidden items-center justify-center gap-1.5 h-9 px-3.5 rounded-lg bg-destructive text-destructive-foreground text-[13px] font-medium transition-all active:scale-[0.98] shrink-0"
               >
                 <AlertTriangle className="w-3.5 h-3.5" strokeWidth={2.2} />
                 Report incident
@@ -240,15 +177,80 @@ export default function VehicleForm() {
             )}
           </div>
 
-          {isEdit && vehicleUuid && (
-            <button
-              onClick={() => navigate(`/claims/new?vehicleId=${vehicleUuid}`)}
-              className="sm:hidden w-full inline-flex items-center justify-center gap-2 h-11 rounded-xl bg-destructive text-destructive-foreground text-sm font-semibold transition-all active:scale-[0.98]"
-            >
-              <AlertTriangle className="w-4 h-4" strokeWidth={2.2} />
-              Report incident with this vehicle
-            </button>
-          )}
+          {/* Body */}
+          <div className="md:grid md:grid-cols-[240px_1fr] md:gap-6 lg:grid-cols-[260px_1fr] lg:gap-8 space-y-6 md:space-y-0">
+            {/* Left rail — Garage-style cards */}
+            <aside className="hidden md:block space-y-4">
+              {/* All vehicles tile */}
+              <Link
+                to="/vehicles"
+                className="block rounded-xl bg-card border border-border hover:border-foreground/20 transition-colors p-3.5"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-lg bg-foreground text-background flex items-center justify-center shrink-0">
+                    <Car className="w-4 h-4" strokeWidth={2} />
+                  </div>
+                  <div className="min-w-0">
+                    <div className="text-[13px] font-semibold text-foreground">All vehicles</div>
+                    <div className="text-[11px] text-muted-foreground">Back to garage</div>
+                  </div>
+                </div>
+              </Link>
+
+              {/* Vehicle summary panel — mirrors Alerts panel on Garage */}
+              <div className="rounded-xl bg-card border border-border overflow-hidden">
+                <div className="px-3.5 pt-3 pb-2 text-[11px] font-medium text-muted-foreground">Vehicle</div>
+                <div className="divide-y divide-border">
+                  {[
+                    { label: 'Rego', value: form.regoNumber },
+                    { label: 'Make', value: form.make },
+                    { label: 'Model', value: form.model },
+                    { label: 'Year', value: form.year },
+                  ].map(({ label, value }) => (
+                    <div key={label} className="flex items-center gap-3 px-3.5 py-2.5">
+                      <p className="flex-1 min-w-0 text-[13px] text-muted-foreground">{label}</p>
+                      <span className="text-[13px] font-medium text-foreground tabular-nums truncate max-w-[120px]">{value || '—'}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Quick actions panel */}
+              {isEdit && vehicleUuid && (
+                <div className="rounded-xl bg-card border border-border overflow-hidden">
+                  <div className="px-3.5 pt-3 pb-2 text-[11px] font-medium text-muted-foreground">Quick actions</div>
+                  <div className="divide-y divide-border">
+                    <button
+                      onClick={() => navigate(`/claims/new?vehicleId=${vehicleUuid}`)}
+                      className="w-full flex items-center gap-3 px-3.5 py-2.5 hover:bg-muted/50 transition-colors text-left"
+                    >
+                      <AlertTriangle className="w-3.5 h-3.5 text-destructive" strokeWidth={2} />
+                      <p className="flex-1 min-w-0 text-[13px] text-foreground">Report incident</p>
+                    </button>
+                    <a
+                      href="tel:111"
+                      className="w-full flex items-center gap-3 px-3.5 py-2.5 hover:bg-muted/50 transition-colors text-left"
+                    >
+                      <Phone className="w-3.5 h-3.5 text-muted-foreground" strokeWidth={2} />
+                      <p className="flex-1 min-w-0 text-[13px] text-foreground">Call police · 111</p>
+                    </a>
+                  </div>
+                </div>
+              )}
+            </aside>
+
+            {/* Right column — form */}
+            <div className="space-y-6 pb-24">
+              {/* Mobile-only: Report incident */}
+              {isEdit && vehicleUuid && (
+                <button
+                  onClick={() => navigate(`/claims/new?vehicleId=${vehicleUuid}`)}
+                  className="sm:hidden w-full inline-flex items-center justify-center gap-2 h-11 rounded-xl bg-destructive text-destructive-foreground text-sm font-semibold transition-all active:scale-[0.98]"
+                >
+                  <AlertTriangle className="w-4 h-4" strokeWidth={2.2} />
+                  Report incident with this vehicle
+                </button>
+              )}
 
           {/* Vehicle Photo */}
           <div>
