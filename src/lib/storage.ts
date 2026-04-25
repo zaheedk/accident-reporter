@@ -130,6 +130,7 @@ export async function saveClaim(claim: ClaimReport, userId?: string): Promise<st
     insurance_company: claim.insuranceCompany,
     selected_panel_shop_id: claim.selectedPanelShopId || null,
     user_claim_number: claim.userClaimNumber || '',
+    incident_type: (claim as any).incidentType || '',
   };
 
   if (claim.id) {
