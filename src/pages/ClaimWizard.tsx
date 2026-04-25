@@ -915,6 +915,10 @@ export default function ClaimWizard() {
         </div>
         </div>
       </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </AppLayout>
   );
 }
