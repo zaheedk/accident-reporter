@@ -241,12 +241,13 @@ export default function ClaimList() {
                       const href = c.status === 'draft' ? `/claims/${slug}/edit` : `/claims/${slug}`;
                       const isDraft = c.status === 'draft';
                       const dot = isDraft ? 'bg-amber-500' : 'bg-emerald-500';
+                      const ref = getDisplayRef(c);
                       return (
                         <Link key={c.id} to={href} className="flex items-center gap-3 px-3.5 py-2.5 hover:bg-muted/50 transition-colors">
                           <span className={`w-1.5 h-1.5 rounded-full ${dot} shrink-0`} />
                           <div className="flex-1 min-w-0">
                             <div className="text-[13px] font-medium text-foreground truncate">
-                              {reportNum ? `#${reportNum}` : 'Draft'} <span className="opacity-60">· {getRegoForClaim(c) || 'No vehicle'}</span>
+                              {ref.value ? `#${ref.value}` : (isDraft ? 'Draft' : 'Report')} <span className="opacity-60">· {getRegoForClaim(c) || 'No vehicle'}</span>
                             </div>
                             <div className="text-[11px] text-muted-foreground truncate">{c.incidentDate || 'No date'}</div>
                           </div>
