@@ -428,43 +428,124 @@ export default function ClaimDetail() {
     }
   };
 
+  const reportTitle = reportNumber ? `Report #${reportNumber}` : 'Incident report';
+  const vehicleSummary = vehicle ? `${vehicle.year} ${vehicle.make} ${vehicle.model}`.trim() : '';
+
   return (
     <AppLayout>
-      <div className="space-y-4 overflow-x-hidden" id="claim-report" ref={printRef}>
-        <div className="flex items-start gap-2 print:hidden">
-          <button onClick={() => navigate(-1)} className="p-2 -ml-2 rounded-xl hover:bg-muted transition-colors flex-shrink-0">
-            <ArrowLeft className="w-5 h-5 text-foreground" strokeWidth={1.5} />
-          </button>
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2">
-              <p className="text-sm text-muted-foreground">Report</p>
-              <span className="text-[11px] font-medium text-primary bg-primary/8 px-2 py-0.5 rounded-lg">{claim.status === 'draft' ? 'Draft' : 'Saved'}</span>
+      <div className="theme-garage relative">
+        <div className="space-y-8 overflow-x-hidden" id="claim-report" ref={printRef}>
+          {/* Header — matches Garage / VehicleForm pattern */}
+          <div className="flex items-end justify-between gap-3 pt-2 print:hidden">
+            <div className="flex items-start gap-2 min-w-0">
+              <button
+                onClick={() => navigate(-1)}
+                aria-label="Back"
+                className="w-9 h-9 -ml-1 mt-1 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex-shrink-0"
+              >
+                <ArrowLeft className="w-[18px] h-[18px]" strokeWidth={2} />
+              </button>
+              <div className="min-w-0">
+                <h1 className="text-[28px] leading-tight font-semibold text-foreground tracking-[-0.02em] truncate">
+                  {reportTitle}
+                </h1>
+                <p className="text-[13px] text-muted-foreground mt-1 truncate">
+                  {claim.status === 'draft' ? 'Draft' : 'Saved'}{claim.incidentDate ? ` · ${claim.incidentDate}` : ''}{vehicle?.regoNumber ? ` · ${vehicle.regoNumber}` : ''}
+                </p>
+              </div>
             </div>
-            <h1 className="text-lg font-bold text-foreground -mt-0.5 truncate">Incident report</h1>
+            <div className="flex items-center gap-1 flex-shrink-0">
+              <button onClick={() => navigate(`/claims/${reportNumber || claim.id}/edit`)} className="w-9 h-9 rounded-lg hover:bg-muted transition-colors flex items-center justify-center" title="Edit report">
+                <Pencil className="w-[18px] h-[18px] text-muted-foreground" strokeWidth={1.8} />
+              </button>
+              <button onClick={handleEmail} className="w-9 h-9 rounded-lg hover:bg-muted transition-colors flex items-center justify-center" title="Email report">
+                <Mail className="w-[18px] h-[18px] text-muted-foreground" strokeWidth={1.8} />
+              </button>
+              <button onClick={handlePrint} className="w-9 h-9 rounded-lg hover:bg-muted transition-colors flex items-center justify-center" title="Download as PDF">
+                <Download className="w-[18px] h-[18px] text-muted-foreground" strokeWidth={1.8} />
+              </button>
+              <button onClick={() => setDeleteDialogOpen(true)} className="w-9 h-9 rounded-lg hover:bg-destructive/10 transition-colors flex items-center justify-center" title="Delete report">
+                <Trash2 className="w-[18px] h-[18px] text-destructive" strokeWidth={1.8} />
+              </button>
+            </div>
           </div>
-          <div className="flex items-center gap-1 flex-shrink-0">
-            <button onClick={() => navigate(`/claims/${reportNumber || claim.id}/edit`)} className="p-2 rounded-xl hover:bg-muted transition-colors" title="Edit report">
-              <Pencil className="w-[18px] h-[18px] text-muted-foreground" strokeWidth={1.5} />
-            </button>
-            <button onClick={handleEmail} className="p-2 rounded-xl hover:bg-muted transition-colors" title="Email report">
-              <Mail className="w-[18px] h-[18px] text-muted-foreground" strokeWidth={1.5} />
-            </button>
-            <button onClick={handlePrint} className="p-2 rounded-xl hover:bg-muted transition-colors" title="Download as PDF">
-              <Download className="w-[18px] h-[18px] text-muted-foreground" strokeWidth={1.5} />
-            </button>
-            <button onClick={() => setDeleteDialogOpen(true)} className="p-2 rounded-xl hover:bg-destructive/10 transition-colors" title="Delete report">
-              <Trash2 className="w-[18px] h-[18px] text-destructive" strokeWidth={1.5} />
-            </button>
-          </div>
-        </div>
 
-        <div className="hidden print:block mb-6">
-          <h1 className="text-xl font-bold text-foreground">Incident report</h1>
-          <p className="text-sm text-muted-foreground">Date: {claim.incidentDate} · Status: {claim.status === 'draft' ? 'Draft' : 'Saved'}</p>
-        </div>
+          <div className="hidden print:block mb-6">
+            <h1 className="text-xl font-bold text-foreground">Incident report</h1>
+            <p className="text-sm text-muted-foreground">Date: {claim.incidentDate} · Status: {claim.status === 'draft' ? 'Draft' : 'Saved'}</p>
+          </div>
+
+          {/* Body */}
+          <div className="md:grid md:grid-cols-[240px_1fr] md:gap-6 lg:grid-cols-[260px_1fr] lg:gap-8 space-y-6 md:space-y-0 print:block">
+            {/* Left rail */}
+            <aside className="hidden md:block space-y-4 print:hidden">
+              {/* Back to incidents tile */}
+              <button
+                onClick={() => navigate('/claims')}
+                className="w-full block rounded-xl bg-card border border-border hover:border-foreground/20 transition-colors p-3.5 text-left"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-lg bg-foreground text-background flex items-center justify-center shrink-0">
+                    <ArrowLeft className="w-4 h-4" strokeWidth={2} />
+                  </div>
+                  <div className="min-w-0">
+                    <div className="text-[13px] font-semibold text-foreground">All incidents</div>
+                    <div className="text-[11px] text-muted-foreground">Back to list</div>
+                  </div>
+                </div>
+              </button>
+
+              {/* Report summary */}
+              <div className="rounded-xl bg-card border border-border overflow-hidden">
+                <div className="px-3.5 pt-3 pb-2 text-[11px] font-medium text-muted-foreground">Report</div>
+                <div className="divide-y divide-border">
+                  {[
+                    { label: 'Status', value: claim.status === 'draft' ? 'Draft' : 'Saved' },
+                    { label: 'Report #', value: reportNumber ? `#${reportNumber}` : '' },
+                    { label: 'Date', value: claim.incidentDate },
+                    { label: 'Vehicle', value: vehicleSummary },
+                    { label: 'Rego', value: vehicle?.regoNumber || '' },
+                    { label: 'Insurer', value: claim.insuranceCompany },
+                  ].map(({ label, value }) => (
+                    <div key={label} className="flex items-center gap-3 px-3.5 py-2.5">
+                      <p className="flex-1 min-w-0 text-[13px] text-muted-foreground">{label}</p>
+                      <span className="text-[13px] font-medium text-foreground tabular-nums truncate max-w-[140px]">{value || '—'}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Quick actions */}
+              <div className="rounded-xl bg-card border border-border overflow-hidden">
+                <div className="px-3.5 pt-3 pb-2 text-[11px] font-medium text-muted-foreground">Quick actions</div>
+                <div className="divide-y divide-border">
+                  <button onClick={() => navigate(`/claims/${reportNumber || claim.id}/edit`)} className="w-full flex items-center gap-3 px-3.5 py-2.5 hover:bg-muted/50 transition-colors text-left">
+                    <Pencil className="w-3.5 h-3.5 text-muted-foreground" strokeWidth={2} />
+                    <p className="flex-1 min-w-0 text-[13px] text-foreground">Edit report</p>
+                  </button>
+                  <button onClick={handleEmail} className="w-full flex items-center gap-3 px-3.5 py-2.5 hover:bg-muted/50 transition-colors text-left">
+                    <Mail className="w-3.5 h-3.5 text-muted-foreground" strokeWidth={2} />
+                    <p className="flex-1 min-w-0 text-[13px] text-foreground">Email report</p>
+                  </button>
+                  <button onClick={handlePrint} className="w-full flex items-center gap-3 px-3.5 py-2.5 hover:bg-muted/50 transition-colors text-left">
+                    <Download className="w-3.5 h-3.5 text-muted-foreground" strokeWidth={2} />
+                    <p className="flex-1 min-w-0 text-[13px] text-foreground">Download PDF</p>
+                  </button>
+                  {insurerPhone && (
+                    <a href={`tel:${insurerPhone.replace(/\s/g, '')}`} className="w-full flex items-center gap-3 px-3.5 py-2.5 hover:bg-muted/50 transition-colors text-left">
+                      <Phone className="w-3.5 h-3.5 text-muted-foreground" strokeWidth={2} />
+                      <p className="flex-1 min-w-0 text-[13px] text-foreground truncate">Call insurer</p>
+                    </a>
+                  )}
+                </div>
+              </div>
+            </aside>
+
+            {/* Right column */}
+            <div className="space-y-6 pb-24 print:pb-0 min-w-0">
 
         <div className="print:hidden">
-          <div className="space-y-4 mt-4">
+          <div className="space-y-4">
             {/* ── Section 1: Incident & Vehicle ── */}
             <Section title="Incident & Vehicle" icon={<Car className="w-4 h-4 text-primary" />}>
               <SubHeading>Incident Details</SubHeading>
@@ -660,13 +741,17 @@ export default function ClaimDetail() {
           </div>
         </div>
 
-        {/* Print-only: show report sections */}
-        <div className="hidden print:block space-y-4">
-          <Section title="Incident & Vehicle" icon={<Car className="w-4 h-4 text-primary" />}>
-            <Row label="Date & time" value={`${claim.incidentDate} at ${claim.incidentTime}`} />
-            <Row label="Location" value={claim.incidentLocation} />
-            <Row label="Description" value={claim.description} />
-          </Section>
+            </div>
+          </div>
+
+          {/* Print-only: show report sections */}
+          <div className="hidden print:block space-y-4">
+            <Section title="Incident & Vehicle" icon={<Car className="w-4 h-4 text-primary" />}>
+              <Row label="Date & time" value={`${claim.incidentDate} at ${claim.incidentTime}`} />
+              <Row label="Location" value={claim.incidentLocation} />
+              <Row label="Description" value={claim.description} />
+            </Section>
+          </div>
         </div>
       </div>
 
