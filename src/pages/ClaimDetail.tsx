@@ -392,6 +392,42 @@ export default function ClaimDetail() {
     }
   };
 
+  const sendDamagePhotosEmail = async () => {
+    const recipient = photosEmailTo.trim();
+    if (!recipient) { toast.error('Please enter a recipient email'); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(recipient)) { toast.error('Please enter a valid email address'); return; }
+    if (photos.length === 0) { toast.error('No damage photos to send'); return; }
+    setSendingPhotos(true);
+    try {
+      const veh = vehicles.find(v => v.id === claim.vehicleId);
+      const { error } = await supabase.functions.invoke('send-email', {
+        body: {
+          type: 'damage_photos',
+          to: recipient,
+          data: {
+            claimId: claim.id,
+            claimNumber: claimNumber,
+            date: claim.incidentDate,
+            location: claim.incidentLocation,
+            vehicle: veh ? `${veh.year} ${veh.make} ${veh.model}` : '',
+            rego: veh?.regoNumber || '',
+            photoCount: String(photos.length),
+            message: photosMessage.trim().slice(0, 1000),
+          },
+        },
+      });
+      if (error) throw error;
+      toast.success(`${photos.length} photo${photos.length > 1 ? 's' : ''} sent to ${recipient}`);
+      setPhotosDialogOpen(false);
+      setPhotosEmailTo('');
+      setPhotosMessage('');
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to send photos');
+    } finally {
+      setSendingPhotos(false);
+    }
+  };
+
   return (
     <AppLayout>
       <div className="space-y-4 overflow-x-hidden" id="claim-report" ref={printRef}>
