@@ -157,37 +157,110 @@ export default function Profile() {
 
   return (
     <AppLayout>
-      <div className="theme-dashboard-dark">
-      <div className="space-y-5">
-        <div className="flex items-start gap-3">
-          <Link to="/dashboard" aria-label="Back" className="w-10 h-10 -ml-1 rounded-xl border border-border bg-card hover:bg-muted flex items-center justify-center transition-colors shrink-0 mt-1">
-            <ArrowLeft className="w-5 h-5 text-foreground" strokeWidth={2} />
-          </Link>
-          <div className="min-w-0">
-            <p className="eyebrow">Settings</p>
-            <h1 className="display-heading mt-1">Profile</h1>
+      <div className="theme-garage relative">
+        <div className="space-y-8">
+          {/* Header — matches Garage / VehicleForm pattern */}
+          <div className="flex items-end justify-between gap-3 pt-2">
+            <div className="flex items-start gap-2 min-w-0">
+              <button
+                onClick={() => navigate(-1)}
+                aria-label="Back"
+                className="w-9 h-9 -ml-1 mt-1 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex-shrink-0"
+              >
+                <ArrowLeft className="w-[18px] h-[18px]" strokeWidth={2} />
+              </button>
+              <div className="min-w-0">
+                <h1 className="text-[28px] leading-tight font-semibold text-foreground tracking-[-0.02em] truncate">
+                  {profile.display_name || 'Your profile'}
+                </h1>
+                <p className="text-[13px] text-muted-foreground mt-1">
+                  Profile &amp; settings{isPhoneUser && profile.phone_number ? ` · ${profile.phone_number}` : (user?.email ? ` · ${user.email}` : '')}
+                </p>
+              </div>
+            </div>
           </div>
-        </div>
 
-        <div className="card-soft flex flex-col items-center gap-3 py-6">
-          <div className="relative">
-            <Avatar className="w-20 h-20">
-              <AvatarImage src={profile.avatar_url} alt={profile.display_name} />
-              <AvatarFallback className="bg-muted text-muted-foreground text-lg font-bold">{initials}</AvatarFallback>
-            </Avatar>
-            <button onClick={() => fileInputRef.current?.click()} disabled={uploading}
-              className="absolute -bottom-1 -right-1 w-8 h-8 rounded-full bg-foreground text-card flex items-center justify-center shadow-sm hover:bg-foreground/90 transition-colors">
-              {uploading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Camera className="w-3.5 h-3.5" />}
-            </button>
-            <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarUpload} />
-          </div>
-          <div className="text-center">
-            <p className="text-sm font-semibold text-foreground">{profile.display_name || 'No name set'}</p>
-            <p className="text-xs text-muted-foreground">{isPhoneUser ? profile.phone_number : user?.email}</p>
-          </div>
-        </div>
+          {/* Body */}
+          <div className="md:grid md:grid-cols-[240px_1fr] md:gap-6 lg:grid-cols-[260px_1fr] lg:gap-8 space-y-6 md:space-y-0">
+            {/* Left rail */}
+            <aside className="hidden md:block space-y-4">
+              {/* Avatar tile */}
+              <div className="rounded-xl bg-card border border-border p-3.5">
+                <div className="flex flex-col items-center gap-3 py-2">
+                  <div className="relative">
+                    <Avatar className="w-20 h-20">
+                      <AvatarImage src={profile.avatar_url} alt={profile.display_name} />
+                      <AvatarFallback className="bg-muted text-muted-foreground text-lg font-bold">{initials}</AvatarFallback>
+                    </Avatar>
+                    <button onClick={() => fileInputRef.current?.click()} disabled={uploading}
+                      className="absolute -bottom-1 -right-1 w-8 h-8 rounded-full bg-foreground text-background flex items-center justify-center shadow-sm hover:bg-foreground/90 transition-colors">
+                      {uploading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Camera className="w-3.5 h-3.5" />}
+                    </button>
+                  </div>
+                  <div className="text-center min-w-0">
+                    <p className="text-[13px] font-semibold text-foreground truncate">{profile.display_name || 'No name set'}</p>
+                    <p className="text-[11px] text-muted-foreground truncate">{isPhoneUser ? profile.phone_number : user?.email}</p>
+                  </div>
+                </div>
+              </div>
 
-        <form onSubmit={handleSave} className="card-soft space-y-4">
+              {/* Account summary panel */}
+              <div className="rounded-xl bg-card border border-border overflow-hidden">
+                <div className="px-3.5 pt-3 pb-2 text-[11px] font-medium text-muted-foreground">Account</div>
+                <div className="divide-y divide-border">
+                  {[
+                    { label: 'Name', value: profile.display_name },
+                    { label: 'Email', value: isPhoneUser ? profile.email : user?.email },
+                    { label: 'Phone', value: profile.phone_number },
+                    { label: 'License', value: profile.license_number },
+                  ].map(({ label, value }) => (
+                    <div key={label} className="flex items-center gap-3 px-3.5 py-2.5">
+                      <p className="flex-1 min-w-0 text-[13px] text-muted-foreground">{label}</p>
+                      <span className="text-[13px] font-medium text-foreground tabular-nums truncate max-w-[140px]">{value || '—'}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Quick actions */}
+              <div className="rounded-xl bg-card border border-border overflow-hidden">
+                <div className="px-3.5 pt-3 pb-2 text-[11px] font-medium text-muted-foreground">Quick actions</div>
+                <div className="divide-y divide-border">
+                  <Link to="/dashboard" className="w-full flex items-center gap-3 px-3.5 py-2.5 hover:bg-muted/50 transition-colors text-left">
+                    <ArrowLeft className="w-3.5 h-3.5 text-muted-foreground" strokeWidth={2} />
+                    <p className="flex-1 min-w-0 text-[13px] text-foreground">Back to dashboard</p>
+                  </Link>
+                  <Link to="/vehicles" className="w-full flex items-center gap-3 px-3.5 py-2.5 hover:bg-muted/50 transition-colors text-left">
+                    <User className="w-3.5 h-3.5 text-muted-foreground" strokeWidth={2} />
+                    <p className="flex-1 min-w-0 text-[13px] text-foreground">My vehicles</p>
+                  </Link>
+                </div>
+              </div>
+            </aside>
+
+            {/* Right column — content */}
+            <div className="space-y-6 pb-24">
+              {/* Mobile-only: avatar header */}
+              <div className="md:hidden card-soft flex flex-col items-center gap-3 py-6">
+                <div className="relative">
+                  <Avatar className="w-20 h-20">
+                    <AvatarImage src={profile.avatar_url} alt={profile.display_name} />
+                    <AvatarFallback className="bg-muted text-muted-foreground text-lg font-bold">{initials}</AvatarFallback>
+                  </Avatar>
+                  <button onClick={() => fileInputRef.current?.click()} disabled={uploading}
+                    className="absolute -bottom-1 -right-1 w-8 h-8 rounded-full bg-foreground text-background flex items-center justify-center shadow-sm hover:bg-foreground/90 transition-colors">
+                    {uploading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Camera className="w-3.5 h-3.5" />}
+                  </button>
+                </div>
+                <div className="text-center">
+                  <p className="text-sm font-semibold text-foreground">{profile.display_name || 'No name set'}</p>
+                  <p className="text-xs text-muted-foreground">{isPhoneUser ? profile.phone_number : user?.email}</p>
+                </div>
+              </div>
+
+              <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarUpload} />
+
+              <form onSubmit={handleSave} className="card-soft space-y-4">
           <div>
             <label className="form-label flex items-center gap-1.5"><User className="w-3.5 h-3.5" strokeWidth={1.5} />Full name</label>
             <input className="form-input" placeholder="Your full name" value={profile.display_name} onChange={e => setProfile(p => ({ ...p, display_name: e.target.value }))} />
