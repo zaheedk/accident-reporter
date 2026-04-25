@@ -223,7 +223,7 @@ export default function Family() {
                         {m.email && <div className="text-xs text-muted-foreground">{m.email}</div>}
                       </div>
                       {isHead && m.role !== 'head' && (
-                        <Button variant="ghost" size="sm" onClick={() => removeMember(m.id)}>
+                        <Button variant="ghost" size="sm" onClick={() => removeMember(m.id, m.display_name || m.email || 'this member')}>
                           <X className="w-4 h-4" />
                         </Button>
                       )}
