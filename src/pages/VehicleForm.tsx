@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, Check, Camera, X, ImageIcon, Loader2, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, Check, Camera, X, Loader2, AlertTriangle } from 'lucide-react';
 import DocumentVault from '@/components/DocumentVault';
 import { getVehicles, saveVehicle } from '@/lib/storage';
 import { Vehicle } from '@/types';
