@@ -1117,6 +1117,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_family_head: {
+        Args: { _family_id: string; _user_id: string }
+        Returns: boolean
+      }
       move_to_dlq: {
         Args: {
           dlq_name: string
@@ -1134,6 +1138,7 @@ export type Database = {
           read_ct: number
         }[]
       }
+      user_family_id: { Args: { _user_id: string }; Returns: string }
     }
     Enums: {
       app_role: "admin" | "user"
