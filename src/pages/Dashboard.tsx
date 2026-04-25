@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { Car, Plus, AlertTriangle, ChevronRight, User, Shield, Phone, Search, MapPin, X, MessageSquare, FileWarning, ShieldAlert, CalendarClock, ArrowUpRight, Activity, FileText, Wrench, Truck, BookOpen, Lightbulb, Star } from 'lucide-react';
+import { Car, Plus, AlertTriangle, ChevronRight, User, Shield, Phone, Search, MapPin, X, MessageSquare, FileWarning, ShieldAlert, CalendarClock, ArrowUpRight, Activity, FileText, Wrench, Truck, BookOpen, Lightbulb, Star, Users } from 'lucide-react';
 import { getVehicles, getClaims } from '@/lib/storage';
 import { useAuth } from '@/contexts/AuthContext';
 import AppLayout from '@/components/AppLayout';
@@ -53,6 +53,20 @@ export default function Dashboard() {
   const { data: claims = [] } = useOfflineQuery<ClaimReport[]>(
     ['claims', user?.id ?? ''],
     () => getClaims(user!.id),
+    { enabled: !!user }
+  );
+
+  const { data: familyInfo } = useOfflineQuery<{ inFamily: boolean; isHead: boolean; memberCount: number }>(
+    ['family-info', user?.id ?? ''],
+    async () => {
+      if (!user) return { inFamily: false, isHead: false, memberCount: 0 };
+      const { data: m } = await supabase
+        .from('family_members').select('family_id, role').eq('user_id', user.id).maybeSingle();
+      if (!m) return { inFamily: false, isHead: false, memberCount: 0 };
+      const { count } = await supabase
+        .from('family_members').select('*', { count: 'exact', head: true }).eq('family_id', m.family_id);
+      return { inFamily: true, isHead: m.role === 'head', memberCount: count ?? 1 };
+    },
     { enabled: !!user }
   );
 
@@ -423,6 +437,29 @@ export default function Dashboard() {
                     <div className="text-[11px] text-destructive-foreground/75 mt-1.5">Emergency 111</div>
                   </div>
                 </a>
+              </motion.div>
+
+              {/* Family quick card */}
+              <motion.div variants={fadeUp}>
+                <Link
+                  to="/family"
+                  className="flex items-center gap-3 p-4 rounded-2xl bg-card border border-border hover:border-foreground/20 transition-colors group"
+                >
+                  <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                    <Users className="w-5 h-5 text-primary" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-[14px] font-semibold text-foreground tracking-[-0.01em]">
+                      {familyInfo?.inFamily ? 'Your family' : 'Invite your family'}
+                    </div>
+                    <div className="text-[12px] text-muted-foreground truncate">
+                      {familyInfo?.inFamily
+                        ? `${familyInfo.memberCount} member${familyInfo.memberCount === 1 ? '' : 's'} · share vehicles & reports`
+                        : 'Share vehicles, reports and reminders with your household'}
+                    </div>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors" />
+                </Link>
               </motion.div>
 
               {/* Vehicle cards — Apple/Linear flat thumbnails */}
