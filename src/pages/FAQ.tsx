@@ -1,6 +1,7 @@
 import AppLayout from '@/components/AppLayout';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { HelpCircle, MessageSquare } from 'lucide-react';
+import SEO from '@/components/SEO';
 
 const faqs = [
   {
