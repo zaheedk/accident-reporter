@@ -741,13 +741,17 @@ export default function ClaimDetail() {
           </div>
         </div>
 
-        {/* Print-only: show report sections */}
-        <div className="hidden print:block space-y-4">
-          <Section title="Incident & Vehicle" icon={<Car className="w-4 h-4 text-primary" />}>
-            <Row label="Date & time" value={`${claim.incidentDate} at ${claim.incidentTime}`} />
-            <Row label="Location" value={claim.incidentLocation} />
-            <Row label="Description" value={claim.description} />
-          </Section>
+            </div>
+          </div>
+
+          {/* Print-only: show report sections */}
+          <div className="hidden print:block space-y-4">
+            <Section title="Incident & Vehicle" icon={<Car className="w-4 h-4 text-primary" />}>
+              <Row label="Date & time" value={`${claim.incidentDate} at ${claim.incidentTime}`} />
+              <Row label="Location" value={claim.incidentLocation} />
+              <Row label="Description" value={claim.description} />
+            </Section>
+          </div>
         </div>
       </div>
 
