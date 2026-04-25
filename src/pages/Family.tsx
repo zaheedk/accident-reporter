@@ -301,27 +301,14 @@ export default function Family() {
                   <Card className="p-5 space-y-3">
                     <h2 className="font-semibold">Invitation history</h2>
                     {invites.map(inv => {
-                      const isExpired = inv.status === 'pending' && new Date(inv.expires_at) < new Date();
-                      const effectiveStatus = isExpired ? 'expired' : inv.status;
-                      const statusStyles: Record<string, string> = {
-                        pending: 'bg-amber-500/15 text-amber-600 dark:text-amber-400',
-                        accepted: 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400',
-                        revoked: 'bg-muted text-muted-foreground',
-                        expired: 'bg-destructive/15 text-destructive',
-                      };
-                      const statusLabel: Record<string, string> = {
-                        pending: 'Pending',
-                        accepted: 'Joined',
-                        revoked: 'Revoked',
-                        expired: 'Expired',
-                      };
+                      const effectiveStatus = getInviteStatus(inv);
                       return (
                         <div key={inv.id} className="flex items-center justify-between gap-2 p-3 rounded-lg bg-muted/40">
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 flex-wrap">
                               <span className="text-sm font-medium truncate">{inv.email || 'Share code'}</span>
-                              <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${statusStyles[effectiveStatus]}`}>
-                                {statusLabel[effectiveStatus]}
+                              <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${inviteStatusStyles[effectiveStatus]}`}>
+                                {inviteStatusLabel[effectiveStatus]}
                               </span>
                             </div>
                             <div className="text-xs text-muted-foreground font-mono">{inv.code}</div>
