@@ -85,16 +85,24 @@ export default function PanelShops() {
     <AppLayout>
       <div className="theme-garage relative">
         <div className="relative space-y-7">
-        {/* Header — Apple/Linear: large display title, fine eyebrow */}
+        {/* Header — Apple/Linear: back arrow + large display title */}
         <div className="flex items-end justify-between gap-3 pt-2">
-          <div className="min-w-0">
-            <p className="text-[12px] text-muted-foreground">Directory · Nationwide</p>
-            <h1 className="text-[28px] leading-tight font-semibold text-foreground tracking-[-0.02em] truncate mt-1">
-              Panel Shops
-            </h1>
-            <p className="text-[13px] text-muted-foreground mt-1">
-              Top-rated panel beaters across NZ · 4.5+ Google rating
-            </p>
+          <div className="flex items-start gap-2 min-w-0">
+            <Link
+              to={session ? '/dashboard' : '/'}
+              aria-label="Back"
+              className="w-9 h-9 -ml-1 mt-1 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex-shrink-0"
+            >
+              <ArrowLeft className="w-[18px] h-[18px]" strokeWidth={2} />
+            </Link>
+            <div className="min-w-0">
+              <h1 className="text-[28px] leading-tight font-semibold text-foreground tracking-[-0.02em] truncate">
+                Panel Shops
+              </h1>
+              <p className="text-[13px] text-muted-foreground tabular-nums mt-1">
+                Top-rated NZ panel beaters · 4.5+ rating
+              </p>
+            </div>
           </div>
           {isAdmin && (
             <button
