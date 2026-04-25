@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, Save, Camera, Loader2, MapPin, Car, Trash2, Check, CarFront, Ban, ParkingSquare, Plus, User, Users } from 'lucide-react';
+import { useNavigate, useParams, useSearchParams, Link } from 'react-router-dom';
+import { ArrowLeft, ArrowRight, Save, Camera, Loader2, MapPin, Car, Trash2, Check, CarFront, Ban, ParkingSquare, Plus, User, Users, Phone, AlertTriangle, FileText } from 'lucide-react';
 import { DamagePhotoAnalyzer, ThirdPartyPhotos } from '@/components/PhotoAnalyzer';
 import { PhotoCapture } from '@/components/PhotoCapture';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -309,8 +309,8 @@ export default function ClaimWizard() {
 
   return (
     <AppLayout>
-      <div className="theme-dashboard">
-        <div className="space-y-6 pb-24">
+      <div className="theme-garage">
+        <div className="space-y-8">
           {/* Header — Apple/Linear */}
           <div className="flex items-end justify-between gap-3 pt-2">
             <div className="flex items-start gap-2 min-w-0">
@@ -320,12 +320,12 @@ export default function ClaimWizard() {
                 <ArrowLeft className="w-[18px] h-[18px]" strokeWidth={2} />
               </button>
               <div className="min-w-0">
-                <p className="text-[12px] text-muted-foreground">
-                  {isEdit ? 'Edit claim' : 'New claim'}{reportRef ? ` · ${reportRef}` : ''}
-                </p>
-                <h1 className="text-[28px] leading-tight font-semibold text-foreground tracking-[-0.02em] truncate mt-1">
+                <h1 className="text-[28px] leading-tight font-semibold text-foreground tracking-[-0.02em] truncate">
                   Report incident
                 </h1>
+                <p className="text-[13px] text-muted-foreground mt-1">
+                  {isEdit ? 'Edit claim' : 'New claim'}{reportRef ? ` · ${reportRef}` : ''}
+                </p>
               </div>
             </div>
 
@@ -360,8 +360,68 @@ export default function ClaimWizard() {
             </div>
           </div>
 
-        {/* 4-step pill bar */}
-        <div className="flex items-center">
+          {/* Body — sidebar + main on tablet+ */}
+          <div className="md:grid md:grid-cols-[240px_1fr] md:gap-6 lg:grid-cols-[260px_1fr] lg:gap-8 space-y-6 md:space-y-0">
+            {/* Left rail — Garage-style cards */}
+            <aside className="hidden md:block space-y-4">
+              {/* Progress panel */}
+              <div className="rounded-xl bg-card border border-border overflow-hidden">
+                <div className="px-3.5 pt-3 pb-2 text-[11px] font-medium text-muted-foreground">Progress</div>
+                <div className="divide-y divide-border">
+                  {STEPS.map((label, i) => {
+                    const status = i < step ? 'done' : i === step ? 'active' : 'idle';
+                    return (
+                      <button
+                        key={label}
+                        onClick={async () => { if (shouldSave()) await autoSave(); setStep(i); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                        className={`w-full flex items-center gap-3 px-3.5 py-2.5 text-left hover:bg-muted/50 transition-colors ${status === 'active' ? 'bg-muted/40' : ''}`}
+                      >
+                        <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-semibold tabular-nums shrink-0 ${
+                          status === 'done' ? 'bg-foreground text-background' :
+                          status === 'active' ? 'bg-foreground text-background' :
+                          'bg-muted text-muted-foreground'
+                        }`}>
+                          {status === 'done' ? <Check className="w-3 h-3" strokeWidth={3} /> : i + 1}
+                        </span>
+                        <p className={`flex-1 min-w-0 text-[13px] ${status === 'idle' ? 'text-muted-foreground' : 'text-foreground font-medium'}`}>{label}</p>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Quick actions panel */}
+              <div className="rounded-xl bg-card border border-border overflow-hidden">
+                <div className="px-3.5 pt-3 pb-2 text-[11px] font-medium text-muted-foreground">Emergency</div>
+                <div className="divide-y divide-border">
+                  <a href="tel:111" className="w-full flex items-center gap-3 px-3.5 py-2.5 hover:bg-muted/50 transition-colors text-left">
+                    <Phone className="w-3.5 h-3.5 text-destructive" strokeWidth={2} />
+                    <p className="flex-1 min-w-0 text-[13px] text-foreground">Call police · 111</p>
+                  </a>
+                  <Link to="/tow-companies" className="w-full flex items-center gap-3 px-3.5 py-2.5 hover:bg-muted/50 transition-colors text-left">
+                    <AlertTriangle className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" strokeWidth={2} />
+                    <p className="flex-1 min-w-0 text-[13px] text-foreground">Find a tow truck</p>
+                  </Link>
+                  <Link to="/claims" className="w-full flex items-center gap-3 px-3.5 py-2.5 hover:bg-muted/50 transition-colors text-left">
+                    <FileText className="w-3.5 h-3.5 text-muted-foreground" strokeWidth={2} />
+                    <p className="flex-1 min-w-0 text-[13px] text-foreground">All reports</p>
+                  </Link>
+                </div>
+              </div>
+
+              {/* Auto-save hint */}
+              <div className="rounded-xl bg-card border border-border p-3.5">
+                <div className="flex items-center gap-2 text-[11px] text-muted-foreground">
+                  <Save className="w-3 h-3" /> Auto-saved as you type
+                </div>
+              </div>
+            </aside>
+
+            {/* Right column — wizard */}
+            <div className="space-y-6 pb-24">
+
+        {/* 4-step pill bar — mobile only (sidebar shows progress on md+) */}
+        <div className="flex items-center md:hidden">
           {STEPS.map((label, i) => {
             const status = i < step ? 'done' : i === step ? 'active' : 'idle';
             return (
@@ -853,6 +913,8 @@ export default function ClaimWizard() {
             </button>
           )}
         </div>
+            </div>
+          </div>
         </div>
       </div>
     </AppLayout>
