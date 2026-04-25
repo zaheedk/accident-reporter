@@ -14,6 +14,11 @@ import rightOfWayHero from '@/assets/blog/right-of-way-hero.jpg';
 import youngDriverHero from '@/assets/blog/young-driver-hero.jpg';
 import talkingToInsurerHero from '@/assets/blog/talking-to-insurer-hero.jpg';
 import reportingAccidentPoliceHero from '@/assets/blog/reporting-accident-police-hero.jpg';
+import writtenOffCarHero from '@/assets/blog/written-off-car-hero.jpg';
+import comprehensiveVsThirdPartyHero from '@/assets/blog/comprehensive-vs-third-party-hero.jpg';
+import hitAndRunHero from '@/assets/blog/hit-and-run-hero.jpg';
+import towTruckNzHero from '@/assets/blog/tow-truck-nz-hero.jpg';
+import multiVehiclePileupHero from '@/assets/blog/multi-vehicle-pileup-hero.jpg';
 
 export interface BlogArticle {
   slug: string;
