@@ -913,8 +913,6 @@ export default function ClaimWizard() {
             </button>
           )}
         </div>
-        </div>
-      </div>
             </div>
           </div>
         </div>
