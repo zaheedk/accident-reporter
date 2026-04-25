@@ -550,6 +550,109 @@ export default function ClaimWizard() {
                     placeholder="e.g. 50" value={claim.speedBeforeBraking} onChange={e => update('speedBeforeBraking', e.target.value)} />
                 </div>
 
+                {/* Damage to your vehicle */}
+                <div>
+                  <label className="field-label">Damage to your vehicle</label>
+                  <textarea className="w-full min-h-[72px] px-3.5 py-2.5 rounded-xl border border-border bg-card text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring/30"
+                    placeholder="Describe the visible damage"
+                    value={claim.damageDescription} onChange={e => update('damageDescription', e.target.value)} />
+                </div>
+
+                {/* Towed */}
+                <div className="card-soft space-y-3">
+                  <ToggleRow id="towed" label="Vehicle was towed"
+                    checked={!!claim.vehicleTowed}
+                    onChange={v => update('vehicleTowed', v)} />
+                  {claim.vehicleTowed && (
+                    <input className="w-full h-11 px-3.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring/30"
+                      placeholder="Towing company"
+                      value={claim.towingCompany} onChange={e => update('towingCompany', e.target.value)} />
+                  )}
+                </div>
+
+                {/* Police */}
+                <div className="card-soft space-y-3">
+                  <ToggleRow id="police" label="Police attended"
+                    checked={!!claim.policeAttended}
+                    onChange={v => update('policeAttended', v)} />
+                  {claim.policeAttended && (
+                    <input className="w-full h-11 px-3.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring/30"
+                      placeholder="Officer name / badge / station"
+                      value={claim.policeOfficerDetails} onChange={e => update('policeOfficerDetails', e.target.value)} />
+                  )}
+                </div>
+
+                {/* Injuries */}
+                <div className="card-soft space-y-3">
+                  <ToggleRow id="hurt" label="Anyone hurt"
+                    checked={!!claim.anyoneHurt}
+                    onChange={v => update('anyoneHurt', v)} />
+                  {claim.anyoneHurt && (
+                    <textarea className="w-full min-h-[64px] px-3.5 py-2.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring/30"
+                      placeholder="Describe injuries and who was affected"
+                      value={claim.injuryDetails} onChange={e => update('injuryDetails', e.target.value)} />
+                  )}
+                </div>
+
+                {/* Substance use */}
+                <div className="card-soft space-y-3">
+                  <ToggleRow id="substance" label="Driver consumed alcohol or drugs"
+                    checked={!!claim.driverConsumedSubstance}
+                    onChange={v => update('driverConsumedSubstance', v)} />
+                  {claim.driverConsumedSubstance && (
+                    <textarea className="w-full min-h-[64px] px-3.5 py-2.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring/30"
+                      placeholder="Substance and quantity"
+                      value={claim.substanceDetails} onChange={e => update('substanceDetails', e.target.value)} />
+                  )}
+                </div>
+
+                {/* Other property damage */}
+                <div className="card-soft space-y-3">
+                  <label className="field-label mb-0">Other property damage</label>
+                  <textarea className="w-full min-h-[64px] px-3.5 py-2.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring/30"
+                    placeholder="e.g. fence, lamp post (optional)"
+                    value={claim.otherPropertyDamage} onChange={e => update('otherPropertyDamage', e.target.value)} />
+                  <input className="w-full h-11 px-3.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring/30"
+                    placeholder="Owner name / contact"
+                    value={claim.otherPropertyOwner} onChange={e => update('otherPropertyOwner', e.target.value)} />
+                </div>
+
+                {/* Liability */}
+                <div className="card-soft space-y-3">
+                  <ToggleRow id="liability" label="Liability admitted at scene"
+                    checked={!!claim.liabilityAdmitted}
+                    onChange={v => update('liabilityAdmitted', v)} />
+                  {claim.liabilityAdmitted && (
+                    <textarea className="w-full min-h-[64px] px-3.5 py-2.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring/30"
+                      placeholder="Who admitted, what was said"
+                      value={claim.liabilityDetails} onChange={e => update('liabilityDetails', e.target.value)} />
+                  )}
+                </div>
+
+                {/* Repairer */}
+                <div className="card-soft space-y-3">
+                  <label className="field-label mb-0">Repairer (if known)</label>
+                  <input className="w-full h-11 px-3.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring/30"
+                    placeholder="Repairer / panel shop name"
+                    value={claim.repairerName} onChange={e => update('repairerName', e.target.value)} />
+                  <div className="grid grid-cols-2 gap-2">
+                    <input className="h-11 px-3.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring/30"
+                      type="tel" placeholder="Phone"
+                      value={claim.repairerPhone} onChange={e => update('repairerPhone', e.target.value)} />
+                    <input className="h-11 px-3.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring/30"
+                      placeholder="Address"
+                      value={claim.repairerAddress} onChange={e => update('repairerAddress', e.target.value)} />
+                  </div>
+                </div>
+
+                {/* Your insurance claim number */}
+                <div>
+                  <label className="field-label">Your insurance claim #</label>
+                  <input className="w-full h-12 px-3.5 rounded-xl border border-border bg-card text-sm text-foreground tabular-nums focus:outline-none focus:ring-2 focus:ring-ring/30"
+                    placeholder="Reference from your insurer"
+                    value={claim.userClaimNumber} onChange={e => update('userClaimNumber', e.target.value)} />
+                </div>
+
               </div>
             )}
 
