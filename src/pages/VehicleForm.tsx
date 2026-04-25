@@ -427,6 +427,7 @@ export default function VehicleForm() {
           </div>
         </div>
       </div>
+    </div>
     </AppLayout>
   );
 }
