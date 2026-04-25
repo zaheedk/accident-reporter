@@ -418,15 +418,15 @@ export default function Dashboard() {
               {/* Mobile hero action tiles — kept as-is for mobile */}
               <motion.div variants={fadeUp} className="grid grid-cols-2 gap-3 md:hidden">
                 <button
-                  onClick={handleOpenTowSheet}
+                  onClick={() => setAccidentSheetOpen(true)}
                   className="rounded-2xl bg-foreground text-background p-5 text-left transition-all active:scale-[0.98] min-h-[140px] flex flex-col justify-between"
                 >
                   <div className="w-10 h-10 rounded-xl bg-background/10 flex items-center justify-center">
-                    <Phone className="w-5 h-5" strokeWidth={2} />
+                    <AlertTriangle className="w-5 h-5" strokeWidth={2} />
                   </div>
                   <div>
-                    <div className="text-[15px] font-semibold leading-tight">Call tow<br/>truck</div>
-                    <div className="text-[11px] text-background/60 mt-1.5">24/7 emergency</div>
+                    <div className="text-[15px] font-semibold leading-tight">Had<br/>accident?</div>
+                    <div className="text-[11px] text-background/60 mt-1.5">Tow or report now</div>
                   </div>
                 </button>
                 <a href="tel:111" className="rounded-2xl text-destructive-foreground p-5 transition-all active:scale-[0.98] flex flex-col justify-between min-h-[140px] bg-accent">
