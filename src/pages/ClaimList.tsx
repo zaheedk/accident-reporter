@@ -84,6 +84,13 @@ export default function ClaimList() {
   }, [vehicles]);
 
   const getRegoForClaim = (c: ClaimReport) => vehicleMap[c.vehicleId]?.regoNumber || '';
+  const getDisplayRef = (c: ClaimReport): { label: 'Claim' | 'Policy' | 'Report'; value: string } => {
+    if (c.userClaimNumber) return { label: 'Claim', value: c.userClaimNumber };
+    const policy = (vehicleMap[c.vehicleId] as any)?.insurancePolicyNumber || '';
+    if (policy) return { label: 'Policy', value: policy };
+    const reportNum = claimMeta[c.id]?.reportNumber || '';
+    return { label: 'Report', value: reportNum };
+  };
 
   const draftCount = useMemo(() => claims.filter(c => c.status === 'draft').length, [claims]);
   const savedCount = useMemo(() => claims.filter(c => c.status !== 'draft').length, [claims]);
