@@ -1767,7 +1767,7 @@ The clearer your records, the harder it is for an assessor to lowball you.
 ---
 
 *Already had your car written off? Open SAVO, head to your incident, and export the full PDF report to back up your settlement negotiation.*
-    \`
+    `
   },
   {
     slug: "comprehensive-vs-third-party-insurance-nz",
@@ -1893,7 +1893,7 @@ Whatever cover you choose, you still need to lodge claims fast and provide solid
 ---
 
 *Not sure which policy you're currently on? Add your vehicle to SAVO's garage and store your policy document so it's one tap away when something goes wrong.*
-    \`
+    `
   },
   {
     slug: "hit-and-run-accident-nz-what-to-do",
@@ -2011,7 +2011,7 @@ Read more about [dashcam evidence](/blog/dashcam-phone-evidence-insurance-claims
 ---
 
 *Just been hit and the other driver took off? Open SAVO, tap "New Report", and capture the scene before anything moves.*
-    \`
+    `
   },
   {
     slug: "towing-rights-nz-choosing-tow-company",
@@ -2133,7 +2133,7 @@ Once your car is on the truck, SAVO helps you:
 ---
 
 *If a tow truck just pulled up to your accident, take a breath, call your insurer, and check our [tow directory](/tow-companies) for verified operators near you.*
-    \`
+    `
   },
   {
     slug: "multi-vehicle-pile-up-nz-fault-claims",
@@ -2272,7 +2272,7 @@ When fault is being argued months later, the driver with the cleanest evidence a
 ---
 
 *Involved in a multi-vehicle crash? Open SAVO, capture the full scene before anything moves, and email the report to your insurer the same day to get ahead of the queue.*
-    \`
+    `
   }
 ];
 
