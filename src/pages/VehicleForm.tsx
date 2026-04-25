@@ -427,9 +427,10 @@ export default function VehicleForm() {
               {isEdit ? 'Update vehicle' : 'Save vehicle'}
             </button>
           </div>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
     </AppLayout>
   );
 }
