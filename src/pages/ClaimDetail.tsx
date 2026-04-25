@@ -400,6 +400,7 @@ export default function ClaimDetail() {
     setSendingPhotos(true);
     try {
       const veh = vehicles.find(v => v.id === claim.vehicleId);
+      const vehPolicyNumber = (veh as any)?.insurancePolicyNumber || '';
       const { error } = await supabase.functions.invoke('send-email', {
         body: {
           type: 'damage_photos',
@@ -407,6 +408,8 @@ export default function ClaimDetail() {
           data: {
             claimId: claim.id,
             claimNumber: claimNumber,
+            userClaimNumber: claim.userClaimNumber || '',
+            policyNumber: vehPolicyNumber,
             date: claim.incidentDate,
             location: claim.incidentLocation,
             vehicle: veh ? `${veh.year} ${veh.make} ${veh.model}` : '',

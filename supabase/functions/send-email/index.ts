@@ -288,8 +288,16 @@ function getEmailContent(type: string, data: Record<string, string> = {}) {
     }
 
     case 'damage_photos': {
-      const claimRef = data.claimNumber ? `CLM-${String(data.claimNumber).padStart(4, '0')}` : '';
-      const subject = `Vehicle damage photos${claimRef ? ` – ${claimRef}` : ''}${data.rego ? ` (${data.rego})` : ''}`;
+      const internalRef = data.claimNumber ? `CLM-${String(data.claimNumber).padStart(4, '0')}` : '';
+      const displayRef = (data.userClaimNumber && String(data.userClaimNumber).trim())
+        || (data.policyNumber && String(data.policyNumber).trim())
+        || internalRef;
+      const displayLabel = (data.userClaimNumber && String(data.userClaimNumber).trim())
+        ? 'claim'
+        : (data.policyNumber && String(data.policyNumber).trim())
+          ? 'policy'
+          : 'incident';
+      const subject = `Vehicle damage photos${displayRef ? ` – ${displayRef}` : ''}${data.rego ? ` (${data.rego})` : ''}`;
       const html = `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
           <div style="background: linear-gradient(135deg, #1e3a5f, #162d4a); padding: 30px; border-radius: 12px 12px 0 0;">
@@ -297,7 +305,7 @@ function getEmailContent(type: string, data: Record<string, string> = {}) {
           </div>
           <div style="background: #ffffff; padding: 30px; border: 1px solid #e5e5e5; border-top: none; border-radius: 0 0 12px 12px;">
             <h2 style="color: #1a1a1a; margin-top: 0;">Vehicle Damage Photos</h2>
-            <p style="color: #555; line-height: 1.6;">Please find attached the damage photos${claimRef ? ` for incident <strong>${claimRef}</strong>` : ''}${data.rego ? ` involving vehicle <strong>${data.rego}</strong>` : ''}.</p>
+            <p style="color: #555; line-height: 1.6;">Please find attached the damage photos${displayRef ? ` for ${displayLabel} <strong>${displayRef}</strong>` : ''}${data.rego ? ` involving vehicle <strong>${data.rego}</strong>` : ''}.</p>
             <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
               ${data.date ? `<tr><td style="padding: 8px 0; color: #999; width: 120px;">Incident Date</td><td style="padding: 8px 0; color: #333; font-weight: 500;">${data.date}</td></tr>` : ''}
               ${data.location ? `<tr><td style="padding: 8px 0; color: #999;">Location</td><td style="padding: 8px 0; color: #333; font-weight: 500;">${data.location}</td></tr>` : ''}
