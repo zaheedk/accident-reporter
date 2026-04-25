@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Shield, Camera, FileText, Clock, Phone, Wrench, Truck, ChevronRight, ArrowRight, CheckCircle2, BookOpen, HelpCircle, Newspaper, Menu, X, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
+import SEO from '@/components/SEO';
 const heroScene = '/hero-scene.jpg';
 
 const stagger = { hidden: {}, visible: { transition: { staggerChildren: 0.1 } } };
