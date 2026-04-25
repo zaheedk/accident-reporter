@@ -44,6 +44,10 @@ export default function ClaimDetail() {
   const [emailDialogOpen, setEmailDialogOpen] = useState(false);
   const [emailTo, setEmailTo] = useState('');
   const [sendingEmail, setSendingEmail] = useState(false);
+  const [photosDialogOpen, setPhotosDialogOpen] = useState(false);
+  const [photosEmailTo, setPhotosEmailTo] = useState('');
+  const [photosMessage, setPhotosMessage] = useState('');
+  const [sendingPhotos, setSendingPhotos] = useState(false);
   const [claimNumber, setClaimNumber] = useState('');
   const [reportNumber, setReportNumber] = useState('');
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
