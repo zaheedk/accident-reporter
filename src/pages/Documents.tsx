@@ -30,27 +30,33 @@ export default function Documents() {
       ? { primary: selectedVehicle.regoNumber, secondary: `${selectedVehicle.year} ${selectedVehicle.make} ${selectedVehicle.model}` }
       : { primary: 'Select', secondary: '' };
 
-  const docCount = selected === 'personal' ? null : null;
+  const docContextLabel = selected === 'personal'
+    ? 'Personal'
+    : selectedVehicle ? selectedVehicle.regoNumber : '';
 
   return (
     <AppLayout>
-      <div className="theme-dashboard">
-        <div className="space-y-7">
-        {/* Header — eyebrow + display title */}
-        <div className="flex items-start justify-between gap-3 pt-1">
+      <div className="theme-garage relative">
+        <div className="relative space-y-8">
+        {/* Header — Apple/Linear: large display title, fine eyebrow, no uppercase shouting */}
+        <div className="flex items-end justify-between gap-3 pt-2">
           <div className="flex items-start gap-2 min-w-0">
             <Link
               to="/dashboard"
               aria-label="Back"
-              className="w-9 h-9 -ml-1 mt-1 rounded-xl flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors flex-shrink-0"
+              className="w-9 h-9 -ml-1 mt-1 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex-shrink-0"
             >
-              <ArrowLeft className="w-5 h-5" />
+              <ArrowLeft className="w-[18px] h-[18px]" strokeWidth={2} />
             </Link>
             <div className="min-w-0">
-              <p className="text-[12px] text-muted-foreground">Vault · {selected === 'personal' ? 'Personal' : selectedVehicle?.regoNumber ?? ''}</p>
-              <h1 className="text-[28px] font-semibold tracking-[-0.02em] mt-1 text-foreground truncate">
+              <h1 className="text-[28px] leading-tight font-semibold text-foreground tracking-[-0.02em] truncate">
                 Documents
               </h1>
+              {docContextLabel && (
+                <p className="text-[13px] text-muted-foreground tabular-nums mt-1">
+                  {docContextLabel}
+                </p>
+              )}
             </div>
           </div>
         </div>
