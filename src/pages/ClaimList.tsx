@@ -84,6 +84,13 @@ export default function ClaimList() {
   }, [vehicles]);
 
   const getRegoForClaim = (c: ClaimReport) => vehicleMap[c.vehicleId]?.regoNumber || '';
+  const getDisplayRef = (c: ClaimReport): { label: 'Claim' | 'Policy' | 'Report'; value: string } => {
+    if (c.userClaimNumber) return { label: 'Claim', value: c.userClaimNumber };
+    const policy = (vehicleMap[c.vehicleId] as any)?.insurancePolicyNumber || '';
+    if (policy) return { label: 'Policy', value: policy };
+    const reportNum = claimMeta[c.id]?.reportNumber || '';
+    return { label: 'Report', value: reportNum };
+  };
 
   const draftCount = useMemo(() => claims.filter(c => c.status === 'draft').length, [claims]);
   const savedCount = useMemo(() => claims.filter(c => c.status !== 'draft').length, [claims]);
@@ -108,8 +115,10 @@ export default function ClaimList() {
       const meta = claimMeta[c.id];
       const claimNumStr = meta?.claimNumber ? String(meta.claimNumber) : '';
       const reportNum = (meta?.reportNumber || '').toLowerCase();
+      const userClaim = (c.userClaimNumber || '').toLowerCase();
+      const policy = ((vehicleMap[c.vehicleId] as any)?.insurancePolicyNumber || '').toLowerCase();
       const location = (c.incidentLocation || '').toLowerCase();
-      return rego.includes(q) || date.includes(q) || claimNumStr.includes(q) || reportNum.includes(q) || location.includes(q);
+      return rego.includes(q) || date.includes(q) || claimNumStr.includes(q) || reportNum.includes(q) || userClaim.includes(q) || policy.includes(q) || location.includes(q);
     });
   }, [claims, search, vehicleMap, claimMeta, filter]);
 
@@ -232,12 +241,13 @@ export default function ClaimList() {
                       const href = c.status === 'draft' ? `/claims/${slug}/edit` : `/claims/${slug}`;
                       const isDraft = c.status === 'draft';
                       const dot = isDraft ? 'bg-amber-500' : 'bg-emerald-500';
+                      const ref = getDisplayRef(c);
                       return (
                         <Link key={c.id} to={href} className="flex items-center gap-3 px-3.5 py-2.5 hover:bg-muted/50 transition-colors">
                           <span className={`w-1.5 h-1.5 rounded-full ${dot} shrink-0`} />
                           <div className="flex-1 min-w-0">
                             <div className="text-[13px] font-medium text-foreground truncate">
-                              {reportNum ? `#${reportNum}` : 'Draft'} <span className="opacity-60">· {getRegoForClaim(c) || 'No vehicle'}</span>
+                              {ref.value ? `#${ref.value}` : (isDraft ? 'Draft' : 'Report')} <span className="opacity-60">· {getRegoForClaim(c) || 'No vehicle'}</span>
                             </div>
                             <div className="text-[11px] text-muted-foreground truncate">{c.incidentDate || 'No date'}</div>
                           </div>
@@ -258,7 +268,7 @@ export default function ClaimList() {
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/70" />
                   <input
                     type="text"
-                    placeholder="Search rego, date, report #..."
+                    placeholder="Search rego, claim #, policy, date..."
                     value={search}
                     onChange={e => setSearch(e.target.value)}
                     className="w-full pl-9 pr-9 h-10 rounded-lg bg-card border border-border text-[13px] placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-ring/30 focus:border-ring/40 transition-all"
@@ -324,6 +334,7 @@ export default function ClaimList() {
                     const statusTone = isDraft
                       ? 'text-amber-700 dark:text-amber-400 bg-amber-500/10'
                       : 'text-foreground/70 bg-muted/60';
+                    const ref = getDisplayRef(c);
                     return (
                       <div
                         key={c.id}
@@ -341,13 +352,13 @@ export default function ClaimList() {
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2">
                                 <div className="text-[13px] font-semibold text-foreground truncate tabular-nums">
-                                  {rego || (reportNum ? `#${reportNum}` : 'No vehicle')}
+                                  {rego || (ref.value ? `${ref.label} #${ref.value}` : 'No vehicle')}
                                 </div>
                               </div>
                               <div className="text-[12px] text-muted-foreground truncate flex items-center gap-1.5">
                                 <Calendar className="w-3 h-3" strokeWidth={2} />
                                 {c.incidentDate || 'No date'}
-                                {reportNum && rego && <span className="opacity-50">· #{reportNum}</span>}
+                                {ref.value && rego && <span className="opacity-50">· {ref.label} #{ref.value}</span>}
                               </div>
                             </div>
                             <button

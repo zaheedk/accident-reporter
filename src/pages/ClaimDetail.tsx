@@ -428,7 +428,14 @@ export default function ClaimDetail() {
     }
   };
 
-  const reportTitle = reportNumber ? `Report #${reportNumber}` : 'Incident report';
+  const policyNumber = (vehicle as any)?.insurancePolicyNumber || '';
+  const displayRef = claim.userClaimNumber || policyNumber || reportNumber || '';
+  const displayRefLabel = claim.userClaimNumber
+    ? 'Claim'
+    : policyNumber
+      ? 'Policy'
+      : 'Report';
+  const reportTitle = displayRef ? `${displayRefLabel} #${displayRef}` : 'Incident report';
   const vehicleSummary = vehicle ? `${vehicle.year} ${vehicle.make} ${vehicle.model}`.trim() : '';
 
   return (
@@ -501,7 +508,7 @@ export default function ClaimDetail() {
                 <div className="divide-y divide-border">
                   {[
                     { label: 'Status', value: claim.status === 'draft' ? 'Draft' : 'Saved' },
-                    { label: 'Report #', value: reportNumber ? `#${reportNumber}` : '' },
+                    { label: displayRefLabel === 'Report' ? 'Report #' : `${displayRefLabel} #`, value: displayRef ? `#${displayRef}` : '' },
                     { label: 'Date', value: claim.incidentDate },
                     { label: 'Vehicle', value: vehicleSummary },
                     { label: 'Rego', value: vehicle?.regoNumber || '' },
