@@ -6,6 +6,44 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+const REMINDER_WINDOWS = [30, 14, 7, 3, 1]; // days before expiry
+
+function normalizePhone(phone: string): string {
+  let cleaned = phone.replace(/[\s\-()]/g, "");
+  if (cleaned.startsWith("+")) return cleaned;
+  if (cleaned.startsWith("00")) return "+" + cleaned.slice(2);
+  if (cleaned.startsWith("0")) return "+64" + cleaned.slice(1);
+  if (/^\d{8,10}$/.test(cleaned)) return "+64" + cleaned;
+  return "+" + cleaned;
+}
+
+async function sendSms(toPhone: string, body: string): Promise<boolean> {
+  const sid = Deno.env.get("TWILIO_ACCOUNT_SID");
+  const token = Deno.env.get("TWILIO_AUTH_TOKEN");
+  const from = Deno.env.get("TWILIO_PHONE_NUMBER");
+  if (!sid || !token || !from) return false;
+  try {
+    const e164 = normalizePhone(toPhone);
+    if (!/^\+\d{8,15}$/.test(e164)) return false;
+    const url = `https://api.twilio.com/2010-04-01/Accounts/${sid}/Messages.json`;
+    const credentials = btoa(`${sid}:${token}`);
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { Authorization: `Basic ${credentials}`, "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({ To: e164, From: from, Body: body }),
+    });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      console.error("Twilio SMS error:", data);
+      return false;
+    }
+    return true;
+  } catch (err) {
+    console.error("SMS send failed:", err);
+    return false;
+  }
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -16,51 +54,70 @@ serve(async (req) => {
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Calculate date 30 days from now
     const now = new Date();
-    const reminderDate = new Date(now);
-    reminderDate.setDate(reminderDate.getDate() + 30);
-    const targetDate = reminderDate.toISOString().split('T')[0]; // YYYY-MM-DD
 
-    // Check if this is a test request
+    // Build a map of YYYY-MM-DD -> daysOut for each reminder window
+    const windowMap = new Map<string, number>();
+    for (const days of REMINDER_WINDOWS) {
+      const d = new Date(now);
+      d.setDate(d.getDate() + days);
+      windowMap.set(d.toISOString().split('T')[0], days);
+    }
+
     const body = req.method === 'POST' ? await req.json().catch(() => ({})) : {};
     const isTest = body.test === true;
     const testEmail = body.testEmail;
+    const testPhone = body.testPhone;
+    const testDays = typeof body.testDays === 'number' ? body.testDays : 30;
 
-    // Get all vehicles
     const { data: vehicles, error: vErr } = await supabase.from('vehicles').select('*, user_id');
     if (vErr) throw vErr;
 
-    // Get all profiles with license expiry
-    const { data: profiles, error: pErr } = await supabase.from('profiles').select('user_id, license_number, license_expiry, email, email_verified, display_name');
+    const { data: profiles, error: pErr } = await supabase.from('profiles').select('user_id, license_number, license_expiry, email, email_verified, display_name, phone_number');
     if (pErr) throw pErr;
+
+    const profileByUser = new Map<string, any>();
+    for (const p of profiles || []) profileByUser.set(p.user_id, p);
 
     const results: string[] = [];
 
-    // Helper to resolve user email
-    const resolveEmail = async (userId: string, isTest: boolean, testEmail?: string) => {
+    const resolveEmail = async (userId: string) => {
       if (isTest) return testEmail;
       const { data: userData } = await supabase.auth.admin.getUserById(userId);
       let userEmail = userData?.user?.email;
       if (userEmail?.endsWith('@savo.phone.local')) {
-        const { data: profileData } = await supabase
-          .from('profiles')
-          .select('email, email_verified')
-          .eq('user_id', userId)
-          .single();
-        if (profileData?.email && profileData?.email_verified) {
-          userEmail = profileData.email;
-        } else {
-          userEmail = null;
-        }
+        const profile = profileByUser.get(userId);
+        userEmail = profile?.email && profile?.email_verified ? profile.email : null;
       }
       return userEmail;
     };
 
-    // Helper to send notification + email + push
-    const sendReminder = async (userId: string, vehicleId: string | null, type: string, title: string, message: string, emailData: Record<string, string>, userEmail: string | null | undefined, pushUrl: string) => {
-      // Check for existing notification (avoid duplicates) — skip for tests
+    const resolvePhone = async (userId: string): Promise<string | null> => {
+      if (isTest) return testPhone || null;
+      const profile = profileByUser.get(userId);
+      if (profile?.phone_number) return profile.phone_number;
+      const { data: userData } = await supabase.auth.admin.getUserById(userId);
+      return userData?.user?.phone || null;
+    };
+
+    const sendReminder = async (
+      userId: string,
+      vehicleId: string | null,
+      baseType: string,
+      daysOut: number,
+      title: string,
+      message: string,
+      smsMessage: string,
+      emailData: Record<string, string>,
+      userEmail: string | null | undefined,
+      userPhone: string | null,
+      pushUrl: string,
+    ) => {
+      // Per-window dedupe key
+      const type = `${baseType}_${daysOut}d`;
+
       if (!isTest) {
+        // Avoid duplicate for same window — check ever, since each window only fires once
         const { data: existing } = await supabase.from('notifications')
           .select('id')
           .eq('user_id', userId)
@@ -70,70 +127,82 @@ serve(async (req) => {
         if (existing && existing.length > 0) return;
       }
 
-      // Create in-app notification
+      // In-app notification
       const notifData: Record<string, any> = { user_id: userId, type, title, message };
       if (vehicleId) notifData.vehicle_id = vehicleId;
       await supabase.from('notifications').insert(notifData);
 
-      // Send email
+      // Email
       if (userEmail) {
         await supabase.functions.invoke('send-email', {
-          body: { type, to: userEmail, data: emailData },
+          body: { type: baseType, to: userEmail, data: { ...emailData, daysRemaining: String(daysOut) } },
         });
-        results.push(`Sent ${type} email to ${userEmail}`);
-      } else {
-        results.push(`Created notification for ${type} (no verified email)`);
+        results.push(`Email ${type} -> ${userEmail}`);
       }
 
-      // Send push
+      // Push
       try {
         await supabase.functions.invoke('send-push', {
           body: { user_id: userId, title, body: message, url: pushUrl, tag: `${type}-${vehicleId || userId}` },
         });
-        results.push(`Sent ${type} push for user ${userId}`);
       } catch (pushErr) {
-        console.error('Push notification error:', pushErr);
+        console.error('Push error:', pushErr);
+      }
+
+      // SMS
+      if (userPhone) {
+        const ok = await sendSms(userPhone, smsMessage);
+        if (ok) results.push(`SMS ${type} -> ${userPhone}`);
       }
     };
 
-    // --- Vehicle expiry checks ---
+    // Vehicle expiry checks
     for (const v of vehicles || []) {
-      const vehicleName = `${v.year} ${v.make} ${v.model}`;
-      const userEmail = await resolveEmail(v.user_id, isTest, testEmail);
+      const vehicleName = `${v.year} ${v.make} ${v.model}`.trim();
+      const userEmail = await resolveEmail(v.user_id);
+      const userPhone = await resolvePhone(v.user_id);
 
       const checks = [
-        { field: v.rego_expiry, type: 'rego_expiry_reminder', title: 'Registration Expiry Reminder', message: `Your registration for ${vehicleName} (${v.rego_number}) expires on ${v.rego_expiry}. Please renew it soon.` },
-        { field: v.wof_expiry, type: 'wof_expiry_reminder', title: 'WOF Expiry Reminder', message: `Your WOF for ${vehicleName} (${v.rego_number}) expires on ${v.wof_expiry}. Book an inspection soon.` },
-        { field: v.insurance_expiry, type: 'insurance_expiry_reminder', title: 'Insurance Policy Expiry Reminder', message: `Your insurance policy for ${vehicleName} (${v.rego_number}) expires on ${v.insurance_expiry}. Contact your insurer to renew.` },
+        { field: v.rego_expiry, type: 'rego_expiry_reminder', label: 'Registration', book: 'Please renew it soon.' },
+        { field: v.wof_expiry, type: 'wof_expiry_reminder', label: 'WOF', book: 'Book an inspection soon.' },
+        { field: v.insurance_expiry, type: 'insurance_expiry_reminder', label: 'Insurance policy', book: 'Contact your insurer to renew.' },
       ];
 
       for (const check of checks) {
         if (!check.field) continue;
-        const shouldNotify = isTest || check.field === targetDate;
-        if (!shouldNotify) continue;
+        const daysOut = isTest ? testDays : windowMap.get(check.field);
+        if (daysOut === undefined) continue;
+
+        const dayWord = daysOut === 1 ? 'tomorrow' : `in ${daysOut} days`;
+        const title = `${check.label} expires ${dayWord}`;
+        const message = `Your ${check.label.toLowerCase()} for ${vehicleName} (${v.rego_number}) expires on ${check.field} (${dayWord}). ${check.book}`;
+        const smsMessage = `SAVO: ${check.label} for ${v.rego_number} expires ${dayWord} (${check.field}). ${check.book}`;
 
         const emailData: Record<string, string> = { vehicle: vehicleName, rego: v.rego_number, expiryDate: check.field };
         if (check.type === 'insurance_expiry_reminder') {
           emailData.insurer = v.insurance_company || '';
           emailData.policyNumber = v.insurance_policy_number || '';
         }
-        await sendReminder(v.user_id, v.id, check.type, check.title, check.message, emailData, userEmail, '/vehicles');
+        await sendReminder(v.user_id, v.id, check.type, daysOut, title, message, smsMessage, emailData, userEmail, userPhone, '/vehicles');
       }
     }
 
-    // --- Driver license expiry checks ---
+    // Driver license expiry checks
     for (const p of profiles || []) {
       if (!p.license_expiry || !p.license_number) continue;
-      const shouldNotify = isTest || p.license_expiry === targetDate;
-      if (!shouldNotify) continue;
+      const daysOut = isTest ? testDays : windowMap.get(p.license_expiry);
+      if (daysOut === undefined) continue;
 
-      const userEmail = await resolveEmail(p.user_id, isTest, testEmail);
+      const userEmail = await resolveEmail(p.user_id);
+      const userPhone = await resolvePhone(p.user_id);
       const displayName = p.display_name || 'driver';
-      const title = 'Driver License Expiry Reminder';
-      const message = `Your driver license (${p.license_number}) expires on ${p.license_expiry}. Please renew it soon.`;
+      const dayWord = daysOut === 1 ? 'tomorrow' : `in ${daysOut} days`;
+      const title = `Driver licence expires ${dayWord}`;
+      const message = `Your driver licence (${p.license_number}) expires on ${p.license_expiry} (${dayWord}). Please renew it soon.`;
+      const smsMessage = `SAVO: Driver licence ${p.license_number} expires ${dayWord} (${p.license_expiry}). Please renew soon.`;
       const emailData = { licenseNumber: p.license_number, expiryDate: p.license_expiry, name: displayName };
 
-      await sendReminder(p.user_id, null, 'license_expiry_reminder', title, message, emailData, userEmail, '/profile');
+      await sendReminder(p.user_id, null, 'license_expiry_reminder', daysOut, title, message, smsMessage, emailData, userEmail, userPhone, '/profile');
     }
 
     return new Response(JSON.stringify({ success: true, sent: results.length, details: results }), {
