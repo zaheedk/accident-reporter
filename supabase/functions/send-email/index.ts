@@ -287,6 +287,30 @@ function getEmailContent(type: string, data: Record<string, string> = {}) {
       return { subject: subjectLine, html: bodyHtml };
     }
 
+    case 'damage_photos': {
+      const claimRef = data.claimNumber ? `CLM-${String(data.claimNumber).padStart(4, '0')}` : '';
+      const subject = `Vehicle damage photos${claimRef ? ` – ${claimRef}` : ''}${data.rego ? ` (${data.rego})` : ''}`;
+      const html = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <div style="background: linear-gradient(135deg, #1e3a5f, #162d4a); padding: 30px; border-radius: 12px 12px 0 0;">
+            <h1 style="color: white; margin: 0; font-size: 24px;">SAVO</h1>
+          </div>
+          <div style="background: #ffffff; padding: 30px; border: 1px solid #e5e5e5; border-top: none; border-radius: 0 0 12px 12px;">
+            <h2 style="color: #1a1a1a; margin-top: 0;">Vehicle Damage Photos</h2>
+            <p style="color: #555; line-height: 1.6;">Please find attached the damage photos${claimRef ? ` for incident <strong>${claimRef}</strong>` : ''}${data.rego ? ` involving vehicle <strong>${data.rego}</strong>` : ''}.</p>
+            <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+              ${data.date ? `<tr><td style="padding: 8px 0; color: #999; width: 120px;">Incident Date</td><td style="padding: 8px 0; color: #333; font-weight: 500;">${data.date}</td></tr>` : ''}
+              ${data.location ? `<tr><td style="padding: 8px 0; color: #999;">Location</td><td style="padding: 8px 0; color: #333; font-weight: 500;">${data.location}</td></tr>` : ''}
+              ${data.vehicle ? `<tr><td style="padding: 8px 0; color: #999;">Vehicle</td><td style="padding: 8px 0; color: #333; font-weight: 500;">${data.vehicle}</td></tr>` : ''}
+              ${data.photoCount ? `<tr><td style="padding: 8px 0; color: #999;">Photos</td><td style="padding: 8px 0; color: #333; font-weight: 500;">${data.photoCount} attached</td></tr>` : ''}
+            </table>
+            ${data.message ? `<div style="background: #f5f5f5; padding: 15px; border-radius: 8px; margin: 20px 0;"><p style="color: #555; margin: 0; line-height: 1.6; white-space: pre-wrap;">${data.message}</p></div>` : ''}
+            <p style="color: #999; font-size: 12px; margin-top: 30px;">— Sent via SAVO</p>
+          </div>
+        </div>`;
+      return { subject, html };
+    }
+
     case 'welcome':
       return {
         subject: 'Welcome to SAVO – Your claims assistant',
