@@ -363,17 +363,16 @@ export default function Dashboard() {
   return (
     <AppLayout>
       <div className="theme-dashboard relative">
-        <motion.div className="relative space-y-8" variants={stagger} initial="hidden" animate="visible">
-          {/* Header — Apple/Linear style */}
-          <motion.div variants={fadeUp} className="flex items-end justify-between gap-3 pt-2">
+        <motion.div className="relative space-y-6 md:space-y-8" variants={stagger} initial="hidden" animate="visible">
+          {/* Mobile-only header */}
+          <motion.div variants={fadeUp} className="flex items-end justify-between gap-3 pt-2 md:hidden">
             <div className="min-w-0">
               <p className="text-[12px] text-muted-foreground">{greeting}</p>
               <h1 className="text-[28px] leading-tight font-semibold text-foreground tracking-[-0.02em] truncate mt-1">
                 {firstName}.
               </h1>
             </div>
-            {/* Mobile-only avatar (sidebar shows it on tablet+) */}
-            <Link to="/profile" className="md:hidden shrink-0">
+            <Link to="/profile" className="shrink-0">
               <Avatar className="w-11 h-11 ring-1 ring-border">
                 <AvatarImage src={avatarUrl} alt={displayName} />
                 <AvatarFallback className="bg-muted text-foreground text-[11px] font-semibold">
@@ -385,8 +384,14 @@ export default function Dashboard() {
 
           {/* Body — sidebar + main on tablet+ */}
           <div className="md:grid md:grid-cols-[260px_1fr] md:gap-6 lg:grid-cols-[280px_1fr] lg:gap-8 space-y-6 md:space-y-0">
-            {/* Left rail — tablet & desktop only */}
+            {/* Left rail — tablet & desktop only; greeting moves into this column to fill the empty space */}
             <motion.aside variants={fadeUp} className="hidden md:block space-y-4">
+              <div className="pt-1 pb-1">
+                <p className="text-[12px] text-muted-foreground">{greeting}</p>
+                <h1 className="text-[24px] leading-tight font-semibold text-foreground tracking-[-0.02em] truncate mt-1">
+                  {firstName}.
+                </h1>
+              </div>
               <QuickActions />
               <UpcomingPanel />
               <ActivityPanel />
