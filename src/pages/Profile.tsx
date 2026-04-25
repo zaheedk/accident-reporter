@@ -447,7 +447,9 @@ export default function Profile() {
             </div>
           </button>
         </div>
-      </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <AlertDialog open={showDeactivate} onOpenChange={setShowDeactivate}>
