@@ -36,6 +36,7 @@ export default function Dashboard() {
   const { user, isAdmin } = useAuth();
 
   const [towSheetOpen, setTowSheetOpen] = useState(false);
+  const [accidentSheetOpen, setAccidentSheetOpen] = useState(false);
   const [towCompanies, setTowCompanies] = useState<any[]>([]);
   const [towSearch, setTowSearch] = useState('');
   const [userCity, setUserCity] = useState('');
@@ -417,15 +418,15 @@ export default function Dashboard() {
               {/* Mobile hero action tiles — kept as-is for mobile */}
               <motion.div variants={fadeUp} className="grid grid-cols-2 gap-3 md:hidden">
                 <button
-                  onClick={handleOpenTowSheet}
+                  onClick={() => setAccidentSheetOpen(true)}
                   className="rounded-2xl bg-foreground text-background p-5 text-left transition-all active:scale-[0.98] min-h-[140px] flex flex-col justify-between"
                 >
                   <div className="w-10 h-10 rounded-xl bg-background/10 flex items-center justify-center">
-                    <Phone className="w-5 h-5" strokeWidth={2} />
+                    <AlertTriangle className="w-5 h-5" strokeWidth={2} />
                   </div>
                   <div>
-                    <div className="text-[15px] font-semibold leading-tight">Call tow<br/>truck</div>
-                    <div className="text-[11px] text-background/60 mt-1.5">24/7 emergency</div>
+                    <div className="text-[15px] font-semibold leading-tight">Had<br/>accident?</div>
+                    <div className="text-[11px] text-background/60 mt-1.5">Tow or report now</div>
                   </div>
                 </button>
                 <a href="tel:111" className="rounded-2xl text-destructive-foreground p-5 transition-all active:scale-[0.98] flex flex-col justify-between min-h-[140px] bg-accent">
@@ -747,6 +748,47 @@ export default function Dashboard() {
           </div>
         </motion.div>
       </div>
+
+      <Sheet open={accidentSheetOpen} onOpenChange={setAccidentSheetOpen}>
+        <SheetContent side="bottom" className="rounded-t-2xl p-0" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
+          <SheetHeader className="px-5 pt-5 pb-2">
+            <SheetTitle className="text-left flex items-center gap-2">
+              <AlertTriangle className="w-5 h-5 text-foreground" />
+              Had an accident?
+            </SheetTitle>
+            <p className="text-[13px] text-muted-foreground text-left">What would you like to do first?</p>
+          </SheetHeader>
+          <div className="px-5 pb-6 pt-3 space-y-2.5">
+            <button
+              onClick={() => { setAccidentSheetOpen(false); handleOpenTowSheet(); }}
+              className="w-full flex items-center gap-3 p-4 rounded-2xl bg-foreground text-background text-left active:scale-[0.99] transition-transform"
+            >
+              <div className="w-11 h-11 rounded-xl bg-background/10 flex items-center justify-center shrink-0">
+                <Truck className="w-5 h-5" strokeWidth={2} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="text-[15px] font-semibold leading-tight">Call a tow truck</div>
+                <div className="text-[12px] text-background/60 mt-0.5">See nearby 24/7 tow companies</div>
+              </div>
+              <ChevronRight className="w-5 h-5 text-background/60 shrink-0" />
+            </button>
+            <Link
+              to="/claims/new"
+              onClick={() => setAccidentSheetOpen(false)}
+              className="w-full flex items-center gap-3 p-4 rounded-2xl bg-card border border-border text-left active:scale-[0.99] transition-transform"
+            >
+              <div className="w-11 h-11 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
+                <FileText className="w-5 h-5" strokeWidth={2} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="text-[15px] font-semibold leading-tight text-foreground">Record accident details</div>
+                <div className="text-[12px] text-muted-foreground mt-0.5">Start a new incident report</div>
+              </div>
+              <ChevronRight className="w-5 h-5 text-muted-foreground/60 shrink-0" />
+            </Link>
+          </div>
+        </SheetContent>
+      </Sheet>
 
       <Sheet open={towSheetOpen} onOpenChange={setTowSheetOpen}>
         <SheetContent side="bottom" className="h-[90vh] rounded-t-2xl p-0 flex flex-col" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
