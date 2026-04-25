@@ -720,6 +720,29 @@ export default function Dashboard() {
                   </Link>
                 )}
               </motion.div>
+
+              {/* Family quick card — bottom of main column */}
+              <motion.div variants={fadeUp}>
+                <Link
+                  to="/family"
+                  className="flex items-center gap-3 p-4 rounded-2xl bg-card border border-border hover:border-foreground/20 transition-colors group"
+                >
+                  <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                    <Users className="w-5 h-5 text-primary" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-[14px] font-semibold text-foreground tracking-[-0.01em]">
+                      {familyInfo?.inFamily ? 'Your family' : 'Invite your family'}
+                    </div>
+                    <div className="text-[12px] text-muted-foreground truncate">
+                      {familyInfo?.inFamily
+                        ? `${familyInfo.memberCount} member${familyInfo.memberCount === 1 ? '' : 's'} · share vehicles & reports`
+                        : 'Share vehicles, reports and reminders with your household'}
+                    </div>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors" />
+                </Link>
+              </motion.div>
             </div>
           </div>
         </motion.div>
