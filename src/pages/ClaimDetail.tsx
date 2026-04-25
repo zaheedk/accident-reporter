@@ -625,7 +625,17 @@ export default function ClaimDetail() {
 
               {photos.length > 0 && (
                 <>
-                  <SubHeading>Damage Photos</SubHeading>
+                  <div className="flex items-center justify-between gap-2">
+                    <SubHeading>Damage Photos</SubHeading>
+                    <button
+                      type="button"
+                      onClick={() => { setPhotosEmailTo(''); setPhotosMessage(''); setPhotosDialogOpen(true); }}
+                      className="print:hidden inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:underline"
+                    >
+                      <Mail className="w-3.5 h-3.5" />
+                      Email photos
+                    </button>
+                  </div>
                   <div className="grid grid-cols-3 gap-2">
                     {photos.map(p => (
                       <button key={p.id} onClick={() => setLightboxUrl(p.fullUrl)} className="rounded-xl overflow-hidden aspect-square bg-muted">
