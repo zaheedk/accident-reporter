@@ -180,6 +180,7 @@ export default function QuickCapture() {
         newCaps.push({ previewUrl, queuedId: id });
 
         // Background upload — non-blocking, routed by target
+        queuedTargetsRef.current.set(id, target);
         uploadPhotoInBackground(queued, target).catch(() => { /* will be retried later */ });
       } catch (e) {
         console.error('capture failed', e);
@@ -203,18 +204,19 @@ export default function QuickCapture() {
         const path = `${q.userId}/${q.claimId}/${Date.now()}-${Math.random().toString(36).slice(2, 7)}.${ext}`;
         const { error: upErr } = await supabase.storage.from('claim-photos').upload(path, file);
         if (upErr) throw upErr;
-        await supabase.from('claim_photos').insert({
+        const { error: dbErr } = await supabase.from('claim_photos').insert({
           claim_id: q.claimId,
           user_id: q.userId,
           file_path: path,
           file_name: file.name,
         });
+        if (dbErr) throw dbErr;
       } else {
         // Third-party photo
         const path = `${q.userId}/${q.claimId}/tp${TP_INDEX}/${target.tpType}_${Date.now()}.${ext}`;
         const { error: upErr } = await supabase.storage.from('tp-photos').upload(path, file);
         if (upErr) throw upErr;
-        await supabase.from('tp_photos').insert({
+        const { error: dbErr } = await supabase.from('tp_photos').insert({
           claim_id: q.claimId,
           user_id: q.userId,
           tp_index: TP_INDEX,
@@ -222,12 +224,21 @@ export default function QuickCapture() {
           file_path: path,
           file_name: file.name,
         });
+        if (dbErr) throw dbErr;
       }
 
-      const { removeQueuedPhoto } = await import('@/lib/photo-queue');
       await removeQueuedPhoto(q.id);
+      queuedTargetsRef.current.delete(q.id);
+      setFailedQueueIds(prev => {
+        if (!prev.has(q.id)) return prev;
+        const n = new Set(prev); n.delete(q.id); return n;
+      });
     } catch (e) {
       console.warn('Background upload failed, will retry', e);
+      setFailedQueueIds(prev => {
+        const n = new Set(prev); n.add(q.id); return n;
+      });
+      throw e;
     }
   };
 
