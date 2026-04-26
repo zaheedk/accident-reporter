@@ -21,6 +21,7 @@ export default function ClaimList() {
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [claimMeta, setClaimMeta] = useState<Record<string, { claimNumber: number | null; reportNumber: string | null }>>({});
   const [claimPhotos, setClaimPhotos] = useState<Record<string, string>>({});
+  const [insurerPhones, setInsurerPhones] = useState<Record<string, string>>({});
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState<FilterType>('all');
   const [deleteId, setDeleteId] = useState<string | null>(null);
