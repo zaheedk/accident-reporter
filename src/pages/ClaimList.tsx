@@ -21,6 +21,7 @@ export default function ClaimList() {
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [claimMeta, setClaimMeta] = useState<Record<string, { claimNumber: number | null; reportNumber: string | null }>>({});
   const [claimPhotos, setClaimPhotos] = useState<Record<string, string>>({});
+  const [insurerPhones, setInsurerPhones] = useState<Record<string, string>>({});
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState<FilterType>('all');
   const [deleteId, setDeleteId] = useState<string | null>(null);
@@ -73,6 +74,14 @@ export default function ClaimList() {
         }
       }
       setClaimMeta(meta);
+
+      // Fetch insurer phone numbers for "Call insurance" buttons
+      const { data: insurers } = await supabase.from('insurance_companies').select('name, phone');
+      if (insurers) {
+        const phoneMap: Record<string, string> = {};
+        insurers.forEach((i: any) => { if (i.name && i.phone) phoneMap[i.name.toLowerCase()] = i.phone; });
+        setInsurerPhones(phoneMap);
+      }
     };
     load();
   }, [user]);
@@ -390,12 +399,20 @@ export default function ClaimList() {
                           >
                             {isDraft ? (<><FileEdit className="w-3.5 h-3.5" strokeWidth={2} /> Continue</>) : (<><ChevronRight className="w-3.5 h-3.5" strokeWidth={2} /> Open</>)}
                           </Link>
-                          <a
-                            href="tel:111"
-                            className="flex-1 flex items-center justify-center gap-1.5 py-2 text-[12px] font-medium text-foreground hover:bg-muted/50 transition-colors"
-                          >
-                            <Phone className="w-3.5 h-3.5" strokeWidth={2} /> Police
-                          </a>
+                          {(() => {
+                            const insurerName = c.insuranceCompany || (vehicleMap[c.vehicleId] as any)?.insuranceCompany || '';
+                            const phone = insurerName ? insurerPhones[insurerName.toLowerCase()] : '';
+                            const href = phone ? `tel:${phone.replace(/\s+/g, '')}` : 'tel:';
+                            return (
+                              <a
+                                href={href}
+                                onClick={(e) => { if (!phone) { e.preventDefault(); toast.error('No insurer phone on file'); } }}
+                                className="flex-1 flex items-center justify-center gap-1.5 py-2 text-[12px] font-medium text-foreground hover:bg-muted/50 transition-colors"
+                              >
+                                <Phone className="w-3.5 h-3.5" strokeWidth={2} /> Insurance
+                              </a>
+                            );
+                          })()}
                         </div>
                       </div>
                     );
