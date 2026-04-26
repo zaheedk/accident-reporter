@@ -77,6 +77,13 @@ export default function QuickCapture() {
   const step = STEPS[stepIdx];
   const totalCaptured = Object.values(captures).reduce((n, arr) => n + arr.length, 0);
 
+  // Load insurer suggestions for the datalist
+  useEffect(() => {
+    supabase.from('insurance_companies').select('name').order('name').then(({ data }) => {
+      if (data) setInsurerOptions(data.map((r: any) => r.name).filter(Boolean));
+    });
+  }, []);
+
   // Boot: load vehicles, capture GPS, create draft claim
   useEffect(() => {
     if (!user) return;
