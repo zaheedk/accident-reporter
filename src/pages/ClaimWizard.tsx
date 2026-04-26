@@ -493,25 +493,7 @@ export default function ClaimWizard() {
             {/* Right column — wizard */}
             <div className="space-y-6 pb-24">
 
-        {/* 4-step pill bar — mobile only (sidebar shows progress on md+) */}
-        <div className="flex items-center md:hidden">
-          {STEPS.map((label, i) => {
-            const status = i < step ? 'done' : i === step ? 'active' : 'idle';
-            return (
-              <div key={label} className="flex items-center flex-1 min-w-0 last:flex-none">
-                <div className="step-pill">
-                  <div className={`step-pill-circle step-pill-circle--${status}`}>
-                    {status === 'done' ? <Check className="w-3.5 h-3.5" strokeWidth={3} /> : i + 1}
-                  </div>
-                  <span className={`step-pill-label step-pill-label--${status}`}>{label}</span>
-                </div>
-                {i < STEPS.length - 1 && (
-                  <div className={`step-pill-connector ${i < step ? 'step-pill-connector--done' : ''}`} />
-                )}
-              </div>
-            );
-          })}
-        </div>
+        {/* mobile stepper now lives inside the dark header card above */}
 
         {/* Step content */}
         <AnimatePresence mode="wait">
