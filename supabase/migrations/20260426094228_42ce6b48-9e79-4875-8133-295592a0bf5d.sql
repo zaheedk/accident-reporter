@@ -1,0 +1,2 @@
+ALTER TABLE public.tp_photos DROP CONSTRAINT IF EXISTS tp_photos_type_check;
+ALTER TABLE public.tp_photos ADD CONSTRAINT tp_photos_type_check CHECK (type = ANY (ARRAY['damage'::text, 'rego'::text, 'license'::text, 'driver'::text]));

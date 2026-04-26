@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
-  Camera, Check, ChevronRight, X, MapPin, Clock, Loader2,
-  SkipForward, ArrowRight, Car, User as UserIcon, IdCard, Hash, FileImage, AlertTriangle
+  Camera, Check, X, MapPin, Clock, Loader2,
+  SkipForward, ArrowRight, Car, User as UserIcon, IdCard, Hash, AlertTriangle, Phone
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
@@ -16,22 +16,33 @@ import { watermarkImage } from '@/lib/image-watermark';
 import { compressImage } from '@/lib/image-compress';
 import { enqueuePhoto, type QueuedPhoto } from '@/lib/photo-queue';
 
+type Target =
+  | { kind: 'claim' }                                           // claim_photos / claim-photos bucket
+  | { kind: 'tp'; tpType: 'damage' | 'rego' | 'license' | 'driver' }; // tp_photos / tp-photos bucket
+
 interface CaptureStep {
   key: string;
   title: string;
   hint: string;
   icon: typeof Camera;
   optional?: boolean;
+  /** If undefined → this step is a form step, not a photo step */
+  target?: Target;
+  /** Form step renderer key */
+  form?: 'other-driver-info';
 }
 
 const STEPS: CaptureStep[] = [
-  { key: 'scene',         title: 'Wide shot of the scene',     hint: 'Step back. Capture the full scene — both vehicles, road, surroundings.', icon: MapPin },
-  { key: 'own-damage',    title: 'Your vehicle damage',        hint: 'Get close to the damaged area. Take 1–2 angles if needed.',           icon: Car },
-  { key: 'other-damage',  title: 'Other vehicle damage',       hint: 'Show the damage on the other car clearly.',                            icon: AlertTriangle },
-  { key: 'other-plate',   title: "Other car's number plate",   hint: 'Make sure the plate is readable — fill the frame.',                    icon: Hash },
-  { key: 'other-licence', title: "Other driver's licence",     hint: 'Ask permission. Capture both sides if possible.',                       icon: IdCard, optional: true },
-  { key: 'other-driver',  title: "Photo of the other driver",  hint: 'Optional — only with consent.',                                         icon: UserIcon, optional: true },
+  { key: 'scene',             title: 'Wide shot of the scene',     hint: 'Step back. Capture the full scene — both vehicles, road, surroundings.', icon: MapPin,        target: { kind: 'claim' } },
+  { key: 'own-damage',        title: 'Your vehicle damage',        hint: 'Get close to the damaged area. Take 1–2 angles if needed.',           icon: Car,             target: { kind: 'claim' } },
+  { key: 'other-damage',      title: 'Other vehicle damage',       hint: 'Show the damage on the other car clearly.',                            icon: AlertTriangle,   target: { kind: 'tp', tpType: 'damage' } },
+  { key: 'other-plate',       title: "Other car's number plate",   hint: 'Make sure the plate is readable — fill the frame.',                    icon: Hash,            target: { kind: 'tp', tpType: 'rego' } },
+  { key: 'other-licence',     title: "Other driver's licence",     hint: 'Ask permission. Capture both sides if possible.',                       icon: IdCard,    optional: true, target: { kind: 'tp', tpType: 'license' } },
+  { key: 'other-driver',      title: "Photo of the other driver",  hint: 'Optional — only with consent.',                                         icon: UserIcon,  optional: true, target: { kind: 'tp', tpType: 'driver' } },
+  { key: 'other-driver-info', title: "Other driver's details",     hint: "Quick — just their name and a phone number you can call back.",         icon: Phone,           form: 'other-driver-info' },
 ];
+
+const TP_INDEX = 0; // QuickCapture binds to first third party
 
 export default function QuickCapture() {
   const navigate = useNavigate();
@@ -52,6 +63,11 @@ export default function QuickCapture() {
   const [finishing, setFinishing] = useState(false);
   const previewUrlsRef = useRef<string[]>([]);
 
+  // Other driver info (form step)
+  const [otherDriverName, setOtherDriverName] = useState('');
+  const [otherDriverPhone, setOtherDriverPhone] = useState('');
+  const [savingDriver, setSavingDriver] = useState(false);
+
   const step = STEPS[stepIdx];
   const totalCaptured = Object.values(captures).reduce((n, arr) => n + arr.length, 0);
 
@@ -62,7 +78,6 @@ export default function QuickCapture() {
 
     (async () => {
       try {
-        // 1. Load vehicles
         const vs = await getVehicles(user.id);
         if (!mounted) return;
         setVehicles(vs);
@@ -70,7 +85,6 @@ export default function QuickCapture() {
         setSelectedVehicleId(initial);
         const initialVehicle = vs.find(v => v.id === initial);
 
-        // 2. Try GPS in parallel with claim creation (don't block)
         getCurrentPosition({ timeout: 10000 })
           .then(async ({ latitude, longitude }) => {
             if (!mounted) return;
@@ -86,7 +100,6 @@ export default function QuickCapture() {
           })
           .catch(() => { /* user can enter later */ });
 
-        // 3. Create draft claim
         const now = new Date();
         const incidentDate = now.toISOString().split('T')[0];
         const incidentTime = now.toTimeString().slice(0, 5);
@@ -123,7 +136,6 @@ export default function QuickCapture() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
-  // Persist location into the claim once we have both
   useEffect(() => {
     if (!claimId || !location) return;
     supabase
@@ -136,8 +148,9 @@ export default function QuickCapture() {
   const openCamera = () => cameraRef.current?.click();
 
   const handleFiles = useCallback(async (files: FileList | null) => {
-    if (!files || !user || !claimId) return;
+    if (!files || !user || !claimId || !step.target) return;
     const stepKey = step.key;
+    const target = step.target;
     const newCaps: { previewUrl: string; queuedId: string }[] = [];
 
     for (const f of Array.from(files)) {
@@ -146,7 +159,6 @@ export default function QuickCapture() {
         continue;
       }
       try {
-        // Watermark with timestamp + GPS at capture time
         const stamped = await watermarkImage(f);
         const id = `qc-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
         const previewUrl = URL.createObjectURL(stamped);
@@ -164,8 +176,8 @@ export default function QuickCapture() {
         await enqueuePhoto(queued);
         newCaps.push({ previewUrl, queuedId: id });
 
-        // Background upload — non-blocking
-        uploadPhotoInBackground(queued).catch(() => { /* will be retried later */ });
+        // Background upload — non-blocking, routed by target
+        uploadPhotoInBackground(queued, target).catch(() => { /* will be retried later */ });
       } catch (e) {
         console.error('capture failed', e);
         toast.error('Could not save that photo');
@@ -177,21 +189,38 @@ export default function QuickCapture() {
     }
   }, [step, user, claimId]);
 
-  const uploadPhotoInBackground = async (q: QueuedPhoto) => {
+  const uploadPhotoInBackground = async (q: QueuedPhoto, target: Target) => {
     try {
       const file = q.blob instanceof File
         ? await compressImage(q.blob)
         : await compressImage(new File([q.blob], q.fileName, { type: q.fileType }));
       const ext = file.name.split('.').pop() || 'jpg';
-      const path = `${q.userId}/${q.claimId}/${Date.now()}-${Math.random().toString(36).slice(2, 7)}.${ext}`;
-      const { error: upErr } = await supabase.storage.from('claim-photos').upload(path, file);
-      if (upErr) throw upErr;
-      await supabase.from('claim_photos').insert({
-        claim_id: q.claimId,
-        user_id: q.userId,
-        file_path: path,
-        file_name: file.name,
-      });
+
+      if (target.kind === 'claim') {
+        const path = `${q.userId}/${q.claimId}/${Date.now()}-${Math.random().toString(36).slice(2, 7)}.${ext}`;
+        const { error: upErr } = await supabase.storage.from('claim-photos').upload(path, file);
+        if (upErr) throw upErr;
+        await supabase.from('claim_photos').insert({
+          claim_id: q.claimId,
+          user_id: q.userId,
+          file_path: path,
+          file_name: file.name,
+        });
+      } else {
+        // Third-party photo
+        const path = `${q.userId}/${q.claimId}/tp${TP_INDEX}/${target.tpType}_${Date.now()}.${ext}`;
+        const { error: upErr } = await supabase.storage.from('tp-photos').upload(path, file);
+        if (upErr) throw upErr;
+        await supabase.from('tp_photos').insert({
+          claim_id: q.claimId,
+          user_id: q.userId,
+          tp_index: TP_INDEX,
+          type: target.tpType,
+          file_path: path,
+          file_name: file.name,
+        });
+      }
+
       const { removeQueuedPhoto } = await import('@/lib/photo-queue');
       await removeQueuedPhoto(q.id);
     } catch (e) {
@@ -199,7 +228,37 @@ export default function QuickCapture() {
     }
   };
 
-  const next = () => {
+  const persistOtherDriverInfo = async (): Promise<boolean> => {
+    if (!claimId) return false;
+    const name = otherDriverName.trim();
+    const phone = otherDriverPhone.trim();
+    if (!name && !phone) return true; // skipped — nothing to save
+    setSavingDriver(true);
+    try {
+      // Read existing third_parties (it might already have an entry seeded)
+      const { data: row } = await supabase.from('claims').select('third_parties').eq('id', claimId).single();
+      const existing: any[] = Array.isArray(row?.third_parties) ? [...(row!.third_parties as any[])] : [];
+      const empty = { ownerName: '', phone: '', address: '', insurer: '', claimNumber: '', claimLodgementDate: '', make: '', model: '', regoNumber: '', damageDescription: '' };
+      if (existing.length === 0) existing.push({ ...empty });
+      existing[TP_INDEX] = { ...empty, ...existing[TP_INDEX], ownerName: name, phone };
+      const { error } = await supabase.from('claims').update({ third_parties: existing }).eq('id', claimId);
+      if (error) throw error;
+      return true;
+    } catch (e: any) {
+      console.error('save other driver info', e);
+      toast.error('Could not save the details — try again');
+      return false;
+    } finally {
+      setSavingDriver(false);
+    }
+  };
+
+  const next = async () => {
+    // If leaving the form step, persist its data first
+    if (step.form === 'other-driver-info') {
+      const ok = await persistOtherDriverInfo();
+      if (!ok) return;
+    }
     if (stepIdx < STEPS.length - 1) setStepIdx(stepIdx + 1);
     else finish();
   };
@@ -211,7 +270,6 @@ export default function QuickCapture() {
   const finish = async () => {
     if (!claimId) return;
     setFinishing(true);
-    // Hop into the wizard at the "scene" step (step index 1) — Step 1 details already pre-filled
     const target = reportNumber
       ? `/claims/${reportNumber}/edit?step=1&from=quick-capture`
       : `/claims/new`;
@@ -219,7 +277,7 @@ export default function QuickCapture() {
   };
 
   const exitWithConfirm = () => {
-    if (totalCaptured > 0) {
+    if (totalCaptured > 0 || otherDriverName || otherDriverPhone) {
       const ok = window.confirm('Save what you have and continue later?');
       if (!ok) return;
     }
@@ -230,9 +288,11 @@ export default function QuickCapture() {
     }
   };
 
+  const isFormStep = !!step.form;
   const currentCaps = captures[step.key] || [];
   const hasCapForStep = currentCaps.length > 0;
   const isLast = stepIdx === STEPS.length - 1;
+  const formHasContent = step.form === 'other-driver-info' && (otherDriverName.trim() || otherDriverPhone.trim());
 
   return (
     <AppLayout>
@@ -282,7 +342,8 @@ export default function QuickCapture() {
         {/* Progress dots */}
         <div className="px-5 pb-5 flex items-center gap-1.5">
           {STEPS.map((s, i) => {
-            const captured = (captures[s.key] || []).length > 0;
+            const captured = (captures[s.key] || []).length > 0
+              || (s.form === 'other-driver-info' && (otherDriverName || otherDriverPhone));
             const isCurrent = i === stepIdx;
             return (
               <button
@@ -325,39 +386,70 @@ export default function QuickCapture() {
                 </div>
               </div>
 
-              {/* Capture preview area */}
-              <div className="rounded-2xl bg-background/5 border border-background/10 overflow-hidden">
-                {hasCapForStep ? (
-                  <div className="p-3 grid grid-cols-3 gap-2">
-                    {currentCaps.map((c, i) => (
-                      <div key={i} className="relative aspect-square rounded-xl overflow-hidden bg-background/10">
-                        <img src={c.previewUrl} alt={`${step.title} ${i + 1}`} className="w-full h-full object-cover" />
-                        <div className="absolute bottom-1 right-1 w-5 h-5 rounded-full bg-background/90 text-foreground flex items-center justify-center">
-                          <Check className="w-3 h-3" strokeWidth={2.5} />
+              {/* Body: form step OR photo capture */}
+              {isFormStep ? (
+                <div className="rounded-2xl bg-background/5 border border-background/10 p-4 space-y-3">
+                  <label className="block">
+                    <span className="text-[11px] uppercase tracking-wider text-background/60 font-medium">Full name</span>
+                    <input
+                      type="text"
+                      value={otherDriverName}
+                      onChange={(e) => setOtherDriverName(e.target.value)}
+                      autoComplete="name"
+                      placeholder="e.g. John Smith"
+                      className="mt-1.5 w-full h-11 px-3 rounded-xl bg-background/10 border border-background/15 text-background placeholder:text-background/40 text-[14px] focus:outline-none focus:border-background/40"
+                    />
+                  </label>
+                  <label className="block">
+                    <span className="text-[11px] uppercase tracking-wider text-background/60 font-medium">Contact number</span>
+                    <input
+                      type="tel"
+                      value={otherDriverPhone}
+                      onChange={(e) => setOtherDriverPhone(e.target.value)}
+                      autoComplete="tel"
+                      inputMode="tel"
+                      placeholder="e.g. 021 555 1234"
+                      className="mt-1.5 w-full h-11 px-3 rounded-xl bg-background/10 border border-background/15 text-background placeholder:text-background/40 text-[14px] focus:outline-none focus:border-background/40"
+                    />
+                  </label>
+                  <p className="text-[11px] text-background/50 leading-relaxed">
+                    Saved to the third-party section of your report. You can add the rest later.
+                  </p>
+                </div>
+              ) : (
+                <div className="rounded-2xl bg-background/5 border border-background/10 overflow-hidden">
+                  {hasCapForStep ? (
+                    <div className="p-3 grid grid-cols-3 gap-2">
+                      {currentCaps.map((c, i) => (
+                        <div key={i} className="relative aspect-square rounded-xl overflow-hidden bg-background/10">
+                          <img src={c.previewUrl} alt={`${step.title} ${i + 1}`} className="w-full h-full object-cover" />
+                          <div className="absolute bottom-1 right-1 w-5 h-5 rounded-full bg-background/90 text-foreground flex items-center justify-center">
+                            <Check className="w-3 h-3" strokeWidth={2.5} />
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      ))}
+                      <button
+                        onClick={openCamera}
+                        className="aspect-square rounded-xl border border-dashed border-background/30 flex flex-col items-center justify-center gap-1 text-background/70 active:scale-95 transition-transform"
+                      >
+                        <Camera className="w-5 h-5" strokeWidth={1.8} />
+                        <span className="text-[10px] font-medium">Add more</span>
+                      </button>
+                    </div>
+                  ) : (
                     <button
                       onClick={openCamera}
-                      className="aspect-square rounded-xl border border-dashed border-background/30 flex flex-col items-center justify-center gap-1 text-background/70 active:scale-95 transition-transform"
+                      className="w-full aspect-[4/3] flex flex-col items-center justify-center gap-3 active:scale-[0.99] transition-transform"
                     >
-                      <Camera className="w-5 h-5" strokeWidth={1.8} />
-                      <span className="text-[10px] font-medium">Add more</span>
+                      <div className="w-16 h-16 rounded-full bg-background/10 flex items-center justify-center">
+                        <Camera className="w-7 h-7" strokeWidth={1.8} />
+                      </div>
+                      <div className="text-[14px] font-semibold">Tap to take photo</div>
+                      <div className="text-[11px] text-background/60">Auto-stamped with time + location</div>
                     </button>
-                  </div>
-                ) : (
-                  <button
-                    onClick={openCamera}
-                    className="w-full aspect-[4/3] flex flex-col items-center justify-center gap-3 active:scale-[0.99] transition-transform"
-                  >
-                    <div className="w-16 h-16 rounded-full bg-background/10 flex items-center justify-center">
-                      <Camera className="w-7 h-7" strokeWidth={1.8} />
-                    </div>
-                    <div className="text-[14px] font-semibold">Tap to take photo</div>
-                    <div className="text-[11px] text-background/60">Auto-stamped with time + location</div>
-                  </button>
-                )}
-              </div>
+                  )}
+                </div>
+              )}
 
               {totalCaptured > 0 && (
                 <div className="text-[11px] text-background/60 text-center tabular-nums">
@@ -377,7 +469,9 @@ export default function QuickCapture() {
           >
             Back
           </button>
-          {!hasCapForStep && step.optional && !isLast && (
+
+          {/* Photo step — no capture yet, optional → Skip */}
+          {!isFormStep && !hasCapForStep && step.optional && !isLast && (
             <button
               onClick={next}
               className="flex-1 h-12 rounded-xl bg-background/10 text-background text-[14px] font-semibold inline-flex items-center justify-center gap-1.5 active:scale-[0.98] transition-transform"
@@ -386,7 +480,9 @@ export default function QuickCapture() {
               Skip
             </button>
           )}
-          {!hasCapForStep && !step.optional && (
+
+          {/* Photo step — required, no capture yet → Take photo */}
+          {!isFormStep && !hasCapForStep && !step.optional && (
             <button
               onClick={openCamera}
               className="flex-1 h-12 rounded-xl bg-background text-foreground text-[14px] font-semibold inline-flex items-center justify-center gap-1.5 active:scale-[0.98] transition-transform"
@@ -395,13 +491,41 @@ export default function QuickCapture() {
               Take photo
             </button>
           )}
-          {hasCapForStep && (
+
+          {/* Photo step — has at least one capture → Next */}
+          {!isFormStep && hasCapForStep && (
             <button
               onClick={next}
               disabled={finishing}
               className="flex-1 h-12 rounded-xl bg-background text-foreground text-[14px] font-semibold inline-flex items-center justify-center gap-1.5 active:scale-[0.98] transition-transform"
             >
               {finishing ? <Loader2 className="w-4 h-4 animate-spin" /> : (
+                <>
+                  {isLast ? 'Continue to report' : 'Next'}
+                  <ArrowRight className="w-4 h-4" />
+                </>
+              )}
+            </button>
+          )}
+
+          {/* Form step → Skip (when empty) or Save & continue */}
+          {isFormStep && !formHasContent && (
+            <button
+              onClick={next}
+              disabled={savingDriver || finishing}
+              className="flex-1 h-12 rounded-xl bg-background/10 text-background text-[14px] font-semibold inline-flex items-center justify-center gap-1.5 active:scale-[0.98] transition-transform"
+            >
+              <SkipForward className="w-4 h-4" />
+              Skip
+            </button>
+          )}
+          {isFormStep && formHasContent && (
+            <button
+              onClick={next}
+              disabled={savingDriver || finishing}
+              className="flex-1 h-12 rounded-xl bg-background text-foreground text-[14px] font-semibold inline-flex items-center justify-center gap-1.5 active:scale-[0.98] transition-transform"
+            >
+              {savingDriver || finishing ? <Loader2 className="w-4 h-4 animate-spin" /> : (
                 <>
                   {isLast ? 'Continue to report' : 'Next'}
                   <ArrowRight className="w-4 h-4" />
