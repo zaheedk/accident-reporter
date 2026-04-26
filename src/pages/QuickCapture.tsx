@@ -39,7 +39,7 @@ const STEPS: CaptureStep[] = [
   { key: 'other-plate',       title: "Other car's number plate",   hint: 'Make sure the plate is readable — fill the frame.',                    icon: Hash,            target: { kind: 'tp', tpType: 'rego' } },
   { key: 'other-licence',     title: "Other driver's licence",     hint: 'Ask permission. Capture both sides if possible.',                       icon: IdCard,    optional: true, target: { kind: 'tp', tpType: 'license' } },
   { key: 'other-driver',      title: "Photo of the other driver license",  hint: 'Optional — only with consent.',                                         icon: UserIcon,  optional: true, target: { kind: 'tp', tpType: 'driver' } },
-  { key: 'other-driver-info', title: "Other driver's details",     hint: "Quick — just their name and a phone number you can call back.",         icon: Phone,           form: 'other-driver-info' },
+  { key: 'other-driver-info', title: "Other driver's details",     hint: "Quick — name, phone, rego, and insurer if you have them.",         icon: Phone,           form: 'other-driver-info' },
 ];
 
 const TP_INDEX = 0; // QuickCapture binds to first third party
@@ -69,10 +69,20 @@ export default function QuickCapture() {
   // Other driver info (form step)
   const [otherDriverName, setOtherDriverName] = useState('');
   const [otherDriverPhone, setOtherDriverPhone] = useState('');
+  const [otherDriverRego, setOtherDriverRego] = useState('');
+  const [otherDriverInsurer, setOtherDriverInsurer] = useState('');
+  const [insurerOptions, setInsurerOptions] = useState<string[]>([]);
   const [savingDriver, setSavingDriver] = useState(false);
 
   const step = STEPS[stepIdx];
   const totalCaptured = Object.values(captures).reduce((n, arr) => n + arr.length, 0);
+
+  // Load insurer suggestions for the datalist
+  useEffect(() => {
+    supabase.from('insurance_companies').select('name').order('name').then(({ data }) => {
+      if (data) setInsurerOptions(data.map((r: any) => r.name).filter(Boolean));
+    });
+  }, []);
 
   // Boot: load vehicles, capture GPS, create draft claim
   useEffect(() => {
@@ -246,7 +256,9 @@ export default function QuickCapture() {
     if (!claimId) return false;
     const name = otherDriverName.trim();
     const phone = otherDriverPhone.trim();
-    if (!name && !phone) return true; // skipped — nothing to save
+    const regoNumber = otherDriverRego.trim().toUpperCase();
+    const insurer = otherDriverInsurer.trim();
+    if (!name && !phone && !regoNumber && !insurer) return true; // skipped — nothing to save
     setSavingDriver(true);
     try {
       // Read existing third_parties (it might already have an entry seeded)
@@ -254,7 +266,7 @@ export default function QuickCapture() {
       const existing: any[] = Array.isArray(row?.third_parties) ? [...(row!.third_parties as any[])] : [];
       const empty = { ownerName: '', phone: '', address: '', insurer: '', claimNumber: '', claimLodgementDate: '', make: '', model: '', regoNumber: '', damageDescription: '' };
       if (existing.length === 0) existing.push({ ...empty });
-      existing[TP_INDEX] = { ...empty, ...existing[TP_INDEX], ownerName: name, phone };
+      existing[TP_INDEX] = { ...empty, ...existing[TP_INDEX], ownerName: name, phone, regoNumber, insurer };
       const { error } = await supabase.from('claims').update({ third_parties: existing }).eq('id', claimId);
       if (error) throw error;
       return true;
@@ -314,7 +326,7 @@ export default function QuickCapture() {
   };
 
   const exitWithConfirm = () => {
-    if (totalCaptured > 0 || otherDriverName || otherDriverPhone) {
+    if (totalCaptured > 0 || otherDriverName || otherDriverPhone || otherDriverRego || otherDriverInsurer) {
       const ok = window.confirm('Save what you have and continue later?');
       if (!ok) return;
     }
@@ -329,7 +341,7 @@ export default function QuickCapture() {
   const currentCaps = captures[step.key] || [];
   const hasCapForStep = currentCaps.length > 0;
   const isLast = stepIdx === STEPS.length - 1;
-  const formHasContent = step.form === 'other-driver-info' && (otherDriverName.trim() || otherDriverPhone.trim());
+  const formHasContent = step.form === 'other-driver-info' && (otherDriverName.trim() || otherDriverPhone.trim() || otherDriverRego.trim() || otherDriverInsurer.trim());
 
   return (
     <AppLayout>
@@ -380,7 +392,7 @@ export default function QuickCapture() {
         <div className="px-5 pb-5 flex items-center gap-1.5">
           {STEPS.map((s, i) => {
             const captured = (captures[s.key] || []).length > 0
-              || (s.form === 'other-driver-info' && (otherDriverName || otherDriverPhone));
+              || (s.form === 'other-driver-info' && (otherDriverName || otherDriverPhone || otherDriverRego || otherDriverInsurer));
             const isCurrent = i === stepIdx;
             return (
               <button
@@ -448,6 +460,37 @@ export default function QuickCapture() {
                       placeholder="e.g. 021 555 1234"
                       className="mt-1.5 w-full h-11 px-3 rounded-xl bg-background/10 border border-background/15 text-background placeholder:text-background/40 text-[14px] focus:outline-none focus:border-background/40"
                     />
+                  </label>
+                  <label className="block">
+                    <span className="text-[11px] uppercase tracking-wider text-background/60 font-medium">Rego (number plate)</span>
+                    <input
+                      type="text"
+                      value={otherDriverRego}
+                      onChange={(e) => setOtherDriverRego(e.target.value.toUpperCase().slice(0, 10))}
+                      autoCapitalize="characters"
+                      autoCorrect="off"
+                      spellCheck={false}
+                      placeholder="e.g. ABC123"
+                      maxLength={10}
+                      className="mt-1.5 w-full h-11 px-3 rounded-xl bg-background/10 border border-background/15 text-background placeholder:text-background/40 text-[14px] uppercase tracking-wider focus:outline-none focus:border-background/40"
+                    />
+                  </label>
+                  <label className="block">
+                    <span className="text-[11px] uppercase tracking-wider text-background/60 font-medium">Insurance company</span>
+                    <input
+                      type="text"
+                      value={otherDriverInsurer}
+                      onChange={(e) => setOtherDriverInsurer(e.target.value.slice(0, 100))}
+                      list="quickcapture-insurer-options"
+                      placeholder="e.g. AA Insurance"
+                      maxLength={100}
+                      className="mt-1.5 w-full h-11 px-3 rounded-xl bg-background/10 border border-background/15 text-background placeholder:text-background/40 text-[14px] focus:outline-none focus:border-background/40"
+                    />
+                    <datalist id="quickcapture-insurer-options">
+                      {insurerOptions.map((n) => (
+                        <option key={n} value={n} />
+                      ))}
+                    </datalist>
                   </label>
                   <p className="text-[11px] text-background/50 leading-relaxed">
                     Saved to the third-party section of your report. You can add the rest later.
