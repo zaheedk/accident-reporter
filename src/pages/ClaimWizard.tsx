@@ -975,25 +975,30 @@ export default function ClaimWizard() {
         </AnimatePresence>
 
         {/* Sticky footer actions */}
-        <div className="flex gap-3 pt-2">
-          {step > 0 && (
-            <button onClick={prev} disabled={navigating}
-              className="h-12 px-5 rounded-2xl bg-muted text-foreground text-sm font-semibold transition-all active:scale-[0.98] disabled:opacity-40 inline-flex items-center justify-center gap-2 shrink-0">
-              {navigating ? <Loader2 className="w-4 h-4 animate-spin" /> : <ArrowLeft className="w-4 h-4" strokeWidth={2.2} />}
-              Back
-            </button>
-          )}
-          {step < STEPS.length - 1 ? (
-            <button onClick={next} disabled={navigating}
-              className="flex-1 h-12 rounded-2xl bg-foreground text-background text-sm font-semibold transition-all active:scale-[0.98] disabled:opacity-40 inline-flex items-center justify-center gap-2">
-              {navigating ? <Loader2 className="w-4 h-4 animate-spin" /> : <>Continue <ArrowRight className="w-4 h-4" strokeWidth={2.2} /></>}
-            </button>
-          ) : (
-            <button onClick={submit} disabled={submitting}
-              className="flex-1 h-12 rounded-2xl bg-foreground text-background text-sm font-semibold transition-all active:scale-[0.98] disabled:opacity-40 inline-flex items-center justify-center gap-2">
-              {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Save className="w-4 h-4" /> Save report</>}
-            </button>
-          )}
+        <div className="space-y-2 pt-2">
+          <div className="flex gap-3">
+            {step > 0 && (
+              <button onClick={prev} disabled={navigating}
+                className="h-12 px-5 rounded-2xl bg-muted text-foreground text-sm font-semibold transition-all active:scale-[0.98] disabled:opacity-40 inline-flex items-center justify-center gap-2 shrink-0">
+                {navigating ? <Loader2 className="w-4 h-4 animate-spin" /> : <ArrowLeft className="w-4 h-4" strokeWidth={2.2} />}
+                Back
+              </button>
+            )}
+            {step < STEPS.length - 1 ? (
+              <button onClick={next} disabled={navigating}
+                className="flex-1 h-12 rounded-2xl bg-foreground text-background text-[15px] font-semibold transition-all active:scale-[0.98] disabled:opacity-40 inline-flex items-center justify-center gap-2 shadow-sm">
+                {navigating ? <Loader2 className="w-4 h-4 animate-spin" /> : <>Continue to {STEPS[step + 1].toLowerCase()} <ArrowRight className="w-4 h-4" strokeWidth={2.2} /></>}
+              </button>
+            ) : (
+              <button onClick={submit} disabled={submitting}
+                className="flex-1 h-12 rounded-2xl bg-foreground text-background text-[15px] font-semibold transition-all active:scale-[0.98] disabled:opacity-40 inline-flex items-center justify-center gap-2 shadow-sm">
+                {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Save className="w-4 h-4" /> Save report</>}
+              </button>
+            )}
+          </div>
+          <p className="md:hidden text-center text-[11px] text-muted-foreground">
+            Step {step + 1} of {STEPS.length} · Auto-saved
+          </p>
         </div>
             </div>
           </div>
