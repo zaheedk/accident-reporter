@@ -503,47 +503,75 @@ export default function ClaimWizard() {
             {/* ===== STEP 1: DETAILS ===== */}
             {step === 0 && (
               <div className="space-y-5">
-                {/* Vehicle */}
+                {/* Your vehicle — tile-style picker */}
                 <div>
-                  <label className="field-label">Vehicle</label>
+                  <label className="field-label">Your vehicle</label>
                   {vehicles.length === 0 ? (
                     <button onClick={async () => { await autoSave(); navigate('/vehicles/new'); }}
-                      className="w-full p-4 rounded-xl border border-dashed border-border bg-muted/30 text-sm text-muted-foreground hover:bg-muted/50 transition-colors">
-                      No vehicles yet — <span className="text-primary font-semibold">Add one</span>
+                      className="w-full p-4 rounded-2xl border border-dashed border-border bg-muted/30 text-sm text-muted-foreground hover:bg-muted/50 transition-colors">
+                      No vehicles yet — <span className="text-foreground font-semibold">Add one</span>
                     </button>
                   ) : (
-                    <div className="relative">
-                      <Car className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
-                      <select
-                        value={claim.vehicleId}
-                        onChange={e => {
-                          const vid = e.target.value;
-                          const v = vehicles.find(x => x.id === vid);
-                          setClaim(prev => ({ ...prev, vehicleId: vid, insuranceCompany: v?.insuranceCompany || prev.insuranceCompany }));
-                        }}
-                        className="w-full h-12 pl-10 pr-3 rounded-xl border border-border bg-card text-sm font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-ring/30 appearance-none">
-                        <option value="">Select your vehicle</option>
-                        {vehicles.map(v => (
-                          <option key={v.id} value={v.id}>{v.regoNumber} — {v.year} {v.make} {v.model}</option>
-                        ))}
-                      </select>
-                    </div>
+                    (() => {
+                      const selected = vehicles.find(v => v.id === claim.vehicleId);
+                      return (
+                        <div className="relative rounded-2xl border border-border bg-card hover:border-foreground/30 transition-colors">
+                          <div className="flex items-center gap-3 p-3 pr-10">
+                            <div className="w-11 h-11 rounded-xl bg-muted flex items-center justify-center shrink-0">
+                              <Car className="w-5 h-5 text-foreground/70" strokeWidth={1.8} />
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              {selected ? (
+                                <>
+                                  <div className="text-[15px] font-bold text-foreground truncate tracking-[-0.01em]">
+                                    {selected.year} {selected.make} {selected.model}
+                                  </div>
+                                  <div className="text-[12px] text-muted-foreground tabular-nums uppercase tracking-wider mt-0.5">
+                                    {selected.regoNumber}
+                                  </div>
+                                </>
+                              ) : (
+                                <div className="text-[14px] font-semibold text-muted-foreground">Select your vehicle</div>
+                              )}
+                            </div>
+                            <ArrowRight className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground rotate-0" strokeWidth={2} />
+                          </div>
+                          <select
+                            aria-label="Select vehicle"
+                            value={claim.vehicleId}
+                            onChange={e => {
+                              const vid = e.target.value;
+                              const v = vehicles.find(x => x.id === vid);
+                              setClaim(prev => ({ ...prev, vehicleId: vid, insuranceCompany: v?.insuranceCompany || prev.insuranceCompany }));
+                            }}
+                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+                            <option value="">Select your vehicle</option>
+                            {vehicles.map(v => (
+                              <option key={v.id} value={v.id}>{v.regoNumber} — {v.year} {v.make} {v.model}</option>
+                            ))}
+                          </select>
+                        </div>
+                      );
+                    })()
                   )}
                 </div>
 
-                {/* Date & Time */}
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="field-label">Date</label>
-                    <input type="date"
-                      className="w-full h-12 px-3.5 rounded-xl border border-border bg-card text-sm font-semibold text-foreground tabular-nums focus:outline-none focus:ring-2 focus:ring-ring/30"
-                      value={claim.incidentDate} onChange={e => update('incidentDate', e.target.value)} />
-                  </div>
-                  <div>
-                    <label className="field-label">Time</label>
-                    <input type="time"
-                      className="w-full h-12 px-3.5 rounded-xl border border-border bg-card text-sm font-semibold text-foreground tabular-nums focus:outline-none focus:ring-2 focus:ring-ring/30"
-                      value={claim.incidentTime} onChange={e => update('incidentTime', e.target.value)} />
+                {/* When did it happen — Date & Time */}
+                <div>
+                  <label className="field-label">When did it happen?</label>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="rounded-2xl border border-border bg-card px-3.5 py-2.5">
+                      <div className="text-[10px] uppercase tracking-[0.14em] text-muted-foreground/80 font-medium">Date</div>
+                      <input type="date"
+                        className="w-full mt-0.5 bg-transparent text-[15px] font-semibold text-foreground tabular-nums focus:outline-none"
+                        value={claim.incidentDate} onChange={e => update('incidentDate', e.target.value)} />
+                    </div>
+                    <div className="rounded-2xl border border-border bg-card px-3.5 py-2.5">
+                      <div className="text-[10px] uppercase tracking-[0.14em] text-muted-foreground/80 font-medium">Time</div>
+                      <input type="time"
+                        className="w-full mt-0.5 bg-transparent text-[15px] font-semibold text-foreground tabular-nums focus:outline-none"
+                        value={claim.incidentTime} onChange={e => update('incidentTime', e.target.value)} />
+                    </div>
                   </div>
                 </div>
 
@@ -563,25 +591,32 @@ export default function ClaimWizard() {
                   </div>
                 </div>
 
-                {/* Location with mini preview */}
+                {/* Location — bigger preview + stacked address */}
                 <div>
                   <label className="field-label">Location</label>
-                  <div className="rounded-xl border border-border overflow-hidden bg-card">
-                    {/* Static map-style preview band */}
-                    <div className="relative h-24 bg-gradient-to-br from-muted to-muted/50 flex items-center justify-center"
-                      style={{ backgroundImage: 'repeating-linear-gradient(45deg, transparent 0 12px, hsl(var(--border) / .35) 12px 13px), repeating-linear-gradient(-45deg, transparent 0 12px, hsl(var(--border) / .35) 12px 13px)' }}>
-                      <div className="w-9 h-9 rounded-full bg-foreground flex items-center justify-center shadow-lg">
-                        <MapPin className="w-4 h-4 text-background" strokeWidth={2.5} />
+                  <div className="rounded-2xl border border-border overflow-hidden bg-card">
+                    <div className="relative h-36 bg-gradient-to-br from-muted to-muted/40 flex items-center justify-center"
+                      style={{ backgroundImage: 'repeating-linear-gradient(0deg, transparent 0 22px, hsl(var(--border) / .45) 22px 23px), repeating-linear-gradient(90deg, transparent 0 22px, hsl(var(--border) / .45) 22px 23px)' }}>
+                      <div className="relative">
+                        <div className="absolute inset-0 rounded-full bg-foreground/20 blur-md scale-110" />
+                        <div className="relative w-11 h-11 rounded-full bg-foreground flex items-center justify-center shadow-xl">
+                          <MapPin className="w-5 h-5 text-background" strokeWidth={2.5} fill="currentColor" />
+                        </div>
                       </div>
                     </div>
-                    <div className="p-3 flex items-center gap-2">
-                      <input
-                        className="flex-1 min-w-0 bg-transparent text-sm font-semibold text-foreground placeholder:text-muted-foreground/60 focus:outline-none"
-                        placeholder="Street and town"
-                        value={claim.incidentLocation}
-                        onChange={e => update('incidentLocation', e.target.value)} />
+                    <div className="p-3 flex items-center gap-2 border-t border-border">
+                      <div className="flex-1 min-w-0">
+                        <input
+                          className="w-full bg-transparent text-[14px] font-bold text-foreground placeholder:text-muted-foreground/60 focus:outline-none truncate"
+                          placeholder="Street address"
+                          value={claim.incidentLocation}
+                          onChange={e => update('incidentLocation', e.target.value)} />
+                        <div className="text-[12px] text-muted-foreground truncate">
+                          {claim.incidentLocation ? 'Tap to edit · auto-saved' : 'Detect or type the address'}
+                        </div>
+                      </div>
                       <button type="button" onClick={detectLocation} disabled={detectingLocation}
-                        className="shrink-0 h-9 px-3.5 rounded-xl border border-border text-xs font-semibold text-foreground hover:bg-muted transition-colors flex items-center gap-1.5 disabled:opacity-50">
+                        className="shrink-0 h-9 px-3.5 rounded-full bg-muted text-xs font-semibold text-foreground hover:bg-muted/70 transition-colors flex items-center gap-1.5 disabled:opacity-50">
                         {detectingLocation ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <MapPin className="w-3.5 h-3.5" />}
                         {detectingLocation ? 'Detecting' : 'Detect'}
                       </button>
