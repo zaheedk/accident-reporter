@@ -361,7 +361,7 @@ export default function ClaimWizard() {
           </div>
 
           {/* Header — mobile dark hero card with integrated stepper */}
-          <div className="md:hidden -mx-4 sm:-mx-6 -mt-5 px-5 pt-5 pb-5 bg-foreground text-background rounded-b-3xl shadow-sm">
+          <div className="md:hidden -mx-4 sm:-mx-6 -mt-10 sm:-mt-10 px-5 pt-5 pb-5 bg-foreground text-background rounded-b-3xl shadow-sm">
             <div className="flex items-start justify-between gap-2">
               <button onClick={async () => { if (shouldSave()) await autoSave(); navigate(-1); }}
                 className="w-9 h-9 -ml-2 rounded-full flex items-center justify-center text-background/70 hover:text-background hover:bg-background/10 transition-colors flex-shrink-0"
