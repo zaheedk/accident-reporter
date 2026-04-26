@@ -108,7 +108,13 @@ export default function ClaimDetail() {
       setClaim(foundClaim);
       setVehicles(vehs);
       if (claimNumData?.claim_number) setClaimNumber(String(claimNumData.claim_number));
-      if (claimNumData?.report_number) setReportNumber(claimNumData.report_number);
+      if (claimNumData?.report_number) {
+        setReportNumber(claimNumData.report_number);
+        // If URL still uses the UUID, swap it for the friendly report number
+        if (id && id !== claimNumData.report_number && /^[0-9a-f-]{36}$/i.test(id)) {
+          navigate(`/claims/${claimNumData.report_number}`, { replace: true });
+        }
+      }
 
       const [photosRes, tpRes, insurersRes, shopsRes] = await Promise.all([
         supabase.from('claim_photos').select('*').eq('claim_id', resolvedId),
