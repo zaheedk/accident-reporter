@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { Car, Plus, AlertTriangle, ChevronRight, User, Shield, Phone, Search, MapPin, X, MessageSquare, FileWarning, ShieldAlert, CalendarClock, ArrowUpRight, Activity, FileText, Wrench, Truck, BookOpen, Lightbulb, Star, Users } from 'lucide-react';
+import { Car, Plus, AlertTriangle, ChevronRight, User, Shield, Phone, Search, MapPin, X, MessageSquare, FileWarning, ShieldAlert, CalendarClock, ArrowUpRight, Activity, FileText, Wrench, Truck, BookOpen, Lightbulb, Star, Users, Ambulance } from 'lucide-react';
 import { getVehicles, getClaims } from '@/lib/storage';
 import { useAuth } from '@/contexts/AuthContext';
 import AppLayout from '@/components/AppLayout';
@@ -759,6 +759,20 @@ export default function Dashboard() {
             <p className="text-[13px] text-muted-foreground text-left">What would you like to do first?</p>
           </SheetHeader>
           <div className="px-5 pb-6 pt-3 space-y-2.5">
+            <a
+              href="tel:111"
+              onClick={() => setAccidentSheetOpen(false)}
+              className="w-full flex items-center gap-3 p-4 rounded-2xl bg-red-600 text-white text-left active:scale-[0.99] transition-transform"
+            >
+              <div className="w-11 h-11 rounded-xl bg-white/15 flex items-center justify-center shrink-0">
+                <Ambulance className="w-5 h-5" strokeWidth={2} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="text-[15px] font-semibold leading-tight">Call an ambulance</div>
+                <div className="text-[12px] text-white/80 mt-0.5">Emergency services — dial 111</div>
+              </div>
+              <ChevronRight className="w-5 h-5 text-white/70 shrink-0" />
+            </a>
             <button
               onClick={() => { setAccidentSheetOpen(false); handleOpenTowSheet(); }}
               className="w-full flex items-center gap-3 p-4 rounded-2xl bg-foreground text-background text-left active:scale-[0.99] transition-transform"
