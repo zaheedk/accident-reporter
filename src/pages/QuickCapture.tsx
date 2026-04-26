@@ -256,7 +256,9 @@ export default function QuickCapture() {
     if (!claimId) return false;
     const name = otherDriverName.trim();
     const phone = otherDriverPhone.trim();
-    if (!name && !phone) return true; // skipped — nothing to save
+    const regoNumber = otherDriverRego.trim().toUpperCase();
+    const insurer = otherDriverInsurer.trim();
+    if (!name && !phone && !regoNumber && !insurer) return true; // skipped — nothing to save
     setSavingDriver(true);
     try {
       // Read existing third_parties (it might already have an entry seeded)
@@ -264,7 +266,7 @@ export default function QuickCapture() {
       const existing: any[] = Array.isArray(row?.third_parties) ? [...(row!.third_parties as any[])] : [];
       const empty = { ownerName: '', phone: '', address: '', insurer: '', claimNumber: '', claimLodgementDate: '', make: '', model: '', regoNumber: '', damageDescription: '' };
       if (existing.length === 0) existing.push({ ...empty });
-      existing[TP_INDEX] = { ...empty, ...existing[TP_INDEX], ownerName: name, phone };
+      existing[TP_INDEX] = { ...empty, ...existing[TP_INDEX], ownerName: name, phone, regoNumber, insurer };
       const { error } = await supabase.from('claims').update({ third_parties: existing }).eq('id', claimId);
       if (error) throw error;
       return true;
