@@ -759,6 +759,23 @@ export default function Dashboard() {
             <p className="text-[13px] text-muted-foreground text-left">What would you like to do first?</p>
           </SheetHeader>
           <div className="px-5 pb-6 pt-3 space-y-2.5">
+            <Link
+              to="/claims/quick-capture"
+              onClick={() => setAccidentSheetOpen(false)}
+              className="w-full flex items-center gap-3 p-4 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 text-white text-left active:scale-[0.99] transition-transform shadow-lg shadow-orange-500/20"
+            >
+              <div className="w-11 h-11 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
+                <Zap className="w-5 h-5" strokeWidth={2.2} fill="currentColor" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="text-[15px] font-semibold leading-tight flex items-center gap-1.5 flex-wrap">
+                  Quick capture
+                  <span className="text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded bg-white/20 font-bold">Recommended</span>
+                </div>
+                <div className="text-[12px] text-white/90 mt-0.5">Guided photos · auto GPS &amp; time</div>
+              </div>
+              <ChevronRight className="w-5 h-5 text-white/80 shrink-0" />
+            </Link>
             <a
               href="tel:111"
               className="w-full flex items-center gap-3 p-4 rounded-2xl bg-red-600 text-white text-left active:scale-[0.99] transition-transform"
