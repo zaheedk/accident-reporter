@@ -399,12 +399,20 @@ export default function ClaimList() {
                           >
                             {isDraft ? (<><FileEdit className="w-3.5 h-3.5" strokeWidth={2} /> Continue</>) : (<><ChevronRight className="w-3.5 h-3.5" strokeWidth={2} /> Open</>)}
                           </Link>
-                          <a
-                            href="tel:111"
-                            className="flex-1 flex items-center justify-center gap-1.5 py-2 text-[12px] font-medium text-foreground hover:bg-muted/50 transition-colors"
-                          >
-                            <Phone className="w-3.5 h-3.5" strokeWidth={2} /> Police
-                          </a>
+                          {(() => {
+                            const insurerName = c.insuranceCompany || (vehicleMap[c.vehicleId] as any)?.insuranceCompany || '';
+                            const phone = insurerName ? insurerPhones[insurerName.toLowerCase()] : '';
+                            const href = phone ? `tel:${phone.replace(/\s+/g, '')}` : 'tel:';
+                            return (
+                              <a
+                                href={href}
+                                onClick={(e) => { if (!phone) { e.preventDefault(); toast.error('No insurer phone on file'); } }}
+                                className="flex-1 flex items-center justify-center gap-1.5 py-2 text-[12px] font-medium text-foreground hover:bg-muted/50 transition-colors"
+                              >
+                                <Phone className="w-3.5 h-3.5" strokeWidth={2} /> Insurance
+                              </a>
+                            );
+                          })()}
                         </div>
                       </div>
                     );
