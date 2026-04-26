@@ -392,7 +392,7 @@ export default function QuickCapture() {
         <div className="px-5 pb-5 flex items-center gap-1.5">
           {STEPS.map((s, i) => {
             const captured = (captures[s.key] || []).length > 0
-              || (s.form === 'other-driver-info' && (otherDriverName || otherDriverPhone));
+              || (s.form === 'other-driver-info' && (otherDriverName || otherDriverPhone || otherDriverRego || otherDriverInsurer));
             const isCurrent = i === stepIdx;
             return (
               <button
