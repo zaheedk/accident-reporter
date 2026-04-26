@@ -282,8 +282,31 @@ export default function QuickCapture() {
   };
 
   const finish = async () => {
-    if (!claimId) return;
+    if (!claimId || !user) return;
     setFinishing(true);
+
+    // Sweep any photos still queued in IndexedDB for this claim/user and retry uploading them.
+    // This catches photos whose initial background upload silently failed (e.g. transient network).
+    try {
+      const queued = await getQueuedPhotosForUser(user.id);
+      const mine = queued.filter(q => q.claimId === claimId);
+      if (mine.length > 0) {
+        toast.message(`Finishing ${mine.length} photo upload${mine.length > 1 ? 's' : ''}…`);
+        const results = await Promise.allSettled(
+          mine.map(q => {
+            const target = queuedTargetsRef.current.get(q.id) || ({ kind: 'claim' } as Target);
+            return uploadPhotoInBackground(q, target);
+          })
+        );
+        const failed = results.filter(r => r.status === 'rejected').length;
+        if (failed > 0) {
+          toast.error(`${failed} photo${failed > 1 ? 's' : ''} couldn't upload. They're saved on this device — open the report to retry.`);
+        }
+      }
+    } catch (e) {
+      console.warn('finish sweep failed', e);
+    }
+
     const target = reportNumber
       ? `/claims/${reportNumber}/edit?step=1&from=quick-capture`
       : `/claims/new`;
