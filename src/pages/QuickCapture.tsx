@@ -61,7 +61,10 @@ export default function QuickCapture() {
   const [location, setLocation] = useState<{ lat: number; lng: number; address: string } | null>(null);
   const [capturedAt] = useState<Date>(new Date());
   const [finishing, setFinishing] = useState(false);
+  const [failedQueueIds, setFailedQueueIds] = useState<Set<string>>(new Set());
   const previewUrlsRef = useRef<string[]>([]);
+  // Map queuedId -> target so we can retry uploads (e.g. on finish or when user taps retry)
+  const queuedTargetsRef = useRef<Map<string, Target>>(new Map());
 
   // Other driver info (form step)
   const [otherDriverName, setOtherDriverName] = useState('');
