@@ -14,7 +14,7 @@ import { Vehicle } from '@/types';
 import { getCurrentPosition } from '@/lib/geolocation';
 import { watermarkImage } from '@/lib/image-watermark';
 import { compressImage } from '@/lib/image-compress';
-import { enqueuePhoto, type QueuedPhoto } from '@/lib/photo-queue';
+import { enqueuePhoto, getQueuedPhotosForUser, removeQueuedPhoto, type QueuedPhoto } from '@/lib/photo-queue';
 
 type Target =
   | { kind: 'claim' }                                           // claim_photos / claim-photos bucket
