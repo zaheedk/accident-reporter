@@ -74,6 +74,14 @@ export default function ClaimList() {
         }
       }
       setClaimMeta(meta);
+
+      // Fetch insurer phone numbers for "Call insurance" buttons
+      const { data: insurers } = await supabase.from('insurance_companies').select('name, phone');
+      if (insurers) {
+        const phoneMap: Record<string, string> = {};
+        insurers.forEach((i: any) => { if (i.name && i.phone) phoneMap[i.name.toLowerCase()] = i.phone; });
+        setInsurerPhones(phoneMap);
+      }
     };
     load();
   }, [user]);
