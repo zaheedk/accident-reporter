@@ -309,7 +309,7 @@ export default function ClaimWizard() {
 
   return (
     <AppLayout>
-      <div className="theme-garage">
+      <div className="theme-garage !pt-0 md:!pt-5">
         <div className="space-y-8">
           {/* Header — desktop / tablet (Apple/Linear) */}
           <div className="hidden md:flex items-end justify-between gap-3 pt-2">
