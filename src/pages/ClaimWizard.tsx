@@ -403,29 +403,30 @@ export default function ClaimWizard() {
             </div>
 
             {/* Compact stepper inside dark header */}
-            <div className="flex items-center mt-5">
+            <div className="flex items-center mt-5 gap-1.5">
               {STEPS.map((label, i) => {
                 const status = i < step ? 'done' : i === step ? 'active' : 'idle';
+                const isActive = status === 'active';
                 return (
-                  <div key={label} className="flex items-center flex-1 min-w-0 last:flex-none">
+                  <div key={label} className={`flex items-center min-w-0 ${isActive ? 'flex-1' : 'flex-none'}`}>
                     <button
                       type="button"
                       onClick={async () => { if (shouldSave()) await autoSave(); setStep(i); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
                       className="flex items-center gap-1.5 min-w-0"
                     >
                       <span className={`w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-bold tabular-nums shrink-0 transition-colors ${
-                        status === 'active' ? 'bg-background text-foreground' :
+                        isActive ? 'bg-background text-foreground' :
                         status === 'done' ? 'bg-background/90 text-foreground' :
                         'bg-background/15 text-background/60'
                       }`}>
                         {status === 'done' ? <Check className="w-3 h-3" strokeWidth={3} /> : i + 1}
                       </span>
-                      {status === 'active' && (
-                        <span className="text-[12px] font-semibold text-background truncate">{label}</span>
+                      {isActive && (
+                        <span className="text-[12px] font-semibold text-background whitespace-nowrap">{label}</span>
                       )}
                     </button>
                     {i < STEPS.length - 1 && (
-                      <div className={`h-px flex-1 mx-2 ${i < step ? 'bg-background/80' : 'bg-background/20'}`} />
+                      <div className={`h-px flex-1 min-w-[8px] ml-1.5 ${i < step ? 'bg-background/80' : 'bg-background/20'}`} />
                     )}
                   </div>
                 );
