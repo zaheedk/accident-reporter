@@ -1,11 +1,4 @@
 project_id = "kmapvntjwhhtfgvjzsof"
 
-[functions]
-  [functions.auth-email-hook]
-    verify_jwt = false
-  [functions.process-email-queue]
-    verify_jwt = true
-  [functions.call-status-webhook]
-    verify_jwt = false
-  [functions.transcribe-call]
-    verify_jwt = false
+[functions.widget-data]
+verify_jwt = false
