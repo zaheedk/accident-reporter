@@ -678,31 +678,37 @@ export default function ClaimWizard() {
                   />
                 </div>
 
-                {/* Conditions */}
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="field-label">Weather</label>
-                    <select className="w-full h-12 px-3.5 rounded-xl border border-border bg-card text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring/30 appearance-none"
-                      value={claim.weatherCondition} onChange={e => update('weatherCondition', e.target.value)}>
-                      <option value="">Select…</option>
-                      {WEATHER_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="field-label">Road</label>
-                    <select className="w-full h-12 px-3.5 rounded-xl border border-border bg-card text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring/30 appearance-none"
-                      value={claim.roadCondition} onChange={e => update('roadCondition', e.target.value)}>
-                      <option value="">Select…</option>
-                      {ROAD_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-                    </select>
+                {/* Conditions — internal-label tiles to match Step 1 */}
+                <div>
+                  <label className="field-label">Conditions</label>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="rounded-2xl border border-border bg-card px-3.5 py-2.5">
+                      <div className="text-[10px] uppercase tracking-[0.14em] text-muted-foreground/80 font-medium">Weather</div>
+                      <select className="w-full mt-0.5 bg-transparent text-[15px] font-semibold text-foreground focus:outline-none appearance-none"
+                        value={claim.weatherCondition} onChange={e => update('weatherCondition', e.target.value)}>
+                        <option value="">Select…</option>
+                        {WEATHER_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+                      </select>
+                    </div>
+                    <div className="rounded-2xl border border-border bg-card px-3.5 py-2.5">
+                      <div className="text-[10px] uppercase tracking-[0.14em] text-muted-foreground/80 font-medium">Road</div>
+                      <select className="w-full mt-0.5 bg-transparent text-[15px] font-semibold text-foreground focus:outline-none appearance-none"
+                        value={claim.roadCondition} onChange={e => update('roadCondition', e.target.value)}>
+                        <option value="">Select…</option>
+                        {ROAD_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+                      </select>
+                    </div>
                   </div>
                 </div>
 
-                {/* Speed */}
+                {/* Speed — internal-label tile */}
                 <div>
-                  <label className="field-label">Speed before braking (km/h)</label>
-                  <input className="w-full h-12 px-3.5 rounded-xl border border-border bg-card text-sm text-foreground tabular-nums placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-ring/30"
-                    placeholder="e.g. 50" value={claim.speedBeforeBraking} onChange={e => update('speedBeforeBraking', e.target.value)} />
+                  <label className="field-label">Speed</label>
+                  <div className="rounded-2xl border border-border bg-card px-3.5 py-2.5">
+                    <div className="text-[10px] uppercase tracking-[0.14em] text-muted-foreground/80 font-medium">Before braking (km/h)</div>
+                    <input className="w-full mt-0.5 bg-transparent text-[15px] font-semibold text-foreground tabular-nums placeholder:text-muted-foreground/60 focus:outline-none"
+                      placeholder="e.g. 50" value={claim.speedBeforeBraking} onChange={e => update('speedBeforeBraking', e.target.value)} />
+                  </div>
                 </div>
 
                 {isEdit && (
