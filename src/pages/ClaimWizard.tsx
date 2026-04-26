@@ -309,7 +309,7 @@ export default function ClaimWizard() {
 
   return (
     <AppLayout>
-      <div className="theme-garage">
+      <div className="theme-garage !pt-0 md:!pt-5">
         <div className="space-y-8">
           {/* Header — desktop / tablet (Apple/Linear) */}
           <div className="hidden md:flex items-end justify-between gap-3 pt-2">
@@ -361,7 +361,7 @@ export default function ClaimWizard() {
           </div>
 
           {/* Header — mobile dark hero card with integrated stepper */}
-          <div className="md:hidden -mx-4 sm:-mx-6 px-5 pt-4 pb-5 bg-foreground text-background rounded-b-3xl shadow-sm">
+          <div className="md:hidden -mx-4 sm:-mx-6 -mt-5 px-5 pt-5 pb-5 bg-foreground text-background rounded-b-3xl shadow-sm">
             <div className="flex items-start justify-between gap-2">
               <button onClick={async () => { if (shouldSave()) await autoSave(); navigate(-1); }}
                 className="w-9 h-9 -ml-2 rounded-full flex items-center justify-center text-background/70 hover:text-background hover:bg-background/10 transition-colors flex-shrink-0"
@@ -678,31 +678,37 @@ export default function ClaimWizard() {
                   />
                 </div>
 
-                {/* Conditions */}
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="field-label">Weather</label>
-                    <select className="w-full h-12 px-3.5 rounded-xl border border-border bg-card text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring/30 appearance-none"
-                      value={claim.weatherCondition} onChange={e => update('weatherCondition', e.target.value)}>
-                      <option value="">Select…</option>
-                      {WEATHER_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="field-label">Road</label>
-                    <select className="w-full h-12 px-3.5 rounded-xl border border-border bg-card text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring/30 appearance-none"
-                      value={claim.roadCondition} onChange={e => update('roadCondition', e.target.value)}>
-                      <option value="">Select…</option>
-                      {ROAD_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-                    </select>
+                {/* Conditions — internal-label tiles to match Step 1 */}
+                <div>
+                  <label className="field-label">Conditions</label>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="rounded-2xl border border-border bg-card px-3.5 py-2.5">
+                      <div className="text-[10px] uppercase tracking-[0.14em] text-muted-foreground/80 font-medium">Weather</div>
+                      <select className="w-full mt-0.5 bg-transparent text-[15px] font-semibold text-foreground focus:outline-none appearance-none"
+                        value={claim.weatherCondition} onChange={e => update('weatherCondition', e.target.value)}>
+                        <option value="">Select…</option>
+                        {WEATHER_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+                      </select>
+                    </div>
+                    <div className="rounded-2xl border border-border bg-card px-3.5 py-2.5">
+                      <div className="text-[10px] uppercase tracking-[0.14em] text-muted-foreground/80 font-medium">Road</div>
+                      <select className="w-full mt-0.5 bg-transparent text-[15px] font-semibold text-foreground focus:outline-none appearance-none"
+                        value={claim.roadCondition} onChange={e => update('roadCondition', e.target.value)}>
+                        <option value="">Select…</option>
+                        {ROAD_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+                      </select>
+                    </div>
                   </div>
                 </div>
 
-                {/* Speed */}
+                {/* Speed — internal-label tile */}
                 <div>
-                  <label className="field-label">Speed before braking (km/h)</label>
-                  <input className="w-full h-12 px-3.5 rounded-xl border border-border bg-card text-sm text-foreground tabular-nums placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-ring/30"
-                    placeholder="e.g. 50" value={claim.speedBeforeBraking} onChange={e => update('speedBeforeBraking', e.target.value)} />
+                  <label className="field-label">Speed</label>
+                  <div className="rounded-2xl border border-border bg-card px-3.5 py-2.5">
+                    <div className="text-[10px] uppercase tracking-[0.14em] text-muted-foreground/80 font-medium">Before braking (km/h)</div>
+                    <input className="w-full mt-0.5 bg-transparent text-[15px] font-semibold text-foreground tabular-nums placeholder:text-muted-foreground/60 focus:outline-none"
+                      placeholder="e.g. 50" value={claim.speedBeforeBraking} onChange={e => update('speedBeforeBraking', e.target.value)} />
+                  </div>
                 </div>
 
                 {isEdit && (
@@ -896,16 +902,19 @@ export default function ClaimWizard() {
                   ))}
                 </div>
 
-                {/* Fault */}
-                <div className="card-soft space-y-3">
-                  <label className="field-label">Who is at fault?</label>
-                  <select className="w-full h-12 px-3.5 rounded-xl border border-border bg-background text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-ring/30 appearance-none"
-                    value={claim.atFault} onChange={e => update('atFault', e.target.value)}>
-                    <option value="">Select…</option>
-                    <option value="me">I am at fault</option>
-                    <option value="other_party">The other party is at fault</option>
-                    <option value="shared">Shared fault</option>
-                  </select>
+                {/* Fault — internal-label tile to match Step 1 */}
+                <div>
+                  <label className="field-label">Liability</label>
+                  <div className="rounded-2xl border border-border bg-card px-3.5 py-2.5">
+                    <div className="text-[10px] uppercase tracking-[0.14em] text-muted-foreground/80 font-medium">Who is at fault?</div>
+                    <select className="w-full mt-0.5 bg-transparent text-[15px] font-semibold text-foreground focus:outline-none appearance-none"
+                      value={claim.atFault} onChange={e => update('atFault', e.target.value)}>
+                      <option value="">Select…</option>
+                      <option value="me">I am at fault</option>
+                      <option value="other_party">The other party is at fault</option>
+                      <option value="shared">Shared fault</option>
+                    </select>
+                  </div>
                   {claim.atFault === 'other_party' && (
                     <div className="p-3.5 rounded-xl bg-primary/5 border border-primary/20 flex items-start gap-3">
                       <Car className="w-5 h-5 text-primary mt-0.5 shrink-0" />
