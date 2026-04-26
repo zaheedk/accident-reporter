@@ -1,0 +1,107 @@
+// Edge function consumed by the home-screen widget.
+// Auth: a long-lived widget token in the `X-Widget-Token` header.
+// Returns a tiny JSON payload with: latest claim, next vehicle expiry, emergency contacts.
+
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.95.0';
+
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-widget-token',
+  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+};
+
+const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
+const SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+
+function json(body: unknown, status = 200) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+  });
+}
+
+Deno.serve(async (req) => {
+  if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
+
+  const token = req.headers.get('x-widget-token') ?? '';
+  if (!token || token.length < 16) return json({ error: 'missing_token' }, 401);
+
+  const admin = createClient(SUPABASE_URL, SERVICE_KEY, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
+
+  // Validate token
+  const { data: tokenRow, error: tokenErr } = await admin
+    .from('widget_tokens')
+    .select('user_id, expires_at')
+    .eq('token', token)
+    .maybeSingle();
+
+  if (tokenErr || !tokenRow) return json({ error: 'invalid_token' }, 401);
+  if (new Date(tokenRow.expires_at).getTime() < Date.now()) return json({ error: 'expired' }, 401);
+
+  const userId = tokenRow.user_id as string;
+
+  // Mark last used (fire & forget)
+  admin.from('widget_tokens').update({ last_used_at: new Date().toISOString() }).eq('token', token).then(() => {});
+
+  // Latest claim
+  const { data: claim } = await admin
+    .from('claims')
+    .select('report_number, status, incident_date, incident_location, insurance_company, updated_at')
+    .eq('user_id', userId)
+    .order('updated_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  // Next vehicle expiry across rego/wof/insurance
+  const { data: vehicles } = await admin
+    .from('vehicles')
+    .select('rego_number, make, model, rego_expiry, wof_expiry, insurance_expiry, insurance_company')
+    .eq('user_id', userId)
+    .eq('is_active', true);
+
+  type Expiry = { kind: string; date: string; vehicle: string; rego: string; insurer?: string };
+  const expiries: Expiry[] = [];
+  for (const v of vehicles ?? []) {
+    const label = `${v.make ?? ''} ${v.model ?? ''}`.trim() || 'Vehicle';
+    if (v.rego_expiry) expiries.push({ kind: 'Rego', date: v.rego_expiry, vehicle: label, rego: v.rego_number ?? '' });
+    if (v.wof_expiry) expiries.push({ kind: 'WOF', date: v.wof_expiry, vehicle: label, rego: v.rego_number ?? '' });
+    if (v.insurance_expiry) expiries.push({ kind: 'Insurance', date: v.insurance_expiry, vehicle: label, rego: v.rego_number ?? '', insurer: v.insurance_company ?? '' });
+  }
+  expiries.sort((a, b) => (a.date > b.date ? 1 : -1));
+  const nextExpiry = expiries.find((e) => e.date >= new Date().toISOString().slice(0, 10)) ?? expiries[0] ?? null;
+
+  // Emergency contacts: insurer phone (from latest claim) + emergency number
+  let insurerPhone = '';
+  let insurerName = '';
+  if (claim?.insurance_company) {
+    const { data: ic } = await admin
+      .from('insurance_companies')
+      .select('name, phone')
+      .ilike('name', claim.insurance_company)
+      .maybeSingle();
+    if (ic) {
+      insurerPhone = ic.phone ?? '';
+      insurerName = ic.name ?? '';
+    }
+  }
+
+  return json({
+    refreshedAt: new Date().toISOString(),
+    claim: claim
+      ? {
+          reportNumber: claim.report_number,
+          status: claim.status,
+          incidentDate: claim.incident_date,
+          location: claim.incident_location,
+          insurer: claim.insurance_company,
+        }
+      : null,
+    nextExpiry,
+    contacts: {
+      insurer: insurerName ? { name: insurerName, phone: insurerPhone } : null,
+      emergency: { name: 'Emergency', phone: '111' },
+    },
+  });
+});

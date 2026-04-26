@@ -10,6 +10,7 @@ import { Loader2 } from "lucide-react";
 import { Capacitor } from "@capacitor/core";
 import InstallPrompt from "@/components/InstallPrompt";
 import OnboardingTour from "@/components/OnboardingTour";
+import DeepLinkHandler from "@/components/DeepLinkHandler";
 
 // Home is eagerly imported so the public landing page paints on first render (improves LCP)
 import Home from "./pages/Home";
@@ -43,6 +44,7 @@ const DeleteAccount = lazy(() => import("./pages/DeleteAccount"));
 const DeleteDataRequest = lazy(() => import("./pages/DeleteDataRequest"));
 const Documents = lazy(() => import("./pages/Documents"));
 const Family = lazy(() => import("./pages/Family"));
+const WidgetSetup = lazy(() => import("./pages/WidgetSetup"));
 
 const PageLoader = () => (
   <div className="min-h-screen bg-background flex items-center justify-center">
@@ -105,6 +107,7 @@ const App = () => (
         <Sonner />
         <OnboardingTour />
         <BrowserRouter>
+          <DeepLinkHandler />
           <Suspense fallback={<PageLoader />}>
             <Routes>
               <Route path="/auth" element={<Auth />} />
@@ -128,6 +131,7 @@ const App = () => (
               <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
               <Route path="/documents" element={<ProtectedRoute><Documents /></ProtectedRoute>} />
               <Route path="/family" element={<ProtectedRoute><Family /></ProtectedRoute>} />
+              <Route path="/widget-setup" element={<ProtectedRoute><WidgetSetup /></ProtectedRoute>} />
               <Route path="/about" element={<About />} />
               <Route path="/how-it-works" element={<HowItWorks />} />
               <Route path="/faq" element={<FAQ />} />

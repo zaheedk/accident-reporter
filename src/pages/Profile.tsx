@@ -366,6 +366,17 @@ export default function Profile() {
           </div>
         )}
 
+        <Link
+          to="/widget-setup"
+          className="card-soft flex items-center justify-between hover:bg-muted/40 transition-colors"
+        >
+          <div>
+            <h2 className="text-sm font-semibold text-foreground">Home-screen widget</h2>
+            <p className="text-[11px] text-muted-foreground">Quick capture, latest claim & expiry alerts on your home screen</p>
+          </div>
+          <span className="text-xs text-primary font-medium">Set up →</span>
+        </Link>
+
         {!isPhoneUser && !isOAuthUser && (
           <div className="card-soft space-y-4">
             <h2 className="text-sm font-semibold text-foreground flex items-center gap-1.5">
