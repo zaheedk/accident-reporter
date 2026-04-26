@@ -802,20 +802,6 @@ export default function Dashboard() {
               </div>
               <ChevronRight className="w-5 h-5 text-background/60 shrink-0" />
             </button>
-            <Link
-              to="/claims/new"
-              onClick={() => setAccidentSheetOpen(false)}
-              className="w-full flex items-center gap-3 p-4 rounded-2xl bg-card border border-border text-left active:scale-[0.99] transition-transform"
-            >
-              <div className="w-11 h-11 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
-                <FileText className="w-5 h-5" strokeWidth={2} />
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="text-[15px] font-semibold leading-tight text-foreground">Record accident details</div>
-                <div className="text-[12px] text-muted-foreground mt-0.5">Start a new incident report</div>
-              </div>
-              <ChevronRight className="w-5 h-5 text-muted-foreground/60 shrink-0" />
-            </Link>
           </div>
         </SheetContent>
       </Sheet>
