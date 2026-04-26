@@ -39,7 +39,7 @@ const STEPS: CaptureStep[] = [
   { key: 'other-plate',       title: "Other car's number plate",   hint: 'Make sure the plate is readable — fill the frame.',                    icon: Hash,            target: { kind: 'tp', tpType: 'rego' } },
   { key: 'other-licence',     title: "Other driver's licence",     hint: 'Ask permission. Capture both sides if possible.',                       icon: IdCard,    optional: true, target: { kind: 'tp', tpType: 'license' } },
   { key: 'other-driver',      title: "Photo of the other driver license",  hint: 'Optional — only with consent.',                                         icon: UserIcon,  optional: true, target: { kind: 'tp', tpType: 'driver' } },
-  { key: 'other-driver-info', title: "Other driver's details",     hint: "Quick — just their name and a phone number you can call back.",         icon: Phone,           form: 'other-driver-info' },
+  { key: 'other-driver-info', title: "Other driver's details",     hint: "Quick — name, phone, rego, and insurer if you have them.",         icon: Phone,           form: 'other-driver-info' },
 ];
 
 const TP_INDEX = 0; // QuickCapture binds to first third party
