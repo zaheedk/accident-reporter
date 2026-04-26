@@ -21,6 +21,7 @@ const VehicleList = lazy(() => import("./pages/VehicleList"));
 const VehicleForm = lazy(() => import("./pages/VehicleForm"));
 const ClaimList = lazy(() => import("./pages/ClaimList"));
 const ClaimWizard = lazy(() => import("./pages/ClaimWizard"));
+const QuickCapture = lazy(() => import("./pages/QuickCapture"));
 const ClaimDetail = lazy(() => import("./pages/ClaimDetail"));
 const PanelShops = lazy(() => import("./pages/PanelShops"));
 const TowCompanies = lazy(() => import("./pages/TowCompanies"));
