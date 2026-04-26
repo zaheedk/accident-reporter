@@ -761,7 +761,6 @@ export default function Dashboard() {
           <div className="px-5 pb-6 pt-3 space-y-2.5">
             <a
               href="tel:111"
-              onClick={() => setAccidentSheetOpen(false)}
               className="w-full flex items-center gap-3 p-4 rounded-2xl bg-red-600 text-white text-left active:scale-[0.99] transition-transform"
             >
               <div className="w-11 h-11 rounded-xl bg-white/15 flex items-center justify-center shrink-0">
@@ -774,7 +773,7 @@ export default function Dashboard() {
               <ChevronRight className="w-5 h-5 text-white/70 shrink-0" />
             </a>
             <button
-              onClick={() => { setAccidentSheetOpen(false); handleOpenTowSheet(); }}
+              onClick={handleOpenTowSheet}
               className="w-full flex items-center gap-3 p-4 rounded-2xl bg-foreground text-background text-left active:scale-[0.99] transition-transform"
             >
               <div className="w-11 h-11 rounded-xl bg-background/10 flex items-center justify-center shrink-0">
