@@ -136,9 +136,12 @@ export default function ClaimWizard() {
         if (!resolvedId) { setLoadingClaim(false); return; }
         const [{ data: claimRow }, { data: claimNumData }, { data: photosData }] = await Promise.all([
           supabase.from('claims').select('*').eq('id', resolvedId).single(),
-          supabase.from('claims').select('claim_number').eq('id', resolvedId).single(),
+          supabase.from('claims').select('claim_number, report_number').eq('id', resolvedId).single(),
           supabase.from('claim_photos').select('id, file_path, file_name').eq('claim_id', resolvedId),
         ]);
+        if (claimNumData?.report_number && id && id !== claimNumData.report_number && /^[0-9a-f-]{36}$/i.test(id)) {
+          navigate(`/claims/${claimNumData.report_number}/edit${window.location.search}`, { replace: true });
+        }
         if (claimRow) {
           const loaded: ClaimReport = {
             id: claimRow.id, status: claimRow.status as any, createdAt: claimRow.created_at, updatedAt: claimRow.updated_at,
