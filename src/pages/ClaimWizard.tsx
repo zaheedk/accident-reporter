@@ -311,8 +311,8 @@ export default function ClaimWizard() {
     <AppLayout>
       <div className="theme-garage">
         <div className="space-y-8">
-          {/* Header — Apple/Linear */}
-          <div className="flex items-end justify-between gap-3 pt-2">
+          {/* Header — desktop / tablet (Apple/Linear) */}
+          <div className="hidden md:flex items-end justify-between gap-3 pt-2">
             <div className="flex items-start gap-2 min-w-0">
               <button onClick={async () => { if (shouldSave()) await autoSave(); navigate(-1); }}
                 className="w-9 h-9 -ml-1 mt-1 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex-shrink-0"
@@ -357,6 +357,79 @@ export default function ClaimWizard() {
                   </AlertDialogContent>
                 </AlertDialog>
               )}
+            </div>
+          </div>
+
+          {/* Header — mobile dark hero card with integrated stepper */}
+          <div className="md:hidden -mx-4 sm:-mx-6 px-5 pt-4 pb-5 bg-foreground text-background rounded-b-3xl shadow-sm">
+            <div className="flex items-start justify-between gap-2">
+              <button onClick={async () => { if (shouldSave()) await autoSave(); navigate(-1); }}
+                className="w-9 h-9 -ml-2 rounded-full flex items-center justify-center text-background/70 hover:text-background hover:bg-background/10 transition-colors flex-shrink-0"
+                aria-label="Back">
+                <ArrowLeft className="w-[18px] h-[18px]" strokeWidth={2.2} />
+              </button>
+              <div className="flex-1 min-w-0 text-center px-1">
+                <p className="text-[10px] uppercase tracking-[0.18em] text-background/50 font-semibold">
+                  {isEdit ? 'Edit claim' : 'New claim'}{reportRef ? ` · ${reportRef}` : ''}
+                </p>
+                <h1 className="text-[22px] leading-tight font-bold tracking-[-0.02em] mt-0.5">
+                  Report incident
+                </h1>
+              </div>
+              {claim.id ? (
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <button type="button" disabled={deleting}
+                      className="w-9 h-9 -mr-1 rounded-full hover:bg-background/10 transition-colors disabled:opacity-50 flex items-center justify-center text-background/70 hover:text-background"
+                      title="Delete report">
+                      <Trash2 className="w-4 h-4" strokeWidth={2} />
+                    </button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Delete report?</AlertDialogTitle>
+                      <AlertDialogDescription>This action cannot be undone.</AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel disabled={deleting}>Cancel</AlertDialogCancel>
+                      <AlertDialogAction onClick={handleDeleteReport} disabled={deleting}
+                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                        {deleting ? 'Deleting…' : 'Delete'}
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              ) : <div className="w-9" />}
+            </div>
+
+            {/* Compact stepper inside dark header */}
+            <div className="flex items-center mt-5">
+              {STEPS.map((label, i) => {
+                const status = i < step ? 'done' : i === step ? 'active' : 'idle';
+                return (
+                  <div key={label} className="flex items-center flex-1 min-w-0 last:flex-none">
+                    <button
+                      type="button"
+                      onClick={async () => { if (shouldSave()) await autoSave(); setStep(i); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                      className="flex items-center gap-1.5 min-w-0"
+                    >
+                      <span className={`w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-bold tabular-nums shrink-0 transition-colors ${
+                        status === 'active' ? 'bg-background text-foreground' :
+                        status === 'done' ? 'bg-background/90 text-foreground' :
+                        'bg-background/15 text-background/60'
+                      }`}>
+                        {status === 'done' ? <Check className="w-3 h-3" strokeWidth={3} /> : i + 1}
+                      </span>
+                      {status === 'active' && (
+                        <span className="text-[12px] font-semibold text-background truncate">{label}</span>
+                      )}
+                    </button>
+                    {i < STEPS.length - 1 && (
+                      <div className={`h-px flex-1 mx-2 ${i < step ? 'bg-background/80' : 'bg-background/20'}`} />
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
 
