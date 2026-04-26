@@ -326,7 +326,7 @@ export default function QuickCapture() {
   };
 
   const exitWithConfirm = () => {
-    if (totalCaptured > 0 || otherDriverName || otherDriverPhone) {
+    if (totalCaptured > 0 || otherDriverName || otherDriverPhone || otherDriverRego || otherDriverInsurer) {
       const ok = window.confirm('Save what you have and continue later?');
       if (!ok) return;
     }
