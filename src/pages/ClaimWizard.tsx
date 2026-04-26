@@ -111,6 +111,11 @@ export default function ClaimWizard() {
   const isEdit = !!id;
 
   useEffect(() => {
+    const stepParam = searchParams.get('step');
+    if (stepParam) {
+      const n = parseInt(stepParam, 10);
+      if (!isNaN(n) && n >= 0) setStep(n);
+    }
     getVehicles(user?.id).then(v => {
       setVehicles(v);
       const regoParam = searchParams.get('rego');

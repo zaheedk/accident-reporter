@@ -21,6 +21,7 @@ const VehicleList = lazy(() => import("./pages/VehicleList"));
 const VehicleForm = lazy(() => import("./pages/VehicleForm"));
 const ClaimList = lazy(() => import("./pages/ClaimList"));
 const ClaimWizard = lazy(() => import("./pages/ClaimWizard"));
+const QuickCapture = lazy(() => import("./pages/QuickCapture"));
 const ClaimDetail = lazy(() => import("./pages/ClaimDetail"));
 const PanelShops = lazy(() => import("./pages/PanelShops"));
 const TowCompanies = lazy(() => import("./pages/TowCompanies"));
@@ -116,6 +117,7 @@ const App = () => (
               <Route path="/vehicles/:id/edit" element={<ProtectedRoute><VehicleForm /></ProtectedRoute>} />
               <Route path="/claims" element={<ProtectedRoute><ClaimList /></ProtectedRoute>} />
               <Route path="/claims/new" element={<ProtectedRoute><ClaimWizard /></ProtectedRoute>} />
+              <Route path="/claims/quick-capture" element={<ProtectedRoute><QuickCapture /></ProtectedRoute>} />
               <Route path="/claims/:id/edit" element={<ProtectedRoute><ClaimWizard /></ProtectedRoute>} />
               <Route path="/claims/:id" element={<ProtectedRoute><ClaimDetail /></ProtectedRoute>} />
               <Route path="/panel-shops" element={<PanelShops />} />
