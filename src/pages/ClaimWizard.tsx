@@ -902,16 +902,19 @@ export default function ClaimWizard() {
                   ))}
                 </div>
 
-                {/* Fault */}
-                <div className="card-soft space-y-3">
-                  <label className="field-label">Who is at fault?</label>
-                  <select className="w-full h-12 px-3.5 rounded-xl border border-border bg-background text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-ring/30 appearance-none"
-                    value={claim.atFault} onChange={e => update('atFault', e.target.value)}>
-                    <option value="">Select…</option>
-                    <option value="me">I am at fault</option>
-                    <option value="other_party">The other party is at fault</option>
-                    <option value="shared">Shared fault</option>
-                  </select>
+                {/* Fault — internal-label tile to match Step 1 */}
+                <div>
+                  <label className="field-label">Liability</label>
+                  <div className="rounded-2xl border border-border bg-card px-3.5 py-2.5">
+                    <div className="text-[10px] uppercase tracking-[0.14em] text-muted-foreground/80 font-medium">Who is at fault?</div>
+                    <select className="w-full mt-0.5 bg-transparent text-[15px] font-semibold text-foreground focus:outline-none appearance-none"
+                      value={claim.atFault} onChange={e => update('atFault', e.target.value)}>
+                      <option value="">Select…</option>
+                      <option value="me">I am at fault</option>
+                      <option value="other_party">The other party is at fault</option>
+                      <option value="shared">Shared fault</option>
+                    </select>
+                  </div>
                   {claim.atFault === 'other_party' && (
                     <div className="p-3.5 rounded-xl bg-primary/5 border border-primary/20 flex items-start gap-3">
                       <Car className="w-5 h-5 text-primary mt-0.5 shrink-0" />
