@@ -5,4 +5,6 @@
     <string name="package_name">nz.co.savo.app</string>
     <string name="custom_url_scheme">nz.co.savo.app</string>
     <string name="server_client_id">801226493928-0uq06s4htaufogc6ra2h1t9j1tog2rfl.apps.googleusercontent.com</string>
+    <string name="widget_label">SAVO</string>
+    <string name="widget_description">Latest claim, expiry alerts and one-tap incident capture.</string>
 </resources>
