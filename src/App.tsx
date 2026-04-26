@@ -10,6 +10,7 @@ import { Loader2 } from "lucide-react";
 import { Capacitor } from "@capacitor/core";
 import InstallPrompt from "@/components/InstallPrompt";
 import OnboardingTour from "@/components/OnboardingTour";
+import DeepLinkHandler from "@/components/DeepLinkHandler";
 
 // Home is eagerly imported so the public landing page paints on first render (improves LCP)
 import Home from "./pages/Home";
@@ -105,6 +106,7 @@ const App = () => (
         <Sonner />
         <OnboardingTour />
         <BrowserRouter>
+          <DeepLinkHandler />
           <Suspense fallback={<PageLoader />}>
             <Routes>
               <Route path="/auth" element={<Auth />} />
