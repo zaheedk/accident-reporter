@@ -69,6 +69,9 @@ export default function QuickCapture() {
   // Other driver info (form step)
   const [otherDriverName, setOtherDriverName] = useState('');
   const [otherDriverPhone, setOtherDriverPhone] = useState('');
+  const [otherDriverRego, setOtherDriverRego] = useState('');
+  const [otherDriverInsurer, setOtherDriverInsurer] = useState('');
+  const [insurerOptions, setInsurerOptions] = useState<string[]>([]);
   const [savingDriver, setSavingDriver] = useState(false);
 
   const step = STEPS[stepIdx];
