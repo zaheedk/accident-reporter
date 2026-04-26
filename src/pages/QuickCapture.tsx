@@ -461,6 +461,37 @@ export default function QuickCapture() {
                       className="mt-1.5 w-full h-11 px-3 rounded-xl bg-background/10 border border-background/15 text-background placeholder:text-background/40 text-[14px] focus:outline-none focus:border-background/40"
                     />
                   </label>
+                  <label className="block">
+                    <span className="text-[11px] uppercase tracking-wider text-background/60 font-medium">Rego (number plate)</span>
+                    <input
+                      type="text"
+                      value={otherDriverRego}
+                      onChange={(e) => setOtherDriverRego(e.target.value.toUpperCase().slice(0, 10))}
+                      autoCapitalize="characters"
+                      autoCorrect="off"
+                      spellCheck={false}
+                      placeholder="e.g. ABC123"
+                      maxLength={10}
+                      className="mt-1.5 w-full h-11 px-3 rounded-xl bg-background/10 border border-background/15 text-background placeholder:text-background/40 text-[14px] uppercase tracking-wider focus:outline-none focus:border-background/40"
+                    />
+                  </label>
+                  <label className="block">
+                    <span className="text-[11px] uppercase tracking-wider text-background/60 font-medium">Insurance company</span>
+                    <input
+                      type="text"
+                      value={otherDriverInsurer}
+                      onChange={(e) => setOtherDriverInsurer(e.target.value.slice(0, 100))}
+                      list="quickcapture-insurer-options"
+                      placeholder="e.g. AA Insurance"
+                      maxLength={100}
+                      className="mt-1.5 w-full h-11 px-3 rounded-xl bg-background/10 border border-background/15 text-background placeholder:text-background/40 text-[14px] focus:outline-none focus:border-background/40"
+                    />
+                    <datalist id="quickcapture-insurer-options">
+                      {insurerOptions.map((n) => (
+                        <option key={n} value={n} />
+                      ))}
+                    </datalist>
+                  </label>
                   <p className="text-[11px] text-background/50 leading-relaxed">
                     Saved to the third-party section of your report. You can add the rest later.
                   </p>
