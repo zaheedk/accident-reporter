@@ -42,6 +42,7 @@ export async function saveVehicle(vehicle: Omit<Vehicle, 'id' | 'createdAt'> & {
     roadside_phone: vehicle.roadsidePhone || '',
     photo_url: vehicle.photoUrl || '',
     is_active: vehicle.isActive ?? true,
+    is_default: vehicle.isDefault ?? false,
   };
 
   if (vehicle.id) {
@@ -79,8 +80,18 @@ function dbVehicleToVehicle(row: any): Vehicle {
     roadsidePhone: row.roadside_phone || '',
     photoUrl: row.photo_url || '',
     isActive: row.is_active ?? true,
+    isDefault: row.is_default ?? false,
     createdAt: row.created_at,
   };
+}
+
+// Set a vehicle as the default for a user. Trigger ensures uniqueness.
+export async function setDefaultVehicle(vehicleId: string): Promise<void> {
+  const { error } = await supabase
+    .from('vehicles')
+    .update({ is_default: true })
+    .eq('id', vehicleId);
+  if (error) { console.error('setDefaultVehicle', error); throw error; }
 }
 
 // ── Claim helpers ──
