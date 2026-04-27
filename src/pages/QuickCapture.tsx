@@ -16,6 +16,7 @@ import { getCurrentPosition } from '@/lib/geolocation';
 import { watermarkImage } from '@/lib/image-watermark';
 import { compressImage } from '@/lib/image-compress';
 import { enqueuePhoto, getQueuedPhotosForUser, removeQueuedPhoto, type QueuedPhoto } from '@/lib/photo-queue';
+import { useSpeech } from '@/hooks/use-speech';
 
 type Target =
   | { kind: 'claim' }                                           // claim_photos / claim-photos bucket
