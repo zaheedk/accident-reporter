@@ -663,6 +663,5 @@ export default function QuickCapture() {
           }}
         />
       </div>
-    </AppLayout>
   );
 }
