@@ -1,5 +1,13 @@
 import { supabase } from '@/integrations/supabase/client';
 import { Vehicle, ClaimReport } from '@/types';
+import { getCached, setCache } from '@/lib/offline-cache';
+import {
+  offlineInsert,
+  offlineUpdate,
+  offlineUpsert,
+  offlineDelete,
+} from '@/lib/offline-mutations';
+import { isOnline } from '@/lib/sync-engine';
 
 // Helper to resolve user id – skips the network call when already known
 async function resolveUserId(userId?: string): Promise<string | null> {
@@ -13,9 +21,19 @@ async function resolveUserId(userId?: string): Promise<string | null> {
 export async function getVehicles(userId?: string): Promise<Vehicle[]> {
   const uid = await resolveUserId(userId);
   if (!uid) return [];
+  const cacheKey = `vehicles:${uid}`;
+  // Offline → serve cache and bail
+  if (!isOnline()) {
+    return (await getCached<Vehicle[]>(cacheKey)) ?? [];
+  }
   const { data, error } = await supabase.from('vehicles').select('*').eq('user_id', uid).order('created_at', { ascending: false });
-  if (error) { console.error('getVehicles', error); return []; }
-  return (data || []).map(dbVehicleToVehicle);
+  if (error) {
+    console.error('getVehicles', error);
+    return (await getCached<Vehicle[]>(cacheKey)) ?? [];
+  }
+  const mapped = (data || []).map(dbVehicleToVehicle);
+  void setCache(cacheKey, mapped);
+  return mapped;
 }
 
 export async function saveVehicle(vehicle: Omit<Vehicle, 'id' | 'createdAt'> & { id?: string; createdAt?: string }, userId?: string): Promise<void> {
@@ -46,16 +64,14 @@ export async function saveVehicle(vehicle: Omit<Vehicle, 'id' | 'createdAt'> & {
   };
 
   if (vehicle.id) {
-    const { error } = await supabase.from('vehicles').upsert({ ...row, id: vehicle.id });
-    if (error) { console.error('saveVehicle upsert', error); throw error; }
+    await offlineUpsert('vehicles', { ...row, id: vehicle.id });
   } else {
-    const { error } = await supabase.from('vehicles').insert(row);
-    if (error) { console.error('saveVehicle insert', error); throw error; }
+    await offlineInsert('vehicles', row);
   }
 }
 
 export async function deleteVehicle(id: string): Promise<void> {
-  await supabase.from('vehicles').delete().eq('id', id);
+  await offlineDelete('vehicles', { id });
 }
 
 function dbVehicleToVehicle(row: any): Vehicle {
@@ -87,11 +103,7 @@ function dbVehicleToVehicle(row: any): Vehicle {
 
 // Set a vehicle as the default for a user. Trigger ensures uniqueness.
 export async function setDefaultVehicle(vehicleId: string): Promise<void> {
-  const { error } = await supabase
-    .from('vehicles')
-    .update({ is_default: true })
-    .eq('id', vehicleId);
-  if (error) { console.error('setDefaultVehicle', error); throw error; }
+  await offlineUpdate('vehicles', { is_default: true }, { id: vehicleId });
 }
 
 // ── Claim helpers ──
@@ -99,9 +111,18 @@ export async function setDefaultVehicle(vehicleId: string): Promise<void> {
 export async function getClaims(userId?: string): Promise<ClaimReport[]> {
   const uid = await resolveUserId(userId);
   if (!uid) return [];
+  const cacheKey = `claims:${uid}`;
+  if (!isOnline()) {
+    return (await getCached<ClaimReport[]>(cacheKey)) ?? [];
+  }
   const { data, error } = await supabase.from('claims').select('*').eq('user_id', uid).order('created_at', { ascending: false });
-  if (error) { console.error('getClaims', error); return []; }
-  return (data || []).map(dbClaimToClaim);
+  if (error) {
+    console.error('getClaims', error);
+    return (await getCached<ClaimReport[]>(cacheKey)) ?? [];
+  }
+  const mapped = (data || []).map(dbClaimToClaim);
+  void setCache(cacheKey, mapped);
+  return mapped;
 }
 
 export async function saveClaim(claim: ClaimReport, userId?: string): Promise<string> {
@@ -149,9 +170,22 @@ export async function saveClaim(claim: ClaimReport, userId?: string): Promise<st
   };
 
   if (claim.id) {
+    if (!isOnline()) {
+      // Offline edit — queue the upsert. We can't return a fresh id, so reuse the existing one.
+      await offlineUpsert('claims', { ...row, id: claim.id });
+      return claim.id;
+    }
     const { data } = await supabase.from('claims').upsert({ ...row, id: claim.id }).select('id').single();
     return data?.id || claim.id;
   } else {
+    if (!isOnline()) {
+      // Offline create — assign a client-side UUID so dependent rows can reference it.
+      const tempId = (typeof crypto !== 'undefined' && 'randomUUID' in crypto)
+        ? crypto.randomUUID()
+        : `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+      await offlineInsert('claims', { ...row, id: tempId });
+      return tempId;
+    }
     const { data } = await supabase.from('claims').insert(row).select('id').single();
     return data?.id || '';
   }
