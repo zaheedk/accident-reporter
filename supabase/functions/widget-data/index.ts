@@ -49,7 +49,7 @@ Deno.serve(async (req) => {
     .select('report_number, status, incident_date, incident_location, insurance_company, updated_at')
     .eq('user_id', userId)
     .order('updated_at', { ascending: false })
-    .limit(3);
+    .limit(2);
 
   const claims = (claimsRaw ?? []).map((c) => ({
     reportNumber: c.report_number,
