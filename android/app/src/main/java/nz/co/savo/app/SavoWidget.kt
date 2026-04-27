@@ -277,7 +277,7 @@ private fun callIntent(phone: String): Intent {
 }
 
 /** Cycles to the next vehicle in the cached list and re-renders. */
-class CycleVehicleAction : ActionCallback {
+class NextVehicleAction : ActionCallback {
     override suspend fun onAction(
         context: Context,
         glanceId: GlanceId,
@@ -288,7 +288,25 @@ class CycleVehicleAction : ActionCallback {
         if (count > 1) {
             val current = prefs.getInt("vehicles_current_index", 0)
             val next = (current + 1) % count
-            prefs.edit().putInt("vehicles_current_index", next).apply()
+            prefs.edit().putInt("vehicles_current_index", next).commit()
+        }
+        SavoWidget().updateAll(context)
+    }
+}
+
+/** Cycles to the previous vehicle in the cached list and re-renders. */
+class PrevVehicleAction : ActionCallback {
+    override suspend fun onAction(
+        context: Context,
+        glanceId: GlanceId,
+        parameters: ActionParameters,
+    ) {
+        val prefs = context.getSharedPreferences("savo_widget_prefs", Context.MODE_PRIVATE)
+        val count = prefs.getInt("vehicles_count", 0)
+        if (count > 1) {
+            val current = prefs.getInt("vehicles_current_index", 0)
+            val prev = (current - 1 + count) % count
+            prefs.edit().putInt("vehicles_current_index", prev).commit()
         }
         SavoWidget().updateAll(context)
     }
