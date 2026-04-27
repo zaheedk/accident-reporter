@@ -119,22 +119,33 @@ private fun WidgetBody(
             .cornerRadius(20.dp)
             .padding(12.dp)
     ) {
-        // Header row: SAVO + rego plate (+ switch button if multiple vehicles)
+        // Header row: SAVO + rego plate (+ prev/next vehicle buttons if multiple vehicles)
         Row(modifier = GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             Text(
                 text = "SAVO",
                 style = TextStyle(color = accent, fontSize = 12.sp, fontWeight = FontWeight.Bold),
-                modifier = GlanceModifier.defaultWeight(),
             )
-            if (rego.isNotEmpty()) {
-                val plateModifier = GlanceModifier
-                    .background(plateBg)
-                    .cornerRadius(6.dp)
-                    .padding(horizontal = 8.dp, vertical = 3.dp)
-                    .let { if (showSwitch) it.clickable(actionRunCallback<CycleVehicleAction>()) else it }
+            Spacer(GlanceModifier.defaultWeight())
+            if (showSwitch) {
                 Box(
                     contentAlignment = Alignment.Center,
-                    modifier = plateModifier
+                    modifier = GlanceModifier
+                        .background(switchBg)
+                        .cornerRadius(8.dp)
+                        .padding(horizontal = 10.dp, vertical = 6.dp)
+                        .clickable(actionRunCallback<PrevVehicleAction>())
+                ) {
+                    Text("◀", style = TextStyle(color = fg, fontSize = 13.sp, fontWeight = FontWeight.Bold))
+                }
+                Spacer(GlanceModifier.width(6.dp))
+            }
+            if (rego.isNotEmpty()) {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = GlanceModifier
+                        .background(plateBg)
+                        .cornerRadius(6.dp)
+                        .padding(horizontal = 10.dp, vertical = 4.dp)
                 ) {
                     Text(rego, style = TextStyle(color = plateFg, fontSize = 13.sp, fontWeight = FontWeight.Bold))
                 }
@@ -145,11 +156,11 @@ private fun WidgetBody(
                     contentAlignment = Alignment.Center,
                     modifier = GlanceModifier
                         .background(switchBg)
-                        .cornerRadius(6.dp)
-                        .padding(horizontal = 8.dp, vertical = 3.dp)
-                        .clickable(actionRunCallback<CycleVehicleAction>())
+                        .cornerRadius(8.dp)
+                        .padding(horizontal = 10.dp, vertical = 6.dp)
+                        .clickable(actionRunCallback<NextVehicleAction>())
                 ) {
-                    Text("⇄", style = TextStyle(color = fg, fontSize = 13.sp, fontWeight = FontWeight.Bold))
+                    Text("▶", style = TextStyle(color = fg, fontSize = 13.sp, fontWeight = FontWeight.Bold))
                 }
             }
         }
