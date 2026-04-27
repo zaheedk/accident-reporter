@@ -130,16 +130,35 @@ export async function getClaims(userId?: string): Promise<ClaimReport[]> {
   const uid = await resolveUserId(userId);
   if (!uid) return [];
   const cacheKey = `claims:${uid}`;
-  if (!isOnline()) {
-    return (await getCached<ClaimReport[]>(cacheKey)) ?? [];
+
+  // Local-first
+  const cached = await getCached<any[]>(cacheKey);
+  const cachedMapped = cached
+    ? cached.map((r: any) => (r.incidentDate !== undefined ? (r as ClaimReport) : dbClaimToClaim(r)))
+    : null;
+
+  if (isOnline()) {
+    void supabase
+      .from('claims')
+      .select('*')
+      .eq('user_id', uid)
+      .order('created_at', { ascending: false })
+      .then(({ data, error }) => {
+        if (error || !data) return;
+        void setCache(cacheKey, data);
+      });
   }
+
+  if (cachedMapped) return cachedMapped;
+
+  if (!isOnline()) return [];
   const { data, error } = await supabase.from('claims').select('*').eq('user_id', uid).order('created_at', { ascending: false });
   if (error) {
     console.error('getClaims', error);
-    return (await getCached<ClaimReport[]>(cacheKey)) ?? [];
+    return [];
   }
   const mapped = (data || []).map(dbClaimToClaim);
-  void setCache(cacheKey, mapped);
+  void setCache(cacheKey, data);
   return mapped;
 }
 
