@@ -103,11 +103,7 @@ function dbVehicleToVehicle(row: any): Vehicle {
 
 // Set a vehicle as the default for a user. Trigger ensures uniqueness.
 export async function setDefaultVehicle(vehicleId: string): Promise<void> {
-  const { error } = await supabase
-    .from('vehicles')
-    .update({ is_default: true })
-    .eq('id', vehicleId);
-  if (error) { console.error('setDefaultVehicle', error); throw error; }
+  await offlineUpdate('vehicles', { is_default: true }, { id: vehicleId });
 }
 
 // ── Claim helpers ──
@@ -115,9 +111,18 @@ export async function setDefaultVehicle(vehicleId: string): Promise<void> {
 export async function getClaims(userId?: string): Promise<ClaimReport[]> {
   const uid = await resolveUserId(userId);
   if (!uid) return [];
+  const cacheKey = `claims:${uid}`;
+  if (!isOnline()) {
+    return (await getCached<ClaimReport[]>(cacheKey)) ?? [];
+  }
   const { data, error } = await supabase.from('claims').select('*').eq('user_id', uid).order('created_at', { ascending: false });
-  if (error) { console.error('getClaims', error); return []; }
-  return (data || []).map(dbClaimToClaim);
+  if (error) {
+    console.error('getClaims', error);
+    return (await getCached<ClaimReport[]>(cacheKey)) ?? [];
+  }
+  const mapped = (data || []).map(dbClaimToClaim);
+  void setCache(cacheKey, mapped);
+  return mapped;
 }
 
 export async function saveClaim(claim: ClaimReport, userId?: string): Promise<string> {
@@ -165,9 +170,22 @@ export async function saveClaim(claim: ClaimReport, userId?: string): Promise<st
   };
 
   if (claim.id) {
+    if (!isOnline()) {
+      // Offline edit — queue the upsert. We can't return a fresh id, so reuse the existing one.
+      await offlineUpsert('claims', { ...row, id: claim.id });
+      return claim.id;
+    }
     const { data } = await supabase.from('claims').upsert({ ...row, id: claim.id }).select('id').single();
     return data?.id || claim.id;
   } else {
+    if (!isOnline()) {
+      // Offline create — assign a client-side UUID so dependent rows can reference it.
+      const tempId = (typeof crypto !== 'undefined' && 'randomUUID' in crypto)
+        ? crypto.randomUUID()
+        : `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+      await offlineInsert('claims', { ...row, id: tempId });
+      return tempId;
+    }
     const { data } = await supabase.from('claims').insert(row).select('id').single();
     return data?.id || '';
   }
