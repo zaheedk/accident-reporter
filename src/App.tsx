@@ -12,6 +12,11 @@ import InstallPrompt from "@/components/InstallPrompt";
 import OnboardingTour from "@/components/OnboardingTour";
 import DeepLinkHandler from "@/components/DeepLinkHandler";
 import WidgetInstallPrompt from "@/components/WidgetInstallPrompt";
+import { SyncStatusBadge } from "@/components/SyncStatusBadge";
+import { installSyncTriggers, runSync } from "@/lib/sync-engine";
+
+// Boot the offline sync engine (foreground + reconnect triggers).
+installSyncTriggers();
 
 // Home is eagerly imported so the public landing page paints on first render (improves LCP)
 import Home from "./pages/Home";
@@ -67,10 +72,11 @@ const queryClient = new QueryClient({
   },
 });
 
-// Re-fetch all queries when the device comes back online
+// Re-fetch all queries AND drain the offline write queue when the device reconnects.
 if (typeof window !== 'undefined') {
   window.addEventListener('online', () => {
     queryClient.invalidateQueries();
+    void runSync();
   });
 }
 
@@ -108,6 +114,7 @@ const App = () => (
         <Sonner />
         <OnboardingTour />
         <WidgetInstallPrompt />
+        <SyncStatusBadge />
         <BrowserRouter>
           <DeepLinkHandler />
           <Suspense fallback={<PageLoader />}>
