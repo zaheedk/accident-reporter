@@ -317,7 +317,7 @@ class SavoWidgetReceiver : GlanceAppWidgetReceiver() {
 
                 val editor = prefs.edit()
 
-                // Clear previous
+                // Clear previous (we now show 2, but clear up to 3 for safety on upgrade)
                 for (i in 0 until 3) {
                     editor.remove("claim_${i}_ref")
                     editor.remove("claim_${i}_status")
@@ -335,7 +335,7 @@ class SavoWidgetReceiver : GlanceAppWidgetReceiver() {
 
                 val claimsArr = json.optJSONArray("claims")
                 if (claimsArr != null) {
-                    for (i in 0 until minOf(3, claimsArr.length())) {
+                    for (i in 0 until minOf(2, claimsArr.length())) {
                         val c = claimsArr.optJSONObject(i) ?: continue
                         editor.putString("claim_${i}_ref", c.optString("reportNumber", ""))
                         editor.putString("claim_${i}_status", c.optString("status", ""))
@@ -344,7 +344,7 @@ class SavoWidgetReceiver : GlanceAppWidgetReceiver() {
 
                 val expiriesArr = json.optJSONArray("nextExpiries")
                 if (expiriesArr != null) {
-                    for (i in 0 until minOf(3, expiriesArr.length())) {
+                    for (i in 0 until minOf(2, expiriesArr.length())) {
                         val e = expiriesArr.optJSONObject(i) ?: continue
                         editor.putString("expiry_${i}_kind", e.optString("kind", ""))
                         editor.putString("expiry_${i}_date", e.optString("date", ""))
