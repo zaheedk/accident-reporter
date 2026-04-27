@@ -365,9 +365,8 @@ export default function QuickCapture() {
   const formHasContent = step.form === 'other-driver-info' && (otherDriverName.trim() || otherDriverPhone.trim() || otherDriverRego.trim() || otherDriverInsurer.trim());
 
   return (
-    <AppLayout>
-      <div className="!pt-0 -mx-4 sm:-mx-6 -mt-10 min-h-[calc(100dvh-4rem)] flex flex-col bg-foreground text-background"
-           style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
+    <div className="fixed inset-0 z-50 flex flex-col bg-foreground text-background overflow-y-auto"
+         style={{ paddingTop: 'env(safe-area-inset-top, 0px)', paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
 
         {/* Header strip */}
         <div className="px-5 pt-5 pb-4 flex items-center justify-between">
