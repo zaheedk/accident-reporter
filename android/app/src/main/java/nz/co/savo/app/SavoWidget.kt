@@ -1,5 +1,8 @@
 package nz.co.savo.app
 
+import android.app.PendingIntent
+import android.appwidget.AppWidgetManager
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import androidx.glance.GlanceId
@@ -7,6 +10,7 @@ import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetReceiver
 import androidx.glance.appwidget.action.actionStartActivity
 import androidx.glance.action.clickable
+import androidx.glance.action.actionStartActivity as actionStartActivityNoOp
 import androidx.glance.layout.*
 import androidx.glance.text.Text
 import androidx.glance.text.TextStyle
@@ -23,11 +27,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.glance.layout.Alignment
 import androidx.glance.appwidget.updateAll
+import androidx.glance.appwidget.action.actionRunCallback
+import androidx.glance.appwidget.action.ActionCallback
+import androidx.glance.action.ActionParameters
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
+import org.json.JSONArray
 import java.net.HttpURLConnection
 import java.net.URL
 
@@ -51,11 +59,33 @@ class SavoWidget : GlanceAppWidget() {
 
             val insurerPhone = prefs.getString("insurer_phone", null) ?: ""
             val insurerName = prefs.getString("insurer_name", null) ?: "Insurer"
-            val roadsidePhone = prefs.getString("roadside_phone", null) ?: ""
-            val roadsideName = prefs.getString("roadside_name", null) ?: "Roadside"
-            val rego = prefs.getString("vehicle_rego", null) ?: ""
 
-            WidgetBody(claims, expiries, insurerName, insurerPhone, roadsideName, roadsidePhone, rego)
+            // Vehicle list cached as flat strings: vehicles_count + per-index fields
+            val vehicleCount = prefs.getInt("vehicles_count", 0)
+            val currentIndex = if (vehicleCount > 0) {
+                prefs.getInt("vehicles_current_index", 0).coerceAtLeast(0) % vehicleCount
+            } else 0
+
+            val rego = if (vehicleCount > 0)
+                prefs.getString("vehicle_${currentIndex}_rego", "") ?: ""
+            else (prefs.getString("vehicle_rego", null) ?: "")
+            val roadsidePhone = if (vehicleCount > 0)
+                prefs.getString("vehicle_${currentIndex}_roadside_phone", "") ?: ""
+            else (prefs.getString("roadside_phone", null) ?: "")
+            val roadsideName = if (vehicleCount > 0)
+                prefs.getString("vehicle_${currentIndex}_roadside_name", "") ?: "Roadside"
+            else (prefs.getString("roadside_name", null) ?: "Roadside")
+
+            WidgetBody(
+                claims = claims,
+                expiries = expiries,
+                insurerName = insurerName,
+                insurerPhone = insurerPhone,
+                roadsideName = roadsideName,
+                roadsidePhone = roadsidePhone,
+                rego = rego,
+                showSwitch = vehicleCount > 1,
+            )
         }
     }
 }
@@ -72,6 +102,7 @@ private fun WidgetBody(
     roadsideName: String,
     roadsidePhone: String,
     rego: String,
+    showSwitch: Boolean,
 ) {
     val bg = ColorProvider(Color(0xFF0F172A))
     val fg = ColorProvider(Color(0xFFFFFFFF))
@@ -79,6 +110,7 @@ private fun WidgetBody(
     val accent = ColorProvider(Color(0xFFF26B1F))
     val plateBg = ColorProvider(Color(0xFFFBBF24))
     val plateFg = ColorProvider(Color(0xFF111827))
+    val switchBg = ColorProvider(Color(0xFF334155))
 
     Column(
         modifier = GlanceModifier
@@ -87,7 +119,7 @@ private fun WidgetBody(
             .cornerRadius(20.dp)
             .padding(12.dp)
     ) {
-        // Header row: SAVO + rego plate
+        // Header row: SAVO + rego plate (+ switch button if multiple vehicles)
         Row(modifier = GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             Text(
                 text = "SAVO",
@@ -103,6 +135,19 @@ private fun WidgetBody(
                         .padding(horizontal = 8.dp, vertical = 3.dp)
                 ) {
                     Text(rego, style = TextStyle(color = plateFg, fontSize = 13.sp, fontWeight = FontWeight.Bold))
+                }
+            }
+            if (showSwitch) {
+                Spacer(GlanceModifier.width(6.dp))
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = GlanceModifier
+                        .background(switchBg)
+                        .cornerRadius(6.dp)
+                        .padding(horizontal = 8.dp, vertical = 3.dp)
+                        .clickable(actionRunCallback<CycleVehicleAction>())
+                ) {
+                    Text("⇄", style = TextStyle(color = fg, fontSize = 13.sp, fontWeight = FontWeight.Bold))
                 }
             }
         }
@@ -218,6 +263,24 @@ private fun callIntent(phone: String): Intent {
         .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
 }
 
+/** Cycles to the next vehicle in the cached list and re-renders. */
+class CycleVehicleAction : ActionCallback {
+    override suspend fun onAction(
+        context: Context,
+        glanceId: GlanceId,
+        parameters: ActionParameters,
+    ) {
+        val prefs = context.getSharedPreferences("savo_widget_prefs", Context.MODE_PRIVATE)
+        val count = prefs.getInt("vehicles_count", 0)
+        if (count > 1) {
+            val current = prefs.getInt("vehicles_current_index", 0)
+            val next = (current + 1) % count
+            prefs.edit().putInt("vehicles_current_index", next).apply()
+        }
+        SavoWidget().updateAll(context)
+    }
+}
+
 class SavoWidgetReceiver : GlanceAppWidgetReceiver() {
     override val glanceAppWidget: GlanceAppWidget = SavoWidget()
 
@@ -260,6 +323,13 @@ class SavoWidgetReceiver : GlanceAppWidgetReceiver() {
                     editor.remove("expiry_${i}_date")
                     editor.remove("expiry_${i}_vehicle")
                 }
+                // Clear previous vehicle list (up to 10 cached)
+                val prevCount = prefs.getInt("vehicles_count", 0)
+                for (i in 0 until prevCount.coerceAtLeast(10)) {
+                    editor.remove("vehicle_${i}_rego")
+                    editor.remove("vehicle_${i}_roadside_name")
+                    editor.remove("vehicle_${i}_roadside_phone")
+                }
 
                 val claimsArr = json.optJSONArray("claims")
                 if (claimsArr != null) {
@@ -287,17 +357,35 @@ class SavoWidgetReceiver : GlanceAppWidgetReceiver() {
                     editor.putString("insurer_name", "Insurer")
                     editor.putString("insurer_phone", "")
                 }
+
+                // Cache vehicle list (up to 10) for cycling on the widget
+                val vehiclesArr: JSONArray? = json.optJSONArray("vehicles")
+                val total = minOf(10, vehiclesArr?.length() ?: 0)
+                editor.putInt("vehicles_count", total)
+                if (vehiclesArr != null) {
+                    for (i in 0 until total) {
+                        val v = vehiclesArr.optJSONObject(i) ?: continue
+                        editor.putString("vehicle_${i}_rego", v.optString("rego", ""))
+                        editor.putString("vehicle_${i}_roadside_name", v.optString("roadsideName", "Roadside"))
+                        editor.putString("vehicle_${i}_roadside_phone", v.optString("roadsidePhone", ""))
+                    }
+                }
+                // Reset current index if it falls outside the new list
+                val curIdx = prefs.getInt("vehicles_current_index", 0)
+                if (total == 0 || curIdx >= total) editor.putInt("vehicles_current_index", 0)
+
+                // Legacy single-vehicle fields kept for backward compatibility
+                json.optJSONObject("vehicle")?.let { v ->
+                    editor.putString("vehicle_rego", v.optString("rego", ""))
+                } ?: run {
+                    editor.putString("vehicle_rego", "")
+                }
                 json.optJSONObject("contacts")?.optJSONObject("roadside")?.let { rs ->
                     editor.putString("roadside_name", rs.optString("name", "Roadside"))
                     editor.putString("roadside_phone", rs.optString("phone", ""))
                 } ?: run {
                     editor.putString("roadside_name", "Roadside")
                     editor.putString("roadside_phone", "")
-                }
-                json.optJSONObject("vehicle")?.let { v ->
-                    editor.putString("vehicle_rego", v.optString("rego", ""))
-                } ?: run {
-                    editor.putString("vehicle_rego", "")
                 }
                 editor.apply()
 
