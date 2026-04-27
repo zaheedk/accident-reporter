@@ -100,39 +100,39 @@ private fun WidgetBody(
     val muted = ColorProvider(Color(0xFF64748B))
     val plateBg = ColorProvider(Color(0xFFFBBF24))
     val plateFg = ColorProvider(Color(0xFF111827))
-    val switchBg = ColorProvider(Color(0xFFE2E8F0))
-    val switchFg = ColorProvider(Color(0xFF1E3A5F))
+    val pillBg = ColorProvider(Color(0xFFF1F5F9))     // Light grey pill (Google-style)
+    val pillFg = ColorProvider(Color(0xFF1E3A5F))
     val white = ColorProvider(Color(0xFFFFFFFF))
 
     Column(
         modifier = GlanceModifier
             .fillMaxSize()
             .background(bg)
-            .cornerRadius(20.dp)
-            .padding(12.dp)
+            .cornerRadius(28.dp)
+            .padding(14.dp)
     ) {
-        // Header: logo + SAVO + plate + switcher
+        // Header row: SAVO + plate + switcher
         Row(modifier = GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             Image(
                 provider = ImageProvider(R.mipmap.ic_launcher),
                 contentDescription = "SAVO",
-                modifier = GlanceModifier.size(18.dp),
+                modifier = GlanceModifier.size(22.dp),
             )
-            Spacer(GlanceModifier.width(6.dp))
+            Spacer(GlanceModifier.width(8.dp))
             Text(
                 text = "SAVO",
-                style = TextStyle(color = brand, fontSize = 14.sp, fontWeight = FontWeight.Bold),
+                style = TextStyle(color = brand, fontSize = 18.sp, fontWeight = FontWeight.Bold),
             )
             Spacer(GlanceModifier.defaultWeight())
             if (showSwitch) {
                 Box(
                     contentAlignment = Alignment.Center,
                     modifier = GlanceModifier
-                        .background(switchBg)
-                        .cornerRadius(8.dp)
-                        .padding(horizontal = 10.dp, vertical = 6.dp)
+                        .size(36.dp)
+                        .background(pillBg)
+                        .cornerRadius(18.dp)
                         .clickable(actionRunCallback<PrevVehicleAction>())
-                ) { Text("◀", style = TextStyle(color = switchFg, fontSize = 13.sp, fontWeight = FontWeight.Bold)) }
+                ) { Text("◀", style = TextStyle(color = pillFg, fontSize = 14.sp, fontWeight = FontWeight.Bold)) }
                 Spacer(GlanceModifier.width(6.dp))
             }
             if (rego.isNotEmpty()) {
@@ -140,57 +140,70 @@ private fun WidgetBody(
                     contentAlignment = Alignment.Center,
                     modifier = GlanceModifier
                         .background(plateBg)
-                        .cornerRadius(6.dp)
-                        .padding(horizontal = 10.dp, vertical = 4.dp)
-                ) { Text(rego, style = TextStyle(color = plateFg, fontSize = 13.sp, fontWeight = FontWeight.Bold)) }
+                        .cornerRadius(8.dp)
+                        .padding(horizontal = 12.dp, vertical = 6.dp)
+                ) { Text(rego, style = TextStyle(color = plateFg, fontSize = 16.sp, fontWeight = FontWeight.Bold)) }
             }
             if (showSwitch) {
                 Spacer(GlanceModifier.width(6.dp))
                 Box(
                     contentAlignment = Alignment.Center,
                     modifier = GlanceModifier
-                        .background(switchBg)
-                        .cornerRadius(8.dp)
-                        .padding(horizontal = 10.dp, vertical = 6.dp)
+                        .size(36.dp)
+                        .background(pillBg)
+                        .cornerRadius(18.dp)
                         .clickable(actionRunCallback<NextVehicleAction>())
-                ) { Text("▶", style = TextStyle(color = switchFg, fontSize = 13.sp, fontWeight = FontWeight.Bold)) }
+                ) { Text("▶", style = TextStyle(color = pillFg, fontSize = 14.sp, fontWeight = FontWeight.Bold)) }
             }
         }
-        Spacer(GlanceModifier.height(8.dp))
+        Spacer(GlanceModifier.height(12.dp))
 
-        // Expiry rows for the selected vehicle (days left)
-        ExpiryRow("Rego", regoExpiry, text, muted)
-        ExpiryRow("WOF", wofExpiry, text, muted)
-        ExpiryRow("Insurance", insuranceExpiry, text, muted)
+        // Expiry pill — Google-style rounded bar with all 3 expiries
+        Row(
+            modifier = GlanceModifier
+                .fillMaxWidth()
+                .background(pillBg)
+                .cornerRadius(28.dp)
+                .padding(horizontal = 14.dp, vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            ExpiryCell("Rego", regoExpiry, pillFg, muted, GlanceModifier.defaultWeight())
+            ExpiryCell("WOF", wofExpiry, pillFg, muted, GlanceModifier.defaultWeight())
+            ExpiryCell("Insurance", insuranceExpiry, pillFg, muted, GlanceModifier.defaultWeight())
+        }
 
-        Spacer(GlanceModifier.defaultWeight())
+        Spacer(GlanceModifier.height(10.dp))
 
-        // Quick Accident Capture — full width, blue
+        // Quick Accident Capture — full width, big blue pill
         Box(
             contentAlignment = Alignment.Center,
             modifier = GlanceModifier
                 .fillMaxWidth()
-                .height(36.dp)
+                .height(52.dp)
                 .background(accent)
-                .cornerRadius(10.dp)
+                .cornerRadius(26.dp)
                 .clickable(actionStartActivity(deepLinkIntent("savo://quick-capture")))
         ) {
-            Text("Quick Accident Capture", style = TextStyle(color = white, fontSize = 12.sp, fontWeight = FontWeight.Bold))
+            Text(
+                "Quick Accident Capture",
+                style = TextStyle(color = white, fontSize = 16.sp, fontWeight = FontWeight.Bold),
+            )
         }
-        Spacer(GlanceModifier.height(6.dp))
-        // Roadside + 111
+        Spacer(GlanceModifier.height(8.dp))
+
+        // Roadside + 111 — big circular-pill action buttons
         Row(modifier = GlanceModifier.fillMaxWidth()) {
             ActionButton(
-                label = if (roadsidePhone.isNotEmpty()) roadsideName.take(12) else "Roadside",
+                label = if (roadsidePhone.isNotEmpty()) roadsideName.take(14) else "Roadside",
                 colorBg = ColorProvider(Color(0xFF0EA5E9)),
                 colorFg = white,
                 modifier = GlanceModifier.defaultWeight().clickable(
                     actionStartActivity(callIntent(roadsidePhone))
                 ),
             )
-            Spacer(GlanceModifier.width(6.dp))
+            Spacer(GlanceModifier.width(8.dp))
             ActionButton(
-                label = "111",
+                label = "Call 111",
                 colorBg = ColorProvider(Color(0xFFB91C1C)),
                 colorFg = white,
                 modifier = GlanceModifier.defaultWeight().clickable(
@@ -202,11 +215,23 @@ private fun WidgetBody(
 }
 
 @Composable
-private fun ExpiryRow(label: String, isoDate: String, text: ColorProvider, muted: ColorProvider) {
-    Row(modifier = GlanceModifier.fillMaxWidth().padding(vertical = 2.dp)) {
+private fun ExpiryCell(
+    label: String,
+    isoDate: String,
+    text: ColorProvider,
+    muted: ColorProvider,
+    modifier: GlanceModifier,
+) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
         Text(label, style = TextStyle(color = muted, fontSize = 11.sp, fontWeight = FontWeight.Medium))
-        Spacer(GlanceModifier.defaultWeight())
-        Text(formatDaysLeft(isoDate), style = TextStyle(color = text, fontSize = 11.sp, fontWeight = FontWeight.Bold))
+        Spacer(GlanceModifier.height(2.dp))
+        Text(
+            formatDaysLeft(isoDate),
+            style = TextStyle(color = text, fontSize = 14.sp, fontWeight = FontWeight.Bold),
+        )
     }
 }
 
@@ -218,11 +243,11 @@ private fun formatDaysLeft(isoDate: String): String {
         val today = fmt.parse(fmt.format(java.util.Date())) ?: return "—"
         val diff = TimeUnit.MILLISECONDS.toDays(target.time - today.time)
         when {
-            diff > 1 -> "in $diff days"
-            diff == 1L -> "in 1 day"
-            diff == 0L -> "today"
-            diff == -1L -> "1 day ago"
-            else -> "${-diff} days ago"
+            diff > 1 -> "$diff days"
+            diff == 1L -> "1 day"
+            diff == 0L -> "Today"
+            diff == -1L -> "-1 day"
+            else -> "${diff}d"
         }
     } catch (_: Exception) { "—" }
 }
@@ -237,11 +262,11 @@ private fun ActionButton(
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier
-            .height(36.dp)
+            .height(52.dp)
             .background(colorBg)
-            .cornerRadius(10.dp)
+            .cornerRadius(26.dp)
     ) {
-        Text(label, style = TextStyle(color = colorFg, fontSize = 11.sp, fontWeight = FontWeight.Bold))
+        Text(label, style = TextStyle(color = colorFg, fontSize = 15.sp, fontWeight = FontWeight.Bold))
     }
 }
 
