@@ -64,16 +64,14 @@ export async function saveVehicle(vehicle: Omit<Vehicle, 'id' | 'createdAt'> & {
   };
 
   if (vehicle.id) {
-    const { error } = await supabase.from('vehicles').upsert({ ...row, id: vehicle.id });
-    if (error) { console.error('saveVehicle upsert', error); throw error; }
+    await offlineUpsert('vehicles', { ...row, id: vehicle.id });
   } else {
-    const { error } = await supabase.from('vehicles').insert(row);
-    if (error) { console.error('saveVehicle insert', error); throw error; }
+    await offlineInsert('vehicles', row);
   }
 }
 
 export async function deleteVehicle(id: string): Promise<void> {
-  await supabase.from('vehicles').delete().eq('id', id);
+  await offlineDelete('vehicles', { id });
 }
 
 function dbVehicleToVehicle(row: any): Vehicle {
