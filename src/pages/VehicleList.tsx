@@ -1,9 +1,9 @@
 import { useState, useMemo } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
-import { Plus, Car, Trash2, ArrowLeft, Phone, CheckCircle2, PowerOff, Search, X, ShieldAlert, FileWarning, CalendarClock, Pencil, FileText, AlertOctagon } from 'lucide-react';
+import { Plus, Car, Trash2, ArrowLeft, Phone, CheckCircle2, PowerOff, Search, X, ShieldAlert, FileWarning, CalendarClock, Pencil, FileText, AlertOctagon, Star } from 'lucide-react';
 // (ProgressRing removed — Apple/Linear style favours flat squircle thumbnails)
-import { getVehicles, deleteVehicle } from '@/lib/storage';
+import { getVehicles, deleteVehicle, setDefaultVehicle } from '@/lib/storage';
 import { supabase } from '@/integrations/supabase/client';
 import AppLayout from '@/components/AppLayout';
 import { Vehicle } from '@/types';
@@ -99,6 +99,16 @@ export default function VehicleList() {
     } finally {
       setDeleting(false);
       setDeleteTarget(null);
+    }
+  };
+
+  const handleSetDefault = async (vehicle: Vehicle) => {
+    if (vehicle.isDefault) return;
+    try {
+      await setDefaultVehicle(vehicle.id);
+      queryClient.invalidateQueries({ queryKey: ['vehicles'] });
+    } catch (e) {
+      console.error(e);
     }
   };
 
@@ -317,12 +327,27 @@ export default function VehicleList() {
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2">
                                 <div className="text-[13px] font-semibold text-foreground truncate tabular-nums">{v.regoNumber}</div>
+                                {v.isDefault && (
+                                  <span className="inline-flex items-center gap-1 text-[10px] font-medium text-amber-700 dark:text-amber-400 bg-amber-500/10 rounded px-1.5 py-px flex-shrink-0">
+                                    <Star className="w-2.5 h-2.5 fill-current" /> Default
+                                  </span>
+                                )}
                                 {isInactive && (
                                   <span className="text-[10px] font-medium text-muted-foreground border border-border rounded px-1.5 py-px flex-shrink-0">Inactive</span>
                                 )}
                               </div>
                               <div className="text-[12px] text-muted-foreground truncate">{v.year} {v.make} {v.model}</div>
                             </div>
+                            {!isInactive && vehicles.length > 1 && !v.isDefault && (
+                              <button
+                                onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleSetDefault(v); }}
+                                aria-label="Set as default vehicle"
+                                title="Set as default"
+                                className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground/60 hover:text-amber-500 hover:bg-amber-500/10 transition-colors shrink-0"
+                              >
+                                <Star className="w-3.5 h-3.5" />
+                              </button>
+                            )}
                             <button
                               onClick={(e) => { e.preventDefault(); e.stopPropagation(); setDeleteTarget(v); }}
                               aria-label="Delete vehicle"
