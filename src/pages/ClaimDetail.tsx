@@ -228,11 +228,12 @@ export default function ClaimDetail() {
     printDiv.style.padding = '20px';
     printDiv.style.fontFamily = 'system-ui, sans-serif';
     printDiv.style.color = '#1a1a1a';
+    printDiv.style.background = '#ffffff';
     printDiv.style.maxWidth = '800px';
-    
-    // Header — dark navy band matching email branding
+
+    // Header — solid dark navy band (avoid gradient: html2canvas can render it incorrectly)
     const header = document.createElement('div');
-    header.style.cssText = 'margin:-20px -20px 24px -20px;padding:24px 20px;background:linear-gradient(135deg,#1e3a5f,#162d4a);color:#ffffff;border-radius:0;';
+    header.style.cssText = 'margin:-20px -20px 24px -20px;padding:24px 20px;background-color:#1e3a5f;background-image:none;color:#ffffff;border-radius:0;';
     header.innerHTML = `
       <h1 style="font-size:22px;font-weight:700;margin:0 0 6px 0;color:#ffffff;letter-spacing:-0.01em;">Incident Report</h1>
       <p style="font-size:12px;color:#cbd5e1;margin:0;">Date: ${claim.incidentDate} · Time: ${claim.incidentTime} · Status: ${claim.status === 'draft' ? 'Draft' : 'Saved'}${claimNumber ? ` · CLM-${claimNumber.padStart(4, '0')}` : ''}</p>
