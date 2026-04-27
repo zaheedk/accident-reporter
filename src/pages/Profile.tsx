@@ -89,11 +89,20 @@ export default function Profile() {
     // Check if email was added/changed (for phone users) to auto-send verification
     const emailChanged = isPhoneUser && profile.email && profile.email.includes('@') && !profile.email_verified;
     
-    const { error } = await supabase.from('profiles').update(updateData as any).eq('user_id', user.id);
-    setSaving(false);
-    if (error) { toast.error('Failed to save profile'); return; }
-    
-    toast.success('Profile updated');
+    try {
+      const { offlineUpdate } = await import('@/lib/offline-mutations');
+      const res = await offlineUpdate('profiles', updateData as any, { user_id: user.id });
+      setSaving(false);
+      if ((res as any).queued) {
+        toast.success('Saved offline — will sync when reconnected');
+      } else {
+        toast.success('Profile updated');
+      }
+    } catch (e) {
+      setSaving(false);
+      toast.error('Failed to save profile');
+      return;
+    }
     
     // Auto-send verification email if phone user just added/changed their email
     if (emailChanged) {
