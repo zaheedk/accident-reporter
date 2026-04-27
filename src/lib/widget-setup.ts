@@ -60,3 +60,40 @@ export async function setupWidget(): Promise<{ token: string; pushed: boolean }>
   const pushed = await writeWidgetCredentialsToDevice(token);
   return { token, pushed };
 }
+
+const AUTO_SETUP_FLAG = 'savo_widget_auto_setup_done';
+
+/**
+ * Runs once per device: when the user first signs in on the native app, issue
+ * a widget token and push it into native storage so the home-screen widget
+ * works without the user ever visiting /widget-setup.
+ */
+export async function ensureWidgetAutoSetup(): Promise<void> {
+  if (!Capacitor.isNativePlatform()) return;
+  try {
+    if (localStorage.getItem(AUTO_SETUP_FLAG) === '1') return;
+    const { data: userRes } = await supabase.auth.getUser();
+    if (!userRes.user?.id) return;
+
+    // Reuse an existing valid token if one exists for this user
+    const { data: existing } = await supabase
+      .from('widget_tokens')
+      .select('token, expires_at')
+      .eq('user_id', userRes.user.id)
+      .gt('expires_at', new Date().toISOString())
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    let token = existing?.token as string | undefined;
+    if (!token) {
+      token = await issueWidgetToken(
+        Capacitor.getPlatform() === 'android' ? 'Android phone' : 'iPhone',
+      );
+    }
+    const pushed = await writeWidgetCredentialsToDevice(token);
+    if (pushed) localStorage.setItem(AUTO_SETUP_FLAG, '1');
+  } catch (e) {
+    console.warn('widget auto-setup failed', e);
+  }
+}
