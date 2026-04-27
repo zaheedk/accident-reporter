@@ -1,6 +1,6 @@
 // Edge function consumed by the home-screen widget.
 // Auth: a long-lived widget token in the `X-Widget-Token` header.
-// Returns a JSON payload with: latest 3 claims, next 3 vehicle expiries, emergency contacts.
+// Returns per-vehicle expiry data and emergency/roadside contacts.
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.95.0';
 
@@ -43,9 +43,6 @@ Deno.serve(async (req) => {
 
   admin.from('widget_tokens').update({ last_used_at: new Date().toISOString() }).eq('token', token).then(() => {});
 
-  // Claims intentionally omitted — widget no longer surfaces them.
-
-  // All vehicles (for expiries + selectable widget vehicle list)
   const { data: vehicles } = await admin
     .from('vehicles')
     .select('id, rego_number, make, model, rego_expiry, wof_expiry, insurance_expiry, insurance_company, roadside_provider, roadside_phone, is_default, updated_at')
@@ -54,23 +51,18 @@ Deno.serve(async (req) => {
     .order('is_default', { ascending: false })
     .order('updated_at', { ascending: false });
 
-  type Expiry = { kind: string; date: string; vehicle: string; rego: string; insurer?: string };
-  const expiries: Expiry[] = [];
-  for (const v of vehicles ?? []) {
-    const label = `${v.make ?? ''} ${v.model ?? ''}`.trim() || 'Vehicle';
-    if (v.rego_expiry) expiries.push({ kind: 'Rego', date: v.rego_expiry, vehicle: label, rego: v.rego_number ?? '' });
-    if (v.wof_expiry) expiries.push({ kind: 'WOF', date: v.wof_expiry, vehicle: label, rego: v.rego_number ?? '' });
-    if (v.insurance_expiry) expiries.push({ kind: 'Insurance', date: v.insurance_expiry, vehicle: label, rego: v.rego_number ?? '', insurer: v.insurance_company ?? '' });
-  }
-  // Sort: prioritise upcoming (today onwards) by soonest, then past by most recent
-  const today = new Date().toISOString().slice(0, 10);
-  const upcoming = expiries.filter((e) => e.date >= today).sort((a, b) => (a.date > b.date ? 1 : -1));
-  const past = expiries.filter((e) => e.date < today).sort((a, b) => (a.date > b.date ? -1 : 1));
-  const nextExpiries = [...upcoming, ...past].slice(0, 2);
-  const nextExpiry = nextExpiries[0] ?? null;
+  const vehicleList = (vehicles ?? []).map((v) => ({
+    rego: v.rego_number ?? '',
+    make: v.make ?? '',
+    model: v.model ?? '',
+    regoExpiry: v.rego_expiry ?? '',
+    wofExpiry: v.wof_expiry ?? '',
+    insuranceExpiry: v.insurance_expiry ?? '',
+    roadsideName: v.roadside_provider ?? '',
+    roadsidePhone: v.roadside_phone ?? '',
+    isDefault: !!v.is_default,
+  }));
 
-  // Primary vehicle = explicit default if set, else most recently updated.
-  // We also expose the full list so the widget can let the user cycle through them.
   const primaryVehicle = (vehicles ?? []).find((v) => v.is_default) ?? (vehicles ?? [])[0] ?? null;
   const vehicleSummary = primaryVehicle
     ? {
@@ -79,46 +71,12 @@ Deno.serve(async (req) => {
         model: primaryVehicle.model ?? '',
       }
     : null;
-  const vehicleList = (vehicles ?? []).map((v) => ({
-    rego: v.rego_number ?? '',
-    make: v.make ?? '',
-    model: v.model ?? '',
-    roadsideName: v.roadside_provider ?? '',
-    roadsidePhone: v.roadside_phone ?? '',
-    isDefault: !!v.is_default,
-  }));
-  const roadside = primaryVehicle && primaryVehicle.roadside_phone
-    ? {
-        name: primaryVehicle.roadside_provider || 'Roadside',
-        phone: primaryVehicle.roadside_phone,
-      }
-    : null;
-
-  // Insurer contact — fall back to the primary vehicle's insurer since claims aren't fetched.
-  let insurerPhone = '';
-  let insurerName = '';
-  const insurerSource = primaryVehicle?.insurance_company ?? '';
-  if (insurerSource) {
-    const { data: ic } = await admin
-      .from('insurance_companies')
-      .select('name, phone')
-      .ilike('name', insurerSource)
-      .maybeSingle();
-    if (ic) {
-      insurerPhone = ic.phone ?? '';
-      insurerName = ic.name ?? '';
-    }
-  }
 
   return json({
     refreshedAt: new Date().toISOString(),
-    nextExpiry,
-    nextExpiries,
     vehicle: vehicleSummary,
     vehicles: vehicleList,
     contacts: {
-      insurer: insurerName ? { name: insurerName, phone: insurerPhone } : null,
-      roadside,
       emergency: { name: 'Emergency', phone: '111' },
     },
   });
