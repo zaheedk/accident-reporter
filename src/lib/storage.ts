@@ -1,5 +1,13 @@
 import { supabase } from '@/integrations/supabase/client';
 import { Vehicle, ClaimReport } from '@/types';
+import { getCached, setCache } from '@/lib/offline-cache';
+import {
+  offlineInsert,
+  offlineUpdate,
+  offlineUpsert,
+  offlineDelete,
+} from '@/lib/offline-mutations';
+import { isOnline } from '@/lib/sync-engine';
 
 // Helper to resolve user id – skips the network call when already known
 async function resolveUserId(userId?: string): Promise<string | null> {
@@ -13,9 +21,19 @@ async function resolveUserId(userId?: string): Promise<string | null> {
 export async function getVehicles(userId?: string): Promise<Vehicle[]> {
   const uid = await resolveUserId(userId);
   if (!uid) return [];
+  const cacheKey = `vehicles:${uid}`;
+  // Offline → serve cache and bail
+  if (!isOnline()) {
+    return (await getCached<Vehicle[]>(cacheKey)) ?? [];
+  }
   const { data, error } = await supabase.from('vehicles').select('*').eq('user_id', uid).order('created_at', { ascending: false });
-  if (error) { console.error('getVehicles', error); return []; }
-  return (data || []).map(dbVehicleToVehicle);
+  if (error) {
+    console.error('getVehicles', error);
+    return (await getCached<Vehicle[]>(cacheKey)) ?? [];
+  }
+  const mapped = (data || []).map(dbVehicleToVehicle);
+  void setCache(cacheKey, mapped);
+  return mapped;
 }
 
 export async function saveVehicle(vehicle: Omit<Vehicle, 'id' | 'createdAt'> & { id?: string; createdAt?: string }, userId?: string): Promise<void> {
