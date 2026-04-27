@@ -60,12 +60,13 @@ Deno.serve(async (req) => {
   }));
   const latestClaim = claims[0] ?? null;
 
-  // All vehicles (for expiries + primary vehicle info)
+  // All vehicles (for expiries + selectable widget vehicle list)
   const { data: vehicles } = await admin
     .from('vehicles')
-    .select('rego_number, make, model, rego_expiry, wof_expiry, insurance_expiry, insurance_company, roadside_provider, roadside_phone, updated_at')
+    .select('id, rego_number, make, model, rego_expiry, wof_expiry, insurance_expiry, insurance_company, roadside_provider, roadside_phone, is_default, updated_at')
     .eq('user_id', userId)
     .eq('is_active', true)
+    .order('is_default', { ascending: false })
     .order('updated_at', { ascending: false });
 
   type Expiry = { kind: string; date: string; vehicle: string; rego: string; insurer?: string };
@@ -83,8 +84,9 @@ Deno.serve(async (req) => {
   const nextExpiries = [...upcoming, ...past].slice(0, 3);
   const nextExpiry = nextExpiries[0] ?? null;
 
-  // Primary vehicle = most recently updated; surfaces rego + roadside on widget
-  const primaryVehicle = (vehicles ?? [])[0] ?? null;
+  // Primary vehicle = explicit default if set, else most recently updated.
+  // We also expose the full list so the widget can let the user cycle through them.
+  const primaryVehicle = (vehicles ?? []).find((v) => v.is_default) ?? (vehicles ?? [])[0] ?? null;
   const vehicleSummary = primaryVehicle
     ? {
         rego: primaryVehicle.rego_number ?? '',
@@ -92,6 +94,14 @@ Deno.serve(async (req) => {
         model: primaryVehicle.model ?? '',
       }
     : null;
+  const vehicleList = (vehicles ?? []).map((v) => ({
+    rego: v.rego_number ?? '',
+    make: v.make ?? '',
+    model: v.model ?? '',
+    roadsideName: v.roadside_provider ?? '',
+    roadsidePhone: v.roadside_phone ?? '',
+    isDefault: !!v.is_default,
+  }));
   const roadside = primaryVehicle && primaryVehicle.roadside_phone
     ? {
         name: primaryVehicle.roadside_provider || 'Roadside',
