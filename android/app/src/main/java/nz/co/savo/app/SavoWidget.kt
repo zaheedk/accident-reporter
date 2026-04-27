@@ -166,24 +166,7 @@ private fun WidgetBody(
         }
         Spacer(GlanceModifier.height(6.dp))
 
-        // Claims section
-        Text(
-            text = "Recent claims",
-            style = TextStyle(color = muted, fontSize = 10.sp, fontWeight = FontWeight.Bold),
-        )
-        if (claims.isEmpty()) {
-            Text("No active claims", style = TextStyle(color = fg, fontSize = 11.sp))
-        } else {
-            claims.forEach { c ->
-                Text(
-                    text = (if (c.ref.isNotEmpty()) "#${c.ref} · " else "") + c.status,
-                    style = TextStyle(color = fg, fontSize = 11.sp),
-                    maxLines = 1,
-                )
-            }
-        }
-
-        Spacer(GlanceModifier.height(8.dp))
+        // Claims removed — widget focuses on vehicle, expiries, and quick actions.
 
         // Expiries section
         Text(
