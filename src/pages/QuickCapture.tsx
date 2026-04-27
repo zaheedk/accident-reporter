@@ -2,7 +2,8 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   Camera, Check, X, MapPin, Clock, Loader2,
-  SkipForward, ArrowRight, Car, User as UserIcon, IdCard, Hash, AlertTriangle, Phone
+  SkipForward, ArrowRight, Car, User as UserIcon, IdCard, Hash, AlertTriangle, Phone,
+  Volume2, VolumeX,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
@@ -15,6 +16,7 @@ import { getCurrentPosition } from '@/lib/geolocation';
 import { watermarkImage } from '@/lib/image-watermark';
 import { compressImage } from '@/lib/image-compress';
 import { enqueuePhoto, getQueuedPhotosForUser, removeQueuedPhoto, type QueuedPhoto } from '@/lib/photo-queue';
+import { useSpeech } from '@/hooks/use-speech';
 
 type Target =
   | { kind: 'claim' }                                           // claim_photos / claim-photos bucket
@@ -76,6 +78,19 @@ export default function QuickCapture() {
 
   const step = STEPS[stepIdx];
   const totalCaptured = Object.values(captures).reduce((n, arr) => n + arr.length, 0);
+
+  // Voice prompts (Web Speech API) — defaults to ON, persisted in localStorage.
+  const speech = useSpeech();
+
+  // Speak the current step's title + hint whenever it changes (and on mount once init is done).
+  useEffect(() => {
+    if (creating) return;
+    speech.speak(`${step.title}. ${step.hint}`);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stepIdx, creating, speech.enabled]);
+
+  // Stop any speech when leaving the screen.
+  useEffect(() => () => speech.stop(), [speech]);
 
   // Load insurer suggestions for the datalist
   useEffect(() => {
@@ -363,7 +378,22 @@ export default function QuickCapture() {
               Step {stepIdx + 1} of {STEPS.length}
             </div>
           </div>
-          <div className="w-9 h-9" />
+          {speech.supported ? (
+            <button
+              onClick={() => {
+                const next = !speech.enabled;
+                speech.setEnabled(next);
+                if (next) speech.speak(`${step.title}. ${step.hint}`);
+              }}
+              aria-label={speech.enabled ? 'Mute voice prompts' : 'Unmute voice prompts'}
+              aria-pressed={speech.enabled}
+              className="w-9 h-9 rounded-full bg-background/10 flex items-center justify-center active:scale-95 transition-transform"
+            >
+              {speech.enabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4 text-background/50" />}
+            </button>
+          ) : (
+            <div className="w-9 h-9" />
+          )}
         </div>
 
         {/* Status pills (location + time) */}
