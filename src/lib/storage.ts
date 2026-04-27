@@ -38,6 +38,8 @@ export async function saveVehicle(vehicle: Omit<Vehicle, 'id' | 'createdAt'> & {
     insurance_company: vehicle.insuranceCompany || '',
     insurance_policy_number: vehicle.insurancePolicyNumber || '',
     insurance_expiry: vehicle.insuranceExpiry || '',
+    roadside_provider: vehicle.roadsideProvider || '',
+    roadside_phone: vehicle.roadsidePhone || '',
     photo_url: vehicle.photoUrl || '',
     is_active: vehicle.isActive ?? true,
   };
@@ -73,6 +75,8 @@ function dbVehicleToVehicle(row: any): Vehicle {
     insuranceCompany: row.insurance_company || '',
     insurancePolicyNumber: row.insurance_policy_number || '',
     insuranceExpiry: row.insurance_expiry || '',
+    roadsideProvider: row.roadside_provider || '',
+    roadsidePhone: row.roadside_phone || '',
     photoUrl: row.photo_url || '',
     isActive: row.is_active ?? true,
     createdAt: row.created_at,

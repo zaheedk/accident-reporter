@@ -60,12 +60,13 @@ Deno.serve(async (req) => {
   }));
   const latestClaim = claims[0] ?? null;
 
-  // All vehicle expiries
+  // All vehicles (for expiries + primary vehicle info)
   const { data: vehicles } = await admin
     .from('vehicles')
-    .select('rego_number, make, model, rego_expiry, wof_expiry, insurance_expiry, insurance_company')
+    .select('rego_number, make, model, rego_expiry, wof_expiry, insurance_expiry, insurance_company, roadside_provider, roadside_phone, updated_at')
     .eq('user_id', userId)
-    .eq('is_active', true);
+    .eq('is_active', true)
+    .order('updated_at', { ascending: false });
 
   type Expiry = { kind: string; date: string; vehicle: string; rego: string; insurer?: string };
   const expiries: Expiry[] = [];
@@ -81,6 +82,22 @@ Deno.serve(async (req) => {
   const past = expiries.filter((e) => e.date < today).sort((a, b) => (a.date > b.date ? -1 : 1));
   const nextExpiries = [...upcoming, ...past].slice(0, 3);
   const nextExpiry = nextExpiries[0] ?? null;
+
+  // Primary vehicle = most recently updated; surfaces rego + roadside on widget
+  const primaryVehicle = (vehicles ?? [])[0] ?? null;
+  const vehicleSummary = primaryVehicle
+    ? {
+        rego: primaryVehicle.rego_number ?? '',
+        make: primaryVehicle.make ?? '',
+        model: primaryVehicle.model ?? '',
+      }
+    : null;
+  const roadside = primaryVehicle && primaryVehicle.roadside_phone
+    ? {
+        name: primaryVehicle.roadside_provider || 'Roadside',
+        phone: primaryVehicle.roadside_phone,
+      }
+    : null;
 
   // Insurer contact
   let insurerPhone = '';
@@ -103,8 +120,10 @@ Deno.serve(async (req) => {
     claims,
     nextExpiry,
     nextExpiries,
+    vehicle: vehicleSummary,
     contacts: {
       insurer: insurerName ? { name: insurerName, phone: insurerPhone } : null,
+      roadside,
       emergency: { name: 'Emergency', phone: '111' },
     },
   });

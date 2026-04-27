@@ -1033,6 +1033,8 @@ export type Database = {
           photo_url: string
           rego_expiry: string
           rego_number: string
+          roadside_phone: string
+          roadside_provider: string
           slug: string | null
           updated_at: string
           user_id: string
@@ -1056,6 +1058,8 @@ export type Database = {
           photo_url?: string
           rego_expiry?: string
           rego_number?: string
+          roadside_phone?: string
+          roadside_provider?: string
           slug?: string | null
           updated_at?: string
           user_id: string
@@ -1079,6 +1083,8 @@ export type Database = {
           photo_url?: string
           rego_expiry?: string
           rego_number?: string
+          roadside_phone?: string
+          roadside_provider?: string
           slug?: string | null
           updated_at?: string
           user_id?: string

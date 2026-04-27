@@ -1,0 +1,3 @@
+ALTER TABLE public.vehicles
+  ADD COLUMN IF NOT EXISTS roadside_provider TEXT NOT NULL DEFAULT '',
+  ADD COLUMN IF NOT EXISTS roadside_phone TEXT NOT NULL DEFAULT '';

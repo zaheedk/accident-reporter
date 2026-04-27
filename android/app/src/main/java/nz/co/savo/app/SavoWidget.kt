@@ -51,8 +51,11 @@ class SavoWidget : GlanceAppWidget() {
 
             val insurerPhone = prefs.getString("insurer_phone", null) ?: ""
             val insurerName = prefs.getString("insurer_name", null) ?: "Insurer"
+            val roadsidePhone = prefs.getString("roadside_phone", null) ?: ""
+            val roadsideName = prefs.getString("roadside_name", null) ?: "Roadside"
+            val rego = prefs.getString("vehicle_rego", null) ?: ""
 
-            WidgetBody(claims, expiries, insurerName, insurerPhone)
+            WidgetBody(claims, expiries, insurerName, insurerPhone, roadsideName, roadsidePhone, rego)
         }
     }
 }
@@ -66,11 +69,16 @@ private fun WidgetBody(
     expiries: List<ExpiryItem>,
     insurerName: String,
     insurerPhone: String,
+    roadsideName: String,
+    roadsidePhone: String,
+    rego: String,
 ) {
     val bg = ColorProvider(Color(0xFF0F172A))
     val fg = ColorProvider(Color(0xFFFFFFFF))
     val muted = ColorProvider(Color(0xFF94A3B8))
     val accent = ColorProvider(Color(0xFFF26B1F))
+    val plateBg = ColorProvider(Color(0xFFFBBF24))
+    val plateFg = ColorProvider(Color(0xFF111827))
 
     Column(
         modifier = GlanceModifier
@@ -79,10 +87,25 @@ private fun WidgetBody(
             .cornerRadius(20.dp)
             .padding(12.dp)
     ) {
-        Text(
-            text = "SAVO",
-            style = TextStyle(color = accent, fontSize = 12.sp, fontWeight = FontWeight.Bold),
-        )
+        // Header row: SAVO + rego plate
+        Row(modifier = GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                text = "SAVO",
+                style = TextStyle(color = accent, fontSize = 12.sp, fontWeight = FontWeight.Bold),
+                modifier = GlanceModifier.defaultWeight(),
+            )
+            if (rego.isNotEmpty()) {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = GlanceModifier
+                        .background(plateBg)
+                        .cornerRadius(6.dp)
+                        .padding(horizontal = 8.dp, vertical = 3.dp)
+                ) {
+                    Text(rego, style = TextStyle(color = plateFg, fontSize = 13.sp, fontWeight = FontWeight.Bold))
+                }
+            }
+        }
         Spacer(GlanceModifier.height(6.dp))
 
         // Claims section
@@ -123,6 +146,7 @@ private fun WidgetBody(
 
         Spacer(GlanceModifier.defaultWeight())
 
+        // Action row 1: Capture + Insurer
         Row(modifier = GlanceModifier.fillMaxWidth()) {
             ActionButton(
                 label = "Capture",
@@ -134,11 +158,23 @@ private fun WidgetBody(
             )
             Spacer(GlanceModifier.width(6.dp))
             ActionButton(
-                label = insurerName.take(8),
+                label = insurerName.take(10),
                 colorBg = ColorProvider(Color(0xFF1E293B)),
                 colorFg = fg,
                 modifier = GlanceModifier.defaultWeight().clickable(
                     actionStartActivity(callIntent(insurerPhone))
+                ),
+            )
+        }
+        Spacer(GlanceModifier.height(6.dp))
+        // Action row 2: Roadside + 111
+        Row(modifier = GlanceModifier.fillMaxWidth()) {
+            ActionButton(
+                label = if (roadsidePhone.isNotEmpty()) roadsideName.take(10) else "Roadside",
+                colorBg = ColorProvider(Color(0xFF0EA5E9)),
+                colorFg = fg,
+                modifier = GlanceModifier.defaultWeight().clickable(
+                    actionStartActivity(callIntent(roadsidePhone))
                 ),
             )
             Spacer(GlanceModifier.width(6.dp))
@@ -250,6 +286,18 @@ class SavoWidgetReceiver : GlanceAppWidgetReceiver() {
                 } ?: run {
                     editor.putString("insurer_name", "Insurer")
                     editor.putString("insurer_phone", "")
+                }
+                json.optJSONObject("contacts")?.optJSONObject("roadside")?.let { rs ->
+                    editor.putString("roadside_name", rs.optString("name", "Roadside"))
+                    editor.putString("roadside_phone", rs.optString("phone", ""))
+                } ?: run {
+                    editor.putString("roadside_name", "Roadside")
+                    editor.putString("roadside_phone", "")
+                }
+                json.optJSONObject("vehicle")?.let { v ->
+                    editor.putString("vehicle_rego", v.optString("rego", ""))
+                } ?: run {
+                    editor.putString("vehicle_rego", "")
                 }
                 editor.apply()
 

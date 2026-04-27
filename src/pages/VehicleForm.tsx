@@ -15,6 +15,7 @@ const emptyVehicle: Omit<Vehicle, 'id' | 'createdAt'> = {
   wofExpiry: '', regoExpiry: '',
   financeArrangement: false, financeDetails: '', modified: false, modificationDetails: '',
   insuranceCompany: '', insurancePolicyNumber: '', insuranceExpiry: '',
+  roadsideProvider: '', roadsidePhone: '',
   photoUrl: '',
   isActive: true,
 };
@@ -378,6 +379,22 @@ export default function VehicleForm() {
                 <input type="date" className={`${inputCls} tabular-nums`} value={form.insuranceExpiry} onChange={e => update('insuranceExpiry', e.target.value)} />
               </div>
             </div>
+          </div>
+
+          {/* Roadside assistance */}
+          <div className="card-soft space-y-4">
+            <h2 className="eyebrow">Roadside assistance</h2>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className={labelCls}>Provider</label>
+                <input className={inputCls} placeholder="AA, State Roadside…" value={form.roadsideProvider || ''} onChange={e => update('roadsideProvider', e.target.value)} />
+              </div>
+              <div>
+                <label className={labelCls}>Phone number</label>
+                <input type="tel" className={`${inputCls} tabular-nums`} placeholder="0800 500 222" value={form.roadsidePhone || ''} onChange={e => update('roadsidePhone', e.target.value)} />
+              </div>
+            </div>
+            <p className="text-[12px] text-muted-foreground">Shown as a one-tap call button on your home-screen widget.</p>
           </div>
 
           {/* Conditions */}
