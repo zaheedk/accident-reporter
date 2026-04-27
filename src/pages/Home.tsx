@@ -114,6 +114,24 @@ export default function Home() {
                     How it works
                   </Button>
                 </Link>
+                <a
+                  href="https://play.google.com/store/apps/details?id=nz.co.savo.app"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Download SAVO on Google Play"
+                  className="inline-flex items-center gap-2.5 h-12 px-5 rounded-md bg-black text-white border border-white/15 hover:bg-black/80 transition-colors"
+                >
+                  <svg viewBox="0 0 512 512" className="w-6 h-6" aria-hidden="true">
+                    <path fill="#EA4335" d="M325.3 234.3L104.6 13l280.8 161.2-60.1 60.1z"/>
+                    <path fill="#FBBC04" d="M104.6 13L325.3 234.3l-60.1 60.1L104.6 499V13z"/>
+                    <path fill="#4285F4" d="M385.4 174.2l-60.1 60.1 60.1 60.1L497 234.3l-111.6-60.1z"/>
+                    <path fill="#34A853" d="M104.6 499l220.7-220.7 60.1 60.1L104.6 499z"/>
+                  </svg>
+                  <span className="flex flex-col leading-tight text-left">
+                    <span className="text-[10px] font-medium opacity-80">GET IT ON</span>
+                    <span className="text-sm font-semibold">Google Play</span>
+                  </span>
+                </a>
               </div>
             </motion.div>
             <motion.div variants={fadeUp} className="flex-shrink-0 w-64 md:w-80 lg:w-96">
