@@ -44,13 +44,13 @@ class SavoWidget : GlanceAppWidget() {
         provideContent {
             val prefs = context.getSharedPreferences("savo_widget_prefs", Context.MODE_PRIVATE)
 
-            val claims = (0 until 3).map { i ->
+            val claims = (0 until 2).map { i ->
                 val ref = prefs.getString("claim_${i}_ref", null) ?: ""
                 val status = prefs.getString("claim_${i}_status", null) ?: ""
                 ClaimItem(ref, status)
             }.filter { it.ref.isNotEmpty() || it.status.isNotEmpty() }
 
-            val expiries = (0 until 3).map { i ->
+            val expiries = (0 until 2).map { i ->
                 val kind = prefs.getString("expiry_${i}_kind", null) ?: ""
                 val date = prefs.getString("expiry_${i}_date", null) ?: ""
                 val vehicle = prefs.getString("expiry_${i}_vehicle", null) ?: ""
