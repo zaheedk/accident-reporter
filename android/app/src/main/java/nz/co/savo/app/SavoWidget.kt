@@ -31,45 +31,39 @@ import org.json.JSONObject
 import java.net.HttpURLConnection
 import java.net.URL
 
-/**
- * Home-screen widget that shows the user's latest claim, next vehicle expiry,
- * and three one-tap actions (Quick Capture, Call insurer, Call 111).
- *
- * Data is fetched in the background by SavoWidgetReceiver.onUpdate() via the
- * `widget-data` Supabase edge function and cached in SharedPreferences. The
- * Composable below renders only what's already in the cache so first paint
- * is instant.
- */
 class SavoWidget : GlanceAppWidget() {
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         provideContent {
             val prefs = context.getSharedPreferences("savo_widget_prefs", Context.MODE_PRIVATE)
-            val claimStatus = prefs.getString("claim_status", null) ?: "No active claim"
-            val claimRef = prefs.getString("claim_ref", null) ?: ""
-            val expiryKind = prefs.getString("expiry_kind", null) ?: ""
-            val expiryDate = prefs.getString("expiry_date", null) ?: ""
-            val expiryVehicle = prefs.getString("expiry_vehicle", null) ?: ""
+
+            val claims = (0 until 3).map { i ->
+                val ref = prefs.getString("claim_${i}_ref", null) ?: ""
+                val status = prefs.getString("claim_${i}_status", null) ?: ""
+                ClaimItem(ref, status)
+            }.filter { it.ref.isNotEmpty() || it.status.isNotEmpty() }
+
+            val expiries = (0 until 3).map { i ->
+                val kind = prefs.getString("expiry_${i}_kind", null) ?: ""
+                val date = prefs.getString("expiry_${i}_date", null) ?: ""
+                val vehicle = prefs.getString("expiry_${i}_vehicle", null) ?: ""
+                ExpiryItem(kind, date, vehicle)
+            }.filter { it.kind.isNotEmpty() }
+
             val insurerPhone = prefs.getString("insurer_phone", null) ?: ""
             val insurerName = prefs.getString("insurer_name", null) ?: "Insurer"
 
-            WidgetBody(
-                claimStatus = claimStatus,
-                claimRef = claimRef,
-                expiryLine = if (expiryKind.isNotEmpty())
-                    "$expiryKind · $expiryDate${if (expiryVehicle.isNotEmpty()) " · $expiryVehicle" else ""}"
-                else "No upcoming expiries",
-                insurerName = insurerName,
-                insurerPhone = insurerPhone,
-            )
+            WidgetBody(claims, expiries, insurerName, insurerPhone)
         }
     }
 }
 
+private data class ClaimItem(val ref: String, val status: String)
+private data class ExpiryItem(val kind: String, val date: String, val vehicle: String)
+
 @Composable
 private fun WidgetBody(
-    claimStatus: String,
-    claimRef: String,
-    expiryLine: String,
+    claims: List<ClaimItem>,
+    expiries: List<ExpiryItem>,
     insurerName: String,
     insurerPhone: String,
 ) {
@@ -89,23 +83,46 @@ private fun WidgetBody(
             text = "SAVO",
             style = TextStyle(color = accent, fontSize = 12.sp, fontWeight = FontWeight.Bold),
         )
-        Spacer(GlanceModifier.height(4.dp))
+        Spacer(GlanceModifier.height(6.dp))
+
+        // Claims section
         Text(
-            text = if (claimRef.isNotEmpty()) "Claim $claimRef" else "Latest claim",
-            style = TextStyle(color = fg, fontSize = 13.sp, fontWeight = FontWeight.Medium),
+            text = "Recent claims",
+            style = TextStyle(color = muted, fontSize = 10.sp, fontWeight = FontWeight.Bold),
         )
-        Text(
-            text = claimStatus,
-            style = TextStyle(color = muted, fontSize = 11.sp),
-        )
+        if (claims.isEmpty()) {
+            Text("No active claims", style = TextStyle(color = fg, fontSize = 11.sp))
+        } else {
+            claims.forEach { c ->
+                Text(
+                    text = (if (c.ref.isNotEmpty()) "#${c.ref} · " else "") + c.status,
+                    style = TextStyle(color = fg, fontSize = 11.sp),
+                    maxLines = 1,
+                )
+            }
+        }
+
         Spacer(GlanceModifier.height(8.dp))
+
+        // Expiries section
         Text(
-            text = expiryLine,
-            style = TextStyle(color = fg, fontSize = 11.sp),
+            text = "Upcoming expiries",
+            style = TextStyle(color = muted, fontSize = 10.sp, fontWeight = FontWeight.Bold),
         )
+        if (expiries.isEmpty()) {
+            Text("No upcoming expiries", style = TextStyle(color = fg, fontSize = 11.sp))
+        } else {
+            expiries.forEach { e ->
+                Text(
+                    text = "${e.kind} · ${e.date}${if (e.vehicle.isNotEmpty()) " · ${e.vehicle}" else ""}",
+                    style = TextStyle(color = fg, fontSize = 11.sp),
+                    maxLines = 1,
+                )
+            }
+        }
+
         Spacer(GlanceModifier.defaultWeight())
 
-        // Action row
         Row(modifier = GlanceModifier.fillMaxWidth()) {
             ActionButton(
                 label = "Capture",
@@ -198,22 +215,35 @@ class SavoWidgetReceiver : GlanceAppWidgetReceiver() {
                 val json = JSONObject(body)
 
                 val editor = prefs.edit()
-                json.optJSONObject("claim")?.let { c ->
-                    editor.putString("claim_ref", c.optString("reportNumber", ""))
-                    editor.putString("claim_status", c.optString("status", "draft"))
-                } ?: run {
-                    editor.putString("claim_ref", "")
-                    editor.putString("claim_status", "No active claim")
+
+                // Clear previous
+                for (i in 0 until 3) {
+                    editor.remove("claim_${i}_ref")
+                    editor.remove("claim_${i}_status")
+                    editor.remove("expiry_${i}_kind")
+                    editor.remove("expiry_${i}_date")
+                    editor.remove("expiry_${i}_vehicle")
                 }
-                json.optJSONObject("nextExpiry")?.let { e ->
-                    editor.putString("expiry_kind", e.optString("kind", ""))
-                    editor.putString("expiry_date", e.optString("date", ""))
-                    editor.putString("expiry_vehicle", e.optString("rego", e.optString("vehicle", "")))
-                } ?: run {
-                    editor.putString("expiry_kind", "")
-                    editor.putString("expiry_date", "")
-                    editor.putString("expiry_vehicle", "")
+
+                val claimsArr = json.optJSONArray("claims")
+                if (claimsArr != null) {
+                    for (i in 0 until minOf(3, claimsArr.length())) {
+                        val c = claimsArr.optJSONObject(i) ?: continue
+                        editor.putString("claim_${i}_ref", c.optString("reportNumber", ""))
+                        editor.putString("claim_${i}_status", c.optString("status", ""))
+                    }
                 }
+
+                val expiriesArr = json.optJSONArray("nextExpiries")
+                if (expiriesArr != null) {
+                    for (i in 0 until minOf(3, expiriesArr.length())) {
+                        val e = expiriesArr.optJSONObject(i) ?: continue
+                        editor.putString("expiry_${i}_kind", e.optString("kind", ""))
+                        editor.putString("expiry_${i}_date", e.optString("date", ""))
+                        editor.putString("expiry_${i}_vehicle", e.optString("rego", e.optString("vehicle", "")))
+                    }
+                }
+
                 json.optJSONObject("contacts")?.optJSONObject("insurer")?.let { ins ->
                     editor.putString("insurer_name", ins.optString("name", "Insurer"))
                     editor.putString("insurer_phone", ins.optString("phone", ""))
