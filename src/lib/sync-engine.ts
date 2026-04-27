@@ -99,6 +99,14 @@ export async function runSync(): Promise<void> {
           console.warn('[sync] photo upload failed, will retry', e);
         }
       }
+
+      // 3) Re-hydrate the offline read cache so subsequent reads see fresh data.
+      try {
+        const { hydrateUserData } = await import('@/lib/offline-hydrate');
+        await hydrateUserData(user.id, { force: true });
+      } catch (e) {
+        console.warn('[sync] hydrate failed', e);
+      }
     }
 
     status = 'idle';

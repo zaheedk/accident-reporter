@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState, ReactNode } from 'react
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { ensureWidgetAutoSetup } from '@/lib/widget-setup';
+import { hydrateUserData, resetHydration } from '@/lib/offline-hydrate';
 
 interface AuthContextType {
   session: Session | null;
@@ -42,6 +43,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!session?.user) {
       setIsAdmin(false);
       setIsDeactivated(false);
+      resetHydration();
       return;
     }
     // Check admin role
@@ -61,6 +63,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       .then(({ data }) => setIsDeactivated(data?.is_active === false));
     // Auto-provision the home-screen widget token on native platforms
     ensureWidgetAutoSetup();
+    // Local-first: hydrate the offline cache with the user's data so reads
+    // throughout the app are served from IndexedDB.
+    void hydrateUserData(session.user.id);
   }, [session?.user?.id]);
 
   const signOut = async () => {
