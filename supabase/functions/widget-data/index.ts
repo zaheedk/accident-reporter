@@ -43,22 +43,7 @@ Deno.serve(async (req) => {
 
   admin.from('widget_tokens').update({ last_used_at: new Date().toISOString() }).eq('token', token).then(() => {});
 
-  // Latest 3 claims
-  const { data: claimsRaw } = await admin
-    .from('claims')
-    .select('report_number, status, incident_date, incident_location, insurance_company, updated_at')
-    .eq('user_id', userId)
-    .order('updated_at', { ascending: false })
-    .limit(2);
-
-  const claims = (claimsRaw ?? []).map((c) => ({
-    reportNumber: c.report_number,
-    status: c.status,
-    incidentDate: c.incident_date,
-    location: c.incident_location,
-    insurer: c.insurance_company,
-  }));
-  const latestClaim = claims[0] ?? null;
+  // Claims intentionally omitted — widget no longer surfaces them.
 
   // All vehicles (for expiries + selectable widget vehicle list)
   const { data: vehicles } = await admin
