@@ -59,6 +59,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       .eq('user_id', session.user.id)
       .maybeSingle()
       .then(({ data }) => setIsDeactivated(data?.is_active === false));
+    // Auto-provision the home-screen widget token on native platforms
+    ensureWidgetAutoSetup();
   }, [session?.user?.id]);
 
   const signOut = async () => {
