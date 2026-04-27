@@ -257,26 +257,28 @@ private fun callIntent(phone: String): Intent {
 
 class NextVehicleAction : ActionCallback {
     override suspend fun onAction(context: Context, glanceId: GlanceId, parameters: ActionParameters) {
-        val prefs = context.getSharedPreferences("savo_widget_prefs", Context.MODE_PRIVATE)
-        val count = prefs.getInt("vehicles_count", 0)
-        if (count > 1) {
-            val current = prefs.getInt("vehicles_current_index", 0)
-            prefs.edit().putInt("vehicles_current_index", (current + 1) % count).commit()
-        }
-        SavoWidget().updateAll(context)
+        cycleVehicle(context, glanceId, +1)
     }
 }
 
 class PrevVehicleAction : ActionCallback {
     override suspend fun onAction(context: Context, glanceId: GlanceId, parameters: ActionParameters) {
-        val prefs = context.getSharedPreferences("savo_widget_prefs", Context.MODE_PRIVATE)
-        val count = prefs.getInt("vehicles_count", 0)
-        if (count > 1) {
-            val current = prefs.getInt("vehicles_current_index", 0)
-            prefs.edit().putInt("vehicles_current_index", (current - 1 + count) % count).commit()
-        }
-        SavoWidget().updateAll(context)
+        cycleVehicle(context, glanceId, -1)
     }
+}
+
+private suspend fun cycleVehicle(context: Context, glanceId: GlanceId, delta: Int) {
+    val prefs = context.getSharedPreferences("savo_widget_prefs", Context.MODE_PRIVATE)
+    val count = prefs.getInt("vehicles_count", 0)
+    if (count > 1) {
+        val current = prefs.getInt("vehicles_current_index", 0)
+        val next = ((current + delta) % count + count) % count
+        // apply() is async — does not block the main thread on disk I/O.
+        prefs.edit().putInt("vehicles_current_index", next).apply()
+    }
+    // Update only this widget instance, not all — much faster and avoids
+    // re-triggering the network refresh in onUpdate.
+    SavoWidget().update(context, glanceId)
 }
 
 class SavoWidgetReceiver : GlanceAppWidgetReceiver() {
