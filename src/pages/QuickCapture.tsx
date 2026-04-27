@@ -378,7 +378,22 @@ export default function QuickCapture() {
               Step {stepIdx + 1} of {STEPS.length}
             </div>
           </div>
-          <div className="w-9 h-9" />
+          {speech.supported ? (
+            <button
+              onClick={() => {
+                const next = !speech.enabled;
+                speech.setEnabled(next);
+                if (next) speech.speak(`${step.title}. ${step.hint}`);
+              }}
+              aria-label={speech.enabled ? 'Mute voice prompts' : 'Unmute voice prompts'}
+              aria-pressed={speech.enabled}
+              className="w-9 h-9 rounded-full bg-background/10 flex items-center justify-center active:scale-95 transition-transform"
+            >
+              {speech.enabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4 text-background/50" />}
+            </button>
+          ) : (
+            <div className="w-9 h-9" />
+          )}
         </div>
 
         {/* Status pills (location + time) */}
