@@ -94,14 +94,15 @@ Deno.serve(async (req) => {
       }
     : null;
 
-  // Insurer contact
+  // Insurer contact — fall back to the primary vehicle's insurer since claims aren't fetched.
   let insurerPhone = '';
   let insurerName = '';
-  if (latestClaim?.insurer) {
+  const insurerSource = primaryVehicle?.insurance_company ?? '';
+  if (insurerSource) {
     const { data: ic } = await admin
       .from('insurance_companies')
       .select('name, phone')
-      .ilike('name', latestClaim.insurer)
+      .ilike('name', insurerSource)
       .maybeSingle();
     if (ic) {
       insurerPhone = ic.phone ?? '';
@@ -111,8 +112,6 @@ Deno.serve(async (req) => {
 
   return json({
     refreshedAt: new Date().toISOString(),
-    claim: latestClaim,
-    claims,
     nextExpiry,
     nextExpiries,
     vehicle: vehicleSummary,
