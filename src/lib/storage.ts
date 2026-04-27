@@ -22,17 +22,35 @@ export async function getVehicles(userId?: string): Promise<Vehicle[]> {
   const uid = await resolveUserId(userId);
   if (!uid) return [];
   const cacheKey = `vehicles:${uid}`;
-  // Offline → serve cache and bail
-  if (!isOnline()) {
-    return (await getCached<Vehicle[]>(cacheKey)) ?? [];
+
+  // Local-first: serve cache immediately if we have it.
+  const cached = await getCached<any[]>(cacheKey);
+  const cachedMapped = cached ? cached.map((r: any) => (r.regoNumber ? r as Vehicle : dbVehicleToVehicle(r))) : null;
+
+  // Kick off a background refresh (don't await) when online.
+  if (isOnline()) {
+    void supabase
+      .from('vehicles')
+      .select('*')
+      .eq('user_id', uid)
+      .order('created_at', { ascending: false })
+      .then(({ data, error }) => {
+        if (error || !data) return;
+        void setCache(cacheKey, data); // store raw rows so hydrate + reads share format
+      });
   }
+
+  if (cachedMapped) return cachedMapped;
+
+  // Cold start with no cache: do a blocking fetch.
+  if (!isOnline()) return [];
   const { data, error } = await supabase.from('vehicles').select('*').eq('user_id', uid).order('created_at', { ascending: false });
   if (error) {
     console.error('getVehicles', error);
-    return (await getCached<Vehicle[]>(cacheKey)) ?? [];
+    return [];
   }
   const mapped = (data || []).map(dbVehicleToVehicle);
-  void setCache(cacheKey, mapped);
+  void setCache(cacheKey, data);
   return mapped;
 }
 
