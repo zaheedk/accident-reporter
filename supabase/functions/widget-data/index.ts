@@ -1,6 +1,6 @@
 // Edge function consumed by the home-screen widget.
 // Auth: a long-lived widget token in the `X-Widget-Token` header.
-// Returns a tiny JSON payload with: latest claim, next vehicle expiry, emergency contacts.
+// Returns a JSON payload with: latest 3 claims, next 3 vehicle expiries, emergency contacts.
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.95.0';
 
@@ -30,7 +30,6 @@ Deno.serve(async (req) => {
     auth: { persistSession: false, autoRefreshToken: false },
   });
 
-  // Validate token
   const { data: tokenRow, error: tokenErr } = await admin
     .from('widget_tokens')
     .select('user_id, expires_at')
@@ -42,19 +41,26 @@ Deno.serve(async (req) => {
 
   const userId = tokenRow.user_id as string;
 
-  // Mark last used (fire & forget)
   admin.from('widget_tokens').update({ last_used_at: new Date().toISOString() }).eq('token', token).then(() => {});
 
-  // Latest claim
-  const { data: claim } = await admin
+  // Latest 3 claims
+  const { data: claimsRaw } = await admin
     .from('claims')
     .select('report_number, status, incident_date, incident_location, insurance_company, updated_at')
     .eq('user_id', userId)
     .order('updated_at', { ascending: false })
-    .limit(1)
-    .maybeSingle();
+    .limit(3);
 
-  // Next vehicle expiry across rego/wof/insurance
+  const claims = (claimsRaw ?? []).map((c) => ({
+    reportNumber: c.report_number,
+    status: c.status,
+    incidentDate: c.incident_date,
+    location: c.incident_location,
+    insurer: c.insurance_company,
+  }));
+  const latestClaim = claims[0] ?? null;
+
+  // All vehicle expiries
   const { data: vehicles } = await admin
     .from('vehicles')
     .select('rego_number, make, model, rego_expiry, wof_expiry, insurance_expiry, insurance_company')
@@ -69,17 +75,21 @@ Deno.serve(async (req) => {
     if (v.wof_expiry) expiries.push({ kind: 'WOF', date: v.wof_expiry, vehicle: label, rego: v.rego_number ?? '' });
     if (v.insurance_expiry) expiries.push({ kind: 'Insurance', date: v.insurance_expiry, vehicle: label, rego: v.rego_number ?? '', insurer: v.insurance_company ?? '' });
   }
-  expiries.sort((a, b) => (a.date > b.date ? 1 : -1));
-  const nextExpiry = expiries.find((e) => e.date >= new Date().toISOString().slice(0, 10)) ?? expiries[0] ?? null;
+  // Sort: prioritise upcoming (today onwards) by soonest, then past by most recent
+  const today = new Date().toISOString().slice(0, 10);
+  const upcoming = expiries.filter((e) => e.date >= today).sort((a, b) => (a.date > b.date ? 1 : -1));
+  const past = expiries.filter((e) => e.date < today).sort((a, b) => (a.date > b.date ? -1 : 1));
+  const nextExpiries = [...upcoming, ...past].slice(0, 3);
+  const nextExpiry = nextExpiries[0] ?? null;
 
-  // Emergency contacts: insurer phone (from latest claim) + emergency number
+  // Insurer contact
   let insurerPhone = '';
   let insurerName = '';
-  if (claim?.insurance_company) {
+  if (latestClaim?.insurer) {
     const { data: ic } = await admin
       .from('insurance_companies')
       .select('name, phone')
-      .ilike('name', claim.insurance_company)
+      .ilike('name', latestClaim.insurer)
       .maybeSingle();
     if (ic) {
       insurerPhone = ic.phone ?? '';
@@ -89,16 +99,10 @@ Deno.serve(async (req) => {
 
   return json({
     refreshedAt: new Date().toISOString(),
-    claim: claim
-      ? {
-          reportNumber: claim.report_number,
-          status: claim.status,
-          incidentDate: claim.incident_date,
-          location: claim.incident_location,
-          insurer: claim.insurance_company,
-        }
-      : null,
+    claim: latestClaim,
+    claims,
     nextExpiry,
+    nextExpiries,
     contacts: {
       insurer: insurerName ? { name: insurerName, phone: insurerPhone } : null,
       emergency: { name: 'Emergency', phone: '111' },
