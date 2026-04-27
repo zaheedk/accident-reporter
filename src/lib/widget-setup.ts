@@ -53,6 +53,25 @@ export async function writeWidgetCredentialsToDevice(token: string): Promise<boo
   return false;
 }
 
+/**
+ * Asks Android to pin the SAVO widget on the user's home screen. Returns the
+ * status string from the native bridge ("ok" | "unsupported" | "old_os" |
+ * "error:..."), or "no_bridge" when called outside the native app.
+ */
+export function requestPinWidget(): string {
+  if (!Capacitor.isNativePlatform()) return 'no_bridge';
+  try {
+    const w = window as any;
+    if (w.SavoWidgetBridge?.requestPinWidget) {
+      return w.SavoWidgetBridge.requestPinWidget();
+    }
+  } catch (e) {
+    console.warn('requestPinWidget failed', e);
+    return 'error';
+  }
+  return 'no_bridge';
+}
+
 export async function setupWidget(): Promise<{ token: string; pushed: boolean }> {
   const token = await issueWidgetToken(
     Capacitor.getPlatform() === 'android' ? 'Android phone' : 'iPhone',
