@@ -127,12 +127,14 @@ private fun WidgetBody(
                 modifier = GlanceModifier.defaultWeight(),
             )
             if (rego.isNotEmpty()) {
+                val plateModifier = GlanceModifier
+                    .background(plateBg)
+                    .cornerRadius(6.dp)
+                    .padding(horizontal = 8.dp, vertical = 3.dp)
+                    .let { if (showSwitch) it.clickable(actionRunCallback<CycleVehicleAction>()) else it }
                 Box(
                     contentAlignment = Alignment.Center,
-                    modifier = GlanceModifier
-                        .background(plateBg)
-                        .cornerRadius(6.dp)
-                        .padding(horizontal = 8.dp, vertical = 3.dp)
+                    modifier = plateModifier
                 ) {
                     Text(rego, style = TextStyle(color = plateFg, fontSize = 13.sp, fontWeight = FontWeight.Bold))
                 }
