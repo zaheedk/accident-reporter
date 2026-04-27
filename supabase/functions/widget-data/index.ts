@@ -81,7 +81,7 @@ Deno.serve(async (req) => {
   const today = new Date().toISOString().slice(0, 10);
   const upcoming = expiries.filter((e) => e.date >= today).sort((a, b) => (a.date > b.date ? 1 : -1));
   const past = expiries.filter((e) => e.date < today).sort((a, b) => (a.date > b.date ? -1 : 1));
-  const nextExpiries = [...upcoming, ...past].slice(0, 3);
+  const nextExpiries = [...upcoming, ...past].slice(0, 2);
   const nextExpiry = nextExpiries[0] ?? null;
 
   // Primary vehicle = explicit default if set, else most recently updated.
