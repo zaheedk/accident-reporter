@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState, ReactNode } from 'react
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { ensureWidgetAutoSetup } from '@/lib/widget-setup';
+import { hydrateUserData, resetHydration } from '@/lib/offline-hydrate';
 
 interface AuthContextType {
   session: Session | null;
