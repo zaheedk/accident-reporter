@@ -40,14 +40,61 @@ export default function About() {
         <div>
           <h1 className="text-2xl font-bold text-foreground mb-2">About SAVO</h1>
           <p className="text-sm text-muted-foreground leading-relaxed">
-            SAVO makes vehicle insurance incidents simple, fast, and stress-free. We guide you through every step — from documenting the incident to connecting with trusted panel shops for repairs.
+            SAVO is a free New Zealand–made app that helps drivers document accidents properly the first time, so insurance claims go through smoothly — without the back-and-forth, missing details, or rejected paperwork.
           </p>
         </div>
 
+        {/* Founder's story */}
         <div className="card-surface space-y-4">
-          <h2 className="text-base font-semibold text-foreground">Our Mission</h2>
+          <div className="flex items-center gap-2">
+            <Lightbulb className="w-4 h-4 text-primary" />
+            <h2 className="text-base font-semibold text-foreground">How SAVO Started — A Kiwi Story</h2>
+          </div>
           <p className="text-sm text-muted-foreground leading-relaxed">
-            Filing an incident report after a vehicle accident shouldn't be complicated. We built SAVO to eliminate the paperwork headaches, keep your records organised, and get you back on the road faster.
+            SAVO was born out of frustration. After a minor accident on a wet Auckland morning, our founder did what most Kiwis do — exchanged a few details with the other driver, snapped a couple of photos, and assumed the insurer would take it from there.
+          </p>
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            Weeks later, the claim stalled. The insurer kept coming back asking for more: a clearer photo of the other driver's licence, the exact location, the time, the direction of travel, witness contact details, the third party's insurer, even the angle of impact. Every missing piece meant another phone call, another email, another delay — and eventually, a claim that was partially declined because the evidence wasn't strong enough.
+          </p>
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            Standing on the side of the road in shock, no one remembers a checklist. That's the problem SAVO set out to solve.
+          </p>
+          <blockquote className="border-l-2 border-primary pl-4 py-1 text-sm italic text-foreground/80">
+            <Quote className="w-4 h-4 text-primary mb-1" />
+            "I lost hundreds of dollars and weeks of stress simply because I didn't know what details my insurer needed at the scene. I built SAVO so no other Kiwi has to learn that lesson the hard way."
+            <footer className="not-italic text-xs text-muted-foreground mt-2">— SAVO Founder, Auckland</footer>
+          </blockquote>
+        </div>
+
+        {/* What we do */}
+        <div className="card-surface space-y-4">
+          <div className="flex items-center gap-2">
+            <ShieldCheck className="w-4 h-4 text-primary" />
+            <h2 className="text-base font-semibold text-foreground">Built Around What Insurers Actually Need</h2>
+          </div>
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            We worked backwards from real claim forms used by NZ insurers — IAG, AA, Tower, State, AMI, Vero and others — to figure out exactly what details get a claim approved on the first attempt. SAVO's guided capture flow walks you through every one of them, step by step, even when you're shaken up.
+          </p>
+          <ul className="space-y-2 text-sm text-muted-foreground">
+            <li className="flex gap-2"><span className="text-primary">•</span> Guided photo prompts for damage, plates, scene angles and the other driver's licence</li>
+            <li className="flex gap-2"><span className="text-primary">•</span> Auto-captured GPS location, time, and weather conditions</li>
+            <li className="flex gap-2"><span className="text-primary">•</span> Structured fields for third-party details, insurer, witnesses and police reference</li>
+            <li className="flex gap-2"><span className="text-primary">•</span> One-tap PDF report you can email straight to your insurer</li>
+            <li className="flex gap-2"><span className="text-primary">•</span> Saved vehicle profiles with Rego, WOF and insurance expiry reminders</li>
+          </ul>
+        </div>
+
+        {/* Impact */}
+        <div className="card-surface space-y-4">
+          <div className="flex items-center gap-2">
+            <Heart className="w-4 h-4 text-primary" />
+            <h2 className="text-base font-semibold text-foreground">Helping Kiwis Claim with Confidence</h2>
+          </div>
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            Today, hundreds of New Zealanders use SAVO at the roadside, in supermarket carparks, and after motorway prangs to capture everything their insurer will need — before they leave the scene. Users tell us their claims are processed faster, with fewer follow-up calls, and far less stress.
+          </p>
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            SAVO is, and always will be, free for everyday drivers. Because being prepared after an accident shouldn't be a paid privilege — it should be standard.
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
             {[
