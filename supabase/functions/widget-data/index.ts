@@ -131,6 +131,7 @@ Deno.serve(async (req) => {
     nextExpiry,
     nextExpiries,
     vehicle: vehicleSummary,
+    vehicles: vehicleList,
     contacts: {
       insurer: insurerName ? { name: insurerName, phone: insurerPhone } : null,
       roadside,
