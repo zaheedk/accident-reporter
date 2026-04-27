@@ -7,7 +7,6 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
-import AppLayout from '@/components/AppLayout';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { getVehicles } from '@/lib/storage';
@@ -175,47 +174,54 @@ export default function QuickCapture() {
 
   const openCamera = () => cameraRef.current?.click();
 
-  const handleFiles = useCallback(async (files: FileList | null) => {
+  const handleFiles = useCallback((files: FileList | null) => {
     if (!files || !user || !claimId || !step.target) return;
     const stepKey = step.key;
     const target = step.target;
     const newCaps: { previewUrl: string; queuedId: string }[] = [];
 
+    // Phase 1 (synchronous): create object URLs from raw files and show previews IMMEDIATELY.
+    const toProcess: { id: string; file: File }[] = [];
     for (const f of Array.from(files)) {
       if (f.size > 10 * 1024 * 1024) {
         toast.error(`${f.name} is too large (max 10MB)`);
         continue;
       }
-      try {
-        const stamped = await watermarkImage(f);
-        const id = `qc-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
-        const previewUrl = URL.createObjectURL(stamped);
-        previewUrlsRef.current.push(previewUrl);
-
-        const queued: QueuedPhoto = {
-          id,
-          claimId,
-          userId: user.id,
-          fileName: `${stepKey}-${stamped.name}`,
-          fileType: stamped.type,
-          blob: stamped,
-          createdAt: Date.now(),
-        };
-        await enqueuePhoto(queued);
-        newCaps.push({ previewUrl, queuedId: id });
-
-        // Background upload — non-blocking, routed by target
-        queuedTargetsRef.current.set(id, target);
-        uploadPhotoInBackground(queued, target).catch(() => { /* will be retried later */ });
-      } catch (e) {
-        console.error('capture failed', e);
-        toast.error('Could not save that photo');
-      }
+      const id = `qc-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+      const previewUrl = URL.createObjectURL(f);
+      previewUrlsRef.current.push(previewUrl);
+      newCaps.push({ previewUrl, queuedId: id });
+      toProcess.push({ id, file: f });
     }
 
     if (newCaps.length) {
       setCaptures(prev => ({ ...prev, [stepKey]: [...(prev[stepKey] || []), ...newCaps] }));
     }
+
+    // Phase 2 (async, in background): watermark, persist to IndexedDB, upload to server.
+    // The user can keep tapping & navigating while this runs.
+    void (async () => {
+      for (const { id, file } of toProcess) {
+        try {
+          const stamped = await watermarkImage(file);
+          const queued: QueuedPhoto = {
+            id,
+            claimId,
+            userId: user.id,
+            fileName: `${stepKey}-${stamped.name}`,
+            fileType: stamped.type,
+            blob: stamped,
+            createdAt: Date.now(),
+          };
+          await enqueuePhoto(queued);
+          queuedTargetsRef.current.set(id, target);
+          uploadPhotoInBackground(queued, target).catch(() => { /* retried later */ });
+        } catch (e) {
+          console.error('background processing failed', e);
+          setFailedQueueIds(prev => { const n = new Set(prev); n.add(id); return n; });
+        }
+      }
+    })();
   }, [step, user, claimId]);
 
   const uploadPhotoInBackground = async (q: QueuedPhoto, target: Target) => {
@@ -359,9 +365,8 @@ export default function QuickCapture() {
   const formHasContent = step.form === 'other-driver-info' && (otherDriverName.trim() || otherDriverPhone.trim() || otherDriverRego.trim() || otherDriverInsurer.trim());
 
   return (
-    <AppLayout>
-      <div className="!pt-0 -mx-4 sm:-mx-6 -mt-10 min-h-[calc(100dvh-4rem)] flex flex-col bg-foreground text-background"
-           style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
+    <div className="fixed inset-0 z-50 flex flex-col bg-foreground text-background overflow-y-auto"
+         style={{ paddingTop: 'env(safe-area-inset-top, 0px)', paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
 
         {/* Header strip */}
         <div className="px-5 pt-5 pb-4 flex items-center justify-between">
@@ -658,6 +663,5 @@ export default function QuickCapture() {
           }}
         />
       </div>
-    </AppLayout>
   );
 }
