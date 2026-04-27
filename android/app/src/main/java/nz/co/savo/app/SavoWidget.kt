@@ -44,13 +44,13 @@ class SavoWidget : GlanceAppWidget() {
         provideContent {
             val prefs = context.getSharedPreferences("savo_widget_prefs", Context.MODE_PRIVATE)
 
-            val claims = (0 until 3).map { i ->
+            val claims = (0 until 2).map { i ->
                 val ref = prefs.getString("claim_${i}_ref", null) ?: ""
                 val status = prefs.getString("claim_${i}_status", null) ?: ""
                 ClaimItem(ref, status)
             }.filter { it.ref.isNotEmpty() || it.status.isNotEmpty() }
 
-            val expiries = (0 until 3).map { i ->
+            val expiries = (0 until 2).map { i ->
                 val kind = prefs.getString("expiry_${i}_kind", null) ?: ""
                 val date = prefs.getString("expiry_${i}_date", null) ?: ""
                 val vehicle = prefs.getString("expiry_${i}_vehicle", null) ?: ""
@@ -119,22 +119,33 @@ private fun WidgetBody(
             .cornerRadius(20.dp)
             .padding(12.dp)
     ) {
-        // Header row: SAVO + rego plate (+ switch button if multiple vehicles)
+        // Header row: SAVO + rego plate (+ prev/next vehicle buttons if multiple vehicles)
         Row(modifier = GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             Text(
                 text = "SAVO",
                 style = TextStyle(color = accent, fontSize = 12.sp, fontWeight = FontWeight.Bold),
-                modifier = GlanceModifier.defaultWeight(),
             )
-            if (rego.isNotEmpty()) {
-                val plateModifier = GlanceModifier
-                    .background(plateBg)
-                    .cornerRadius(6.dp)
-                    .padding(horizontal = 8.dp, vertical = 3.dp)
-                    .let { if (showSwitch) it.clickable(actionRunCallback<CycleVehicleAction>()) else it }
+            Spacer(GlanceModifier.defaultWeight())
+            if (showSwitch) {
                 Box(
                     contentAlignment = Alignment.Center,
-                    modifier = plateModifier
+                    modifier = GlanceModifier
+                        .background(switchBg)
+                        .cornerRadius(8.dp)
+                        .padding(horizontal = 10.dp, vertical = 6.dp)
+                        .clickable(actionRunCallback<PrevVehicleAction>())
+                ) {
+                    Text("◀", style = TextStyle(color = fg, fontSize = 13.sp, fontWeight = FontWeight.Bold))
+                }
+                Spacer(GlanceModifier.width(6.dp))
+            }
+            if (rego.isNotEmpty()) {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = GlanceModifier
+                        .background(plateBg)
+                        .cornerRadius(6.dp)
+                        .padding(horizontal = 10.dp, vertical = 4.dp)
                 ) {
                     Text(rego, style = TextStyle(color = plateFg, fontSize = 13.sp, fontWeight = FontWeight.Bold))
                 }
@@ -145,11 +156,11 @@ private fun WidgetBody(
                     contentAlignment = Alignment.Center,
                     modifier = GlanceModifier
                         .background(switchBg)
-                        .cornerRadius(6.dp)
-                        .padding(horizontal = 8.dp, vertical = 3.dp)
-                        .clickable(actionRunCallback<CycleVehicleAction>())
+                        .cornerRadius(8.dp)
+                        .padding(horizontal = 10.dp, vertical = 6.dp)
+                        .clickable(actionRunCallback<NextVehicleAction>())
                 ) {
-                    Text("⇄", style = TextStyle(color = fg, fontSize = 13.sp, fontWeight = FontWeight.Bold))
+                    Text("▶", style = TextStyle(color = fg, fontSize = 13.sp, fontWeight = FontWeight.Bold))
                 }
             }
         }
@@ -266,7 +277,7 @@ private fun callIntent(phone: String): Intent {
 }
 
 /** Cycles to the next vehicle in the cached list and re-renders. */
-class CycleVehicleAction : ActionCallback {
+class NextVehicleAction : ActionCallback {
     override suspend fun onAction(
         context: Context,
         glanceId: GlanceId,
@@ -277,7 +288,25 @@ class CycleVehicleAction : ActionCallback {
         if (count > 1) {
             val current = prefs.getInt("vehicles_current_index", 0)
             val next = (current + 1) % count
-            prefs.edit().putInt("vehicles_current_index", next).apply()
+            prefs.edit().putInt("vehicles_current_index", next).commit()
+        }
+        SavoWidget().updateAll(context)
+    }
+}
+
+/** Cycles to the previous vehicle in the cached list and re-renders. */
+class PrevVehicleAction : ActionCallback {
+    override suspend fun onAction(
+        context: Context,
+        glanceId: GlanceId,
+        parameters: ActionParameters,
+    ) {
+        val prefs = context.getSharedPreferences("savo_widget_prefs", Context.MODE_PRIVATE)
+        val count = prefs.getInt("vehicles_count", 0)
+        if (count > 1) {
+            val current = prefs.getInt("vehicles_current_index", 0)
+            val prev = (current - 1 + count) % count
+            prefs.edit().putInt("vehicles_current_index", prev).commit()
         }
         SavoWidget().updateAll(context)
     }
@@ -317,7 +346,7 @@ class SavoWidgetReceiver : GlanceAppWidgetReceiver() {
 
                 val editor = prefs.edit()
 
-                // Clear previous
+                // Clear previous (we now show 2, but clear up to 3 for safety on upgrade)
                 for (i in 0 until 3) {
                     editor.remove("claim_${i}_ref")
                     editor.remove("claim_${i}_status")
@@ -335,7 +364,7 @@ class SavoWidgetReceiver : GlanceAppWidgetReceiver() {
 
                 val claimsArr = json.optJSONArray("claims")
                 if (claimsArr != null) {
-                    for (i in 0 until minOf(3, claimsArr.length())) {
+                    for (i in 0 until minOf(2, claimsArr.length())) {
                         val c = claimsArr.optJSONObject(i) ?: continue
                         editor.putString("claim_${i}_ref", c.optString("reportNumber", ""))
                         editor.putString("claim_${i}_status", c.optString("status", ""))
@@ -344,7 +373,7 @@ class SavoWidgetReceiver : GlanceAppWidgetReceiver() {
 
                 val expiriesArr = json.optJSONArray("nextExpiries")
                 if (expiriesArr != null) {
-                    for (i in 0 until minOf(3, expiriesArr.length())) {
+                    for (i in 0 until minOf(2, expiriesArr.length())) {
                         val e = expiriesArr.optJSONObject(i) ?: continue
                         editor.putString("expiry_${i}_kind", e.optString("kind", ""))
                         editor.putString("expiry_${i}_date", e.optString("date", ""))
