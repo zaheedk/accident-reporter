@@ -79,6 +79,19 @@ export default function QuickCapture() {
   const step = STEPS[stepIdx];
   const totalCaptured = Object.values(captures).reduce((n, arr) => n + arr.length, 0);
 
+  // Voice prompts (Web Speech API) — defaults to ON, persisted in localStorage.
+  const speech = useSpeech();
+
+  // Speak the current step's title + hint whenever it changes (and on mount once init is done).
+  useEffect(() => {
+    if (creating) return;
+    speech.speak(`${step.title}. ${step.hint}`);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stepIdx, creating, speech.enabled]);
+
+  // Stop any speech when leaving the screen.
+  useEffect(() => () => speech.stop(), [speech]);
+
   // Load insurer suggestions for the datalist
   useEffect(() => {
     supabase.from('insurance_companies').select('name').order('name').then(({ data }) => {
