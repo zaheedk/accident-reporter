@@ -19,6 +19,7 @@ export interface Vehicle {
   roadsidePhone?: string;
   photoUrl: string;
   isActive: boolean;
+  isDefault?: boolean;
   createdAt: string;
 }
 

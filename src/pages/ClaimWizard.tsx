@@ -126,8 +126,10 @@ export default function ClaimWizard() {
       } else if (!id && regoParam) {
         const match = v.find(veh => veh.regoNumber?.toLowerCase() === regoParam.toLowerCase());
         if (match) setClaim(prev => ({ ...prev, vehicleId: match.id, insuranceCompany: match.insuranceCompany || '' }));
-      } else if (!id && v.length === 1) {
-        setClaim(prev => ({ ...prev, vehicleId: v[0].id, insuranceCompany: v[0].insuranceCompany || '' }));
+      } else if (!id) {
+        // Auto-select default vehicle (or the only vehicle if just one)
+        const def = v.find(veh => veh.isDefault) || (v.length === 1 ? v[0] : null);
+        if (def) setClaim(prev => ({ ...prev, vehicleId: def.id, insuranceCompany: def.insuranceCompany || '' }));
       }
     });
     if (id) {
