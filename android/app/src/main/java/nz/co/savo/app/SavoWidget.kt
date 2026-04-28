@@ -221,23 +221,23 @@ private fun WidgetBody(
         }
 
         // Vehicle switcher bar — only when there are 2+ vehicles. Larger tap
-        // targets (48dp) for accessibility, since Glance widgets can't swipe.
+        // targets for accessibility, since Glance widgets can't swipe.
         // An auto-advance ticker (AlarmManager) cycles vehicles every ~6s.
         if (showSwitch) {
-            Spacer(GlanceModifier.height(10.dp))
+            Spacer(GlanceModifier.height(8.dp))
             Row(
                 modifier = GlanceModifier
                     .fillMaxWidth()
                     .background(pillBg)
                     .cornerRadius(28.dp)
-                    .padding(horizontal = 6.dp, vertical = 4.dp),
+                    .padding(horizontal = 4.dp, vertical = 3.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Box(
                     contentAlignment = Alignment.Center,
                     modifier = GlanceModifier
-                        .size(48.dp)
-                        .cornerRadius(24.dp)
+                        .size(44.dp)
+                        .cornerRadius(22.dp)
                         .background(white)
                         .clickable(actionRunCallback<PrevVehicleAction>())
                 ) { Text("◀", style = TextStyle(color = pillFg, fontSize = 18.sp, fontWeight = FontWeight.Bold)) }
@@ -245,26 +245,26 @@ private fun WidgetBody(
                     contentAlignment = Alignment.Center,
                     modifier = GlanceModifier
                         .defaultWeight()
-                        .height(48.dp)
+                        .height(44.dp)
                         .clickable(actionRunCallback<NextVehicleAction>()),
                 ) {
                     Text(
-                        "Vehicle ${currentIndexLabel} / ${vehicleCountLabel}  •  tap to advance",
-                        style = TextStyle(color = pillFg, fontSize = 13.sp, fontWeight = FontWeight.Bold),
+                        "Vehicle ${currentIndexLabel}/${vehicleCountLabel}  •  Tap to change",
+                        style = TextStyle(color = pillFg, fontSize = 12.sp, fontWeight = FontWeight.Bold),
                     )
                 }
                 Box(
                     contentAlignment = Alignment.Center,
                     modifier = GlanceModifier
-                        .size(48.dp)
-                        .cornerRadius(24.dp)
+                        .size(44.dp)
+                        .cornerRadius(22.dp)
                         .background(white)
                         .clickable(actionRunCallback<NextVehicleAction>())
                 ) { Text("▶", style = TextStyle(color = pillFg, fontSize = 18.sp, fontWeight = FontWeight.Bold)) }
             }
         }
 
-        Spacer(GlanceModifier.height(12.dp))
+        Spacer(GlanceModifier.height(8.dp))
 
         if (vehicleCountLabel == "0") {
             // Empty state — no vehicles cached. Tap to retry the backend fetch.
@@ -290,13 +290,13 @@ private fun WidgetBody(
                 }
             }
         } else {
-            // Expiry pill — colored status dots + days-left.
+            // Expiry pill — circular ring indicators + days-left.
             Row(
                 modifier = GlanceModifier
                     .fillMaxWidth()
                     .background(pillBg)
                     .cornerRadius(20.dp)
-                    .padding(horizontal = 10.dp, vertical = 10.dp),
+                    .padding(horizontal = 8.dp, vertical = 8.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 StatusCell("Rego", regoExpiry, muted, text, GlanceModifier.defaultWeight())
@@ -305,16 +305,16 @@ private fun WidgetBody(
             }
         }
 
-        Spacer(GlanceModifier.height(10.dp))
+        Spacer(GlanceModifier.height(8.dp))
 
         // Quick Accident Capture — primary action
         Box(
             contentAlignment = Alignment.Center,
             modifier = GlanceModifier
                 .fillMaxWidth()
-                .height(52.dp)
+                .height(48.dp)
                 .background(accent)
-                .cornerRadius(26.dp)
+                .cornerRadius(24.dp)
                 .clickable(actionStartActivity(deepLinkIntent("savo://quick-capture")))
         ) {
             Text(
@@ -322,7 +322,7 @@ private fun WidgetBody(
                 style = TextStyle(color = white, fontSize = 16.sp, fontWeight = FontWeight.Bold),
             )
         }
-        Spacer(GlanceModifier.height(8.dp))
+        Spacer(GlanceModifier.height(7.dp))
 
         // Roadside (wide) + 111 (compact red circle, separated to prevent fat-finger)
         Row(modifier = GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
@@ -338,9 +338,9 @@ private fun WidgetBody(
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = GlanceModifier
-                    .size(52.dp)
+                    .size(48.dp)
                     .background(red)
-                    .cornerRadius(26.dp)
+                    .cornerRadius(24.dp)
                     .clickable(actionStartActivity(callIntent("111")))
             ) {
                 Text("111", style = TextStyle(color = white, fontSize = 15.sp, fontWeight = FontWeight.Bold))
