@@ -11,6 +11,7 @@ import androidx.glance.appwidget.updateAll
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.json.JSONArray
 
 /**
  * JavaScript bridge that the React app calls (window.SavoWidgetBridge) to
@@ -33,6 +34,47 @@ class WidgetBridge(private val context: Context) {
         // Trigger an immediate backend refresh so the widget updates within seconds.
         CoroutineScope(Dispatchers.IO).launch {
             try { refreshFromBackend(context) } catch (_: Exception) {}
+        }
+    }
+
+    @JavascriptInterface
+    fun setVehicles(vehiclesJson: String) {
+        try {
+            val vehicles = JSONArray(vehiclesJson)
+            val prefs = context.getSharedPreferences("savo_widget_prefs", Context.MODE_PRIVATE)
+            val editor = prefs.edit()
+            val previous = prefs.getInt("vehicles_count", 0)
+            for (i in 0 until maxOf(previous, 10)) {
+                editor.remove("vehicle_${i}_rego")
+                editor.remove("vehicle_${i}_nickname")
+                editor.remove("vehicle_${i}_rego_expiry")
+                editor.remove("vehicle_${i}_wof_expiry")
+                editor.remove("vehicle_${i}_insurance_expiry")
+                editor.remove("vehicle_${i}_roadside_name")
+                editor.remove("vehicle_${i}_roadside_phone")
+            }
+            val total = minOf(vehicles.length(), 10)
+            editor.putInt("vehicles_count", total)
+            for (i in 0 until total) {
+                val v = vehicles.optJSONObject(i) ?: continue
+                editor.putString("vehicle_${i}_rego", v.optString("rego", ""))
+                editor.putString("vehicle_${i}_nickname", v.optString("nickname", ""))
+                editor.putString("vehicle_${i}_rego_expiry", v.optString("regoExpiry", ""))
+                editor.putString("vehicle_${i}_wof_expiry", v.optString("wofExpiry", ""))
+                editor.putString("vehicle_${i}_insurance_expiry", v.optString("insuranceExpiry", ""))
+                editor.putString("vehicle_${i}_roadside_name", v.optString("roadsideName", "Roadside"))
+                editor.putString("vehicle_${i}_roadside_phone", v.optString("roadsidePhone", ""))
+            }
+            val current = prefs.getInt("vehicles_current_index", 0)
+            if (total == 0 || current >= total) editor.putInt("vehicles_current_index", 0)
+            editor.putBoolean("widget_refreshing", false)
+            editor.putLong("widget_last_local_sync_ms", System.currentTimeMillis())
+            editor.commit()
+            CoroutineScope(Dispatchers.Main).launch {
+                SavoWidget().updateAll(context)
+            }
+        } catch (_: Exception) {
+            // Keep the existing widget cache if parsing fails.
         }
     }
 
