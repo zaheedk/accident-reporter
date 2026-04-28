@@ -25,5 +25,6 @@
 -keep class nz.co.savo.app.SavoWidgetReceiver { *; }
 -keep class nz.co.savo.app.AutoAdvanceReceiver { *; }
 -keep class nz.co.savo.app.NextVehicleAction { *; }
+-keep class nz.co.savo.app.NextVehicleReceiver { *; }
 -keep class nz.co.savo.app.PrevVehicleAction { *; }
 -keep class nz.co.savo.app.RefreshWidgetAction { *; }
