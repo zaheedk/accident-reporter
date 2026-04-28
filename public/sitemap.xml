@@ -5,6 +5,7 @@
   <url><loc>https://www.savo.co.nz/how-it-works</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://www.savo.co.nz/faq</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://www.savo.co.nz/legal</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://www.savo.co.nz/privacy</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
   <url><loc>https://www.savo.co.nz/panel-shops</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://www.savo.co.nz/tow-companies</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   
