@@ -236,49 +236,7 @@ private fun WidgetBody(
             }
         }
 
-        // Vehicle switcher bar — only when there are 2+ vehicles. Larger tap
-        // targets for accessibility, since Glance widgets can't swipe.
-        // An auto-advance ticker (AlarmManager) cycles vehicles every ~6s.
-        if (showSwitch) {
-            Spacer(GlanceModifier.height(8.dp))
-            Row(
-                modifier = GlanceModifier
-                    .fillMaxWidth()
-                    .background(pillBg)
-                    .cornerRadius(28.dp)
-                    .padding(horizontal = 4.dp, vertical = 3.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = GlanceModifier
-                        .size(44.dp)
-                        .cornerRadius(22.dp)
-                        .background(white)
-                        .clickable(actionRunCallback<PrevVehicleAction>())
-                ) { Text("◀", style = TextStyle(color = pillFg, fontSize = 18.sp, fontWeight = FontWeight.Bold)) }
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = GlanceModifier
-                        .defaultWeight()
-                        .height(44.dp)
-                        .clickable(actionRunCallback<NextVehicleAction>()),
-                ) {
-                    Text(
-                        "Vehicle ${currentIndexLabel}/${vehicleCountLabel}  •  Tap to change",
-                        style = TextStyle(color = pillFg, fontSize = 12.sp, fontWeight = FontWeight.Bold),
-                    )
-                }
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = GlanceModifier
-                        .size(44.dp)
-                        .cornerRadius(22.dp)
-                        .background(white)
-                        .clickable(actionRunCallback<NextVehicleAction>())
-                ) { Text("▶", style = TextStyle(color = pillFg, fontSize = 18.sp, fontWeight = FontWeight.Bold)) }
-            }
-        }
+        // (Switcher arrows row removed — tap the rego plate to cycle vehicles.)
 
         Spacer(GlanceModifier.height(8.dp))
 
