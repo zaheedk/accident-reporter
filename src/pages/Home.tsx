@@ -266,8 +266,13 @@ export default function Home() {
                 <a href="mailto:info@savo.co.nz" className="text-muted-foreground hover:text-foreground transition-colors">Contact</a>
               </div>
             </div>
-            <div className="mt-8 pt-6 border-t border-border/50 text-[11px] text-muted-foreground text-center">
-              © {new Date().getFullYear()} SAVO. All rights reserved.
+            <div className="mt-8 pt-6 border-t border-border/50 text-[11px] text-muted-foreground text-center space-y-2">
+              <div className="flex items-center justify-center gap-3">
+                <Link to="/legal" className="hover:text-foreground transition-colors">Terms</Link>
+                <span>·</span>
+                <Link to="/privacy" className="hover:text-foreground transition-colors">Privacy</Link>
+              </div>
+              <div>© {new Date().getFullYear()} SAVO. All rights reserved.</div>
             </div>
           </div>
         </footer>
