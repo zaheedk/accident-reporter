@@ -2,6 +2,10 @@ package nz.co.savo.app
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Paint
+import android.graphics.RectF
 import android.net.Uri
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
@@ -40,15 +44,20 @@ import java.util.Locale
 import java.util.TimeZone
 import java.util.concurrent.TimeUnit
 
+private const val WIDGET_PREFS = "savo_widget_prefs"
+private const val REFRESH_COOLDOWN_MS = 60_000L
+private const val MAX_WIDGET_VEHICLES = 10
+
 class SavoWidget : GlanceAppWidget() {
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         provideContent {
-            val prefs = context.getSharedPreferences("savo_widget_prefs", Context.MODE_PRIVATE)
+            val prefs = context.getSharedPreferences(WIDGET_PREFS, Context.MODE_PRIVATE)
 
             val vehicleCount = prefs.getInt("vehicles_count", 0)
             val currentIndex = if (vehicleCount > 0) {
                 prefs.getInt("vehicles_current_index", 0).coerceAtLeast(0) % vehicleCount
             } else 0
+            val isRefreshing = prefs.getBoolean("widget_refreshing", false)
 
             val rego = if (vehicleCount > 0)
                 prefs.getString("vehicle_${currentIndex}_rego", "") ?: ""
@@ -83,27 +92,32 @@ class SavoWidget : GlanceAppWidget() {
                 showSwitch = vehicleCount > 1,
                 currentIndexLabel = (currentIndex + 1).toString(),
                 vehicleCountLabel = vehicleCount.toString(),
+                isRefreshing = isRefreshing,
             )
         }
     }
 }
 
 // Status of an expiry date — drives colour coding (green / amber / red).
-private enum class ExpiryStatus { Unknown, Ok, Soon, Expired }
+private enum class ExpiryStatus { Unknown, Ok, Soon, Critical }
 
-private fun expiryStatus(isoDate: String): ExpiryStatus {
-    if (isoDate.isBlank()) return ExpiryStatus.Unknown
+private fun daysUntilExpiry(isoDate: String): Long? {
+    if (isoDate.isBlank()) return null
     return try {
         val fmt = SimpleDateFormat("yyyy-MM-dd", Locale.US).apply { timeZone = TimeZone.getTimeZone("UTC") }
-        val target = fmt.parse(isoDate) ?: return ExpiryStatus.Unknown
-        val today = fmt.parse(fmt.format(java.util.Date())) ?: return ExpiryStatus.Unknown
-        val diff = TimeUnit.MILLISECONDS.toDays(target.time - today.time)
-        when {
-            diff < 0 -> ExpiryStatus.Expired
-            diff <= 30 -> ExpiryStatus.Soon
-            else -> ExpiryStatus.Ok
-        }
-    } catch (_: Exception) { ExpiryStatus.Unknown }
+        val target = fmt.parse(isoDate) ?: return null
+        val today = fmt.parse(fmt.format(java.util.Date())) ?: return null
+        TimeUnit.MILLISECONDS.toDays(target.time - today.time)
+    } catch (_: Exception) { null }
+}
+
+private fun expiryStatus(isoDate: String): ExpiryStatus {
+    val diff = daysUntilExpiry(isoDate) ?: return ExpiryStatus.Unknown
+    return when {
+        diff <= 7 -> ExpiryStatus.Critical
+        diff <= 30 -> ExpiryStatus.Soon
+        else -> ExpiryStatus.Ok
+    }
 }
 
 @Composable
@@ -118,6 +132,7 @@ private fun WidgetBody(
     showSwitch: Boolean,
     currentIndexLabel: String,
     vehicleCountLabel: String,
+    isRefreshing: Boolean,
 ) {
     val bg = ColorProvider(Color(0xFFFFFFFF))
     val brand = ColorProvider(Color(0xFF1E3A5F))
@@ -132,10 +147,10 @@ private fun WidgetBody(
     val red = ColorProvider(Color(0xFFB91C1C))
     val redSoft = ColorProvider(Color(0xFFFEE2E2))
 
-    // Alert mode: any expired item -> red-tinted card.
+    // Alert mode: critical/expired items -> red-tinted card.
     val statuses = listOf(expiryStatus(regoExpiry), expiryStatus(wofExpiry), expiryStatus(insuranceExpiry))
-    val anyExpired = statuses.any { it == ExpiryStatus.Expired }
-    val cardBg = if (anyExpired) redSoft else bg
+    val anyCritical = statuses.any { it == ExpiryStatus.Critical }
+    val cardBg = if (anyCritical) redSoft else bg
 
     Column(
         modifier = GlanceModifier
@@ -152,7 +167,11 @@ private fun WidgetBody(
                 modifier = GlanceModifier.size(22.dp),
             )
             Spacer(GlanceModifier.width(8.dp))
-            Column(modifier = GlanceModifier.defaultWeight().clickable(actionRunCallback<RefreshWidgetAction>())) {
+            Column(
+                modifier = GlanceModifier.defaultWeight().clickable(
+                    if (showSwitch) actionRunCallback<NextVehicleAction>() else actionRunCallback<RefreshWidgetAction>()
+                )
+            ) {
                 Text(
                     text = if (nickname.isNotEmpty()) nickname else "SAVO",
                     style = TextStyle(color = brand, fontSize = 16.sp, fontWeight = FontWeight.Bold),
@@ -170,12 +189,12 @@ private fun WidgetBody(
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = GlanceModifier
-                    .size(32.dp)
+                    .size(42.dp)
                     .background(pillBg)
-                    .cornerRadius(16.dp)
+                    .cornerRadius(21.dp)
                     .clickable(actionRunCallback<RefreshWidgetAction>())
             ) {
-                Text("⟳", style = TextStyle(color = pillFg, fontSize = 18.sp, fontWeight = FontWeight.Bold))
+                Text(if (isRefreshing) "…" else "⟳", style = TextStyle(color = pillFg, fontSize = 18.sp, fontWeight = FontWeight.Bold))
             }
             if (rego.isNotEmpty()) {
                 Spacer(GlanceModifier.width(8.dp))
@@ -185,6 +204,7 @@ private fun WidgetBody(
                         .background(plateBg)
                         .cornerRadius(8.dp)
                         .padding(horizontal = 12.dp, vertical = 6.dp)
+                        .clickable(if (showSwitch) actionRunCallback<NextVehicleAction>() else actionRunCallback<RefreshWidgetAction>())
                 ) { Text(rego, style = TextStyle(color = plateFg, fontSize = 16.sp, fontWeight = FontWeight.Bold)) }
             } else if (vehicleCountLabel != "0") {
                 // Vehicle exists but rego is missing — prompt a reload.
