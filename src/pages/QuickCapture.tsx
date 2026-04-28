@@ -695,7 +695,7 @@ export default function QuickCapture() {
           {isFormStep && !formHasContent && (
             <button
               onClick={next}
-              disabled={savingDriver || finishing}
+              disabled={savingDriver || savingWitness || finishing}
               className="flex-1 h-12 rounded-xl bg-background/10 text-background text-[14px] font-semibold inline-flex items-center justify-center gap-1.5 active:scale-[0.98] transition-transform"
             >
               <SkipForward className="w-4 h-4" />
@@ -705,10 +705,10 @@ export default function QuickCapture() {
           {isFormStep && formHasContent && (
             <button
               onClick={next}
-              disabled={savingDriver || finishing}
+              disabled={savingDriver || savingWitness || finishing}
               className="flex-1 h-12 rounded-xl bg-background text-foreground text-[14px] font-semibold inline-flex items-center justify-center gap-1.5 active:scale-[0.98] transition-transform"
             >
-              {savingDriver || finishing ? <Loader2 className="w-4 h-4 animate-spin" /> : (
+              {savingDriver || savingWitness || finishing ? <Loader2 className="w-4 h-4 animate-spin" /> : (
                 <>
                   {isLast ? 'Continue to report' : 'Next'}
                   <ArrowRight className="w-4 h-4" />
