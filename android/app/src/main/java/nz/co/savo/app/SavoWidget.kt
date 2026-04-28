@@ -471,6 +471,72 @@ class SavoWidgetReceiver : GlanceAppWidgetReceiver() {
     ) {
         super.onUpdate(context, appWidgetManager, appWidgetIds)
         refreshFromBackend(context)
+        scheduleAutoAdvance(context)
+    }
+
+    override fun onEnabled(context: Context) {
+        super.onEnabled(context)
+        scheduleAutoAdvance(context)
+    }
+
+    override fun onDisabled(context: Context) {
+        cancelAutoAdvance(context)
+        super.onDisabled(context)
+    }
+}
+
+// Auto-advance: cycle to the next vehicle every 6s when 2+ vehicles are
+// present. Uses AlarmManager + a broadcast receiver to avoid keeping a
+// long-lived coroutine alive (Glance widgets are short-lived processes).
+private const val AUTO_ADVANCE_INTERVAL_MS = 6_000L
+private const val AUTO_ADVANCE_ACTION = "nz.co.savo.app.WIDGET_AUTO_ADVANCE"
+
+internal fun scheduleAutoAdvance(context: Context) {
+    val prefs = context.getSharedPreferences("savo_widget_prefs", Context.MODE_PRIVATE)
+    if (prefs.getInt("vehicles_count", 0) < 2) {
+        cancelAutoAdvance(context)
+        return
+    }
+    val am = context.getSystemService(Context.ALARM_SERVICE) as android.app.AlarmManager
+    val pi = autoAdvancePendingIntent(context)
+    am.cancel(pi)
+    am.set(
+        android.app.AlarmManager.ELAPSED_REALTIME,
+        android.os.SystemClock.elapsedRealtime() + AUTO_ADVANCE_INTERVAL_MS,
+        pi,
+    )
+}
+
+internal fun cancelAutoAdvance(context: Context) {
+    val am = context.getSystemService(Context.ALARM_SERVICE) as android.app.AlarmManager
+    am.cancel(autoAdvancePendingIntent(context))
+}
+
+private fun autoAdvancePendingIntent(context: Context): android.app.PendingIntent {
+    val intent = Intent(context, AutoAdvanceReceiver::class.java).apply {
+        action = AUTO_ADVANCE_ACTION
+    }
+    return android.app.PendingIntent.getBroadcast(
+        context, 0, intent,
+        android.app.PendingIntent.FLAG_UPDATE_CURRENT or android.app.PendingIntent.FLAG_IMMUTABLE,
+    )
+}
+
+class AutoAdvanceReceiver : android.content.BroadcastReceiver() {
+    override fun onReceive(context: Context, intent: Intent) {
+        if (intent.action != AUTO_ADVANCE_ACTION) return
+        val prefs = context.getSharedPreferences("savo_widget_prefs", Context.MODE_PRIVATE)
+        val count = prefs.getInt("vehicles_count", 0)
+        if (count > 1) {
+            val current = prefs.getInt("vehicles_current_index", 0)
+            val next = (current + 1) % count
+            prefs.edit().putInt("vehicles_current_index", next).apply()
+            GlobalScope.launch(Dispatchers.Main) {
+                SavoWidget().updateAll(context)
+            }
+        }
+        // Reschedule the next tick.
+        scheduleAutoAdvance(context)
     }
 }
 
