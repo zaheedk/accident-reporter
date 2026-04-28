@@ -154,6 +154,7 @@ export async function ensureWidgetAutoSetup(): Promise<void> {
       );
     }
     const pushed = await writeWidgetCredentialsToDevice(token);
+    if (pushed) void syncWidgetVehiclesFromStorage(userRes.user.id);
     if (pushed) localStorage.setItem(AUTO_SETUP_FLAG, '1');
   } catch (e) {
     console.warn('widget auto-setup failed', e);
