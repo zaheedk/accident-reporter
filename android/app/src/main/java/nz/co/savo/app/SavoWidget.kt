@@ -200,32 +200,37 @@ private fun WidgetBody(
             }
         }
 
-        // Vehicle switcher bar — only when there are 2+ vehicles. Big tappable
-        // arrows + an explicit "1 / N" indicator so users know to tap (no swipe).
+        // Vehicle switcher bar — only when there are 2+ vehicles. Larger tap
+        // targets (48dp) for accessibility, since Glance widgets can't swipe.
+        // An auto-advance ticker (AlarmManager) cycles vehicles every ~6s.
         if (showSwitch) {
             Spacer(GlanceModifier.height(10.dp))
             Row(
                 modifier = GlanceModifier
                     .fillMaxWidth()
                     .background(pillBg)
-                    .cornerRadius(22.dp)
+                    .cornerRadius(28.dp)
                     .padding(horizontal = 6.dp, vertical = 4.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Box(
                     contentAlignment = Alignment.Center,
                     modifier = GlanceModifier
-                        .size(36.dp)
-                        .cornerRadius(18.dp)
+                        .size(48.dp)
+                        .cornerRadius(24.dp)
+                        .background(white)
                         .clickable(actionRunCallback<PrevVehicleAction>())
-                ) { Text("◀", style = TextStyle(color = pillFg, fontSize = 14.sp, fontWeight = FontWeight.Bold)) }
+                ) { Text("◀", style = TextStyle(color = pillFg, fontSize = 18.sp, fontWeight = FontWeight.Bold)) }
                 Box(
                     contentAlignment = Alignment.Center,
-                    modifier = GlanceModifier.defaultWeight().height(36.dp),
+                    modifier = GlanceModifier
+                        .defaultWeight()
+                        .height(48.dp)
+                        .clickable(actionRunCallback<NextVehicleAction>()),
                 ) {
                     Text(
-                        "Vehicle ${currentIndexLabel} / ${vehicleCountLabel}",
-                        style = TextStyle(color = pillFg, fontSize = 12.sp, fontWeight = FontWeight.Bold),
+                        "Vehicle ${currentIndexLabel} / ${vehicleCountLabel}  •  tap to advance",
+                        style = TextStyle(color = pillFg, fontSize = 13.sp, fontWeight = FontWeight.Bold),
                     )
                 }
                 Box(
