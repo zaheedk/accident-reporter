@@ -81,6 +81,8 @@ class SavoWidget : GlanceAppWidget() {
                 roadsideName = roadsideName,
                 roadsidePhone = roadsidePhone,
                 showSwitch = vehicleCount > 1,
+                currentIndexLabel = (currentIndex + 1).toString(),
+                vehicleCountLabel = vehicleCount.toString(),
             )
         }
     }
