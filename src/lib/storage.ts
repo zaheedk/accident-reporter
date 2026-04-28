@@ -8,6 +8,7 @@ import {
   offlineDelete,
 } from '@/lib/offline-mutations';
 import { isOnline } from '@/lib/sync-engine';
+import { writeWidgetVehiclesToDevice } from '@/lib/widget-setup';
 
 // Helper to resolve user id – skips the network call when already known
 async function resolveUserId(userId?: string): Promise<string | null> {
@@ -33,6 +34,7 @@ export async function getVehicles(userId?: string): Promise<Vehicle[]> {
       .order('created_at', { ascending: false });
     if (!error && data) {
       void setCache(cacheKey, data);
+      void writeWidgetVehiclesToDevice(data);
       return data.map(dbVehicleToVehicle);
     }
     if (error) console.error('getVehicles', error);
@@ -40,7 +42,10 @@ export async function getVehicles(userId?: string): Promise<Vehicle[]> {
   }
 
   const cached = await getCached<any[]>(cacheKey);
-  if (cached) return cached.map((r: any) => (r.regoNumber ? r as Vehicle : dbVehicleToVehicle(r)));
+  if (cached) {
+    void writeWidgetVehiclesToDevice(cached);
+    return cached.map((r: any) => (r.regoNumber ? r as Vehicle : dbVehicleToVehicle(r)));
+  }
   return [];
 }
 
