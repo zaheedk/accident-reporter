@@ -257,19 +257,18 @@ private fun WidgetBody(
 
         Spacer(GlanceModifier.height(8.dp))
 
-        // SAVO logo as primary capture action with caption underneath
+        // Large text mark as primary capture action (no tiny launcher icon).
         Column(
             modifier = GlanceModifier
                 .fillMaxWidth()
                 .clickable(actionStartActivity(deepLinkIntent("savo://quick-capture"))),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Image(
-                provider = ImageProvider(R.mipmap.ic_launcher),
-                contentDescription = "Tap SAVO to capture incident details",
-                modifier = GlanceModifier.size(44.dp),
+            Text(
+                "SAVO",
+                style = TextStyle(color = brand, fontSize = 28.sp, fontWeight = FontWeight.Bold),
+                maxLines = 1,
             )
-            Spacer(GlanceModifier.height(2.dp))
             Text(
                 "Click SAVO to capture incident details",
                 style = TextStyle(color = muted, fontSize = 10.sp, fontWeight = FontWeight.Medium),
