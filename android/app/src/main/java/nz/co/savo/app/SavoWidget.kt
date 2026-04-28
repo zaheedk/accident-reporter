@@ -526,7 +526,7 @@ private const val AUTO_ADVANCE_INTERVAL_MS = 6_000L
 private const val AUTO_ADVANCE_ACTION = "nz.co.savo.app.WIDGET_AUTO_ADVANCE"
 
 internal fun scheduleAutoAdvance(context: Context) {
-    val prefs = context.getSharedPreferences("savo_widget_prefs", Context.MODE_PRIVATE)
+    val prefs = context.getSharedPreferences(WIDGET_PREFS, Context.MODE_PRIVATE)
     if (prefs.getInt("vehicles_count", 0) < 2) {
         cancelAutoAdvance(context)
         return
@@ -559,12 +559,12 @@ private fun autoAdvancePendingIntent(context: Context): android.app.PendingInten
 class AutoAdvanceReceiver : android.content.BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         if (intent.action != AUTO_ADVANCE_ACTION) return
-        val prefs = context.getSharedPreferences("savo_widget_prefs", Context.MODE_PRIVATE)
+        val prefs = context.getSharedPreferences(WIDGET_PREFS, Context.MODE_PRIVATE)
         val count = prefs.getInt("vehicles_count", 0)
         if (count > 1) {
             val current = prefs.getInt("vehicles_current_index", 0)
             val next = (current + 1) % count
-            prefs.edit().putInt("vehicles_current_index", next).apply()
+            prefs.edit().putInt("vehicles_current_index", next).commit()
             GlobalScope.launch(Dispatchers.Main) {
                 SavoWidget().updateAll(context)
             }
@@ -575,14 +575,19 @@ class AutoAdvanceReceiver : android.content.BroadcastReceiver() {
 }
 
 internal fun refreshFromBackend(context: Context) {
-    val prefs = context.getSharedPreferences("savo_widget_prefs", Context.MODE_PRIVATE)
-    val token = prefs.getString("widget_token", null) ?: return
-    val baseUrl = prefs.getString("supabase_url", null) ?: return
+    val prefs = context.getSharedPreferences(WIDGET_PREFS, Context.MODE_PRIVATE)
+    val token = prefs.getString("widget_token", null)
+    val baseUrl = prefs.getString("supabase_url", null)
+    if (token.isNullOrBlank() || baseUrl.isNullOrBlank()) {
+        prefs.edit().putBoolean("widget_refreshing", false).apply()
+        return
+    }
     val anon = prefs.getString("supabase_anon", null) ?: ""
 
     GlobalScope.launch(Dispatchers.IO) {
         try {
-            val url = URL("$baseUrl/functions/v1/widget-data")
+            val cleanBaseUrl = baseUrl.trimEnd('/')
+            val url = URL("$cleanBaseUrl/functions/v1/widget-data")
             val conn = url.openConnection() as HttpURLConnection
             conn.requestMethod = "GET"
             conn.setRequestProperty("X-Widget-Token", token)
@@ -598,7 +603,7 @@ internal fun refreshFromBackend(context: Context) {
 
             // Clear previous vehicle list
             val prevCount = prefs.getInt("vehicles_count", 0)
-            for (i in 0 until prevCount.coerceAtLeast(10)) {
+            for (i in 0 until maxOf(prevCount, MAX_WIDGET_VEHICLES)) {
                 editor.remove("vehicle_${i}_rego")
                 editor.remove("vehicle_${i}_nickname")
                 editor.remove("vehicle_${i}_rego_expiry")
@@ -609,7 +614,7 @@ internal fun refreshFromBackend(context: Context) {
             }
 
             val vehiclesArr: JSONArray? = json.optJSONArray("vehicles")
-            val total = minOf(10, vehiclesArr?.length() ?: 0)
+            val total = minOf(MAX_WIDGET_VEHICLES, vehiclesArr?.length() ?: 0)
             editor.putInt("vehicles_count", total)
             if (vehiclesArr != null) {
                 for (i in 0 until total) {
@@ -629,14 +634,21 @@ internal fun refreshFromBackend(context: Context) {
             }
             val curIdx = prefs.getInt("vehicles_current_index", 0)
             if (total == 0 || curIdx >= total) editor.putInt("vehicles_current_index", 0)
+            editor.putBoolean("widget_refreshing", false)
+            editor.putLong("widget_last_success_ms", System.currentTimeMillis())
 
-            editor.apply()
+            editor.commit()
 
             withContext(Dispatchers.Main) {
                 SavoWidget().updateAll(context)
             }
         } catch (_: Exception) {
             // keep showing cached data
+        } finally {
+            prefs.edit().putBoolean("widget_refreshing", false).apply()
+            withContext(Dispatchers.Main) {
+                SavoWidget().updateAll(context)
+            }
         }
     }
 }
