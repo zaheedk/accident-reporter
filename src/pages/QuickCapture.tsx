@@ -396,7 +396,9 @@ export default function QuickCapture() {
   const currentCaps = captures[step.key] || [];
   const hasCapForStep = currentCaps.length > 0;
   const isLast = stepIdx === STEPS.length - 1;
-  const formHasContent = step.form === 'other-driver-info' && (otherDriverName.trim() || otherDriverPhone.trim() || otherDriverRego.trim() || otherDriverInsurer.trim());
+  const formHasContent =
+    (step.form === 'other-driver-info' && !!(otherDriverName.trim() || otherDriverPhone.trim() || otherDriverRego.trim() || otherDriverInsurer.trim())) ||
+    (step.form === 'witness-info' && !!(witnessName.trim() || witnessPhone.trim()));
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col bg-foreground text-background overflow-y-auto"
