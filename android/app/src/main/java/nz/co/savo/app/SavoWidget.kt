@@ -355,10 +355,11 @@ private fun actionIconBitmap(icon: WidgetActionIcon): Bitmap {
         strokeCap = Paint.Cap.ROUND
         strokeJoin = Paint.Join.ROUND
     }
-    val fill = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = 0xFFFFFFFF.toInt()
-        style = Paint.Style.FILL
-    }
+    val red = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = 0xFFEA4335.toInt(); style = Paint.Style.FILL }
+    val blue = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = 0xFF4285F4.toInt(); style = Paint.Style.FILL }
+    val green = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = 0xFF34A853.toInt(); style = Paint.Style.FILL }
+    val yellow = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = 0xFFFBBC05.toInt(); style = Paint.Style.FILL }
+    val white = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = 0xFFFFFFFF.toInt(); style = Paint.Style.FILL }
     val textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = black
         style = Paint.Style.FILL
@@ -366,29 +367,34 @@ private fun actionIconBitmap(icon: WidgetActionIcon): Bitmap {
         isFakeBoldText = true
     }
 
-    canvas.drawOval(RectF(8f, 8f, 120f, 120f), fill)
-    canvas.drawOval(RectF(8f, 8f, 120f, 120f), stroke)
+    canvas.drawOval(RectF(10f, 10f, 118f, 118f), white)
 
     when (icon) {
-        WidgetActionIcon.Phone -> {
-            textPaint.textSize = 56f
-            canvas.drawText("☎", 64f, 84f, textPaint)
+        WidgetActionIcon.Roadside -> {
+            canvas.drawRoundRect(RectF(30f, 56f, 98f, 82f), 8f, 8f, blue)
+            canvas.drawRoundRect(RectF(42f, 44f, 74f, 58f), 6f, 6f, blue)
+            canvas.drawRoundRect(RectF(78f, 47f, 92f, 58f), 4f, 4f, green)
+            canvas.drawCircle(43f, 88f, 9f, black)
+            canvas.drawCircle(85f, 88f, 9f, black)
+            canvas.drawCircle(43f, 88f, 4f, white)
+            canvas.drawCircle(85f, 88f, 4f, white)
         }
-        WidgetActionIcon.TowCall -> {
-            stroke.strokeWidth = 5.5f
-            canvas.drawRoundRect(RectF(28f, 58f, 74f, 82f), 5f, 5f, stroke)
-            canvas.drawRoundRect(RectF(74f, 66f, 98f, 82f), 5f, 5f, stroke)
-            canvas.drawLine(82f, 66f, 90f, 66f, stroke)
-            canvas.drawCircle(43f, 90f, 7f, stroke)
-            canvas.drawCircle(86f, 90f, 7f, stroke)
-            textPaint.textSize = 28f
-            canvas.drawText("☎", 86f, 50f, textPaint)
+        WidgetActionIcon.TowTruck -> {
+            canvas.drawRoundRect(RectF(20f, 58f, 68f, 82f), 6f, 6f, yellow)
+            canvas.drawRoundRect(RectF(68f, 64f, 100f, 82f), 5f, 5f, green)
+            canvas.drawRoundRect(RectF(78f, 50f, 94f, 65f), 4f, 4f, green)
+            canvas.drawLine(24f, 50f, 38f, 38f, stroke)
+            canvas.drawLine(38f, 38f, 56f, 58f, stroke)
+            canvas.drawCircle(38f, 88f, 8f, black)
+            canvas.drawCircle(84f, 88f, 8f, black)
+            canvas.drawCircle(38f, 88f, 3.5f, white)
+            canvas.drawCircle(84f, 88f, 3.5f, white)
         }
         WidgetActionIcon.Emergency -> {
-            textPaint.textSize = 36f
-            canvas.drawText("111", 64f, 76f, textPaint)
-            textPaint.textSize = 24f
-            canvas.drawText("☎", 64f, 45f, textPaint)
+            canvas.drawOval(RectF(20f, 20f, 108f, 108f), red)
+            textPaint.color = 0xFFFFFFFF.toInt()
+            textPaint.textSize = 38f
+            canvas.drawText("111", 64f, 78f, textPaint)
         }
     }
     return bitmap
