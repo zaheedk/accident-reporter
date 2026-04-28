@@ -169,7 +169,7 @@ private fun WidgetBody(
             Spacer(GlanceModifier.width(8.dp))
             Column(
                 modifier = GlanceModifier.defaultWeight().clickable(
-                    if (showSwitch) actionSendBroadcast<NextVehicleReceiver>() else actionRunCallback<RefreshWidgetAction>()
+                    if (showSwitch) actionRunCallback<NextVehicleAction>() else actionRunCallback<RefreshWidgetAction>()
                 )
             ) {
                 Text(
