@@ -144,7 +144,6 @@ private fun WidgetBody(
     val pillBg = ColorProvider(Color(0xFFF1F5F9))
     val pillFg = ColorProvider(Color(0xFF1E3A5F))
     val white = ColorProvider(Color(0xFFFFFFFF))
-    val red = ColorProvider(Color(0xFFB91C1C))
     val redSoft = ColorProvider(Color(0xFFFEE2E2))
 
     // Alert mode: critical/expired items -> red-tinted card.
@@ -298,37 +297,29 @@ private fun WidgetBody(
         }
         Spacer(GlanceModifier.height(7.dp))
 
-        // Round icon buttons: Roadside (call), Tow trucks (search), 111 (emergency).
-        // Each shows a phone "📞" call sign on the call buttons so users
-        // immediately recognise them as dial actions.
+        // Apple-style outline action icons: Roadside (call), Tow trucks (search), 111 (emergency).
         Row(
             modifier = GlanceModifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             RoundIconButton(
-                glyph = "📞",
+                icon = WidgetActionIcon.Phone,
                 caption = if (roadsidePhone.isNotEmpty()) roadsideName.take(12) else "Roadside",
-                bg = ColorProvider(Color(0xFF0EA5E9)),
-                fg = white,
                 captionColor = muted,
                 onClickAction = actionStartActivity(callIntent(roadsidePhone)),
             )
             Spacer(GlanceModifier.defaultWeight())
             RoundIconButton(
-                glyph = "🚛",
+                icon = WidgetActionIcon.TowCall,
                 caption = "Tow trucks",
-                bg = ColorProvider(Color(0xFF1E3A5F)),
-                fg = white,
                 captionColor = muted,
                 onClickAction = actionStartActivity(deepLinkIntent("savo://tow-companies")),
             )
             Spacer(GlanceModifier.defaultWeight())
             RoundIconButton(
-                glyph = "📞",
+                icon = WidgetActionIcon.Emergency,
                 caption = "111",
-                bg = red,
-                fg = white,
                 captionColor = muted,
                 onClickAction = actionStartActivity(callIntent("111")),
             )
@@ -336,26 +327,23 @@ private fun WidgetBody(
     }
 }
 
+private enum class WidgetActionIcon { Phone, TowCall, Emergency }
+
 @Composable
 private fun RoundIconButton(
-    glyph: String,
+    icon: WidgetActionIcon,
     caption: String,
-    bg: ColorProvider,
-    fg: ColorProvider,
     captionColor: ColorProvider,
     onClickAction: androidx.glance.action.Action,
 ) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Box(
-            contentAlignment = Alignment.Center,
+        Image(
+            provider = ImageProvider(actionIconBitmap(icon)),
+            contentDescription = caption,
             modifier = GlanceModifier
                 .size(54.dp)
-                .background(bg)
-                .cornerRadius(27.dp)
-                .clickable(onClickAction)
-        ) {
-            Text(glyph, style = TextStyle(color = fg, fontSize = 22.sp, fontWeight = FontWeight.Bold))
-        }
+                .clickable(onClickAction),
+        )
         Spacer(GlanceModifier.height(4.dp))
         Text(
             caption,
@@ -363,6 +351,57 @@ private fun RoundIconButton(
             maxLines = 1,
         )
     }
+}
+
+private fun actionIconBitmap(icon: WidgetActionIcon): Bitmap {
+    val size = 128
+    val bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
+    val canvas = Canvas(bitmap)
+    val black = 0xFF111111.toInt()
+    val stroke = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = black
+        style = Paint.Style.STROKE
+        strokeWidth = 6f
+        strokeCap = Paint.Cap.ROUND
+        strokeJoin = Paint.Join.ROUND
+    }
+    val fill = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = 0xFFFFFFFF.toInt()
+        style = Paint.Style.FILL
+    }
+    val textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = black
+        style = Paint.Style.FILL
+        textAlign = Paint.Align.CENTER
+        isFakeBoldText = true
+    }
+
+    canvas.drawOval(RectF(8f, 8f, 120f, 120f), fill)
+    canvas.drawOval(RectF(8f, 8f, 120f, 120f), stroke)
+
+    when (icon) {
+        WidgetActionIcon.Phone -> {
+            textPaint.textSize = 56f
+            canvas.drawText("☎", 64f, 84f, textPaint)
+        }
+        WidgetActionIcon.TowCall -> {
+            stroke.strokeWidth = 5.5f
+            canvas.drawRoundRect(RectF(28f, 58f, 74f, 82f), 5f, 5f, stroke)
+            canvas.drawRoundRect(RectF(74f, 66f, 98f, 82f), 5f, 5f, stroke)
+            canvas.drawLine(82f, 66f, 90f, 66f, stroke)
+            canvas.drawCircle(43f, 90f, 7f, stroke)
+            canvas.drawCircle(86f, 90f, 7f, stroke)
+            textPaint.textSize = 28f
+            canvas.drawText("☎", 86f, 50f, textPaint)
+        }
+        WidgetActionIcon.Emergency -> {
+            textPaint.textSize = 36f
+            canvas.drawText("111", 64f, 76f, textPaint)
+            textPaint.textSize = 24f
+            canvas.drawText("☎", 64f, 45f, textPaint)
+        }
+    }
+    return bitmap
 }
 
 @Composable
@@ -484,11 +523,14 @@ private suspend fun cycleVehicle(context: Context, glanceId: GlanceId, delta: In
     if (count > 1) {
         val current = prefs.getInt("vehicles_current_index", 0)
         val next = ((current + delta) % count + count) % count
-        prefs.edit().putInt("vehicles_current_index", next).commit()
+        prefs.edit()
+            .putInt("vehicles_current_index", next)
+            .putLong("widget_last_switch_ms", System.currentTimeMillis())
+            .commit()
     }
-    // Update only this widget instance, not all — much faster and avoids
-    // re-triggering the network refresh in onUpdate.
+    // Force both the tapped instance and any launcher-cached instances to redraw immediately.
     SavoWidget().update(context, glanceId)
+    SavoWidget().updateAll(context)
     // Reset the auto-advance ticker so the user gets a fresh window after
     // manually navigating.
     scheduleAutoAdvance(context)
