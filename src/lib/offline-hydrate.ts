@@ -13,6 +13,7 @@
 import { supabase } from '@/integrations/supabase/client';
 import { setCache } from '@/lib/offline-cache';
 import { isOnline } from '@/lib/sync-engine';
+import { writeWidgetVehiclesToDevice } from '@/lib/widget-setup';
 
 let hydrating: Promise<void> | null = null;
 let lastHydratedUserId: string | null = null;
@@ -115,6 +116,10 @@ export async function hydrateUserData(
         persist(`panel_shops:all`, panelShops),
         persist(`tow_companies:all`, towCompanies),
       ]);
+
+      if (vehicles.status === 'fulfilled' && !vehicles.value.error && vehicles.value.data) {
+        void writeWidgetVehiclesToDevice(vehicles.value.data);
+      }
 
       lastHydratedUserId = userId;
       lastHydratedAt = Date.now();

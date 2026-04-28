@@ -5,6 +5,8 @@
  */
 import { Capacitor } from '@capacitor/core';
 import { supabase } from '@/integrations/supabase/client';
+import { getCached } from '@/lib/offline-cache';
+import type { Vehicle } from '@/types';
 
 const SHARED_PREFS_FILE = 'savo_widget_prefs';
 
@@ -51,6 +53,47 @@ export async function writeWidgetCredentialsToDevice(token: string): Promise<boo
     console.warn('widget bridge failed', e);
   }
   return false;
+}
+
+function normaliseWidgetVehicle(row: any) {
+  const make = row.make ?? '';
+  const model = row.model ?? '';
+  return {
+    rego: row.regoNumber ?? row.rego_number ?? '',
+    make,
+    model,
+    nickname: [make, model].filter(Boolean).join(' ').trim(),
+    regoExpiry: row.regoExpiry ?? row.rego_expiry ?? '',
+    wofExpiry: row.wofExpiry ?? row.wof_expiry ?? '',
+    insuranceExpiry: row.insuranceExpiry ?? row.insurance_expiry ?? '',
+    roadsideName: row.roadsideProvider ?? row.roadside_provider ?? 'Roadside',
+    roadsidePhone: row.roadsidePhone ?? row.roadside_phone ?? '',
+    isDefault: Boolean(row.isDefault ?? row.is_default),
+  };
+}
+
+export async function writeWidgetVehiclesToDevice(vehicles: any[]): Promise<boolean> {
+  if (!Capacitor.isNativePlatform()) return false;
+  try {
+    const mapped = vehicles
+      .filter((v) => (v.isActive ?? v.is_active ?? true) !== false)
+      .map(normaliseWidgetVehicle)
+      .sort((a, b) => Number(b.isDefault) - Number(a.isDefault));
+    const w = window as any;
+    if (w.SavoWidgetBridge?.setVehicles) {
+      w.SavoWidgetBridge.setVehicles(JSON.stringify(mapped));
+      return true;
+    }
+  } catch (e) {
+    console.warn('widget vehicle bridge failed', e);
+  }
+  return false;
+}
+
+export async function syncWidgetVehiclesFromStorage(userId: string): Promise<boolean> {
+  const cached = await getCached<Array<Vehicle | Record<string, unknown>>>(`vehicles:${userId}`);
+  if (!cached) return false;
+  return writeWidgetVehiclesToDevice(cached);
 }
 
 /**
@@ -111,6 +154,7 @@ export async function ensureWidgetAutoSetup(): Promise<void> {
       );
     }
     const pushed = await writeWidgetCredentialsToDevice(token);
+    if (pushed) void syncWidgetVehiclesFromStorage(userRes.user.id);
     if (pushed) localStorage.setItem(AUTO_SETUP_FLAG, '1');
   } catch (e) {
     console.warn('widget auto-setup failed', e);
