@@ -45,6 +45,15 @@
                 android:resource="@xml/savo_widget_info" />
         </receiver>
 
+        <!-- Auto-advance ticker for the multi-vehicle widget switcher. -->
+        <receiver
+            android:name=".AutoAdvanceReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="nz.co.savo.app.WIDGET_AUTO_ADVANCE" />
+            </intent-filter>
+        </receiver>
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"
