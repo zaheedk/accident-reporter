@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   Camera, Check, X, MapPin, Clock, Loader2,
-  SkipForward, ArrowRight, Car, User as UserIcon, IdCard, Hash, AlertTriangle, Phone,
+  SkipForward, ArrowRight, Car, User as UserIcon, IdCard, Hash, AlertTriangle, Phone, Users,
   Volume2, VolumeX,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
