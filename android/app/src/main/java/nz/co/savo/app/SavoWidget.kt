@@ -166,7 +166,19 @@ private fun WidgetBody(
                     )
                 }
             }
+            // Manual refresh — immediately re-fetches from backend.
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = GlanceModifier
+                    .size(32.dp)
+                    .background(pillBg)
+                    .cornerRadius(16.dp)
+                    .clickable(actionRunCallback<RefreshWidgetAction>())
+            ) {
+                Text("⟳", style = TextStyle(color = pillFg, fontSize = 18.sp, fontWeight = FontWeight.Bold))
+            }
             if (rego.isNotEmpty()) {
+                Spacer(GlanceModifier.width(8.dp))
                 Box(
                     contentAlignment = Alignment.Center,
                     modifier = GlanceModifier
