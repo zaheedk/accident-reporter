@@ -113,6 +113,10 @@ export default function QuickCapture() {
   // Boot: load vehicles, capture GPS, create draft claim
   useEffect(() => {
     if (!user) return;
+    // Guard against duplicate inserts when the effect re-runs (StrictMode, auth
+    // context re-issuing the user object, etc). We only ever want one draft.
+    if (claimInitStartedRef.current) return;
+    claimInitStartedRef.current = true;
     let mounted = true;
 
     (async () => {
