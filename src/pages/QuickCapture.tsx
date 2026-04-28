@@ -63,10 +63,16 @@ export default function QuickCapture() {
   const [location, setLocation] = useState<{ lat: number; lng: number; address: string } | null>(null);
   const [capturedAt] = useState<Date>(new Date());
   const [finishing, setFinishing] = useState(false);
+  const [finished, setFinished] = useState(false);
   const [failedQueueIds, setFailedQueueIds] = useState<Set<string>>(new Set());
   const previewUrlsRef = useRef<string[]>([]);
   // Map queuedId -> target so we can retry uploads (e.g. on finish or when user taps retry)
   const queuedTargetsRef = useRef<Map<string, Target>>(new Map());
+  // Strict guard: ensures the draft claim is created exactly once per component
+  // mount, even if the boot effect re-runs (e.g. React StrictMode, AuthContext
+  // re-issuing the user object). Without this we end up creating a new draft
+  // every time the effect fires — leading to multiple empty reports.
+  const claimInitStartedRef = useRef(false);
 
   // Other driver info (form step)
   const [otherDriverName, setOtherDriverName] = useState('');
@@ -107,6 +113,10 @@ export default function QuickCapture() {
   // Boot: load vehicles, capture GPS, create draft claim
   useEffect(() => {
     if (!user) return;
+    // Guard against duplicate inserts when the effect re-runs (StrictMode, auth
+    // context re-issuing the user object, etc). We only ever want one draft.
+    if (claimInitStartedRef.current) return;
+    claimInitStartedRef.current = true;
     let mounted = true;
 
     (async () => {
@@ -156,6 +166,8 @@ export default function QuickCapture() {
       } catch (err: any) {
         console.error('Quick capture init failed', err);
         toast.error('Could not start capture — please try again.');
+        // Allow another attempt if the user retries this screen
+        claimInitStartedRef.current = false;
         navigate('/claims/new');
       } finally {
         if (mounted) setCreating(false);
@@ -374,10 +386,10 @@ export default function QuickCapture() {
       console.warn('finish sweep failed', e);
     }
 
-    const target = reportNumber
-      ? `/claims/${reportNumber}/edit?step=1&from=quick-capture`
-      : `/claims/new`;
-    navigate(target);
+    // Show the success confirmation screen instead of jumping straight into the
+    // standard edit form. The user can choose to view the report or go home.
+    setFinishing(false);
+    setFinished(true);
   };
 
   const exitWithConfirm = () => {
@@ -399,6 +411,46 @@ export default function QuickCapture() {
   const formHasContent =
     (step.form === 'other-driver-info' && !!(otherDriverName.trim() || otherDriverPhone.trim() || otherDriverRego.trim() || otherDriverInsurer.trim())) ||
     (step.form === 'witness-info' && !!(witnessName.trim() || witnessPhone.trim()));
+
+  // ── Success screen ─────────────────────────────────────────────────────────
+  // Shown after `finish()` completes. Confirms the report is saved and lets the
+  // user choose to view it now or come back to it later — instead of dumping
+  // them straight into the long edit form.
+  if (finished) {
+    return (
+      <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-foreground text-background px-6 text-center"
+           style={{ paddingTop: 'env(safe-area-inset-top, 0px)', paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
+        <motion.div
+          initial={{ scale: 0.6, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ type: 'spring', stiffness: 220, damping: 18 }}
+          className="w-20 h-20 rounded-full bg-background text-foreground flex items-center justify-center mb-6"
+        >
+          <Check className="w-10 h-10" strokeWidth={3} />
+        </motion.div>
+        <h1 className="text-[24px] font-semibold tracking-[-0.01em]">Saved</h1>
+        <p className="mt-3 text-[14px] text-background/70 leading-relaxed max-w-[320px]">
+          Your information has been saved to report
+          {reportNumber ? <> <span className="font-semibold text-background">#{reportNumber}</span></> : null}.
+          You can come back at any time to add more details.
+        </p>
+        <div className="mt-8 w-full max-w-[320px] flex flex-col gap-2.5">
+          <button
+            onClick={() => navigate(reportNumber ? `/claims/${reportNumber}` : '/claims')}
+            className="h-12 rounded-xl bg-background text-foreground text-[14px] font-semibold active:scale-[0.98] transition-transform"
+          >
+            View report
+          </button>
+          <button
+            onClick={() => navigate('/')}
+            className="h-12 rounded-xl bg-background/10 text-background text-[14px] font-medium active:scale-[0.98] transition-transform"
+          >
+            Back to home
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col bg-foreground text-background overflow-y-auto"
