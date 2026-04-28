@@ -186,6 +186,17 @@ private fun WidgetBody(
                         .cornerRadius(8.dp)
                         .padding(horizontal = 12.dp, vertical = 6.dp)
                 ) { Text(rego, style = TextStyle(color = plateFg, fontSize = 16.sp, fontWeight = FontWeight.Bold)) }
+            } else if (vehicleCountLabel != "0") {
+                // Vehicle exists but rego is missing — prompt a reload.
+                Spacer(GlanceModifier.width(8.dp))
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = GlanceModifier
+                        .background(pillBg)
+                        .cornerRadius(8.dp)
+                        .padding(horizontal = 10.dp, vertical = 6.dp)
+                        .clickable(actionRunCallback<RefreshWidgetAction>())
+                ) { Text("Tap ⟳ to reload", style = TextStyle(color = pillFg, fontSize = 11.sp, fontWeight = FontWeight.Bold)) }
             }
         }
 
@@ -229,18 +240,43 @@ private fun WidgetBody(
 
         Spacer(GlanceModifier.height(12.dp))
 
-        // Expiry pill — colored status dots + days-left.
-        Row(
-            modifier = GlanceModifier
-                .fillMaxWidth()
-                .background(pillBg)
-                .cornerRadius(20.dp)
-                .padding(horizontal = 10.dp, vertical = 10.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            StatusCell("Rego", regoExpiry, muted, text, GlanceModifier.defaultWeight())
-            StatusCell("WOF", wofExpiry, muted, text, GlanceModifier.defaultWeight())
-            StatusCell("Insurance", insuranceExpiry, muted, text, GlanceModifier.defaultWeight())
+        if (vehicleCountLabel == "0") {
+            // Empty state — no vehicles cached. Tap to retry the backend fetch.
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = GlanceModifier
+                    .fillMaxWidth()
+                    .background(pillBg)
+                    .cornerRadius(20.dp)
+                    .padding(horizontal = 12.dp, vertical = 18.dp)
+                    .clickable(actionRunCallback<RefreshWidgetAction>())
+            ) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(
+                        "No vehicles yet",
+                        style = TextStyle(color = pillFg, fontSize = 14.sp, fontWeight = FontWeight.Bold),
+                    )
+                    Spacer(GlanceModifier.height(2.dp))
+                    Text(
+                        "Tap to reload vehicles",
+                        style = TextStyle(color = muted, fontSize = 11.sp, fontWeight = FontWeight.Medium),
+                    )
+                }
+            }
+        } else {
+            // Expiry pill — colored status dots + days-left.
+            Row(
+                modifier = GlanceModifier
+                    .fillMaxWidth()
+                    .background(pillBg)
+                    .cornerRadius(20.dp)
+                    .padding(horizontal = 10.dp, vertical = 10.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                StatusCell("Rego", regoExpiry, muted, text, GlanceModifier.defaultWeight())
+                StatusCell("WOF", wofExpiry, muted, text, GlanceModifier.defaultWeight())
+                StatusCell("Insurance", insuranceExpiry, muted, text, GlanceModifier.defaultWeight())
+            }
         }
 
         Spacer(GlanceModifier.height(10.dp))
