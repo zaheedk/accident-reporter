@@ -186,6 +186,17 @@ private fun WidgetBody(
                         .cornerRadius(8.dp)
                         .padding(horizontal = 12.dp, vertical = 6.dp)
                 ) { Text(rego, style = TextStyle(color = plateFg, fontSize = 16.sp, fontWeight = FontWeight.Bold)) }
+            } else if (vehicleCountLabel != "0") {
+                // Vehicle exists but rego is missing — prompt a reload.
+                Spacer(GlanceModifier.width(8.dp))
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = GlanceModifier
+                        .background(pillBg)
+                        .cornerRadius(8.dp)
+                        .padding(horizontal = 10.dp, vertical = 6.dp)
+                        .clickable(actionRunCallback<RefreshWidgetAction>())
+                ) { Text("Tap ⟳ to reload", style = TextStyle(color = pillFg, fontSize = 11.sp, fontWeight = FontWeight.Bold)) }
             }
         }
 
