@@ -422,23 +422,6 @@ private fun expiryRingBitmap(value: String, color: Int, progress: Float): Bitmap
     return bitmap
 }
 
-private fun formatDaysLeft(isoDate: String): String {
-    if (isoDate.isBlank()) return "—"
-    return try {
-        val fmt = SimpleDateFormat("yyyy-MM-dd", Locale.US).apply { timeZone = TimeZone.getTimeZone("UTC") }
-        val target = fmt.parse(isoDate) ?: return "—"
-        val today = fmt.parse(fmt.format(java.util.Date())) ?: return "—"
-        val diff = TimeUnit.MILLISECONDS.toDays(target.time - today.time)
-        when {
-            diff > 1 -> "$diff days"
-            diff == 1L -> "1 day"
-            diff == 0L -> "Today"
-            diff == -1L -> "-1 day"
-            else -> "${diff}d"
-        }
-    } catch (_: Exception) { "—" }
-}
-
 @Composable
 private fun ActionButton(
     label: String,
@@ -449,9 +432,9 @@ private fun ActionButton(
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier
-            .height(52.dp)
+            .height(48.dp)
             .background(colorBg)
-            .cornerRadius(26.dp)
+            .cornerRadius(24.dp)
     ) {
         Text(label, style = TextStyle(color = colorFg, fontSize = 15.sp, fontWeight = FontWeight.Bold))
     }
@@ -480,13 +463,12 @@ class PrevVehicleAction : ActionCallback {
 }
 
 private suspend fun cycleVehicle(context: Context, glanceId: GlanceId, delta: Int) {
-    val prefs = context.getSharedPreferences("savo_widget_prefs", Context.MODE_PRIVATE)
+    val prefs = context.getSharedPreferences(WIDGET_PREFS, Context.MODE_PRIVATE)
     val count = prefs.getInt("vehicles_count", 0)
     if (count > 1) {
         val current = prefs.getInt("vehicles_current_index", 0)
         val next = ((current + delta) % count + count) % count
-        // apply() is async — does not block the main thread on disk I/O.
-        prefs.edit().putInt("vehicles_current_index", next).apply()
+        prefs.edit().putInt("vehicles_current_index", next).commit()
     }
     // Update only this widget instance, not all — much faster and avoids
     // re-triggering the network refresh in onUpdate.
@@ -498,13 +480,17 @@ private suspend fun cycleVehicle(context: Context, glanceId: GlanceId, delta: In
 
 class RefreshWidgetAction : ActionCallback {
     override suspend fun onAction(context: Context, glanceId: GlanceId, parameters: ActionParameters) {
-        val prefs = context.getSharedPreferences("savo_widget_prefs", Context.MODE_PRIVATE)
+        val prefs = context.getSharedPreferences(WIDGET_PREFS, Context.MODE_PRIVATE)
         val now = System.currentTimeMillis()
         val last = prefs.getLong("last_manual_refresh_ms", 0L)
         // 60-second cooldown — silently ignore repeated taps to avoid spamming
         // the widget-data edge function.
-        if (now - last < 60_000L) return
-        prefs.edit().putLong("last_manual_refresh_ms", now).apply()
+        if (now - last < REFRESH_COOLDOWN_MS) return
+        prefs.edit()
+            .putLong("last_manual_refresh_ms", now)
+            .putBoolean("widget_refreshing", true)
+            .commit()
+        SavoWidget().update(context, glanceId)
         refreshFromBackend(context)
     }
 }
