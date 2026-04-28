@@ -280,22 +280,26 @@ private fun WidgetBody(
 
         Spacer(GlanceModifier.height(8.dp))
 
-        // Quick Accident Capture — primary action
-        Box(
-            contentAlignment = Alignment.Center,
+        // SAVO logo as primary capture action with caption underneath
+        Column(
             modifier = GlanceModifier
                 .fillMaxWidth()
-                .height(48.dp)
-                .background(accent)
-                .cornerRadius(24.dp)
-                .clickable(actionStartActivity(deepLinkIntent("savo://quick-capture")))
+                .clickable(actionStartActivity(deepLinkIntent("savo://quick-capture"))),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
+            Image(
+                provider = ImageProvider(R.mipmap.ic_launcher),
+                contentDescription = "Tap SAVO to capture incident details",
+                modifier = GlanceModifier.size(44.dp),
+            )
+            Spacer(GlanceModifier.height(2.dp))
             Text(
-                "Quick Accident Capture",
-                style = TextStyle(color = white, fontSize = 16.sp, fontWeight = FontWeight.Bold),
+                "Click SAVO to capture incident details",
+                style = TextStyle(color = muted, fontSize = 10.sp, fontWeight = FontWeight.Medium),
+                maxLines = 1,
             )
         }
-        Spacer(GlanceModifier.height(7.dp))
+        Spacer(GlanceModifier.height(8.dp))
 
             // Google-style action icons: Roadside, Tow trucks, 111 (no captions).
         Row(
