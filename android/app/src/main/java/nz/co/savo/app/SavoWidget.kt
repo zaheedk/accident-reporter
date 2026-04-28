@@ -408,6 +408,7 @@ class SavoWidgetReceiver : GlanceAppWidgetReceiver() {
                 val prevCount = prefs.getInt("vehicles_count", 0)
                 for (i in 0 until prevCount.coerceAtLeast(10)) {
                     editor.remove("vehicle_${i}_rego")
+                    editor.remove("vehicle_${i}_nickname")
                     editor.remove("vehicle_${i}_rego_expiry")
                     editor.remove("vehicle_${i}_wof_expiry")
                     editor.remove("vehicle_${i}_insurance_expiry")
@@ -421,7 +422,12 @@ class SavoWidgetReceiver : GlanceAppWidgetReceiver() {
                 if (vehiclesArr != null) {
                     for (i in 0 until total) {
                         val v = vehiclesArr.optJSONObject(i) ?: continue
+                        val nick = v.optString("nickname", "").ifEmpty {
+                            listOf(v.optString("make", ""), v.optString("model", ""))
+                                .filter { it.isNotEmpty() }.joinToString(" ")
+                        }
                         editor.putString("vehicle_${i}_rego", v.optString("rego", ""))
+                        editor.putString("vehicle_${i}_nickname", nick)
                         editor.putString("vehicle_${i}_rego_expiry", v.optString("regoExpiry", ""))
                         editor.putString("vehicle_${i}_wof_expiry", v.optString("wofExpiry", ""))
                         editor.putString("vehicle_${i}_insurance_expiry", v.optString("insuranceExpiry", ""))
