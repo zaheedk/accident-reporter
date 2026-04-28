@@ -441,8 +441,13 @@ private suspend fun cycleVehicle(context: Context, glanceId: GlanceId, delta: In
 
 class RefreshWidgetAction : ActionCallback {
     override suspend fun onAction(context: Context, glanceId: GlanceId, parameters: ActionParameters) {
-        // Mark refreshing so the user gets immediate visual feedback (header tint
-        // could be added later); for now we just kick off the network fetch.
+        val prefs = context.getSharedPreferences("savo_widget_prefs", Context.MODE_PRIVATE)
+        val now = System.currentTimeMillis()
+        val last = prefs.getLong("last_manual_refresh_ms", 0L)
+        // 60-second cooldown — silently ignore repeated taps to avoid spamming
+        // the widget-data edge function.
+        if (now - last < 60_000L) return
+        prefs.edit().putLong("last_manual_refresh_ms", now).apply()
         refreshFromBackend(context)
     }
 }
