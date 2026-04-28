@@ -30,7 +30,7 @@ interface CaptureStep {
   /** If undefined → this step is a form step, not a photo step */
   target?: Target;
   /** Form step renderer key */
-  form?: 'other-driver-info';
+  form?: 'other-driver-info' | 'witness-info';
 }
 
 const STEPS: CaptureStep[] = [
@@ -41,6 +41,7 @@ const STEPS: CaptureStep[] = [
   { key: 'other-licence',     title: "Other driver's licence",     hint: 'Ask permission. Capture both sides if possible.',                       icon: IdCard,    optional: true, target: { kind: 'tp', tpType: 'license' } },
   { key: 'other-driver',      title: "Photo of the other driver license",  hint: 'Optional — only with consent.',                                         icon: UserIcon,  optional: true, target: { kind: 'tp', tpType: 'driver' } },
   { key: 'other-driver-info', title: "Other driver's details",     hint: "Quick — name, phone, rego, and insurer if you have them.",         icon: Phone,           form: 'other-driver-info' },
+  { key: 'witness-info',      title: 'Witness details',            hint: 'Anyone who saw what happened? Capture their name and phone — optional but powerful.', icon: Users, optional: true, form: 'witness-info' },
 ];
 
 const TP_INDEX = 0; // QuickCapture binds to first third party
