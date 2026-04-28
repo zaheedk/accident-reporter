@@ -210,7 +210,7 @@ private fun WidgetBody(
                             .background(plateBg)
                             .cornerRadius(8.dp)
                             .padding(horizontal = 14.dp, vertical = 8.dp)
-                            .clickable(if (showSwitch) actionSendBroadcast<NextVehicleReceiver>() else actionRunCallback<RefreshWidgetAction>())
+                            .clickable(if (showSwitch) actionRunCallback<NextVehicleAction>() else actionRunCallback<RefreshWidgetAction>())
                     ) { Text(rego, style = TextStyle(color = plateFg, fontSize = 18.sp, fontWeight = FontWeight.Bold)) }
                     if (showSwitch) {
                         Spacer(GlanceModifier.height(2.dp))
