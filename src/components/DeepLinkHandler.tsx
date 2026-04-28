@@ -37,6 +37,8 @@ export default function DeepLinkHandler() {
               navigate(`/claims/${segments[0]}`);
             } else if (host === 'claims') {
               navigate('/claims');
+            } else if (host === 'tow-companies' || host === 'tow') {
+              navigate('/tow-companies');
             }
           } catch (e) {
             console.warn('deep-link parse failed', event.url, e);
