@@ -2,6 +2,10 @@ package nz.co.savo.app
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Paint
+import android.graphics.RectF
 import android.net.Uri
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
@@ -40,15 +44,20 @@ import java.util.Locale
 import java.util.TimeZone
 import java.util.concurrent.TimeUnit
 
+private const val WIDGET_PREFS = "savo_widget_prefs"
+private const val REFRESH_COOLDOWN_MS = 60_000L
+private const val MAX_WIDGET_VEHICLES = 10
+
 class SavoWidget : GlanceAppWidget() {
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         provideContent {
-            val prefs = context.getSharedPreferences("savo_widget_prefs", Context.MODE_PRIVATE)
+            val prefs = context.getSharedPreferences(WIDGET_PREFS, Context.MODE_PRIVATE)
 
             val vehicleCount = prefs.getInt("vehicles_count", 0)
             val currentIndex = if (vehicleCount > 0) {
                 prefs.getInt("vehicles_current_index", 0).coerceAtLeast(0) % vehicleCount
             } else 0
+            val isRefreshing = prefs.getBoolean("widget_refreshing", false)
 
             val rego = if (vehicleCount > 0)
                 prefs.getString("vehicle_${currentIndex}_rego", "") ?: ""
@@ -83,27 +92,32 @@ class SavoWidget : GlanceAppWidget() {
                 showSwitch = vehicleCount > 1,
                 currentIndexLabel = (currentIndex + 1).toString(),
                 vehicleCountLabel = vehicleCount.toString(),
+                isRefreshing = isRefreshing,
             )
         }
     }
 }
 
 // Status of an expiry date — drives colour coding (green / amber / red).
-private enum class ExpiryStatus { Unknown, Ok, Soon, Expired }
+private enum class ExpiryStatus { Unknown, Ok, Soon, Critical }
 
-private fun expiryStatus(isoDate: String): ExpiryStatus {
-    if (isoDate.isBlank()) return ExpiryStatus.Unknown
+private fun daysUntilExpiry(isoDate: String): Long? {
+    if (isoDate.isBlank()) return null
     return try {
         val fmt = SimpleDateFormat("yyyy-MM-dd", Locale.US).apply { timeZone = TimeZone.getTimeZone("UTC") }
-        val target = fmt.parse(isoDate) ?: return ExpiryStatus.Unknown
-        val today = fmt.parse(fmt.format(java.util.Date())) ?: return ExpiryStatus.Unknown
-        val diff = TimeUnit.MILLISECONDS.toDays(target.time - today.time)
-        when {
-            diff < 0 -> ExpiryStatus.Expired
-            diff <= 30 -> ExpiryStatus.Soon
-            else -> ExpiryStatus.Ok
-        }
-    } catch (_: Exception) { ExpiryStatus.Unknown }
+        val target = fmt.parse(isoDate) ?: return null
+        val today = fmt.parse(fmt.format(java.util.Date())) ?: return null
+        TimeUnit.MILLISECONDS.toDays(target.time - today.time)
+    } catch (_: Exception) { null }
+}
+
+private fun expiryStatus(isoDate: String): ExpiryStatus {
+    val diff = daysUntilExpiry(isoDate) ?: return ExpiryStatus.Unknown
+    return when {
+        diff <= 7 -> ExpiryStatus.Critical
+        diff <= 30 -> ExpiryStatus.Soon
+        else -> ExpiryStatus.Ok
+    }
 }
 
 @Composable
@@ -118,6 +132,7 @@ private fun WidgetBody(
     showSwitch: Boolean,
     currentIndexLabel: String,
     vehicleCountLabel: String,
+    isRefreshing: Boolean,
 ) {
     val bg = ColorProvider(Color(0xFFFFFFFF))
     val brand = ColorProvider(Color(0xFF1E3A5F))
@@ -132,10 +147,10 @@ private fun WidgetBody(
     val red = ColorProvider(Color(0xFFB91C1C))
     val redSoft = ColorProvider(Color(0xFFFEE2E2))
 
-    // Alert mode: any expired item -> red-tinted card.
+    // Alert mode: critical/expired items -> red-tinted card.
     val statuses = listOf(expiryStatus(regoExpiry), expiryStatus(wofExpiry), expiryStatus(insuranceExpiry))
-    val anyExpired = statuses.any { it == ExpiryStatus.Expired }
-    val cardBg = if (anyExpired) redSoft else bg
+    val anyCritical = statuses.any { it == ExpiryStatus.Critical }
+    val cardBg = if (anyCritical) redSoft else bg
 
     Column(
         modifier = GlanceModifier
@@ -152,7 +167,11 @@ private fun WidgetBody(
                 modifier = GlanceModifier.size(22.dp),
             )
             Spacer(GlanceModifier.width(8.dp))
-            Column(modifier = GlanceModifier.defaultWeight().clickable(actionRunCallback<RefreshWidgetAction>())) {
+            Column(
+                modifier = GlanceModifier.defaultWeight().clickable(
+                    if (showSwitch) actionRunCallback<NextVehicleAction>() else actionRunCallback<RefreshWidgetAction>()
+                )
+            ) {
                 Text(
                     text = if (nickname.isNotEmpty()) nickname else "SAVO",
                     style = TextStyle(color = brand, fontSize = 16.sp, fontWeight = FontWeight.Bold),
@@ -170,12 +189,12 @@ private fun WidgetBody(
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = GlanceModifier
-                    .size(32.dp)
+                    .size(42.dp)
                     .background(pillBg)
-                    .cornerRadius(16.dp)
+                    .cornerRadius(21.dp)
                     .clickable(actionRunCallback<RefreshWidgetAction>())
             ) {
-                Text("⟳", style = TextStyle(color = pillFg, fontSize = 18.sp, fontWeight = FontWeight.Bold))
+                Text(if (isRefreshing) "…" else "⟳", style = TextStyle(color = pillFg, fontSize = 18.sp, fontWeight = FontWeight.Bold))
             }
             if (rego.isNotEmpty()) {
                 Spacer(GlanceModifier.width(8.dp))
@@ -185,6 +204,7 @@ private fun WidgetBody(
                         .background(plateBg)
                         .cornerRadius(8.dp)
                         .padding(horizontal = 12.dp, vertical = 6.dp)
+                        .clickable(if (showSwitch) actionRunCallback<NextVehicleAction>() else actionRunCallback<RefreshWidgetAction>())
                 ) { Text(rego, style = TextStyle(color = plateFg, fontSize = 16.sp, fontWeight = FontWeight.Bold)) }
             } else if (vehicleCountLabel != "0") {
                 // Vehicle exists but rego is missing — prompt a reload.
@@ -201,23 +221,23 @@ private fun WidgetBody(
         }
 
         // Vehicle switcher bar — only when there are 2+ vehicles. Larger tap
-        // targets (48dp) for accessibility, since Glance widgets can't swipe.
+        // targets for accessibility, since Glance widgets can't swipe.
         // An auto-advance ticker (AlarmManager) cycles vehicles every ~6s.
         if (showSwitch) {
-            Spacer(GlanceModifier.height(10.dp))
+            Spacer(GlanceModifier.height(8.dp))
             Row(
                 modifier = GlanceModifier
                     .fillMaxWidth()
                     .background(pillBg)
                     .cornerRadius(28.dp)
-                    .padding(horizontal = 6.dp, vertical = 4.dp),
+                    .padding(horizontal = 4.dp, vertical = 3.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Box(
                     contentAlignment = Alignment.Center,
                     modifier = GlanceModifier
-                        .size(48.dp)
-                        .cornerRadius(24.dp)
+                        .size(44.dp)
+                        .cornerRadius(22.dp)
                         .background(white)
                         .clickable(actionRunCallback<PrevVehicleAction>())
                 ) { Text("◀", style = TextStyle(color = pillFg, fontSize = 18.sp, fontWeight = FontWeight.Bold)) }
@@ -225,26 +245,26 @@ private fun WidgetBody(
                     contentAlignment = Alignment.Center,
                     modifier = GlanceModifier
                         .defaultWeight()
-                        .height(48.dp)
+                        .height(44.dp)
                         .clickable(actionRunCallback<NextVehicleAction>()),
                 ) {
                     Text(
-                        "Vehicle ${currentIndexLabel} / ${vehicleCountLabel}  •  tap to advance",
-                        style = TextStyle(color = pillFg, fontSize = 13.sp, fontWeight = FontWeight.Bold),
+                        "Vehicle ${currentIndexLabel}/${vehicleCountLabel}  •  Tap to change",
+                        style = TextStyle(color = pillFg, fontSize = 12.sp, fontWeight = FontWeight.Bold),
                     )
                 }
                 Box(
                     contentAlignment = Alignment.Center,
                     modifier = GlanceModifier
-                        .size(48.dp)
-                        .cornerRadius(24.dp)
+                        .size(44.dp)
+                        .cornerRadius(22.dp)
                         .background(white)
                         .clickable(actionRunCallback<NextVehicleAction>())
                 ) { Text("▶", style = TextStyle(color = pillFg, fontSize = 18.sp, fontWeight = FontWeight.Bold)) }
             }
         }
 
-        Spacer(GlanceModifier.height(12.dp))
+        Spacer(GlanceModifier.height(8.dp))
 
         if (vehicleCountLabel == "0") {
             // Empty state — no vehicles cached. Tap to retry the backend fetch.
@@ -270,13 +290,13 @@ private fun WidgetBody(
                 }
             }
         } else {
-            // Expiry pill — colored status dots + days-left.
+            // Expiry pill — circular ring indicators + days-left.
             Row(
                 modifier = GlanceModifier
                     .fillMaxWidth()
                     .background(pillBg)
                     .cornerRadius(20.dp)
-                    .padding(horizontal = 10.dp, vertical = 10.dp),
+                    .padding(horizontal = 8.dp, vertical = 8.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 StatusCell("Rego", regoExpiry, muted, text, GlanceModifier.defaultWeight())
@@ -285,16 +305,16 @@ private fun WidgetBody(
             }
         }
 
-        Spacer(GlanceModifier.height(10.dp))
+        Spacer(GlanceModifier.height(8.dp))
 
         // Quick Accident Capture — primary action
         Box(
             contentAlignment = Alignment.Center,
             modifier = GlanceModifier
                 .fillMaxWidth()
-                .height(52.dp)
+                .height(48.dp)
                 .background(accent)
-                .cornerRadius(26.dp)
+                .cornerRadius(24.dp)
                 .clickable(actionStartActivity(deepLinkIntent("savo://quick-capture")))
         ) {
             Text(
@@ -302,7 +322,7 @@ private fun WidgetBody(
                 style = TextStyle(color = white, fontSize = 16.sp, fontWeight = FontWeight.Bold),
             )
         }
-        Spacer(GlanceModifier.height(8.dp))
+        Spacer(GlanceModifier.height(7.dp))
 
         // Roadside (wide) + 111 (compact red circle, separated to prevent fat-finger)
         Row(modifier = GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
@@ -318,9 +338,9 @@ private fun WidgetBody(
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = GlanceModifier
-                    .size(52.dp)
+                    .size(48.dp)
                     .background(red)
-                    .cornerRadius(26.dp)
+                    .cornerRadius(24.dp)
                     .clickable(actionStartActivity(callIntent("111")))
             ) {
                 Text("111", style = TextStyle(color = white, fontSize = 15.sp, fontWeight = FontWeight.Bold))
@@ -338,57 +358,68 @@ private fun StatusCell(
     modifier: GlanceModifier,
 ) {
     val status = expiryStatus(isoDate)
-    val dotColor = when (status) {
-        ExpiryStatus.Ok -> ColorProvider(Color(0xFF16A34A))
-        ExpiryStatus.Soon -> ColorProvider(Color(0xFFD97706))
-        ExpiryStatus.Expired -> ColorProvider(Color(0xFFDC2626))
-        ExpiryStatus.Unknown -> ColorProvider(Color(0xFFCBD5E1))
+    val days = daysUntilExpiry(isoDate)
+    val ringColor = when (status) {
+        ExpiryStatus.Ok -> 0xFF16A34A.toInt()
+        ExpiryStatus.Soon -> 0xFFD97706.toInt()
+        ExpiryStatus.Critical -> 0xFFDC2626.toInt()
+        ExpiryStatus.Unknown -> 0xFFCBD5E1.toInt()
     }
-    val valueText = when (status) {
-        ExpiryStatus.Unknown -> "—"
-        ExpiryStatus.Expired -> "Expired"
-        else -> formatDaysLeft(isoDate)
-    }
-    val valueColor = if (status == ExpiryStatus.Expired)
-        ColorProvider(Color(0xFFDC2626)) else text
+    val dayNumber = days?.coerceAtLeast(0)?.toString() ?: "—"
 
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Box(
-                modifier = GlanceModifier
-                    .size(8.dp)
-                    .background(dotColor)
-                    .cornerRadius(4.dp),
-            ) {}
-            Spacer(GlanceModifier.width(5.dp))
-            Text(label, style = TextStyle(color = muted, fontSize = 11.sp, fontWeight = FontWeight.Bold))
-        }
-        Spacer(GlanceModifier.height(3.dp))
+        Image(
+            provider = ImageProvider(expiryRingBitmap(dayNumber, ringColor, progressForDays(days))),
+            contentDescription = "$label expiry",
+            modifier = GlanceModifier.size(42.dp),
+        )
+        Spacer(GlanceModifier.height(2.dp))
+        Text(label, style = TextStyle(color = muted, fontSize = 10.sp, fontWeight = FontWeight.Bold), maxLines = 1)
         Text(
-            valueText,
-            style = TextStyle(color = valueColor, fontSize = 13.sp, fontWeight = FontWeight.Bold),
+            if (days == null) "missing" else if (days < 0) "expired" else "days",
+            style = TextStyle(color = text, fontSize = 10.sp, fontWeight = FontWeight.Medium),
+            maxLines = 1,
         )
     }
 }
 
-private fun formatDaysLeft(isoDate: String): String {
-    if (isoDate.isBlank()) return "—"
-    return try {
-        val fmt = SimpleDateFormat("yyyy-MM-dd", Locale.US).apply { timeZone = TimeZone.getTimeZone("UTC") }
-        val target = fmt.parse(isoDate) ?: return "—"
-        val today = fmt.parse(fmt.format(java.util.Date())) ?: return "—"
-        val diff = TimeUnit.MILLISECONDS.toDays(target.time - today.time)
-        when {
-            diff > 1 -> "$diff days"
-            diff == 1L -> "1 day"
-            diff == 0L -> "Today"
-            diff == -1L -> "-1 day"
-            else -> "${diff}d"
-        }
-    } catch (_: Exception) { "—" }
+private fun progressForDays(days: Long?): Float {
+    if (days == null) return 0f
+    return (days.coerceIn(0, 30).toFloat() / 30f).coerceIn(0.08f, 1f)
+}
+
+private fun expiryRingBitmap(value: String, color: Int, progress: Float): Bitmap {
+    val size = 96
+    val stroke = 10f
+    val bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
+    val canvas = Canvas(bitmap)
+    val bounds = RectF(stroke, stroke, size - stroke, size - stroke)
+    val track = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.STROKE
+        strokeWidth = stroke
+        strokeCap = Paint.Cap.ROUND
+        this.color = 0xFFE2E8F0.toInt()
+    }
+    val arc = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.STROKE
+        strokeWidth = stroke
+        strokeCap = Paint.Cap.ROUND
+        this.color = color
+    }
+    val textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        this.color = 0xFF0F172A.toInt()
+        textAlign = Paint.Align.CENTER
+        textSize = if (value.length > 2) 26f else 34f
+        isFakeBoldText = true
+    }
+    canvas.drawArc(bounds, 0f, 360f, false, track)
+    canvas.drawArc(bounds, -90f, 360f * progress, false, arc)
+    val y = (size / 2f) - ((textPaint.descent() + textPaint.ascent()) / 2f)
+    canvas.drawText(value, size / 2f, y, textPaint)
+    return bitmap
 }
 
 @Composable
@@ -401,9 +432,9 @@ private fun ActionButton(
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier
-            .height(52.dp)
+            .height(48.dp)
             .background(colorBg)
-            .cornerRadius(26.dp)
+            .cornerRadius(24.dp)
     ) {
         Text(label, style = TextStyle(color = colorFg, fontSize = 15.sp, fontWeight = FontWeight.Bold))
     }
@@ -432,13 +463,12 @@ class PrevVehicleAction : ActionCallback {
 }
 
 private suspend fun cycleVehicle(context: Context, glanceId: GlanceId, delta: Int) {
-    val prefs = context.getSharedPreferences("savo_widget_prefs", Context.MODE_PRIVATE)
+    val prefs = context.getSharedPreferences(WIDGET_PREFS, Context.MODE_PRIVATE)
     val count = prefs.getInt("vehicles_count", 0)
     if (count > 1) {
         val current = prefs.getInt("vehicles_current_index", 0)
         val next = ((current + delta) % count + count) % count
-        // apply() is async — does not block the main thread on disk I/O.
-        prefs.edit().putInt("vehicles_current_index", next).apply()
+        prefs.edit().putInt("vehicles_current_index", next).commit()
     }
     // Update only this widget instance, not all — much faster and avoids
     // re-triggering the network refresh in onUpdate.
@@ -450,13 +480,17 @@ private suspend fun cycleVehicle(context: Context, glanceId: GlanceId, delta: In
 
 class RefreshWidgetAction : ActionCallback {
     override suspend fun onAction(context: Context, glanceId: GlanceId, parameters: ActionParameters) {
-        val prefs = context.getSharedPreferences("savo_widget_prefs", Context.MODE_PRIVATE)
+        val prefs = context.getSharedPreferences(WIDGET_PREFS, Context.MODE_PRIVATE)
         val now = System.currentTimeMillis()
         val last = prefs.getLong("last_manual_refresh_ms", 0L)
         // 60-second cooldown — silently ignore repeated taps to avoid spamming
         // the widget-data edge function.
-        if (now - last < 60_000L) return
-        prefs.edit().putLong("last_manual_refresh_ms", now).apply()
+        if (now - last < REFRESH_COOLDOWN_MS) return
+        prefs.edit()
+            .putLong("last_manual_refresh_ms", now)
+            .putBoolean("widget_refreshing", true)
+            .commit()
+        SavoWidget().update(context, glanceId)
         refreshFromBackend(context)
     }
 }
@@ -492,7 +526,7 @@ private const val AUTO_ADVANCE_INTERVAL_MS = 6_000L
 private const val AUTO_ADVANCE_ACTION = "nz.co.savo.app.WIDGET_AUTO_ADVANCE"
 
 internal fun scheduleAutoAdvance(context: Context) {
-    val prefs = context.getSharedPreferences("savo_widget_prefs", Context.MODE_PRIVATE)
+    val prefs = context.getSharedPreferences(WIDGET_PREFS, Context.MODE_PRIVATE)
     if (prefs.getInt("vehicles_count", 0) < 2) {
         cancelAutoAdvance(context)
         return
@@ -525,12 +559,12 @@ private fun autoAdvancePendingIntent(context: Context): android.app.PendingInten
 class AutoAdvanceReceiver : android.content.BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         if (intent.action != AUTO_ADVANCE_ACTION) return
-        val prefs = context.getSharedPreferences("savo_widget_prefs", Context.MODE_PRIVATE)
+        val prefs = context.getSharedPreferences(WIDGET_PREFS, Context.MODE_PRIVATE)
         val count = prefs.getInt("vehicles_count", 0)
         if (count > 1) {
             val current = prefs.getInt("vehicles_current_index", 0)
             val next = (current + 1) % count
-            prefs.edit().putInt("vehicles_current_index", next).apply()
+            prefs.edit().putInt("vehicles_current_index", next).commit()
             GlobalScope.launch(Dispatchers.Main) {
                 SavoWidget().updateAll(context)
             }
@@ -541,14 +575,19 @@ class AutoAdvanceReceiver : android.content.BroadcastReceiver() {
 }
 
 internal fun refreshFromBackend(context: Context) {
-    val prefs = context.getSharedPreferences("savo_widget_prefs", Context.MODE_PRIVATE)
-    val token = prefs.getString("widget_token", null) ?: return
-    val baseUrl = prefs.getString("supabase_url", null) ?: return
+    val prefs = context.getSharedPreferences(WIDGET_PREFS, Context.MODE_PRIVATE)
+    val token = prefs.getString("widget_token", null)
+    val baseUrl = prefs.getString("supabase_url", null)
+    if (token.isNullOrBlank() || baseUrl.isNullOrBlank()) {
+        prefs.edit().putBoolean("widget_refreshing", false).apply()
+        return
+    }
     val anon = prefs.getString("supabase_anon", null) ?: ""
 
     GlobalScope.launch(Dispatchers.IO) {
         try {
-            val url = URL("$baseUrl/functions/v1/widget-data")
+            val cleanBaseUrl = baseUrl.trimEnd('/')
+            val url = URL("$cleanBaseUrl/functions/v1/widget-data")
             val conn = url.openConnection() as HttpURLConnection
             conn.requestMethod = "GET"
             conn.setRequestProperty("X-Widget-Token", token)
@@ -564,7 +603,7 @@ internal fun refreshFromBackend(context: Context) {
 
             // Clear previous vehicle list
             val prevCount = prefs.getInt("vehicles_count", 0)
-            for (i in 0 until prevCount.coerceAtLeast(10)) {
+            for (i in 0 until maxOf(prevCount, MAX_WIDGET_VEHICLES)) {
                 editor.remove("vehicle_${i}_rego")
                 editor.remove("vehicle_${i}_nickname")
                 editor.remove("vehicle_${i}_rego_expiry")
@@ -575,7 +614,7 @@ internal fun refreshFromBackend(context: Context) {
             }
 
             val vehiclesArr: JSONArray? = json.optJSONArray("vehicles")
-            val total = minOf(10, vehiclesArr?.length() ?: 0)
+            val total = minOf(MAX_WIDGET_VEHICLES, vehiclesArr?.length() ?: 0)
             editor.putInt("vehicles_count", total)
             if (vehiclesArr != null) {
                 for (i in 0 until total) {
@@ -595,14 +634,21 @@ internal fun refreshFromBackend(context: Context) {
             }
             val curIdx = prefs.getInt("vehicles_current_index", 0)
             if (total == 0 || curIdx >= total) editor.putInt("vehicles_current_index", 0)
+            editor.putBoolean("widget_refreshing", false)
+            editor.putLong("widget_last_success_ms", System.currentTimeMillis())
 
-            editor.apply()
+            editor.commit()
 
             withContext(Dispatchers.Main) {
                 SavoWidget().updateAll(context)
             }
         } catch (_: Exception) {
             // keep showing cached data
+        } finally {
+            prefs.edit().putBoolean("widget_refreshing", false).apply()
+            withContext(Dispatchers.Main) {
+                SavoWidget().updateAll(context)
+            }
         }
     }
 }
