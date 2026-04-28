@@ -137,14 +137,12 @@ private fun WidgetBody(
 ) {
     val bg = ColorProvider(Color(0xFFFFFFFF))
     val brand = ColorProvider(Color(0xFF1E3A5F))
-    val accent = ColorProvider(Color(0xFF2563EB))
     val text = ColorProvider(Color(0xFF0F172A))
     val muted = ColorProvider(Color(0xFF64748B))
     val plateBg = ColorProvider(Color(0xFFFBBF24))
     val plateFg = ColorProvider(Color(0xFF111827))
     val pillBg = ColorProvider(Color(0xFFF1F5F9))
     val pillFg = ColorProvider(Color(0xFF1E3A5F))
-    val white = ColorProvider(Color(0xFFFFFFFF))
     val redSoft = ColorProvider(Color(0xFFFEE2E2))
 
     // Alert mode: critical/expired items -> red-tinted card.
@@ -159,45 +157,9 @@ private fun WidgetBody(
             .cornerRadius(28.dp)
             .padding(14.dp)
     ) {
-        // Row 1: SAVO logo + nickname + plate badge (always visible if present).
+        // Top row: vehicle rego + refresh only. No SAVO header branding.
         Row(modifier = GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            Image(
-                provider = ImageProvider(R.mipmap.ic_launcher),
-                contentDescription = "SAVO",
-                modifier = GlanceModifier.size(22.dp),
-            )
-            Spacer(GlanceModifier.width(8.dp))
-            Column(
-                modifier = GlanceModifier.defaultWeight().clickable(
-                    if (showSwitch) actionRunCallback<NextVehicleAction>() else actionRunCallback<RefreshWidgetAction>()
-                )
-            ) {
-                Text(
-                    text = if (nickname.isNotEmpty()) nickname else "SAVO",
-                    style = TextStyle(color = brand, fontSize = 16.sp, fontWeight = FontWeight.Bold),
-                    maxLines = 1,
-                )
-                if (nickname.isNotEmpty()) {
-                    Text(
-                        text = "SAVO",
-                        style = TextStyle(color = muted, fontSize = 10.sp, fontWeight = FontWeight.Medium),
-                        maxLines = 1,
-                    )
-                }
-            }
-            // Manual refresh — immediately re-fetches from backend.
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = GlanceModifier
-                    .size(42.dp)
-                    .background(pillBg)
-                    .cornerRadius(21.dp)
-                    .clickable(actionRunCallback<RefreshWidgetAction>())
-            ) {
-                Text(if (isRefreshing) "…" else "⟳", style = TextStyle(color = pillFg, fontSize = 18.sp, fontWeight = FontWeight.Bold))
-            }
             if (rego.isNotEmpty()) {
-                Spacer(GlanceModifier.width(8.dp))
                 // Tap the rego plate itself to switch vehicles. The clickable
                 // modifier MUST be on the outermost Box for Glance to register
                 // taps reliably; nesting it inside a Column eats the touch on
@@ -205,6 +167,7 @@ private fun WidgetBody(
                 Box(
                     contentAlignment = Alignment.Center,
                     modifier = GlanceModifier
+                        .defaultWeight()
                         .clickable(if (showSwitch) actionRunCallback<NextVehicleAction>() else actionRunCallback<RefreshWidgetAction>())
                         .background(plateBg)
                         .cornerRadius(8.dp)
@@ -221,9 +184,23 @@ private fun WidgetBody(
                         }
                     }
                 }
-            } else if (vehicleCountLabel != "0") {
-                // Vehicle exists but rego is missing — prompt a reload.
-                Spacer(GlanceModifier.width(8.dp))
+            } else {
+                Spacer(GlanceModifier.defaultWeight())
+            }
+
+            // Manual refresh — re-fetches when needed, while cached phone data remains visible.
+            Spacer(GlanceModifier.width(8.dp))
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = GlanceModifier
+                    .size(40.dp)
+                    .background(pillBg)
+                    .cornerRadius(20.dp)
+                    .clickable(actionRunCallback<RefreshWidgetAction>())
+            ) {
+                Text(if (isRefreshing) "…" else "⟳", style = TextStyle(color = pillFg, fontSize = 18.sp, fontWeight = FontWeight.Bold))
+            }
+            if (rego.isEmpty() && vehicleCountLabel != "0") {
                 Box(
                     contentAlignment = Alignment.Center,
                     modifier = GlanceModifier
@@ -231,7 +208,7 @@ private fun WidgetBody(
                         .cornerRadius(8.dp)
                         .padding(horizontal = 10.dp, vertical = 6.dp)
                         .clickable(actionRunCallback<RefreshWidgetAction>())
-                ) { Text("Tap ⟳ to reload", style = TextStyle(color = pillFg, fontSize = 11.sp, fontWeight = FontWeight.Bold)) }
+                ) { Text("Tap ⟳", style = TextStyle(color = pillFg, fontSize = 11.sp, fontWeight = FontWeight.Bold)) }
             }
         }
 
