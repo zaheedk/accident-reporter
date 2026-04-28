@@ -386,10 +386,10 @@ export default function QuickCapture() {
       console.warn('finish sweep failed', e);
     }
 
-    const target = reportNumber
-      ? `/claims/${reportNumber}/edit?step=1&from=quick-capture`
-      : `/claims/new`;
-    navigate(target);
+    // Show the success confirmation screen instead of jumping straight into the
+    // standard edit form. The user can choose to view the report or go home.
+    setFinishing(false);
+    setFinished(true);
   };
 
   const exitWithConfirm = () => {
