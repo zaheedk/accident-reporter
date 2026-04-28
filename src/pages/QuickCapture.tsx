@@ -63,10 +63,16 @@ export default function QuickCapture() {
   const [location, setLocation] = useState<{ lat: number; lng: number; address: string } | null>(null);
   const [capturedAt] = useState<Date>(new Date());
   const [finishing, setFinishing] = useState(false);
+  const [finished, setFinished] = useState(false);
   const [failedQueueIds, setFailedQueueIds] = useState<Set<string>>(new Set());
   const previewUrlsRef = useRef<string[]>([]);
   // Map queuedId -> target so we can retry uploads (e.g. on finish or when user taps retry)
   const queuedTargetsRef = useRef<Map<string, Target>>(new Map());
+  // Strict guard: ensures the draft claim is created exactly once per component
+  // mount, even if the boot effect re-runs (e.g. React StrictMode, AuthContext
+  // re-issuing the user object). Without this we end up creating a new draft
+  // every time the effect fires — leading to multiple empty reports.
+  const claimInitStartedRef = useRef(false);
 
   // Other driver info (form step)
   const [otherDriverName, setOtherDriverName] = useState('');
