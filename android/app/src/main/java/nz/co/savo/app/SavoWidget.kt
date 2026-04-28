@@ -515,6 +515,7 @@ class PrevVehicleAction : ActionCallback {
 
 class NextVehicleReceiver : android.content.BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
+        val pendingResult = goAsync()
         val prefs = context.getSharedPreferences(WIDGET_PREFS, Context.MODE_PRIVATE)
         val count = prefs.getInt("vehicles_count", 0)
         if (count > 1) {
@@ -525,9 +526,15 @@ class NextVehicleReceiver : android.content.BroadcastReceiver() {
                 .putLong("widget_last_switch_ms", System.currentTimeMillis())
                 .commit()
             GlobalScope.launch(Dispatchers.Main) {
-                SavoWidget().updateAll(context)
+                try {
+                    SavoWidget().updateAll(context.applicationContext)
+                } finally {
+                    pendingResult.finish()
+                }
             }
             scheduleAutoAdvance(context)
+        } else {
+            pendingResult.finish()
         }
     }
 }
