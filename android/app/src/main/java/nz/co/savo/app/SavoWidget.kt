@@ -403,6 +403,14 @@ private suspend fun cycleVehicle(context: Context, glanceId: GlanceId, delta: In
     SavoWidget().update(context, glanceId)
 }
 
+class RefreshWidgetAction : ActionCallback {
+    override suspend fun onAction(context: Context, glanceId: GlanceId, parameters: ActionParameters) {
+        // Mark refreshing so the user gets immediate visual feedback (header tint
+        // could be added later); for now we just kick off the network fetch.
+        refreshFromBackend(context)
+    }
+}
+
 class SavoWidgetReceiver : GlanceAppWidgetReceiver() {
     override val glanceAppWidget: GlanceAppWidget = SavoWidget()
 
@@ -414,71 +422,71 @@ class SavoWidgetReceiver : GlanceAppWidgetReceiver() {
         super.onUpdate(context, appWidgetManager, appWidgetIds)
         refreshFromBackend(context)
     }
+}
 
-    private fun refreshFromBackend(context: Context) {
-        val prefs = context.getSharedPreferences("savo_widget_prefs", Context.MODE_PRIVATE)
-        val token = prefs.getString("widget_token", null) ?: return
-        val baseUrl = prefs.getString("supabase_url", null) ?: return
-        val anon = prefs.getString("supabase_anon", null) ?: ""
+internal fun refreshFromBackend(context: Context) {
+    val prefs = context.getSharedPreferences("savo_widget_prefs", Context.MODE_PRIVATE)
+    val token = prefs.getString("widget_token", null) ?: return
+    val baseUrl = prefs.getString("supabase_url", null) ?: return
+    val anon = prefs.getString("supabase_anon", null) ?: ""
 
-        GlobalScope.launch(Dispatchers.IO) {
-            try {
-                val url = URL("$baseUrl/functions/v1/widget-data")
-                val conn = url.openConnection() as HttpURLConnection
-                conn.requestMethod = "GET"
-                conn.setRequestProperty("X-Widget-Token", token)
-                if (anon.isNotEmpty()) conn.setRequestProperty("apikey", anon)
-                conn.connectTimeout = 8000
-                conn.readTimeout = 8000
+    GlobalScope.launch(Dispatchers.IO) {
+        try {
+            val url = URL("$baseUrl/functions/v1/widget-data")
+            val conn = url.openConnection() as HttpURLConnection
+            conn.requestMethod = "GET"
+            conn.setRequestProperty("X-Widget-Token", token)
+            if (anon.isNotEmpty()) conn.setRequestProperty("apikey", anon)
+            conn.connectTimeout = 8000
+            conn.readTimeout = 8000
 
-                if (conn.responseCode != 200) return@launch
-                val body = conn.inputStream.bufferedReader().use { it.readText() }
-                val json = JSONObject(body)
+            if (conn.responseCode != 200) return@launch
+            val body = conn.inputStream.bufferedReader().use { it.readText() }
+            val json = JSONObject(body)
 
-                val editor = prefs.edit()
+            val editor = prefs.edit()
 
-                // Clear previous vehicle list
-                val prevCount = prefs.getInt("vehicles_count", 0)
-                for (i in 0 until prevCount.coerceAtLeast(10)) {
-                    editor.remove("vehicle_${i}_rego")
-                    editor.remove("vehicle_${i}_nickname")
-                    editor.remove("vehicle_${i}_rego_expiry")
-                    editor.remove("vehicle_${i}_wof_expiry")
-                    editor.remove("vehicle_${i}_insurance_expiry")
-                    editor.remove("vehicle_${i}_roadside_name")
-                    editor.remove("vehicle_${i}_roadside_phone")
-                }
-
-                val vehiclesArr: JSONArray? = json.optJSONArray("vehicles")
-                val total = minOf(10, vehiclesArr?.length() ?: 0)
-                editor.putInt("vehicles_count", total)
-                if (vehiclesArr != null) {
-                    for (i in 0 until total) {
-                        val v = vehiclesArr.optJSONObject(i) ?: continue
-                        val nick = v.optString("nickname", "").ifEmpty {
-                            listOf(v.optString("make", ""), v.optString("model", ""))
-                                .filter { it.isNotEmpty() }.joinToString(" ")
-                        }
-                        editor.putString("vehicle_${i}_rego", v.optString("rego", ""))
-                        editor.putString("vehicle_${i}_nickname", nick)
-                        editor.putString("vehicle_${i}_rego_expiry", v.optString("regoExpiry", ""))
-                        editor.putString("vehicle_${i}_wof_expiry", v.optString("wofExpiry", ""))
-                        editor.putString("vehicle_${i}_insurance_expiry", v.optString("insuranceExpiry", ""))
-                        editor.putString("vehicle_${i}_roadside_name", v.optString("roadsideName", "Roadside"))
-                        editor.putString("vehicle_${i}_roadside_phone", v.optString("roadsidePhone", ""))
-                    }
-                }
-                val curIdx = prefs.getInt("vehicles_current_index", 0)
-                if (total == 0 || curIdx >= total) editor.putInt("vehicles_current_index", 0)
-
-                editor.apply()
-
-                withContext(Dispatchers.Main) {
-                    SavoWidget().updateAll(context)
-                }
-            } catch (_: Exception) {
-                // keep showing cached data
+            // Clear previous vehicle list
+            val prevCount = prefs.getInt("vehicles_count", 0)
+            for (i in 0 until prevCount.coerceAtLeast(10)) {
+                editor.remove("vehicle_${i}_rego")
+                editor.remove("vehicle_${i}_nickname")
+                editor.remove("vehicle_${i}_rego_expiry")
+                editor.remove("vehicle_${i}_wof_expiry")
+                editor.remove("vehicle_${i}_insurance_expiry")
+                editor.remove("vehicle_${i}_roadside_name")
+                editor.remove("vehicle_${i}_roadside_phone")
             }
+
+            val vehiclesArr: JSONArray? = json.optJSONArray("vehicles")
+            val total = minOf(10, vehiclesArr?.length() ?: 0)
+            editor.putInt("vehicles_count", total)
+            if (vehiclesArr != null) {
+                for (i in 0 until total) {
+                    val v = vehiclesArr.optJSONObject(i) ?: continue
+                    val nick = v.optString("nickname", "").ifEmpty {
+                        listOf(v.optString("make", ""), v.optString("model", ""))
+                            .filter { it.isNotEmpty() }.joinToString(" ")
+                    }
+                    editor.putString("vehicle_${i}_rego", v.optString("rego", ""))
+                    editor.putString("vehicle_${i}_nickname", nick)
+                    editor.putString("vehicle_${i}_rego_expiry", v.optString("regoExpiry", ""))
+                    editor.putString("vehicle_${i}_wof_expiry", v.optString("wofExpiry", ""))
+                    editor.putString("vehicle_${i}_insurance_expiry", v.optString("insuranceExpiry", ""))
+                    editor.putString("vehicle_${i}_roadside_name", v.optString("roadsideName", "Roadside"))
+                    editor.putString("vehicle_${i}_roadside_phone", v.optString("roadsidePhone", ""))
+                }
+            }
+            val curIdx = prefs.getInt("vehicles_current_index", 0)
+            if (total == 0 || curIdx >= total) editor.putInt("vehicles_current_index", 0)
+
+            editor.apply()
+
+            withContext(Dispatchers.Main) {
+                SavoWidget().updateAll(context)
+            }
+        } catch (_: Exception) {
+            // keep showing cached data
         }
     }
 }
