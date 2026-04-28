@@ -53,6 +53,9 @@ class SavoWidget : GlanceAppWidget() {
             val rego = if (vehicleCount > 0)
                 prefs.getString("vehicle_${currentIndex}_rego", "") ?: ""
             else ""
+            val nickname = if (vehicleCount > 0)
+                prefs.getString("vehicle_${currentIndex}_nickname", "") ?: ""
+            else ""
             val regoExpiry = if (vehicleCount > 0)
                 prefs.getString("vehicle_${currentIndex}_rego_expiry", "") ?: ""
             else ""
@@ -71,6 +74,7 @@ class SavoWidget : GlanceAppWidget() {
 
             WidgetBody(
                 rego = rego,
+                nickname = nickname,
                 regoExpiry = regoExpiry,
                 wofExpiry = wofExpiry,
                 insuranceExpiry = insuranceExpiry,
@@ -82,9 +86,28 @@ class SavoWidget : GlanceAppWidget() {
     }
 }
 
+// Status of an expiry date — drives colour coding (green / amber / red).
+private enum class ExpiryStatus { Unknown, Ok, Soon, Expired }
+
+private fun expiryStatus(isoDate: String): ExpiryStatus {
+    if (isoDate.isBlank()) return ExpiryStatus.Unknown
+    return try {
+        val fmt = SimpleDateFormat("yyyy-MM-dd", Locale.US).apply { timeZone = TimeZone.getTimeZone("UTC") }
+        val target = fmt.parse(isoDate) ?: return ExpiryStatus.Unknown
+        val today = fmt.parse(fmt.format(java.util.Date())) ?: return ExpiryStatus.Unknown
+        val diff = TimeUnit.MILLISECONDS.toDays(target.time - today.time)
+        when {
+            diff < 0 -> ExpiryStatus.Expired
+            diff <= 30 -> ExpiryStatus.Soon
+            else -> ExpiryStatus.Ok
+        }
+    } catch (_: Exception) { ExpiryStatus.Unknown }
+}
+
 @Composable
 private fun WidgetBody(
     rego: String,
+    nickname: String,
     regoExpiry: String,
     wofExpiry: String,
     insuranceExpiry: String,
@@ -92,26 +115,32 @@ private fun WidgetBody(
     roadsidePhone: String,
     showSwitch: Boolean,
 ) {
-    // Light palette — white background, blue brand, dark text.
     val bg = ColorProvider(Color(0xFFFFFFFF))
-    val brand = ColorProvider(Color(0xFF1E3A5F))      // SAVO navy-blue
-    val accent = ColorProvider(Color(0xFF2563EB))     // Capture (blue)
+    val brand = ColorProvider(Color(0xFF1E3A5F))
+    val accent = ColorProvider(Color(0xFF2563EB))
     val text = ColorProvider(Color(0xFF0F172A))
     val muted = ColorProvider(Color(0xFF64748B))
     val plateBg = ColorProvider(Color(0xFFFBBF24))
     val plateFg = ColorProvider(Color(0xFF111827))
-    val pillBg = ColorProvider(Color(0xFFF1F5F9))     // Light grey pill (Google-style)
+    val pillBg = ColorProvider(Color(0xFFF1F5F9))
     val pillFg = ColorProvider(Color(0xFF1E3A5F))
     val white = ColorProvider(Color(0xFFFFFFFF))
+    val red = ColorProvider(Color(0xFFB91C1C))
+    val redSoft = ColorProvider(Color(0xFFFEE2E2))
+
+    // Alert mode: any expired item -> red-tinted card.
+    val statuses = listOf(expiryStatus(regoExpiry), expiryStatus(wofExpiry), expiryStatus(insuranceExpiry))
+    val anyExpired = statuses.any { it == ExpiryStatus.Expired }
+    val cardBg = if (anyExpired) redSoft else bg
 
     Column(
         modifier = GlanceModifier
             .fillMaxSize()
-            .background(bg)
+            .background(cardBg)
             .cornerRadius(28.dp)
             .padding(14.dp)
     ) {
-        // Header row: SAVO + plate + switcher
+        // Header: icon + nickname (with SAVO subtitle) + plate + switcher
         Row(modifier = GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             Image(
                 provider = ImageProvider(R.mipmap.ic_launcher),
@@ -119,20 +148,29 @@ private fun WidgetBody(
                 modifier = GlanceModifier.size(22.dp),
             )
             Spacer(GlanceModifier.width(8.dp))
-            Text(
-                text = "SAVO",
-                style = TextStyle(color = brand, fontSize = 18.sp, fontWeight = FontWeight.Bold),
-            )
-            Spacer(GlanceModifier.defaultWeight())
+            Column(modifier = GlanceModifier.defaultWeight()) {
+                Text(
+                    text = if (nickname.isNotEmpty()) nickname else "SAVO",
+                    style = TextStyle(color = brand, fontSize = 16.sp, fontWeight = FontWeight.Bold),
+                    maxLines = 1,
+                )
+                if (nickname.isNotEmpty()) {
+                    Text(
+                        text = "SAVO",
+                        style = TextStyle(color = muted, fontSize = 10.sp, fontWeight = FontWeight.Medium),
+                        maxLines = 1,
+                    )
+                }
+            }
             if (showSwitch) {
                 Box(
                     contentAlignment = Alignment.Center,
                     modifier = GlanceModifier
-                        .size(36.dp)
+                        .size(32.dp)
                         .background(pillBg)
-                        .cornerRadius(18.dp)
+                        .cornerRadius(16.dp)
                         .clickable(actionRunCallback<PrevVehicleAction>())
-                ) { Text("◀", style = TextStyle(color = pillFg, fontSize = 14.sp, fontWeight = FontWeight.Bold)) }
+                ) { Text("◀", style = TextStyle(color = pillFg, fontSize = 12.sp, fontWeight = FontWeight.Bold)) }
                 Spacer(GlanceModifier.width(6.dp))
             }
             if (rego.isNotEmpty()) {
@@ -141,40 +179,40 @@ private fun WidgetBody(
                     modifier = GlanceModifier
                         .background(plateBg)
                         .cornerRadius(8.dp)
-                        .padding(horizontal = 12.dp, vertical = 6.dp)
-                ) { Text(rego, style = TextStyle(color = plateFg, fontSize = 16.sp, fontWeight = FontWeight.Bold)) }
+                        .padding(horizontal = 10.dp, vertical = 5.dp)
+                ) { Text(rego, style = TextStyle(color = plateFg, fontSize = 14.sp, fontWeight = FontWeight.Bold)) }
             }
             if (showSwitch) {
                 Spacer(GlanceModifier.width(6.dp))
                 Box(
                     contentAlignment = Alignment.Center,
                     modifier = GlanceModifier
-                        .size(36.dp)
+                        .size(32.dp)
                         .background(pillBg)
-                        .cornerRadius(18.dp)
+                        .cornerRadius(16.dp)
                         .clickable(actionRunCallback<NextVehicleAction>())
-                ) { Text("▶", style = TextStyle(color = pillFg, fontSize = 14.sp, fontWeight = FontWeight.Bold)) }
+                ) { Text("▶", style = TextStyle(color = pillFg, fontSize = 12.sp, fontWeight = FontWeight.Bold)) }
             }
         }
         Spacer(GlanceModifier.height(12.dp))
 
-        // Expiry pill — Google-style rounded bar with all 3 expiries
+        // Expiry pill — colored status dots + days-left.
         Row(
             modifier = GlanceModifier
                 .fillMaxWidth()
                 .background(pillBg)
-                .cornerRadius(28.dp)
-                .padding(horizontal = 14.dp, vertical = 12.dp),
+                .cornerRadius(20.dp)
+                .padding(horizontal = 10.dp, vertical = 10.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            ExpiryCell("Rego", regoExpiry, pillFg, muted, GlanceModifier.defaultWeight())
-            ExpiryCell("WOF", wofExpiry, pillFg, muted, GlanceModifier.defaultWeight())
-            ExpiryCell("Insurance", insuranceExpiry, pillFg, muted, GlanceModifier.defaultWeight())
+            StatusCell("Rego", regoExpiry, muted, text, GlanceModifier.defaultWeight())
+            StatusCell("WOF", wofExpiry, muted, text, GlanceModifier.defaultWeight())
+            StatusCell("Insurance", insuranceExpiry, muted, text, GlanceModifier.defaultWeight())
         }
 
         Spacer(GlanceModifier.height(10.dp))
 
-        // Quick Accident Capture — full width, big blue pill
+        // Quick Accident Capture — primary action
         Box(
             contentAlignment = Alignment.Center,
             modifier = GlanceModifier
@@ -191,46 +229,72 @@ private fun WidgetBody(
         }
         Spacer(GlanceModifier.height(8.dp))
 
-        // Roadside + 111 — big circular-pill action buttons
-        Row(modifier = GlanceModifier.fillMaxWidth()) {
+        // Roadside (wide) + 111 (compact red circle, separated to prevent fat-finger)
+        Row(modifier = GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             ActionButton(
-                label = if (roadsidePhone.isNotEmpty()) roadsideName.take(14) else "Roadside",
+                label = if (roadsidePhone.isNotEmpty()) roadsideName.take(16) else "Roadside",
                 colorBg = ColorProvider(Color(0xFF0EA5E9)),
                 colorFg = white,
                 modifier = GlanceModifier.defaultWeight().clickable(
                     actionStartActivity(callIntent(roadsidePhone))
                 ),
             )
-            Spacer(GlanceModifier.width(8.dp))
-            ActionButton(
-                label = "Call 111",
-                colorBg = ColorProvider(Color(0xFFB91C1C)),
-                colorFg = white,
-                modifier = GlanceModifier.defaultWeight().clickable(
-                    actionStartActivity(callIntent("111"))
-                ),
-            )
+            Spacer(GlanceModifier.width(16.dp))
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = GlanceModifier
+                    .size(52.dp)
+                    .background(red)
+                    .cornerRadius(26.dp)
+                    .clickable(actionStartActivity(callIntent("111")))
+            ) {
+                Text("111", style = TextStyle(color = white, fontSize = 15.sp, fontWeight = FontWeight.Bold))
+            }
         }
     }
 }
 
 @Composable
-private fun ExpiryCell(
+private fun StatusCell(
     label: String,
     isoDate: String,
-    text: ColorProvider,
     muted: ColorProvider,
+    text: ColorProvider,
     modifier: GlanceModifier,
 ) {
+    val status = expiryStatus(isoDate)
+    val dotColor = when (status) {
+        ExpiryStatus.Ok -> ColorProvider(Color(0xFF16A34A))
+        ExpiryStatus.Soon -> ColorProvider(Color(0xFFD97706))
+        ExpiryStatus.Expired -> ColorProvider(Color(0xFFDC2626))
+        ExpiryStatus.Unknown -> ColorProvider(Color(0xFFCBD5E1))
+    }
+    val valueText = when (status) {
+        ExpiryStatus.Unknown -> "—"
+        ExpiryStatus.Expired -> "Expired"
+        else -> formatDaysLeft(isoDate)
+    }
+    val valueColor = if (status == ExpiryStatus.Expired)
+        ColorProvider(Color(0xFFDC2626)) else text
+
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Text(label, style = TextStyle(color = muted, fontSize = 11.sp, fontWeight = FontWeight.Medium))
-        Spacer(GlanceModifier.height(2.dp))
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Box(
+                modifier = GlanceModifier
+                    .size(8.dp)
+                    .background(dotColor)
+                    .cornerRadius(4.dp),
+            ) {}
+            Spacer(GlanceModifier.width(5.dp))
+            Text(label, style = TextStyle(color = muted, fontSize = 11.sp, fontWeight = FontWeight.Bold))
+        }
+        Spacer(GlanceModifier.height(3.dp))
         Text(
-            formatDaysLeft(isoDate),
-            style = TextStyle(color = text, fontSize = 14.sp, fontWeight = FontWeight.Bold),
+            valueText,
+            style = TextStyle(color = valueColor, fontSize = 13.sp, fontWeight = FontWeight.Bold),
         )
     }
 }
