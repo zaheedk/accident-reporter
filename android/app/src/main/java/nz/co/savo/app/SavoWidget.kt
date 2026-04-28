@@ -198,14 +198,30 @@ private fun WidgetBody(
             }
             if (rego.isNotEmpty()) {
                 Spacer(GlanceModifier.width(8.dp))
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = GlanceModifier
-                        .background(plateBg)
-                        .cornerRadius(8.dp)
-                        .padding(horizontal = 12.dp, vertical = 6.dp)
-                        .clickable(if (showSwitch) actionRunCallback<NextVehicleAction>() else actionRunCallback<RefreshWidgetAction>())
-                ) { Text(rego, style = TextStyle(color = plateFg, fontSize = 16.sp, fontWeight = FontWeight.Bold)) }
+                // Tap the rego plate itself to switch vehicles (more discoverable
+                // than tiny arrows; arrows row removed entirely).
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = GlanceModifier.clickable(
+                        if (showSwitch) actionRunCallback<NextVehicleAction>() else actionRunCallback<RefreshWidgetAction>()
+                    ),
+                ) {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = GlanceModifier
+                            .background(plateBg)
+                            .cornerRadius(8.dp)
+                            .padding(horizontal = 14.dp, vertical = 8.dp)
+                    ) { Text(rego, style = TextStyle(color = plateFg, fontSize = 18.sp, fontWeight = FontWeight.Bold)) }
+                    if (showSwitch) {
+                        Spacer(GlanceModifier.height(2.dp))
+                        Text(
+                            "Tap ${currentIndexLabel}/${vehicleCountLabel} to switch",
+                            style = TextStyle(color = muted, fontSize = 9.sp, fontWeight = FontWeight.Medium),
+                            maxLines = 1,
+                        )
+                    }
+                }
             } else if (vehicleCountLabel != "0") {
                 // Vehicle exists but rego is missing — prompt a reload.
                 Spacer(GlanceModifier.width(8.dp))
