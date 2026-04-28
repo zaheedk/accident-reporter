@@ -81,6 +81,8 @@ class SavoWidget : GlanceAppWidget() {
                 roadsideName = roadsideName,
                 roadsidePhone = roadsidePhone,
                 showSwitch = vehicleCount > 1,
+                currentIndexLabel = (currentIndex + 1).toString(),
+                vehicleCountLabel = vehicleCount.toString(),
             )
         }
     }
@@ -114,6 +116,8 @@ private fun WidgetBody(
     roadsideName: String,
     roadsidePhone: String,
     showSwitch: Boolean,
+    currentIndexLabel: String,
+    vehicleCountLabel: String,
 ) {
     val bg = ColorProvider(Color(0xFFFFFFFF))
     val brand = ColorProvider(Color(0xFF1E3A5F))
@@ -140,7 +144,7 @@ private fun WidgetBody(
             .cornerRadius(28.dp)
             .padding(14.dp)
     ) {
-        // Header: icon + nickname (with SAVO subtitle) + plate + switcher
+        // Row 1: SAVO logo + nickname + plate badge (always visible if present).
         Row(modifier = GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             Image(
                 provider = ImageProvider(R.mipmap.ic_launcher),
@@ -162,38 +166,55 @@ private fun WidgetBody(
                     )
                 }
             }
-            if (showSwitch) {
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = GlanceModifier
-                        .size(32.dp)
-                        .background(pillBg)
-                        .cornerRadius(16.dp)
-                        .clickable(actionRunCallback<PrevVehicleAction>())
-                ) { Text("◀", style = TextStyle(color = pillFg, fontSize = 12.sp, fontWeight = FontWeight.Bold)) }
-                Spacer(GlanceModifier.width(6.dp))
-            }
             if (rego.isNotEmpty()) {
                 Box(
                     contentAlignment = Alignment.Center,
                     modifier = GlanceModifier
                         .background(plateBg)
                         .cornerRadius(8.dp)
-                        .padding(horizontal = 10.dp, vertical = 5.dp)
-                ) { Text(rego, style = TextStyle(color = plateFg, fontSize = 14.sp, fontWeight = FontWeight.Bold)) }
+                        .padding(horizontal = 12.dp, vertical = 6.dp)
+                ) { Text(rego, style = TextStyle(color = plateFg, fontSize = 16.sp, fontWeight = FontWeight.Bold)) }
             }
-            if (showSwitch) {
-                Spacer(GlanceModifier.width(6.dp))
+        }
+
+        // Vehicle switcher bar — only when there are 2+ vehicles. Big tappable
+        // arrows + an explicit "1 / N" indicator so users know to tap (no swipe).
+        if (showSwitch) {
+            Spacer(GlanceModifier.height(10.dp))
+            Row(
+                modifier = GlanceModifier
+                    .fillMaxWidth()
+                    .background(pillBg)
+                    .cornerRadius(22.dp)
+                    .padding(horizontal = 6.dp, vertical = 4.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
                 Box(
                     contentAlignment = Alignment.Center,
                     modifier = GlanceModifier
-                        .size(32.dp)
-                        .background(pillBg)
-                        .cornerRadius(16.dp)
+                        .size(36.dp)
+                        .cornerRadius(18.dp)
+                        .clickable(actionRunCallback<PrevVehicleAction>())
+                ) { Text("◀", style = TextStyle(color = pillFg, fontSize = 14.sp, fontWeight = FontWeight.Bold)) }
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = GlanceModifier.defaultWeight().height(36.dp),
+                ) {
+                    Text(
+                        "Vehicle ${currentIndexLabel} / ${vehicleCountLabel}",
+                        style = TextStyle(color = pillFg, fontSize = 12.sp, fontWeight = FontWeight.Bold),
+                    )
+                }
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = GlanceModifier
+                        .size(36.dp)
+                        .cornerRadius(18.dp)
                         .clickable(actionRunCallback<NextVehicleAction>())
-                ) { Text("▶", style = TextStyle(color = pillFg, fontSize = 12.sp, fontWeight = FontWeight.Bold)) }
+                ) { Text("▶", style = TextStyle(color = pillFg, fontSize = 14.sp, fontWeight = FontWeight.Bold)) }
             }
         }
+
         Spacer(GlanceModifier.height(12.dp))
 
         // Expiry pill — colored status dots + days-left.
