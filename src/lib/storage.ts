@@ -121,35 +121,23 @@ export async function getClaims(userId?: string): Promise<ClaimReport[]> {
   if (!uid) return [];
   const cacheKey = `claims:${uid}`;
 
-  // Local-first
-  const cached = await getCached<any[]>(cacheKey);
-  const cachedMapped = cached
-    ? cached.map((r: any) => (r.incidentDate !== undefined ? (r as ClaimReport) : dbClaimToClaim(r)))
-    : null;
-
+  // Online → fetch fresh; fall back to IndexedDB cache only on error/offline.
   if (isOnline()) {
-    void supabase
+    const { data, error } = await supabase
       .from('claims')
       .select('*')
       .eq('user_id', uid)
-      .order('created_at', { ascending: false })
-      .then(({ data, error }) => {
-        if (error || !data) return;
-        void setCache(cacheKey, data);
-      });
+      .order('created_at', { ascending: false });
+    if (!error && data) {
+      void setCache(cacheKey, data);
+      return data.map(dbClaimToClaim);
+    }
+    if (error) console.error('getClaims', error);
   }
 
-  if (cachedMapped) return cachedMapped;
-
-  if (!isOnline()) return [];
-  const { data, error } = await supabase.from('claims').select('*').eq('user_id', uid).order('created_at', { ascending: false });
-  if (error) {
-    console.error('getClaims', error);
-    return [];
-  }
-  const mapped = (data || []).map(dbClaimToClaim);
-  void setCache(cacheKey, data);
-  return mapped;
+  const cached = await getCached<any[]>(cacheKey);
+  if (cached) return cached.map((r: any) => (r.incidentDate !== undefined ? (r as ClaimReport) : dbClaimToClaim(r)));
+  return [];
 }
 
 export async function saveClaim(claim: ClaimReport, userId?: string): Promise<string> {
