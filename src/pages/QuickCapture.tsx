@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   Camera, Check, X, MapPin, Clock, Loader2,
-  SkipForward, ArrowRight, Car, User as UserIcon, IdCard, Hash, AlertTriangle, Phone,
+  SkipForward, ArrowRight, Car, User as UserIcon, IdCard, Hash, AlertTriangle, Phone, Users,
   Volume2, VolumeX,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -30,7 +30,7 @@ interface CaptureStep {
   /** If undefined → this step is a form step, not a photo step */
   target?: Target;
   /** Form step renderer key */
-  form?: 'other-driver-info';
+  form?: 'other-driver-info' | 'witness-info';
 }
 
 const STEPS: CaptureStep[] = [
@@ -41,6 +41,7 @@ const STEPS: CaptureStep[] = [
   { key: 'other-licence',     title: "Other driver's licence",     hint: 'Ask permission. Capture both sides if possible.',                       icon: IdCard,    optional: true, target: { kind: 'tp', tpType: 'license' } },
   { key: 'other-driver',      title: "Photo of the other driver license",  hint: 'Optional — only with consent.',                                         icon: UserIcon,  optional: true, target: { kind: 'tp', tpType: 'driver' } },
   { key: 'other-driver-info', title: "Other driver's details",     hint: "Quick — name, phone, rego, and insurer if you have them.",         icon: Phone,           form: 'other-driver-info' },
+  { key: 'witness-info',      title: 'Witness details',            hint: 'Anyone who saw what happened? Capture their name and phone — optional but powerful.', icon: Users, optional: true, form: 'witness-info' },
 ];
 
 const TP_INDEX = 0; // QuickCapture binds to first third party
@@ -74,6 +75,11 @@ export default function QuickCapture() {
   const [otherDriverInsurer, setOtherDriverInsurer] = useState('');
   const [insurerOptions, setInsurerOptions] = useState<string[]>([]);
   const [savingDriver, setSavingDriver] = useState(false);
+
+  // Witness info (form step)
+  const [witnessName, setWitnessName] = useState('');
+  const [witnessPhone, setWitnessPhone] = useState('');
+  const [savingWitness, setSavingWitness] = useState(false);
 
   const step = STEPS[stepIdx];
   const totalCaptured = Object.values(captures).reduce((n, arr) => n + arr.length, 0);
@@ -300,10 +306,38 @@ export default function QuickCapture() {
     }
   };
 
+  const persistWitnessInfo = async (): Promise<boolean> => {
+    if (!claimId) return false;
+    const name = witnessName.trim();
+    const phone = witnessPhone.trim();
+    if (!name && !phone) return true; // skipped
+    setSavingWitness(true);
+    try {
+      const { data: row } = await supabase.from('claims').select('witnesses').eq('id', claimId).single();
+      const existing: any[] = Array.isArray(row?.witnesses) ? [...(row!.witnesses as any[])] : [];
+      const empty = { name: '', phone: '', address: '', isPassenger: false };
+      if (existing.length === 0) existing.push({ ...empty });
+      existing[0] = { ...empty, ...existing[0], name, phone };
+      const { error } = await supabase.from('claims').update({ witnesses: existing }).eq('id', claimId);
+      if (error) throw error;
+      return true;
+    } catch (e: any) {
+      console.error('save witness info', e);
+      toast.error('Could not save the witness — try again');
+      return false;
+    } finally {
+      setSavingWitness(false);
+    }
+  };
+
   const next = async () => {
     // If leaving the form step, persist its data first
     if (step.form === 'other-driver-info') {
       const ok = await persistOtherDriverInfo();
+      if (!ok) return;
+    }
+    if (step.form === 'witness-info') {
+      const ok = await persistWitnessInfo();
       if (!ok) return;
     }
     if (stepIdx < STEPS.length - 1) setStepIdx(stepIdx + 1);
@@ -347,7 +381,7 @@ export default function QuickCapture() {
   };
 
   const exitWithConfirm = () => {
-    if (totalCaptured > 0 || otherDriverName || otherDriverPhone || otherDriverRego || otherDriverInsurer) {
+    if (totalCaptured > 0 || otherDriverName || otherDriverPhone || otherDriverRego || otherDriverInsurer || witnessName || witnessPhone) {
       const ok = window.confirm('Save what you have and continue later?');
       if (!ok) return;
     }
@@ -362,7 +396,9 @@ export default function QuickCapture() {
   const currentCaps = captures[step.key] || [];
   const hasCapForStep = currentCaps.length > 0;
   const isLast = stepIdx === STEPS.length - 1;
-  const formHasContent = step.form === 'other-driver-info' && (otherDriverName.trim() || otherDriverPhone.trim() || otherDriverRego.trim() || otherDriverInsurer.trim());
+  const formHasContent =
+    (step.form === 'other-driver-info' && !!(otherDriverName.trim() || otherDriverPhone.trim() || otherDriverRego.trim() || otherDriverInsurer.trim())) ||
+    (step.form === 'witness-info' && !!(witnessName.trim() || witnessPhone.trim()));
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col bg-foreground text-background overflow-y-auto"
@@ -427,7 +463,8 @@ export default function QuickCapture() {
         <div className="px-5 pb-5 flex items-center gap-1.5">
           {STEPS.map((s, i) => {
             const captured = (captures[s.key] || []).length > 0
-              || (s.form === 'other-driver-info' && (otherDriverName || otherDriverPhone || otherDriverRego || otherDriverInsurer));
+              || (s.form === 'other-driver-info' && (otherDriverName || otherDriverPhone || otherDriverRego || otherDriverInsurer))
+              || (s.form === 'witness-info' && (witnessName || witnessPhone));
             const isCurrent = i === stepIdx;
             return (
               <button
@@ -471,7 +508,7 @@ export default function QuickCapture() {
               </div>
 
               {/* Body: form step OR photo capture */}
-              {isFormStep ? (
+              {isFormStep && step.form === 'other-driver-info' ? (
                 <div className="rounded-2xl bg-background/5 border border-background/10 p-4 space-y-3">
                   <label className="block">
                     <span className="text-[11px] uppercase tracking-wider text-background/60 font-medium">Full name</span>
@@ -529,6 +566,37 @@ export default function QuickCapture() {
                   </label>
                   <p className="text-[11px] text-background/50 leading-relaxed">
                     Saved to the third-party section of your report. You can add the rest later.
+                  </p>
+                </div>
+              ) : isFormStep && step.form === 'witness-info' ? (
+                <div className="rounded-2xl bg-background/5 border border-background/10 p-4 space-y-3">
+                  <label className="block">
+                    <span className="text-[11px] uppercase tracking-wider text-background/60 font-medium">Witness name</span>
+                    <input
+                      type="text"
+                      value={witnessName}
+                      onChange={(e) => setWitnessName(e.target.value.slice(0, 100))}
+                      autoComplete="name"
+                      placeholder="e.g. Sarah Wilson"
+                      maxLength={100}
+                      className="mt-1.5 w-full h-11 px-3 rounded-xl bg-background/10 border border-background/15 text-background placeholder:text-background/40 text-[14px] focus:outline-none focus:border-background/40"
+                    />
+                  </label>
+                  <label className="block">
+                    <span className="text-[11px] uppercase tracking-wider text-background/60 font-medium">Witness phone</span>
+                    <input
+                      type="tel"
+                      value={witnessPhone}
+                      onChange={(e) => setWitnessPhone(e.target.value.slice(0, 30))}
+                      autoComplete="tel"
+                      inputMode="tel"
+                      placeholder="e.g. 021 555 9876"
+                      maxLength={30}
+                      className="mt-1.5 w-full h-11 px-3 rounded-xl bg-background/10 border border-background/15 text-background placeholder:text-background/40 text-[14px] focus:outline-none focus:border-background/40"
+                    />
+                  </label>
+                  <p className="text-[11px] text-background/50 leading-relaxed">
+                    Saved to the witnesses section of your report. You can add address and more later.
                   </p>
                 </div>
               ) : (
@@ -627,7 +695,7 @@ export default function QuickCapture() {
           {isFormStep && !formHasContent && (
             <button
               onClick={next}
-              disabled={savingDriver || finishing}
+              disabled={savingDriver || savingWitness || finishing}
               className="flex-1 h-12 rounded-xl bg-background/10 text-background text-[14px] font-semibold inline-flex items-center justify-center gap-1.5 active:scale-[0.98] transition-transform"
             >
               <SkipForward className="w-4 h-4" />
@@ -637,10 +705,10 @@ export default function QuickCapture() {
           {isFormStep && formHasContent && (
             <button
               onClick={next}
-              disabled={savingDriver || finishing}
+              disabled={savingDriver || savingWitness || finishing}
               className="flex-1 h-12 rounded-xl bg-background text-foreground text-[14px] font-semibold inline-flex items-center justify-center gap-1.5 active:scale-[0.98] transition-transform"
             >
-              {savingDriver || finishing ? <Loader2 className="w-4 h-4 animate-spin" /> : (
+              {savingDriver || savingWitness || finishing ? <Loader2 className="w-4 h-4 animate-spin" /> : (
                 <>
                   {isLast ? 'Continue to report' : 'Next'}
                   <ArrowRight className="w-4 h-4" />
