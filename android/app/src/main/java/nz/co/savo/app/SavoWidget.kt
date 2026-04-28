@@ -169,7 +169,7 @@ private fun WidgetBody(
             Spacer(GlanceModifier.width(8.dp))
             Column(
                 modifier = GlanceModifier.defaultWeight().clickable(
-                    if (showSwitch) actionRunCallback<NextVehicleAction>() else actionRunCallback<RefreshWidgetAction>()
+                    if (showSwitch) actionSendBroadcast<NextVehicleReceiver>() else actionRunCallback<RefreshWidgetAction>()
                 )
             ) {
                 Text(
@@ -203,7 +203,7 @@ private fun WidgetBody(
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = GlanceModifier.clickable(
-                        if (showSwitch) actionRunCallback<NextVehicleAction>() else actionRunCallback<RefreshWidgetAction>()
+                        if (showSwitch) actionSendBroadcast<NextVehicleReceiver>() else actionRunCallback<RefreshWidgetAction>()
                     ),
                 ) {
                     Box(
@@ -510,6 +510,25 @@ class NextVehicleAction : ActionCallback {
 class PrevVehicleAction : ActionCallback {
     override suspend fun onAction(context: Context, glanceId: GlanceId, parameters: ActionParameters) {
         cycleVehicle(context, glanceId, -1)
+    }
+}
+
+class NextVehicleReceiver : android.content.BroadcastReceiver() {
+    override fun onReceive(context: Context, intent: Intent) {
+        val prefs = context.getSharedPreferences(WIDGET_PREFS, Context.MODE_PRIVATE)
+        val count = prefs.getInt("vehicles_count", 0)
+        if (count > 1) {
+            val current = prefs.getInt("vehicles_current_index", 0)
+            val next = (current + 1) % count
+            prefs.edit()
+                .putInt("vehicles_current_index", next)
+                .putLong("widget_last_switch_ms", System.currentTimeMillis())
+                .commit()
+            GlobalScope.launch(Dispatchers.Main) {
+                SavoWidget().updateAll(context)
+            }
+            scheduleAutoAdvance(context)
+        }
     }
 }
 
