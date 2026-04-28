@@ -443,6 +443,9 @@ private suspend fun cycleVehicle(context: Context, glanceId: GlanceId, delta: In
     // Update only this widget instance, not all — much faster and avoids
     // re-triggering the network refresh in onUpdate.
     SavoWidget().update(context, glanceId)
+    // Reset the auto-advance ticker so the user gets a fresh window after
+    // manually navigating.
+    scheduleAutoAdvance(context)
 }
 
 class RefreshWidgetAction : ActionCallback {
