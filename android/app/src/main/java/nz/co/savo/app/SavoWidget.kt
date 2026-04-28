@@ -358,40 +358,68 @@ private fun StatusCell(
     modifier: GlanceModifier,
 ) {
     val status = expiryStatus(isoDate)
-    val dotColor = when (status) {
-        ExpiryStatus.Ok -> ColorProvider(Color(0xFF16A34A))
-        ExpiryStatus.Soon -> ColorProvider(Color(0xFFD97706))
-        ExpiryStatus.Expired -> ColorProvider(Color(0xFFDC2626))
-        ExpiryStatus.Unknown -> ColorProvider(Color(0xFFCBD5E1))
+    val days = daysUntilExpiry(isoDate)
+    val ringColor = when (status) {
+        ExpiryStatus.Ok -> 0xFF16A34A.toInt()
+        ExpiryStatus.Soon -> 0xFFD97706.toInt()
+        ExpiryStatus.Critical -> 0xFFDC2626.toInt()
+        ExpiryStatus.Unknown -> 0xFFCBD5E1.toInt()
     }
-    val valueText = when (status) {
-        ExpiryStatus.Unknown -> "—"
-        ExpiryStatus.Expired -> "Expired"
-        else -> formatDaysLeft(isoDate)
-    }
-    val valueColor = if (status == ExpiryStatus.Expired)
-        ColorProvider(Color(0xFFDC2626)) else text
+    val dayNumber = days?.coerceAtLeast(0)?.toString() ?: "—"
 
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Box(
-                modifier = GlanceModifier
-                    .size(8.dp)
-                    .background(dotColor)
-                    .cornerRadius(4.dp),
-            ) {}
-            Spacer(GlanceModifier.width(5.dp))
-            Text(label, style = TextStyle(color = muted, fontSize = 11.sp, fontWeight = FontWeight.Bold))
-        }
-        Spacer(GlanceModifier.height(3.dp))
+        Image(
+            provider = ImageProvider(expiryRingBitmap(dayNumber, ringColor, progressForDays(days))),
+            contentDescription = "$label expiry",
+            modifier = GlanceModifier.size(42.dp),
+        )
+        Spacer(GlanceModifier.height(2.dp))
+        Text(label, style = TextStyle(color = muted, fontSize = 10.sp, fontWeight = FontWeight.Bold), maxLines = 1)
         Text(
-            valueText,
-            style = TextStyle(color = valueColor, fontSize = 13.sp, fontWeight = FontWeight.Bold),
+            if (days == null) "missing" else if (days < 0) "expired" else "days",
+            style = TextStyle(color = text, fontSize = 10.sp, fontWeight = FontWeight.Medium),
+            maxLines = 1,
         )
     }
+}
+
+private fun progressForDays(days: Long?): Float {
+    if (days == null) return 0f
+    return (days.coerceIn(0, 30).toFloat() / 30f).coerceIn(0.08f, 1f)
+}
+
+private fun expiryRingBitmap(value: String, color: Int, progress: Float): Bitmap {
+    val size = 96
+    val stroke = 10f
+    val bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
+    val canvas = Canvas(bitmap)
+    val bounds = RectF(stroke, stroke, size - stroke, size - stroke)
+    val track = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.STROKE
+        strokeWidth = stroke
+        strokeCap = Paint.Cap.ROUND
+        this.color = 0xFFE2E8F0.toInt()
+    }
+    val arc = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.STROKE
+        strokeWidth = stroke
+        strokeCap = Paint.Cap.ROUND
+        this.color = color
+    }
+    val textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        this.color = 0xFF0F172A.toInt()
+        textAlign = Paint.Align.CENTER
+        textSize = if (value.length > 2) 26f else 34f
+        isFakeBoldText = true
+    }
+    canvas.drawArc(bounds, 0f, 360f, false, track)
+    canvas.drawArc(bounds, -90f, 360f * progress, false, arc)
+    val y = (size / 2f) - ((textPaint.descent() + textPaint.ascent()) / 2f)
+    canvas.drawText(value, size / 2f, y, textPaint)
+    return bitmap
 }
 
 private fun formatDaysLeft(isoDate: String): String {
