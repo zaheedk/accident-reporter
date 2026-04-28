@@ -198,14 +198,30 @@ private fun WidgetBody(
             }
             if (rego.isNotEmpty()) {
                 Spacer(GlanceModifier.width(8.dp))
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = GlanceModifier
-                        .background(plateBg)
-                        .cornerRadius(8.dp)
-                        .padding(horizontal = 12.dp, vertical = 6.dp)
-                        .clickable(if (showSwitch) actionRunCallback<NextVehicleAction>() else actionRunCallback<RefreshWidgetAction>())
-                ) { Text(rego, style = TextStyle(color = plateFg, fontSize = 16.sp, fontWeight = FontWeight.Bold)) }
+                // Tap the rego plate itself to switch vehicles (more discoverable
+                // than tiny arrows; arrows row removed entirely).
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = GlanceModifier.clickable(
+                        if (showSwitch) actionRunCallback<NextVehicleAction>() else actionRunCallback<RefreshWidgetAction>()
+                    ),
+                ) {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = GlanceModifier
+                            .background(plateBg)
+                            .cornerRadius(8.dp)
+                            .padding(horizontal = 14.dp, vertical = 8.dp)
+                    ) { Text(rego, style = TextStyle(color = plateFg, fontSize = 18.sp, fontWeight = FontWeight.Bold)) }
+                    if (showSwitch) {
+                        Spacer(GlanceModifier.height(2.dp))
+                        Text(
+                            "Tap ${currentIndexLabel}/${vehicleCountLabel} to switch",
+                            style = TextStyle(color = muted, fontSize = 9.sp, fontWeight = FontWeight.Medium),
+                            maxLines = 1,
+                        )
+                    }
+                }
             } else if (vehicleCountLabel != "0") {
                 // Vehicle exists but rego is missing — prompt a reload.
                 Spacer(GlanceModifier.width(8.dp))
@@ -220,49 +236,7 @@ private fun WidgetBody(
             }
         }
 
-        // Vehicle switcher bar — only when there are 2+ vehicles. Larger tap
-        // targets for accessibility, since Glance widgets can't swipe.
-        // An auto-advance ticker (AlarmManager) cycles vehicles every ~6s.
-        if (showSwitch) {
-            Spacer(GlanceModifier.height(8.dp))
-            Row(
-                modifier = GlanceModifier
-                    .fillMaxWidth()
-                    .background(pillBg)
-                    .cornerRadius(28.dp)
-                    .padding(horizontal = 4.dp, vertical = 3.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = GlanceModifier
-                        .size(44.dp)
-                        .cornerRadius(22.dp)
-                        .background(white)
-                        .clickable(actionRunCallback<PrevVehicleAction>())
-                ) { Text("◀", style = TextStyle(color = pillFg, fontSize = 18.sp, fontWeight = FontWeight.Bold)) }
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = GlanceModifier
-                        .defaultWeight()
-                        .height(44.dp)
-                        .clickable(actionRunCallback<NextVehicleAction>()),
-                ) {
-                    Text(
-                        "Vehicle ${currentIndexLabel}/${vehicleCountLabel}  •  Tap to change",
-                        style = TextStyle(color = pillFg, fontSize = 12.sp, fontWeight = FontWeight.Bold),
-                    )
-                }
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = GlanceModifier
-                        .size(44.dp)
-                        .cornerRadius(22.dp)
-                        .background(white)
-                        .clickable(actionRunCallback<NextVehicleAction>())
-                ) { Text("▶", style = TextStyle(color = pillFg, fontSize = 18.sp, fontWeight = FontWeight.Bold)) }
-            }
-        }
+        // (Switcher arrows row removed — tap the rego plate to cycle vehicles.)
 
         Spacer(GlanceModifier.height(8.dp))
 
@@ -324,28 +298,70 @@ private fun WidgetBody(
         }
         Spacer(GlanceModifier.height(7.dp))
 
-        // Roadside (wide) + 111 (compact red circle, separated to prevent fat-finger)
-        Row(modifier = GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            ActionButton(
-                label = if (roadsidePhone.isNotEmpty()) roadsideName.take(16) else "Roadside",
-                colorBg = ColorProvider(Color(0xFF0EA5E9)),
-                colorFg = white,
-                modifier = GlanceModifier.defaultWeight().clickable(
-                    actionStartActivity(callIntent(roadsidePhone))
-                ),
+        // Round icon buttons: Roadside (call), Tow trucks (search), 111 (emergency).
+        // Each shows a phone "📞" call sign on the call buttons so users
+        // immediately recognise them as dial actions.
+        Row(
+            modifier = GlanceModifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            RoundIconButton(
+                glyph = "📞",
+                caption = if (roadsidePhone.isNotEmpty()) roadsideName.take(12) else "Roadside",
+                bg = ColorProvider(Color(0xFF0EA5E9)),
+                fg = white,
+                captionColor = muted,
+                onClickAction = actionStartActivity(callIntent(roadsidePhone)),
             )
-            Spacer(GlanceModifier.width(16.dp))
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = GlanceModifier
-                    .size(48.dp)
-                    .background(red)
-                    .cornerRadius(24.dp)
-                    .clickable(actionStartActivity(callIntent("111")))
-            ) {
-                Text("111", style = TextStyle(color = white, fontSize = 15.sp, fontWeight = FontWeight.Bold))
-            }
+            Spacer(GlanceModifier.defaultWeight())
+            RoundIconButton(
+                glyph = "🚛",
+                caption = "Tow trucks",
+                bg = ColorProvider(Color(0xFF1E3A5F)),
+                fg = white,
+                captionColor = muted,
+                onClickAction = actionStartActivity(deepLinkIntent("savo://tow-companies")),
+            )
+            Spacer(GlanceModifier.defaultWeight())
+            RoundIconButton(
+                glyph = "📞",
+                caption = "111",
+                bg = red,
+                fg = white,
+                captionColor = muted,
+                onClickAction = actionStartActivity(callIntent("111")),
+            )
         }
+    }
+}
+
+@Composable
+private fun RoundIconButton(
+    glyph: String,
+    caption: String,
+    bg: ColorProvider,
+    fg: ColorProvider,
+    captionColor: ColorProvider,
+    onClickAction: androidx.glance.action.Action,
+) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = GlanceModifier
+                .size(54.dp)
+                .background(bg)
+                .cornerRadius(27.dp)
+                .clickable(onClickAction)
+        ) {
+            Text(glyph, style = TextStyle(color = fg, fontSize = 22.sp, fontWeight = FontWeight.Bold))
+        }
+        Spacer(GlanceModifier.height(4.dp))
+        Text(
+            caption,
+            style = TextStyle(color = captionColor, fontSize = 10.sp, fontWeight = FontWeight.Bold),
+            maxLines = 1,
+        )
     }
 }
 
