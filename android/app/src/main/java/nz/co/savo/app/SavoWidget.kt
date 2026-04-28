@@ -21,7 +21,7 @@ import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetReceiver
 import androidx.glance.appwidget.action.ActionCallback
 import androidx.glance.appwidget.action.actionRunCallback
-import androidx.glance.appwidget.action.actionSendBroadcast
+
 import androidx.glance.appwidget.action.actionStartActivity
 import androidx.glance.appwidget.cornerRadius
 import androidx.glance.appwidget.provideContent
@@ -169,7 +169,7 @@ private fun WidgetBody(
             Spacer(GlanceModifier.width(8.dp))
             Column(
                 modifier = GlanceModifier.defaultWeight().clickable(
-                    if (showSwitch) actionSendBroadcast<NextVehicleReceiver>() else actionRunCallback<RefreshWidgetAction>()
+                    if (showSwitch) actionRunCallback<NextVehicleAction>() else actionRunCallback<RefreshWidgetAction>()
                 )
             ) {
                 Text(
@@ -210,7 +210,7 @@ private fun WidgetBody(
                             .background(plateBg)
                             .cornerRadius(8.dp)
                             .padding(horizontal = 14.dp, vertical = 8.dp)
-                            .clickable(if (showSwitch) actionSendBroadcast<NextVehicleReceiver>() else actionRunCallback<RefreshWidgetAction>())
+                            .clickable(if (showSwitch) actionRunCallback<NextVehicleAction>() else actionRunCallback<RefreshWidgetAction>())
                     ) { Text(rego, style = TextStyle(color = plateFg, fontSize = 18.sp, fontWeight = FontWeight.Bold)) }
                     if (showSwitch) {
                         Spacer(GlanceModifier.height(2.dp))
