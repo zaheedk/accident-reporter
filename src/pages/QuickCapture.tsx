@@ -166,6 +166,8 @@ export default function QuickCapture() {
       } catch (err: any) {
         console.error('Quick capture init failed', err);
         toast.error('Could not start capture — please try again.');
+        // Allow another attempt if the user retries this screen
+        claimInitStartedRef.current = false;
         navigate('/claims/new');
       } finally {
         if (mounted) setCreating(false);
