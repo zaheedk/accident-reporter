@@ -55,6 +55,7 @@ Deno.serve(async (req) => {
     rego: v.rego_number ?? '',
     make: v.make ?? '',
     model: v.model ?? '',
+    nickname: [v.make, v.model].filter(Boolean).join(' ').trim(),
     regoExpiry: v.rego_expiry ?? '',
     wofExpiry: v.wof_expiry ?? '',
     insuranceExpiry: v.insurance_expiry ?? '',
