@@ -278,11 +278,11 @@ export default function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
-            '@context': 'https://schema.org(',
-            ')@type': 'WebApplication',
+            '@context': 'https://schema.org',
+            '@type': 'WebApplication',
             name: 'SAVO',
-            url: 'https://savo.co.nz(',
-            description: ')Car accident documentation, insurance claims, courtesy car requests, and panel beater finder for New Zealand drivers.',
+            url: 'https://savo.co.nz',
+            description: 'Car accident documentation, insurance claims, courtesy car requests, and panel beater finder for New Zealand drivers.',
             applicationCategory: 'UtilitiesApplication',
             operatingSystem: 'Web',
             offers: { '@type': 'Offer', price: '0', priceCurrency: 'NZD' },
