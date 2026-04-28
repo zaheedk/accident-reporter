@@ -682,8 +682,16 @@ internal fun refreshFromBackend(context: Context) {
 
             val editor = prefs.edit()
 
-            // Clear previous vehicle list
             val prevCount = prefs.getInt("vehicles_count", 0)
+            val vehiclesArr: JSONArray? = json.optJSONArray("vehicles")
+            val total = minOf(MAX_WIDGET_VEHICLES, vehiclesArr?.length() ?: 0)
+            if (total == 0 && prevCount > 0) {
+                editor.putBoolean("widget_refreshing", false)
+                editor.commit()
+                return@launch
+            }
+
+            // Clear previous vehicle list only after a successful non-empty backend payload.
             for (i in 0 until maxOf(prevCount, MAX_WIDGET_VEHICLES)) {
                 editor.remove("vehicle_${i}_rego")
                 editor.remove("vehicle_${i}_nickname")
@@ -693,9 +701,6 @@ internal fun refreshFromBackend(context: Context) {
                 editor.remove("vehicle_${i}_roadside_name")
                 editor.remove("vehicle_${i}_roadside_phone")
             }
-
-            val vehiclesArr: JSONArray? = json.optJSONArray("vehicles")
-            val total = minOf(MAX_WIDGET_VEHICLES, vehiclesArr?.length() ?: 0)
             editor.putInt("vehicles_count", total)
             if (vehiclesArr != null) {
                 for (i in 0 until total) {
