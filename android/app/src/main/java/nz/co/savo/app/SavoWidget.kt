@@ -21,6 +21,7 @@ import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetReceiver
 import androidx.glance.appwidget.action.ActionCallback
 import androidx.glance.appwidget.action.actionRunCallback
+import androidx.glance.appwidget.action.actionSendBroadcast
 import androidx.glance.appwidget.action.actionStartActivity
 import androidx.glance.appwidget.cornerRadius
 import androidx.glance.appwidget.provideContent
@@ -168,7 +169,7 @@ private fun WidgetBody(
             Spacer(GlanceModifier.width(8.dp))
             Column(
                 modifier = GlanceModifier.defaultWeight().clickable(
-                    if (showSwitch) actionRunCallback<NextVehicleAction>() else actionRunCallback<RefreshWidgetAction>()
+                    if (showSwitch) actionSendBroadcast<NextVehicleReceiver>() else actionRunCallback<RefreshWidgetAction>()
                 )
             ) {
                 Text(
@@ -201,9 +202,7 @@ private fun WidgetBody(
                 // than tiny arrows; arrows row removed entirely).
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = GlanceModifier.clickable(
-                        if (showSwitch) actionRunCallback<NextVehicleAction>() else actionRunCallback<RefreshWidgetAction>()
-                    ),
+                    modifier = GlanceModifier,
                 ) {
                     Box(
                         contentAlignment = Alignment.Center,
@@ -211,6 +210,7 @@ private fun WidgetBody(
                             .background(plateBg)
                             .cornerRadius(8.dp)
                             .padding(horizontal = 14.dp, vertical = 8.dp)
+                            .clickable(if (showSwitch) actionSendBroadcast<NextVehicleReceiver>() else actionRunCallback<RefreshWidgetAction>())
                     ) { Text(rego, style = TextStyle(color = plateFg, fontSize = 18.sp, fontWeight = FontWeight.Bold)) }
                     if (showSwitch) {
                         Spacer(GlanceModifier.height(2.dp))
@@ -297,60 +297,49 @@ private fun WidgetBody(
         }
         Spacer(GlanceModifier.height(7.dp))
 
-        // Apple-style outline action icons: Roadside (call), Tow trucks (search), 111 (emergency).
+            // Google-style action icons: Roadside, Tow trucks, 111 (no captions).
         Row(
             modifier = GlanceModifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            RoundIconButton(
-                icon = WidgetActionIcon.Phone,
-                caption = if (roadsidePhone.isNotEmpty()) roadsideName.take(12) else "Roadside",
-                captionColor = muted,
+            IconOnlyButton(
+                icon = WidgetActionIcon.Roadside,
+                contentDescription = if (roadsidePhone.isNotEmpty()) roadsideName else "Roadside",
                 onClickAction = actionStartActivity(callIntent(roadsidePhone)),
             )
             Spacer(GlanceModifier.defaultWeight())
-            RoundIconButton(
-                icon = WidgetActionIcon.TowCall,
-                caption = "Tow trucks",
-                captionColor = muted,
+            IconOnlyButton(
+                icon = WidgetActionIcon.TowTruck,
+                contentDescription = "Tow trucks",
                 onClickAction = actionStartActivity(deepLinkIntent("savo://tow-companies")),
             )
             Spacer(GlanceModifier.defaultWeight())
-            RoundIconButton(
+            IconOnlyButton(
                 icon = WidgetActionIcon.Emergency,
-                caption = "111",
-                captionColor = muted,
+                contentDescription = "Emergency 111",
                 onClickAction = actionStartActivity(callIntent("111")),
             )
         }
     }
 }
 
-private enum class WidgetActionIcon { Phone, TowCall, Emergency }
+private enum class WidgetActionIcon { Roadside, TowTruck, Emergency }
 
 @Composable
-private fun RoundIconButton(
+private fun IconOnlyButton(
     icon: WidgetActionIcon,
-    caption: String,
-    captionColor: ColorProvider,
+    contentDescription: String,
     onClickAction: androidx.glance.action.Action,
 ) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Image(
-            provider = ImageProvider(actionIconBitmap(icon)),
-            contentDescription = caption,
-            modifier = GlanceModifier
-                .size(54.dp)
-                .clickable(onClickAction),
-        )
-        Spacer(GlanceModifier.height(4.dp))
-        Text(
-            caption,
-            style = TextStyle(color = captionColor, fontSize = 10.sp, fontWeight = FontWeight.Bold),
-            maxLines = 1,
-        )
-    }
+    Image(
+        provider = ImageProvider(actionIconBitmap(icon)),
+        contentDescription = contentDescription,
+        modifier = GlanceModifier
+            .size(58.dp)
+            .padding(6.dp)
+            .clickable(onClickAction),
+    )
 }
 
 private fun actionIconBitmap(icon: WidgetActionIcon): Bitmap {
@@ -365,10 +354,11 @@ private fun actionIconBitmap(icon: WidgetActionIcon): Bitmap {
         strokeCap = Paint.Cap.ROUND
         strokeJoin = Paint.Join.ROUND
     }
-    val fill = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = 0xFFFFFFFF.toInt()
-        style = Paint.Style.FILL
-    }
+    val red = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = 0xFFEA4335.toInt(); style = Paint.Style.FILL }
+    val blue = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = 0xFF4285F4.toInt(); style = Paint.Style.FILL }
+    val green = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = 0xFF34A853.toInt(); style = Paint.Style.FILL }
+    val yellow = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = 0xFFFBBC05.toInt(); style = Paint.Style.FILL }
+    val white = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = 0xFFFFFFFF.toInt(); style = Paint.Style.FILL }
     val textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = black
         style = Paint.Style.FILL
@@ -376,29 +366,34 @@ private fun actionIconBitmap(icon: WidgetActionIcon): Bitmap {
         isFakeBoldText = true
     }
 
-    canvas.drawOval(RectF(8f, 8f, 120f, 120f), fill)
-    canvas.drawOval(RectF(8f, 8f, 120f, 120f), stroke)
+    canvas.drawOval(RectF(10f, 10f, 118f, 118f), white)
 
     when (icon) {
-        WidgetActionIcon.Phone -> {
-            textPaint.textSize = 56f
-            canvas.drawText("☎", 64f, 84f, textPaint)
+        WidgetActionIcon.Roadside -> {
+            canvas.drawRoundRect(RectF(30f, 56f, 98f, 82f), 8f, 8f, blue)
+            canvas.drawRoundRect(RectF(42f, 44f, 74f, 58f), 6f, 6f, blue)
+            canvas.drawRoundRect(RectF(78f, 47f, 92f, 58f), 4f, 4f, green)
+            canvas.drawCircle(43f, 88f, 9f, black)
+            canvas.drawCircle(85f, 88f, 9f, black)
+            canvas.drawCircle(43f, 88f, 4f, white)
+            canvas.drawCircle(85f, 88f, 4f, white)
         }
-        WidgetActionIcon.TowCall -> {
-            stroke.strokeWidth = 5.5f
-            canvas.drawRoundRect(RectF(28f, 58f, 74f, 82f), 5f, 5f, stroke)
-            canvas.drawRoundRect(RectF(74f, 66f, 98f, 82f), 5f, 5f, stroke)
-            canvas.drawLine(82f, 66f, 90f, 66f, stroke)
-            canvas.drawCircle(43f, 90f, 7f, stroke)
-            canvas.drawCircle(86f, 90f, 7f, stroke)
-            textPaint.textSize = 28f
-            canvas.drawText("☎", 86f, 50f, textPaint)
+        WidgetActionIcon.TowTruck -> {
+            canvas.drawRoundRect(RectF(20f, 58f, 68f, 82f), 6f, 6f, yellow)
+            canvas.drawRoundRect(RectF(68f, 64f, 100f, 82f), 5f, 5f, green)
+            canvas.drawRoundRect(RectF(78f, 50f, 94f, 65f), 4f, 4f, green)
+            canvas.drawLine(24f, 50f, 38f, 38f, stroke)
+            canvas.drawLine(38f, 38f, 56f, 58f, stroke)
+            canvas.drawCircle(38f, 88f, 8f, black)
+            canvas.drawCircle(84f, 88f, 8f, black)
+            canvas.drawCircle(38f, 88f, 3.5f, white)
+            canvas.drawCircle(84f, 88f, 3.5f, white)
         }
         WidgetActionIcon.Emergency -> {
-            textPaint.textSize = 36f
-            canvas.drawText("111", 64f, 76f, textPaint)
-            textPaint.textSize = 24f
-            canvas.drawText("☎", 64f, 45f, textPaint)
+            canvas.drawOval(RectF(20f, 20f, 108f, 108f), red)
+            textPaint.color = 0xFFFFFFFF.toInt()
+            textPaint.textSize = 38f
+            canvas.drawText("111", 64f, 78f, textPaint)
         }
     }
     return bitmap
@@ -514,6 +509,32 @@ class NextVehicleAction : ActionCallback {
 class PrevVehicleAction : ActionCallback {
     override suspend fun onAction(context: Context, glanceId: GlanceId, parameters: ActionParameters) {
         cycleVehicle(context, glanceId, -1)
+    }
+}
+
+class NextVehicleReceiver : android.content.BroadcastReceiver() {
+    override fun onReceive(context: Context, intent: Intent) {
+        val pendingResult = goAsync()
+        val prefs = context.getSharedPreferences(WIDGET_PREFS, Context.MODE_PRIVATE)
+        val count = prefs.getInt("vehicles_count", 0)
+        if (count > 1) {
+            val current = prefs.getInt("vehicles_current_index", 0)
+            val next = (current + 1) % count
+            prefs.edit()
+                .putInt("vehicles_current_index", next)
+                .putLong("widget_last_switch_ms", System.currentTimeMillis())
+                .commit()
+            GlobalScope.launch(Dispatchers.Main) {
+                try {
+                    SavoWidget().updateAll(context.applicationContext)
+                } finally {
+                    pendingResult.finish()
+                }
+            }
+            scheduleAutoAdvance(context)
+        } else {
+            pendingResult.finish()
+        }
     }
 }
 
