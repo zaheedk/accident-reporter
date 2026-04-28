@@ -236,10 +236,11 @@ private fun WidgetBody(
                 Box(
                     contentAlignment = Alignment.Center,
                     modifier = GlanceModifier
-                        .size(36.dp)
-                        .cornerRadius(18.dp)
+                        .size(48.dp)
+                        .cornerRadius(24.dp)
+                        .background(white)
                         .clickable(actionRunCallback<NextVehicleAction>())
-                ) { Text("▶", style = TextStyle(color = pillFg, fontSize = 14.sp, fontWeight = FontWeight.Bold)) }
+                ) { Text("▶", style = TextStyle(color = pillFg, fontSize = 18.sp, fontWeight = FontWeight.Bold)) }
             }
         }
 
