@@ -152,7 +152,7 @@ private fun WidgetBody(
                 modifier = GlanceModifier.size(22.dp),
             )
             Spacer(GlanceModifier.width(8.dp))
-            Column(modifier = GlanceModifier.defaultWeight()) {
+            Column(modifier = GlanceModifier.defaultWeight().clickable(actionRunCallback<RefreshWidgetAction>())) {
                 Text(
                     text = if (nickname.isNotEmpty()) nickname else "SAVO",
                     style = TextStyle(color = brand, fontSize = 16.sp, fontWeight = FontWeight.Bold),
