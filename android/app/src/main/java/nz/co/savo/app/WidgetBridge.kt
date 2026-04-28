@@ -27,11 +27,12 @@ class WidgetBridge(private val context: Context) {
             .putString("widget_token", token)
             .putString("supabase_url", supabaseUrl)
             .putString("supabase_anon", anonKey)
+            .remove("last_manual_refresh_ms")
             .apply()
 
-        // Trigger an immediate refresh so the widget updates within seconds.
+        // Trigger an immediate backend refresh so the widget updates within seconds.
         CoroutineScope(Dispatchers.IO).launch {
-            try { SavoWidget().updateAll(context) } catch (_: Exception) {}
+            try { refreshFromBackend(context) } catch (_: Exception) {}
         }
     }
 
