@@ -5,7 +5,6 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Paint
-import android.graphics.Path
 import android.graphics.RectF
 import android.net.Uri
 import androidx.compose.runtime.Composable
@@ -145,7 +144,6 @@ private fun WidgetBody(
     val pillBg = ColorProvider(Color(0xFFF1F5F9))
     val pillFg = ColorProvider(Color(0xFF1E3A5F))
     val white = ColorProvider(Color(0xFFFFFFFF))
-    val red = ColorProvider(Color(0xFFB91C1C))
     val redSoft = ColorProvider(Color(0xFFFEE2E2))
 
     // Alert mode: critical/expired items -> red-tinted card.
