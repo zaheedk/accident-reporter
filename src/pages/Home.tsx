@@ -266,8 +266,13 @@ export default function Home() {
                 <a href="mailto:info@savo.co.nz" className="text-muted-foreground hover:text-foreground transition-colors">Contact</a>
               </div>
             </div>
-            <div className="mt-8 pt-6 border-t border-border/50 text-[11px] text-muted-foreground text-center">
-              © {new Date().getFullYear()} SAVO. All rights reserved.
+            <div className="mt-8 pt-6 border-t border-border/50 text-[11px] text-muted-foreground text-center space-y-2">
+              <div className="flex items-center justify-center gap-3">
+                <Link to="/legal" className="hover:text-foreground transition-colors">Terms</Link>
+                <span>·</span>
+                <Link to="/privacy" className="hover:text-foreground transition-colors">Privacy</Link>
+              </div>
+              <div>© {new Date().getFullYear()} SAVO. All rights reserved.</div>
             </div>
           </div>
         </footer>
@@ -278,11 +283,11 @@ export default function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
-            '@context': 'https://schema.org(',
-            ')@type': 'WebApplication',
+            '@context': 'https://schema.org',
+            '@type': 'WebApplication',
             name: 'SAVO',
-            url: 'https://savo.co.nz(',
-            description: ')Car accident documentation, insurance claims, courtesy car requests, and panel beater finder for New Zealand drivers.',
+            url: 'https://savo.co.nz',
+            description: 'Car accident documentation, insurance claims, courtesy car requests, and panel beater finder for New Zealand drivers.',
             applicationCategory: 'UtilitiesApplication',
             operatingSystem: 'Web',
             offers: { '@type': 'Offer', price: '0', priceCurrency: 'NZD' },
