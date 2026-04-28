@@ -76,6 +76,11 @@ export default function QuickCapture() {
   const [insurerOptions, setInsurerOptions] = useState<string[]>([]);
   const [savingDriver, setSavingDriver] = useState(false);
 
+  // Witness info (form step)
+  const [witnessName, setWitnessName] = useState('');
+  const [witnessPhone, setWitnessPhone] = useState('');
+  const [savingWitness, setSavingWitness] = useState(false);
+
   const step = STEPS[stepIdx];
   const totalCaptured = Object.values(captures).reduce((n, arr) => n + arr.length, 0);
 
