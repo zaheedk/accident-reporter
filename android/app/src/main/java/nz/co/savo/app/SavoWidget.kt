@@ -116,6 +116,8 @@ private fun WidgetBody(
     roadsideName: String,
     roadsidePhone: String,
     showSwitch: Boolean,
+    currentIndexLabel: String,
+    vehicleCountLabel: String,
 ) {
     val bg = ColorProvider(Color(0xFFFFFFFF))
     val brand = ColorProvider(Color(0xFF1E3A5F))
