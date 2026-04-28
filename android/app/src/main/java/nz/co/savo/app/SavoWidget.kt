@@ -21,6 +21,7 @@ import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetReceiver
 import androidx.glance.appwidget.action.ActionCallback
 import androidx.glance.appwidget.action.actionRunCallback
+import androidx.glance.appwidget.action.actionSendBroadcast
 import androidx.glance.appwidget.action.actionStartActivity
 import androidx.glance.appwidget.cornerRadius
 import androidx.glance.appwidget.provideContent
@@ -297,60 +298,49 @@ private fun WidgetBody(
         }
         Spacer(GlanceModifier.height(7.dp))
 
-        // Apple-style outline action icons: Roadside (call), Tow trucks (search), 111 (emergency).
+            // Google-style action icons: Roadside, Tow trucks, 111 (no captions).
         Row(
             modifier = GlanceModifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            RoundIconButton(
-                icon = WidgetActionIcon.Phone,
-                caption = if (roadsidePhone.isNotEmpty()) roadsideName.take(12) else "Roadside",
-                captionColor = muted,
+            IconOnlyButton(
+                icon = WidgetActionIcon.Roadside,
+                contentDescription = if (roadsidePhone.isNotEmpty()) roadsideName else "Roadside",
                 onClickAction = actionStartActivity(callIntent(roadsidePhone)),
             )
             Spacer(GlanceModifier.defaultWeight())
-            RoundIconButton(
-                icon = WidgetActionIcon.TowCall,
-                caption = "Tow trucks",
-                captionColor = muted,
+            IconOnlyButton(
+                icon = WidgetActionIcon.TowTruck,
+                contentDescription = "Tow trucks",
                 onClickAction = actionStartActivity(deepLinkIntent("savo://tow-companies")),
             )
             Spacer(GlanceModifier.defaultWeight())
-            RoundIconButton(
+            IconOnlyButton(
                 icon = WidgetActionIcon.Emergency,
-                caption = "111",
-                captionColor = muted,
+                contentDescription = "Emergency 111",
                 onClickAction = actionStartActivity(callIntent("111")),
             )
         }
     }
 }
 
-private enum class WidgetActionIcon { Phone, TowCall, Emergency }
+private enum class WidgetActionIcon { Roadside, TowTruck, Emergency }
 
 @Composable
-private fun RoundIconButton(
+private fun IconOnlyButton(
     icon: WidgetActionIcon,
-    caption: String,
-    captionColor: ColorProvider,
+    contentDescription: String,
     onClickAction: androidx.glance.action.Action,
 ) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Image(
-            provider = ImageProvider(actionIconBitmap(icon)),
-            contentDescription = caption,
-            modifier = GlanceModifier
-                .size(54.dp)
-                .clickable(onClickAction),
-        )
-        Spacer(GlanceModifier.height(4.dp))
-        Text(
-            caption,
-            style = TextStyle(color = captionColor, fontSize = 10.sp, fontWeight = FontWeight.Bold),
-            maxLines = 1,
-        )
-    }
+    Image(
+        provider = ImageProvider(actionIconBitmap(icon)),
+        contentDescription = contentDescription,
+        modifier = GlanceModifier
+            .size(58.dp)
+            .padding(6.dp)
+            .clickable(onClickAction),
+    )
 }
 
 private fun actionIconBitmap(icon: WidgetActionIcon): Bitmap {
