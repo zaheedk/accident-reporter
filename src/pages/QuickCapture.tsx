@@ -508,7 +508,7 @@ export default function QuickCapture() {
               </div>
 
               {/* Body: form step OR photo capture */}
-              {isFormStep ? (
+              {isFormStep && step.form === 'other-driver-info' ? (
                 <div className="rounded-2xl bg-background/5 border border-background/10 p-4 space-y-3">
                   <label className="block">
                     <span className="text-[11px] uppercase tracking-wider text-background/60 font-medium">Full name</span>
@@ -566,6 +566,37 @@ export default function QuickCapture() {
                   </label>
                   <p className="text-[11px] text-background/50 leading-relaxed">
                     Saved to the third-party section of your report. You can add the rest later.
+                  </p>
+                </div>
+              ) : isFormStep && step.form === 'witness-info' ? (
+                <div className="rounded-2xl bg-background/5 border border-background/10 p-4 space-y-3">
+                  <label className="block">
+                    <span className="text-[11px] uppercase tracking-wider text-background/60 font-medium">Witness name</span>
+                    <input
+                      type="text"
+                      value={witnessName}
+                      onChange={(e) => setWitnessName(e.target.value.slice(0, 100))}
+                      autoComplete="name"
+                      placeholder="e.g. Sarah Wilson"
+                      maxLength={100}
+                      className="mt-1.5 w-full h-11 px-3 rounded-xl bg-background/10 border border-background/15 text-background placeholder:text-background/40 text-[14px] focus:outline-none focus:border-background/40"
+                    />
+                  </label>
+                  <label className="block">
+                    <span className="text-[11px] uppercase tracking-wider text-background/60 font-medium">Witness phone</span>
+                    <input
+                      type="tel"
+                      value={witnessPhone}
+                      onChange={(e) => setWitnessPhone(e.target.value.slice(0, 30))}
+                      autoComplete="tel"
+                      inputMode="tel"
+                      placeholder="e.g. 021 555 9876"
+                      maxLength={30}
+                      className="mt-1.5 w-full h-11 px-3 rounded-xl bg-background/10 border border-background/15 text-background placeholder:text-background/40 text-[14px] focus:outline-none focus:border-background/40"
+                    />
+                  </label>
+                  <p className="text-[11px] text-background/50 leading-relaxed">
+                    Saved to the witnesses section of your report. You can add address and more later.
                   </p>
                 </div>
               ) : (
