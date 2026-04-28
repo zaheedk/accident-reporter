@@ -306,10 +306,38 @@ export default function QuickCapture() {
     }
   };
 
+  const persistWitnessInfo = async (): Promise<boolean> => {
+    if (!claimId) return false;
+    const name = witnessName.trim();
+    const phone = witnessPhone.trim();
+    if (!name && !phone) return true; // skipped
+    setSavingWitness(true);
+    try {
+      const { data: row } = await supabase.from('claims').select('witnesses').eq('id', claimId).single();
+      const existing: any[] = Array.isArray(row?.witnesses) ? [...(row!.witnesses as any[])] : [];
+      const empty = { name: '', phone: '', address: '', isPassenger: false };
+      if (existing.length === 0) existing.push({ ...empty });
+      existing[0] = { ...empty, ...existing[0], name, phone };
+      const { error } = await supabase.from('claims').update({ witnesses: existing }).eq('id', claimId);
+      if (error) throw error;
+      return true;
+    } catch (e: any) {
+      console.error('save witness info', e);
+      toast.error('Could not save the witness — try again');
+      return false;
+    } finally {
+      setSavingWitness(false);
+    }
+  };
+
   const next = async () => {
     // If leaving the form step, persist its data first
     if (step.form === 'other-driver-info') {
       const ok = await persistOtherDriverInfo();
+      if (!ok) return;
+    }
+    if (step.form === 'witness-info') {
+      const ok = await persistWitnessInfo();
       if (!ok) return;
     }
     if (stepIdx < STEPS.length - 1) setStepIdx(stepIdx + 1);
