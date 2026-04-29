@@ -161,15 +161,21 @@ private fun WidgetBody(
         // Top row: vehicle rego + refresh only. No SAVO header branding.
         Row(modifier = GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             if (rego.isNotEmpty()) {
-                // Tap the rego plate itself to switch vehicles. The clickable
-                // modifier MUST be on the outermost Box for Glance to register
-                // taps reliably; nesting it inside a Column eats the touch on
-                // some launchers (Pixel/OneUI).
+                // Tap the rego plate to switch vehicles. We dispatch a real
+                // broadcast (NextVehicleReceiver) instead of actionRunCallback
+                // because some launchers (Pixel/OneUI/Samsung) silently drop
+                // Glance ActionCallback taps on nested clickables.
+                val plateIntent = Intent(LocalContext.current, NextVehicleReceiver::class.java).apply {
+                    action = "nz.co.savo.app.WIDGET_NEXT_VEHICLE"
+                }
                 Box(
                     contentAlignment = Alignment.Center,
                     modifier = GlanceModifier
                         .defaultWeight()
-                        .clickable(if (showSwitch) actionRunCallback<NextVehicleAction>() else actionRunCallback<RefreshWidgetAction>())
+                        .clickable(
+                            if (showSwitch) actionSendBroadcast(plateIntent)
+                            else actionRunCallback<RefreshWidgetAction>()
+                        )
                         .background(plateBg)
                         .cornerRadius(8.dp)
                         .padding(horizontal = 14.dp, vertical = 8.dp)
@@ -178,8 +184,8 @@ private fun WidgetBody(
                         Text(rego, style = TextStyle(color = plateFg, fontSize = 18.sp, fontWeight = FontWeight.Bold))
                         if (showSwitch) {
                             Text(
-                                "tap ${currentIndexLabel}/${vehicleCountLabel}",
-                                style = TextStyle(color = plateFg, fontSize = 8.sp, fontWeight = FontWeight.Medium),
+                                "tap to switch (${currentIndexLabel}/${vehicleCountLabel})",
+                                style = TextStyle(color = plateFg, fontSize = 9.sp, fontWeight = FontWeight.Medium),
                                 maxLines = 1,
                             )
                         }
