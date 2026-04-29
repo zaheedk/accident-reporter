@@ -334,7 +334,13 @@ export default function Dashboard() {
                   {c.userClaimNumber ? `#${c.userClaimNumber}` : 'Draft'} · <span className="opacity-70 capitalize">{c.status}</span>
                 </div>
                 <div className="text-[11px] text-muted-foreground truncate">
-                  {formatDistanceToNow(new Date(c.updatedAt || c.createdAt), { addSuffix: true })}
+                  {(() => {
+                    const raw = c.updatedAt || c.createdAt;
+                    const d = raw ? new Date(raw) : null;
+                    return d && !isNaN(d.getTime())
+                      ? formatDistanceToNow(d, { addSuffix: true })
+                      : '—';
+                  })()}
                 </div>
               </div>
               <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/40" />
