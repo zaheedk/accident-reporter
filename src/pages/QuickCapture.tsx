@@ -103,6 +103,20 @@ export default function QuickCapture() {
   // Stop any speech when leaving the screen.
   useEffect(() => () => speech.stop(), [speech]);
 
+  // Mobile browsers (especially iOS) require a user gesture before
+  // speechSynthesis will play. Prime the engine on the very first tap
+  // anywhere on this screen so subsequent step prompts work automatically.
+  useEffect(() => {
+    if (!speech.supported || speech.primed) return;
+    const handler = () => speech.prime();
+    window.addEventListener('pointerdown', handler, { once: true, capture: true });
+    window.addEventListener('touchstart', handler, { once: true, capture: true });
+    return () => {
+      window.removeEventListener('pointerdown', handler, { capture: true } as any);
+      window.removeEventListener('touchstart', handler, { capture: true } as any);
+    };
+  }, [speech.supported, speech.primed, speech]);
+
   // Load insurer suggestions for the datalist
   useEffect(() => {
     supabase.from('insurance_companies').select('name').order('name').then(({ data }) => {
@@ -474,6 +488,7 @@ export default function QuickCapture() {
           {speech.supported ? (
             <button
               onClick={() => {
+                speech.prime();
                 const next = !speech.enabled;
                 speech.setEnabled(next);
                 if (next) speech.speak(`${step.title}. ${step.hint}`);
