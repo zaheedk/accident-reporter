@@ -488,6 +488,7 @@ export default function QuickCapture() {
           {speech.supported ? (
             <button
               onClick={() => {
+                speech.prime();
                 const next = !speech.enabled;
                 speech.setEnabled(next);
                 if (next) speech.speak(`${step.title}. ${step.hint}`);
