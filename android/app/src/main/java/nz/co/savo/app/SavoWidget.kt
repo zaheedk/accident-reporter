@@ -265,27 +265,27 @@ private fun WidgetBody(
 
         Spacer(GlanceModifier.height(8.dp))
 
-        // Large text mark as primary capture action (no tiny launcher icon).
+        // SAVO logo as the primary capture action.
         Column(
             modifier = GlanceModifier
                 .fillMaxWidth()
                 .clickable(actionStartActivity(deepLinkIntent("savo://quick-capture"))),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Text(
-                "SAVO",
-                style = TextStyle(color = brand, fontSize = 28.sp, fontWeight = FontWeight.Bold),
-                maxLines = 1,
+            Image(
+                provider = ImageProvider(savoLogoBitmap()),
+                contentDescription = "SAVO — tap to capture incident",
+                modifier = GlanceModifier.size(width = 140.dp, height = 44.dp),
             )
             Text(
-                "Click SAVO to capture incident details",
+                "Tap logo to capture incident",
                 style = TextStyle(color = muted, fontSize = 10.sp, fontWeight = FontWeight.Medium),
                 maxLines = 1,
             )
         }
         Spacer(GlanceModifier.height(8.dp))
 
-            // Google-style action icons: Roadside, Tow trucks, 111 (no captions).
+            // Action icons: Roadside, Tow, 111. Filled material-style icons.
         Row(
             modifier = GlanceModifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
