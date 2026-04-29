@@ -8,6 +8,7 @@ import android.graphics.Paint
 import android.graphics.RectF
 import android.net.Uri
 import androidx.compose.runtime.Composable
+import androidx.glance.LocalContext
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -21,6 +22,7 @@ import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetReceiver
 import androidx.glance.appwidget.action.ActionCallback
 import androidx.glance.appwidget.action.actionRunCallback
+import androidx.glance.action.actionSendBroadcast
 
 import androidx.glance.appwidget.action.actionStartActivity
 import androidx.glance.appwidget.cornerRadius
@@ -160,15 +162,21 @@ private fun WidgetBody(
         // Top row: vehicle rego + refresh only. No SAVO header branding.
         Row(modifier = GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             if (rego.isNotEmpty()) {
-                // Tap the rego plate itself to switch vehicles. The clickable
-                // modifier MUST be on the outermost Box for Glance to register
-                // taps reliably; nesting it inside a Column eats the touch on
-                // some launchers (Pixel/OneUI).
+                // Tap the rego plate to switch vehicles. We dispatch a real
+                // broadcast (NextVehicleReceiver) instead of actionRunCallback
+                // because some launchers (Pixel/OneUI/Samsung) silently drop
+                // Glance ActionCallback taps on nested clickables.
+                val plateIntent = Intent(LocalContext.current, NextVehicleReceiver::class.java).apply {
+                    action = "nz.co.savo.app.WIDGET_NEXT_VEHICLE"
+                }
                 Box(
                     contentAlignment = Alignment.Center,
                     modifier = GlanceModifier
                         .defaultWeight()
-                        .clickable(if (showSwitch) actionRunCallback<NextVehicleAction>() else actionRunCallback<RefreshWidgetAction>())
+                        .clickable(
+                            if (showSwitch) actionSendBroadcast(plateIntent)
+                            else actionRunCallback<RefreshWidgetAction>()
+                        )
                         .background(plateBg)
                         .cornerRadius(8.dp)
                         .padding(horizontal = 14.dp, vertical = 8.dp)
@@ -177,8 +185,8 @@ private fun WidgetBody(
                         Text(rego, style = TextStyle(color = plateFg, fontSize = 18.sp, fontWeight = FontWeight.Bold))
                         if (showSwitch) {
                             Text(
-                                "tap ${currentIndexLabel}/${vehicleCountLabel}",
-                                style = TextStyle(color = plateFg, fontSize = 8.sp, fontWeight = FontWeight.Medium),
+                                "tap to switch (${currentIndexLabel}/${vehicleCountLabel})",
+                                style = TextStyle(color = plateFg, fontSize = 9.sp, fontWeight = FontWeight.Medium),
                                 maxLines = 1,
                             )
                         }
@@ -257,27 +265,27 @@ private fun WidgetBody(
 
         Spacer(GlanceModifier.height(8.dp))
 
-        // Large text mark as primary capture action (no tiny launcher icon).
+        // SAVO logo as the primary capture action.
         Column(
             modifier = GlanceModifier
                 .fillMaxWidth()
                 .clickable(actionStartActivity(deepLinkIntent("savo://quick-capture"))),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Text(
-                "SAVO",
-                style = TextStyle(color = brand, fontSize = 28.sp, fontWeight = FontWeight.Bold),
-                maxLines = 1,
+            Image(
+                provider = ImageProvider(savoLogoBitmap()),
+                contentDescription = "SAVO — tap to capture incident",
+                modifier = GlanceModifier.size(width = 140.dp, height = 44.dp),
             )
             Text(
-                "Click SAVO to capture incident details",
+                "Tap logo to capture incident",
                 style = TextStyle(color = muted, fontSize = 10.sp, fontWeight = FontWeight.Medium),
                 maxLines = 1,
             )
         }
         Spacer(GlanceModifier.height(8.dp))
 
-            // Google-style action icons: Roadside, Tow trucks, 111 (no captions).
+            // Action icons: Roadside, Tow, 111. Filled material-style icons.
         Row(
             modifier = GlanceModifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
@@ -325,27 +333,25 @@ private fun actionIconBitmap(icon: WidgetActionIcon): Bitmap {
     val size = 192
     val bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
     val canvas = Canvas(bitmap)
-    val black = 0xFF111111.toInt()
-    val strokeW = 7f
-    val stroke = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = black
+
+    // Brand-colored filled circle backgrounds (Material 3 tonal style).
+    val bgColor = when (icon) {
+        WidgetActionIcon.Roadside -> 0xFF1E3A5F.toInt()   // navy
+        WidgetActionIcon.TowTruck -> 0xFFF26B1F.toInt()   // SAVO orange
+        WidgetActionIcon.Emergency -> 0xFFDC2626.toInt()  // red
+    }
+    val bgPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = bgColor; style = Paint.Style.FILL }
+    val fg = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = 0xFFFFFFFF.toInt()
+        style = Paint.Style.FILL
+    }
+    val fgStroke = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = 0xFFFFFFFF.toInt()
         style = Paint.Style.STROKE
-        strokeWidth = strokeW
+        strokeWidth = 9f
         strokeCap = Paint.Cap.ROUND
         strokeJoin = Paint.Join.ROUND
     }
-    val ringStroke = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = black
-        style = Paint.Style.STROKE
-        strokeWidth = 5f
-    }
-    val whiteFill = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = 0xFFFFFFFF.toInt(); style = Paint.Style.FILL }
-    val redStroke = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = 0xFFDC2626.toInt()
-        style = Paint.Style.STROKE
-        strokeWidth = 6f
-    }
-    val redFill = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = 0xFFDC2626.toInt(); style = Paint.Style.FILL }
     val textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = 0xFFFFFFFF.toInt()
         style = Paint.Style.FILL
@@ -353,51 +359,81 @@ private fun actionIconBitmap(icon: WidgetActionIcon): Bitmap {
         isFakeBoldText = true
     }
 
-    // White background circle + thin black ring (Apple/Material outlined style).
-    val pad = 8f
-    canvas.drawOval(RectF(pad, pad, size - pad, size - pad), whiteFill)
+    val pad = 6f
+    canvas.drawOval(RectF(pad, pad, size - pad, size - pad), bgPaint)
 
+    val cx = size / 2f
     when (icon) {
         WidgetActionIcon.Roadside -> {
-            // Outlined ring + simple car silhouette inside.
-            canvas.drawOval(RectF(pad, pad, size - pad, size - pad), ringStroke)
-            // Car body: lower box with rounded roof
-            val cx = size / 2f
-            val cy = size / 2f + 6f
-            // Roof (trapezoid approx via rounded rect)
-            canvas.drawRoundRect(RectF(cx - 38f, cy - 26f, cx + 38f, cy - 4f), 12f, 12f, stroke)
-            // Body
-            canvas.drawRoundRect(RectF(cx - 56f, cy - 6f, cx + 56f, cy + 22f), 10f, 10f, stroke)
-            // Wheels (outline)
-            canvas.drawCircle(cx - 32f, cy + 26f, 11f, stroke)
-            canvas.drawCircle(cx + 32f, cy + 26f, 11f, stroke)
+            // Telephone receiver glyph (filled white) — universal "call roadside" affordance.
+            val handsetPath = android.graphics.Path().apply {
+                // Simplified phone receiver shape, rotated 35° around center.
+                val w = 78f
+                val h = 78f
+                val left = cx - w / 2f
+                val top = cx - h / 2f
+                addRoundRect(RectF(left, top + 18f, left + 30f, top + 78f), 12f, 12f, android.graphics.Path.Direction.CW)
+                addRoundRect(RectF(left + 48f, top, left + 78f, top + 60f), 12f, 12f, android.graphics.Path.Direction.CW)
+                addRect(RectF(left + 22f, top + 36f, left + 56f, top + 48f), android.graphics.Path.Direction.CW)
+            }
+            canvas.save()
+            canvas.rotate(-30f, cx, cx)
+            canvas.drawPath(handsetPath, fg)
+            canvas.restore()
         }
         WidgetActionIcon.TowTruck -> {
-            canvas.drawOval(RectF(pad, pad, size - pad, size - pad), ringStroke)
-            val cy = size / 2f + 8f
+            // Filled tow-truck silhouette.
+            val cy = cx + 6f
             // Cab
-            canvas.drawRoundRect(RectF(38f, cy - 14f, 84f, cy + 18f), 6f, 6f, stroke)
+            canvas.drawRoundRect(RectF(cx - 56f, cy - 14f, cx - 14f, cy + 16f), 8f, 8f, fg)
             // Flatbed
-            canvas.drawRoundRect(RectF(84f, cy + 2f, 154f, cy + 18f), 4f, 4f, stroke)
+            canvas.drawRoundRect(RectF(cx - 14f, cy + 2f, cx + 56f, cy + 16f), 6f, 6f, fg)
             // Crane arm
-            canvas.drawLine(44f, cy - 14f, 64f, cy - 44f, stroke)
-            canvas.drawLine(64f, cy - 44f, 130f, cy - 44f, stroke)
-            canvas.drawLine(130f, cy - 44f, 130f, cy - 20f, stroke)
-            // Hook
-            canvas.drawCircle(130f, cy - 14f, 5f, stroke)
-            // Wheels
-            canvas.drawCircle(56f, cy + 26f, 11f, stroke)
-            canvas.drawCircle(132f, cy + 26f, 11f, stroke)
+            canvas.drawLine(cx - 50f, cy - 14f, cx - 30f, cy - 46f, fgStroke)
+            canvas.drawLine(cx - 30f, cy - 46f, cx + 36f, cy - 46f, fgStroke)
+            canvas.drawLine(cx + 36f, cy - 46f, cx + 36f, cy - 22f, fgStroke)
+            // Wheels (filled circles with inner cutout)
+            canvas.drawCircle(cx - 38f, cy + 26f, 11f, fg)
+            canvas.drawCircle(cx + 38f, cy + 26f, 11f, fg)
+            val cutout = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = bgColor; style = Paint.Style.FILL }
+            canvas.drawCircle(cx - 38f, cy + 26f, 4.5f, cutout)
+            canvas.drawCircle(cx + 38f, cy + 26f, 4.5f, cutout)
         }
         WidgetActionIcon.Emergency -> {
-            // Solid red circle with "111" — emergency.
-            canvas.drawOval(RectF(pad, pad, size - pad, size - pad), redFill)
-            canvas.drawOval(RectF(pad, pad, size - pad, size - pad), redStroke)
-            textPaint.textSize = 64f
+            // Bold "111" centered.
+            textPaint.textSize = 78f
             val ty = (size / 2f) - ((textPaint.descent() + textPaint.ascent()) / 2f)
             canvas.drawText("111", size / 2f, ty, textPaint)
         }
     }
+    return bitmap
+}
+
+// SAVO wordmark + small camera-car glyph rendered to a bitmap so Glance can show it.
+private fun savoLogoBitmap(): Bitmap {
+    val w = 560
+    val h = 176
+    val bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
+    val canvas = Canvas(bitmap)
+    val brand = 0xFF1E3A5F.toInt()
+    val accent = 0xFFF26B1F.toInt()
+
+    // Wordmark
+    val text = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = brand
+        textAlign = Paint.Align.CENTER
+        isFakeBoldText = true
+        textSize = 132f
+        letterSpacing = 0.08f
+        typeface = android.graphics.Typeface.create(android.graphics.Typeface.SANS_SERIF, android.graphics.Typeface.BOLD)
+    }
+    val ty = (h / 2f) - ((text.descent() + text.ascent()) / 2f)
+    canvas.drawText("SAVO", w / 2f, ty, text)
+
+    // Accent underline dot — subtle brand mark.
+    val dot = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = accent; style = Paint.Style.FILL }
+    canvas.drawCircle(w / 2f, h - 14f, 6f, dot)
+
     return bitmap
 }
 
