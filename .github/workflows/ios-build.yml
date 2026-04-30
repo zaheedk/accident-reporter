@@ -255,9 +255,33 @@ jobs:
         run: |
           set -e
           mkdir -p build
-          # Use the bundle ID embedded in the provisioning profile so the
-          # profile/identifier always match. Override the App target only —
-          # SPM dependencies must stay un-signed.
+
+          # Scope manual signing to the App target ONLY. SPM dependencies
+          # (Facebook, GoogleSignIn, AppAuth, …) reject any provisioning
+          # profile, so we use TARGET_NAME-conditional build settings via an
+          # xcconfig overlay.
+          XCCONFIG="$RUNNER_TEMP/Override.xcconfig"
+          cat > "$XCCONFIG" <<EOF
+          // Defaults for every target: no signing, no profile.
+          CODE_SIGN_STYLE = Manual
+          CODE_SIGNING_ALLOWED = NO
+          CODE_SIGNING_REQUIRED = NO
+          CODE_SIGN_IDENTITY =
+          PROVISIONING_PROFILE_SPECIFIER =
+          DEVELOPMENT_TEAM =
+
+          // Re-enable signing only for the App target.
+          CODE_SIGNING_ALLOWED[sdk=iphoneos*][target=App] = YES
+          CODE_SIGNING_REQUIRED[sdk=iphoneos*][target=App] = YES
+          CODE_SIGN_STYLE[target=App] = Manual
+          CODE_SIGN_IDENTITY[sdk=iphoneos*][target=App] = Apple Distribution
+          DEVELOPMENT_TEAM[target=App] = ${TEAM_ID}
+          PROVISIONING_PROFILE_SPECIFIER[target=App] = ${PROFILE_UUID}
+          PRODUCT_BUNDLE_IDENTIFIER[target=App] = ${PROFILE_BUNDLE_ID}
+          EOF
+          echo "--- xcconfig overlay ---"
+          cat "$XCCONFIG"
+
           xcodebuild \
             -project App.xcodeproj \
             -scheme "$SCHEME" \
@@ -265,12 +289,8 @@ jobs:
             -sdk iphoneos \
             -destination "generic/platform=iOS" \
             -archivePath build/App.xcarchive \
+            -xcconfig "$XCCONFIG" \
             -allowProvisioningUpdates=NO \
-            DEVELOPMENT_TEAM="$TEAM_ID" \
-            PRODUCT_BUNDLE_IDENTIFIER="$PROFILE_BUNDLE_ID" \
-            CODE_SIGN_STYLE=Manual \
-            CODE_SIGN_IDENTITY="Apple Distribution" \
-            PROVISIONING_PROFILE_SPECIFIER="$PROFILE_UUID" \
             archive
 
       - name: Create export options plist
