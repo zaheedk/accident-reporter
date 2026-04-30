@@ -143,8 +143,6 @@ private fun WidgetBody(
     val brand = ColorProvider(Color(0xFF1E3A5F))
     val text = ColorProvider(Color(0xFF0F172A))
     val muted = ColorProvider(Color(0xFF64748B))
-    val plateBg = ColorProvider(Color(0xFFFBBF24))
-    val plateFg = ColorProvider(Color(0xFF111827))
     val pillBg = ColorProvider(Color(0xFFF1F5F9))
     val pillFg = ColorProvider(Color(0xFF1E3A5F))
     val redSoft = ColorProvider(Color(0xFFFEE2E2))
@@ -296,6 +294,43 @@ private fun WidgetBody(
 }
 
 private enum class WidgetActionIcon { Roadside, TowTruck, Emergency }
+
+private fun regoPlateBitmap(rego: String, helper: String): Bitmap {
+    val w = 760
+    val h = 180
+    val bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
+    val canvas = Canvas(bitmap)
+    val bg = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = 0xFFFBBF24.toInt()
+        style = Paint.Style.FILL
+    }
+    val stroke = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = 0xFF111827.toInt()
+        style = Paint.Style.STROKE
+        strokeWidth = 6f
+    }
+    val regoPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = 0xFF111827.toInt()
+        textAlign = Paint.Align.CENTER
+        isFakeBoldText = true
+        textSize = 74f
+        typeface = android.graphics.Typeface.create(android.graphics.Typeface.SANS_SERIF, android.graphics.Typeface.BOLD)
+    }
+    val helperPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = 0xFF111827.toInt()
+        alpha = 210
+        textAlign = Paint.Align.CENTER
+        isFakeBoldText = true
+        textSize = 32f
+    }
+
+    val rect = RectF(6f, 6f, w - 6f, h - 6f)
+    canvas.drawRoundRect(rect, 28f, 28f, bg)
+    canvas.drawRoundRect(rect, 28f, 28f, stroke)
+    canvas.drawText(rego.ifBlank { "SAVO" }, w / 2f, 78f, regoPaint)
+    canvas.drawText(helper, w / 2f, 130f, helperPaint)
+    return bitmap
+}
 
 @Composable
 private fun IconOnlyButton(
