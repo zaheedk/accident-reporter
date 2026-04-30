@@ -94,17 +94,12 @@ jobs:
       - name: Ensure iOS 26 platform is installed
         run: |
           set -e
-          # Some macos-26 runner images ship Xcode 26 but without the iOS 26
-          # device platform pre-downloaded, which makes
-          # `-destination generic/platform=iOS` fail with
-          # "iOS 26.0 is not installed". Trigger a download if needed.
-          if ! xcodebuild -showsdks 2>/dev/null | grep -qE "iphoneos26\."; then
-            echo "iOS 26 SDK not visible — attempting platform download."
-            sudo xcodebuild -downloadPlatform iOS || true
-          else
-            echo "iOS 26 SDK present:"
-            xcodebuild -showsdks | grep -E "iphoneos26\." || true
-          fi
+          # Some macos-26 runner images include Xcode 26 but do not have the
+          # iOS device platform installed/enabled yet. In that state, archive
+          # fails with either "iOS 26.0 is not installed" or "Found no
+          # destinations" even when `xcodebuild -showsdks` lists iphoneos26.*.
+          sudo xcodebuild -runFirstLaunch || true
+          sudo xcodebuild -downloadPlatform iOS || true
           echo "--- Installed platforms ---"
           xcodebuild -showsdks || true
 
@@ -198,6 +193,7 @@ jobs:
             -scheme "$SCHEME" \
             -configuration Release \
             -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
             -archivePath build/App.xcarchive \
             ARCHS=arm64 \
             ONLY_ACTIVE_ARCH=NO \
@@ -309,6 +305,7 @@ jobs:
             -scheme "$SCHEME" \
             -configuration Release \
             -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
             -archivePath build/App.xcarchive \
             -xcconfig "$XCCONFIG" \
             -allowProvisioningUpdates=NO \
