@@ -32,6 +32,13 @@
 
         </activity>
 
+        <activity
+            android:name=".WidgetVehicleSwitchActivity"
+            android:theme="@style/AppTheme.Transparent"
+            android:excludeFromRecents="true"
+            android:noHistory="true"
+            android:exported="true" />
+
         <!-- Home-screen widget -->
         <receiver
             android:name=".SavoWidgetReceiver"
