@@ -75,8 +75,12 @@ jobs:
 
       - name: Add iOS platform if missing
         run: |
-          if [ ! -d "ios" ]; then
+          if [ ! -f "ios/App/Podfile" ]; then
+            echo "No ios/App/Podfile found — (re)adding iOS platform"
+            rm -rf ios
             npx cap add ios
+          else
+            echo "ios/App/Podfile already exists — skipping cap add"
           fi
 
       - name: Sync Capacitor (iOS)
