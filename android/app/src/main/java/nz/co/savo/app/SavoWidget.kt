@@ -262,7 +262,7 @@ private fun WidgetBody(
                     .background(pillBg)
                     .cornerRadius(20.dp)
                     .padding(horizontal = 12.dp, vertical = 18.dp)
-                    .clickable(actionRunCallback<RefreshWidgetAction>())
+                    .clickable(onRefreshTap)
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(
