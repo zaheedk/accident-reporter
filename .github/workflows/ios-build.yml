@@ -293,7 +293,7 @@ jobs:
             <true/>
             <key>provisioningProfiles</key>
             <dict>
-              <key>${BUNDLE_ID}</key>
+              <key>${PROFILE_BUNDLE_ID}</key>
               <string>${PROFILE_UUID}</string>
             </dict>
           </dict>
