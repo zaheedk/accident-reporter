@@ -233,7 +233,7 @@ private fun WidgetBody(
                     .size(40.dp)
                     .background(pillBg)
                     .cornerRadius(20.dp)
-                    .clickable(actionRunCallback<RefreshWidgetAction>())
+                    .clickable(onRefreshTap)
             ) {
                 Text(if (isRefreshing) "…" else "⟳", style = TextStyle(color = pillFg, fontSize = 18.sp, fontWeight = FontWeight.Bold))
             }
