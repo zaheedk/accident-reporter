@@ -168,6 +168,8 @@ private fun WidgetBody(
     currentIndexLabel: String,
     vehicleCountLabel: String,
     isRefreshing: Boolean,
+    onSwitchTap: () -> Unit,
+    onRefreshTap: () -> Unit,
 ) {
     val bg = ColorProvider(Color(0xFFFFFFFF))
     val brand = ColorProvider(Color(0xFF1E3A5F))
