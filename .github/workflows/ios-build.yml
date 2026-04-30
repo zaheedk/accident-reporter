@@ -43,7 +43,7 @@ on:
 jobs:
   build:
     # iOS toolchain only runs on macOS runners
-    runs-on: macos-14
+    runs-on: macos-15
     timeout-minutes: 60
 
     env:
