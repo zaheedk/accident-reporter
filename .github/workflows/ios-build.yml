@@ -61,27 +61,30 @@ jobs:
           node-version: 22
           cache: npm
 
-      - name: Select Xcode with iOS SDK
+      - name: Select Xcode with iOS 26 SDK
         run: |
           set -e
-          for XCODE_APP in \
-            /Applications/Xcode_16.4.app \
-            /Applications/Xcode_16.3.app \
-            /Applications/Xcode_16.2.app \
-            /Applications/Xcode_16.1.app \
-            /Applications/Xcode_16.app \
-            /Applications/Xcode.app
-          do
+          echo "--- Available Xcode installations ---"
+          ls /Applications | grep -i '^Xcode' || true
+          # App Store Connect requires the iOS 26 SDK (Xcode 26+) as of April 2026.
+          # Prefer Xcode 26.x; fall back to any Xcode that ships an iphoneos26.* SDK.
+          CANDIDATES=$(ls -d /Applications/Xcode_26*.app /Applications/Xcode-26*.app 2>/dev/null || true)
+          # Also consider generic Xcode.app last
+          CANDIDATES="$CANDIDATES /Applications/Xcode.app"
+          for XCODE_APP in $CANDIDATES; do
             if [ -d "$XCODE_APP" ]; then
               sudo xcode-select -s "$XCODE_APP"
-              if xcodebuild -showsdks | grep -q "iphoneos"; then
-                echo "Selected $XCODE_APP"
+              SDK_LINE=$(xcodebuild -showsdks 2>/dev/null | grep -E "iphoneos26\." || true)
+              if [ -n "$SDK_LINE" ]; then
+                echo "Selected $XCODE_APP with SDK: $SDK_LINE"
+                xcodebuild -version
                 exit 0
               fi
-              echo "$XCODE_APP does not include an iPhoneOS SDK; trying next Xcode."
+              echo "$XCODE_APP does not include an iOS 26 SDK; trying next Xcode."
             fi
           done
-          echo "::error::No installed Xcode with an iPhoneOS SDK was found on this runner."
+          echo "::error::No installed Xcode with an iOS 26 SDK was found on this runner. Use a runner image that includes Xcode 26 (e.g. macos-15 with Xcode 26, or macos-26)."
+          xcodebuild -showsdks || true
           exit 1
 
       - name: Show Xcode version
