@@ -8,7 +8,7 @@ import android.graphics.Paint
 import android.graphics.RectF
 import android.net.Uri
 import androidx.compose.runtime.Composable
-import androidx.glance.LocalContext
+
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -162,19 +162,15 @@ private fun WidgetBody(
         // Top row: vehicle rego + refresh only. No SAVO header branding.
         Row(modifier = GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             if (rego.isNotEmpty()) {
-                // Tap the rego plate to switch vehicles. We dispatch a real
-                // broadcast (NextVehicleReceiver) instead of actionRunCallback
-                // because some launchers (Pixel/OneUI/Samsung) silently drop
-                // Glance ActionCallback taps on nested clickables.
-                val plateIntent = Intent(LocalContext.current, NextVehicleReceiver::class.java).apply {
-                    action = "nz.co.savo.app.WIDGET_NEXT_VEHICLE"
-                }
+                // Tap the rego plate to switch vehicles. Use the typed
+                // actionSendBroadcast<Receiver>() helper — the Intent overload
+                // is unreliable across Glance versions/launchers.
                 Box(
                     contentAlignment = Alignment.Center,
                     modifier = GlanceModifier
                         .defaultWeight()
                         .clickable(
-                            if (showSwitch) actionSendBroadcast(plateIntent)
+                            if (showSwitch) actionSendBroadcast<NextVehicleReceiver>()
                             else actionRunCallback<RefreshWidgetAction>()
                         )
                         .background(plateBg)
