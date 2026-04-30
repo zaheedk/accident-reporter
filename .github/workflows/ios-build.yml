@@ -43,7 +43,7 @@ on:
 jobs:
   build:
     # iOS toolchain only runs on macOS runners
-    runs-on: macos-14
+    runs-on: macos-15
     timeout-minutes: 60
 
     env:
@@ -62,7 +62,7 @@ jobs:
           cache: npm
 
       - name: Select Xcode
-        run: sudo xcode-select -s /Applications/Xcode_15.4.app || sudo xcode-select -s /Applications/Xcode.app
+        run: sudo xcode-select -s /Applications/Xcode_16.2.app || sudo xcode-select -s /Applications/Xcode_16.1.app || sudo xcode-select -s /Applications/Xcode_16.app || sudo xcode-select -s /Applications/Xcode.app
 
       - name: Show Xcode version
         run: xcodebuild -version
