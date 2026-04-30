@@ -94,7 +94,7 @@ class SavoWidget : GlanceAppWidget() {
                 currentIndexLabel = (currentIndex + 1).toString(),
                 vehicleCountLabel = vehicleCount.toString(),
                 isRefreshing = isRefreshing,
-                onSwitchTap = actionRunCallback<NextVehicleAction>(),
+                onSwitchTap = actionStartActivity(widgetSwitchIntent()),
                 onRefreshTap = actionRunCallback<RefreshWidgetAction>(),
             )
         }
@@ -565,6 +565,13 @@ private fun callIntent(phone: String): Intent {
     }
     return Intent(Intent.ACTION_DIAL, Uri.parse("tel:$phone"))
         .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+}
+
+private fun widgetSwitchIntent(): Intent {
+    return Intent("nz.co.savo.app.widget.NEXT_VEHICLE").apply {
+        setClassName("nz.co.savo.app", "nz.co.savo.app.WidgetVehicleSwitchActivity")
+        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_NO_ANIMATION)
+    }
 }
 
 class NextVehicleAction : ActionCallback {
