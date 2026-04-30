@@ -58,7 +58,7 @@ jobs:
 
       - name: Build Signed Release AAB
         working-directory: android
-        run: ./gradlew bundleRelease
+        run: ./gradlew bundleRelease --stacktrace --info
         env:
           KEYSTORE_FILE: ${{ github.workspace }}/android/app/savonz-keystore.jks
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
@@ -67,7 +67,7 @@ jobs:
 
       - name: Build Signed Release APK
         working-directory: android
-        run: ./gradlew assembleRelease
+        run: ./gradlew assembleRelease --stacktrace
         env:
           KEYSTORE_FILE: ${{ github.workspace }}/android/app/savonz-keystore.jks
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
@@ -76,7 +76,7 @@ jobs:
 
       - name: Build Debug APK
         working-directory: android
-        run: ./gradlew assembleDebug
+        run: ./gradlew assembleDebug --stacktrace
 
       - name: Upload AAB
         uses: actions/upload-artifact@v4
