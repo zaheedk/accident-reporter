@@ -49,7 +49,7 @@ jobs:
     env:
       BUNDLE_ID: ${{ secrets.IOS_BUNDLE_ID || 'nz.co.savo.app' }}
       SCHEME: App
-      WORKSPACE: ios/App/App.xcworkspace
+      XCODE_PROJECT: ios/App/App.xcodeproj
 
     steps:
       - name: Checkout code
@@ -86,29 +86,36 @@ jobs:
               ls -la ios/App || true
             fi
           fi
-          if [ ! -f "ios/App/Podfile" ]; then
-            echo "No ios/App/Podfile found — (re)adding iOS platform"
+          if [ ! -d "ios/App/App.xcodeproj" ] || [ ! -f "ios/App/CapApp-SPM/Package.swift" ]; then
+            echo "No complete Capacitor iOS SPM project found — (re)adding iOS platform"
             rm -rf ios
-            npx cap add ios
+            npx cap add ios --packagemanager SPM
             echo "--- After cap add: ios/App contents ---"
             ls -la ios/App || true
           else
-            echo "ios/App/Podfile already exists — skipping cap add"
+            echo "Capacitor iOS SPM project already exists — skipping cap add"
           fi
-          # Hard fail early with a clear message if Podfile still missing
-          if [ ! -f "ios/App/Podfile" ]; then
-            echo "::error::ios/App/Podfile is still missing after cap add. Check the diagnostics above."
+          if [ ! -d "ios/App/App.xcodeproj" ]; then
+            echo "::error::ios/App/App.xcodeproj is still missing after cap add. Check the diagnostics above."
+            exit 1
+          fi
+          if [ ! -f "ios/App/CapApp-SPM/Package.swift" ]; then
+            echo "::error::ios/App/CapApp-SPM/Package.swift is still missing after cap add. Check the diagnostics above."
             exit 1
           fi
 
       - name: Sync Capacitor (iOS)
         run: npx cap sync ios
 
-      - name: Install CocoaPods
+      - name: Install CocoaPods if project uses Podfile
         working-directory: ios/App
         run: |
-          pod repo update
-          pod install
+          if [ -f "Podfile" ]; then
+            pod repo update
+            pod install
+          else
+            echo "No Podfile found; Capacitor iOS is using Swift Package Manager."
+          fi
 
       # ──────────────────────────────────────────────────────────────────
       # Decide whether we have what we need for a signed build
@@ -146,7 +153,7 @@ jobs:
         run: |
           mkdir -p build
           xcodebuild \
-            -workspace App.xcworkspace \
+            -project App.xcodeproj \
             -scheme "$SCHEME" \
             -configuration Release \
             -sdk iphoneos \
@@ -217,7 +224,7 @@ jobs:
           set -e
           mkdir -p build
           xcodebuild \
-            -workspace App.xcworkspace \
+            -project App.xcodeproj \
             -scheme "$SCHEME" \
             -configuration Release \
             -sdk iphoneos \
