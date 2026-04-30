@@ -59,11 +59,12 @@ class WidgetVehicleSwitchActivity : android.app.Activity() {
                 .putLong("widget_last_switch_ms", System.currentTimeMillis())
                 .commit()
         }
+        val appContext = applicationContext
         GlobalScope.launch(Dispatchers.Main) {
-            SavoWidget().updateAll(this@WidgetVehicleSwitchActivity)
-            finish()
-            overridePendingTransition(0, 0)
+            try { SavoWidget().updateAll(appContext) } catch (_: Exception) {}
         }
+        finish()
+        overridePendingTransition(0, 0)
     }
 }
 
