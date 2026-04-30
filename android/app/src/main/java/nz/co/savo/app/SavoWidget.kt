@@ -22,7 +22,6 @@ import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetReceiver
 import androidx.glance.appwidget.action.ActionCallback
 import androidx.glance.appwidget.action.actionRunCallback
-import androidx.glance.appwidget.action.actionSendBroadcast
 
 import androidx.glance.appwidget.action.actionStartActivity
 import androidx.glance.appwidget.cornerRadius
@@ -162,15 +161,15 @@ private fun WidgetBody(
         // Top row: vehicle rego + refresh only. No SAVO header branding.
         Row(modifier = GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             if (rego.isNotEmpty()) {
-                // Tap the rego plate to switch vehicles. Use the typed
-                // actionSendBroadcast<Receiver>() helper — the Intent overload
-                // is unreliable across Glance versions/launchers.
+                // Tap the rego plate to switch vehicles. Use Glance's own
+                // ActionCallback so the tapped widget instance redraws
+                // immediately instead of waiting on launcher broadcast timing.
                 Box(
                     contentAlignment = Alignment.Center,
                     modifier = GlanceModifier
                         .defaultWeight()
                         .clickable(
-                            if (showSwitch) actionSendBroadcast<NextVehicleReceiver>()
+                            if (showSwitch) actionRunCallback<NextVehicleAction>()
                             else actionRunCallback<RefreshWidgetAction>()
                         )
                         .background(plateBg)
