@@ -143,6 +143,27 @@ jobs:
       - name: Sync Capacitor (iOS)
         run: npx cap sync ios
 
+      - name: Inject required Info.plist usage strings
+        run: |
+          set -e
+          PLIST="ios/App/App/Info.plist"
+          if [ ! -f "$PLIST" ]; then
+            echo "::error::$PLIST not found"
+            exit 1
+          fi
+          # Apple ITMS-90683: required because Capacitor/Geolocation references location APIs
+          /usr/libexec/PlistBuddy -c "Add :NSLocationWhenInUseUsageDescription string 'SAVO uses your location to find nearby panel shops, tow companies, and to record where an incident occurred.'" "$PLIST" 2>/dev/null || \
+            /usr/libexec/PlistBuddy -c "Set :NSLocationWhenInUseUsageDescription 'SAVO uses your location to find nearby panel shops, tow companies, and to record where an incident occurred.'" "$PLIST"
+          /usr/libexec/PlistBuddy -c "Add :NSLocationAlwaysAndWhenInUseUsageDescription string 'SAVO uses your location to find nearby panel shops, tow companies, and to record where an incident occurred.'" "$PLIST" 2>/dev/null || \
+            /usr/libexec/PlistBuddy -c "Set :NSLocationAlwaysAndWhenInUseUsageDescription 'SAVO uses your location to find nearby panel shops, tow companies, and to record where an incident occurred.'" "$PLIST"
+          # Other sensitive APIs referenced via Capacitor plugins / SDKs
+          /usr/libexec/PlistBuddy -c "Add :NSCameraUsageDescription string 'SAVO uses the camera to capture photos of vehicle damage and incident scenes.'" "$PLIST" 2>/dev/null || true
+          /usr/libexec/PlistBuddy -c "Add :NSPhotoLibraryUsageDescription string 'SAVO accesses your photo library so you can attach existing photos to claims.'" "$PLIST" 2>/dev/null || true
+          /usr/libexec/PlistBuddy -c "Add :NSPhotoLibraryAddUsageDescription string 'SAVO saves captured incident photos to your photo library.'" "$PLIST" 2>/dev/null || true
+          /usr/libexec/PlistBuddy -c "Add :NSMicrophoneUsageDescription string 'SAVO uses the microphone to record voice notes and call audio for claim documentation.'" "$PLIST" 2>/dev/null || true
+          echo "--- Final Info.plist ---"
+          /usr/libexec/PlistBuddy -c "Print" "$PLIST" | grep -A0 "Usage" || true
+
       - name: Install CocoaPods if project uses Podfile
         working-directory: ios/App
         run: |
