@@ -23,8 +23,7 @@
 # Keep Glance widget callback classes callable in minified release builds.
 -keep class nz.co.savo.app.SavoWidget { *; }
 -keep class nz.co.savo.app.SavoWidgetReceiver { *; }
--keep class nz.co.savo.app.AutoAdvanceReceiver { *; }
+-keep class nz.co.savo.app.WidgetVehicleSwitchActivity { *; }
 -keep class nz.co.savo.app.NextVehicleAction { *; }
--keep class nz.co.savo.app.NextVehicleReceiver { *; }
 -keep class nz.co.savo.app.PrevVehicleAction { *; }
 -keep class nz.co.savo.app.RefreshWidgetAction { *; }

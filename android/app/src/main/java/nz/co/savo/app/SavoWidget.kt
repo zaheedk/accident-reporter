@@ -7,6 +7,7 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.RectF
 import android.net.Uri
+import android.os.Bundle
 import androidx.compose.runtime.Composable
 
 import androidx.compose.ui.graphics.Color
@@ -45,6 +46,28 @@ import java.util.Locale
 import java.util.TimeZone
 import java.util.concurrent.TimeUnit
 
+class WidgetVehicleSwitchActivity : android.app.Activity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        val prefs = getSharedPreferences(WIDGET_PREFS, Context.MODE_PRIVATE)
+        val count = prefs.getInt("vehicles_count", 0)
+        if (count > 1) {
+            val current = prefs.getInt("vehicles_current_index", 0)
+            val next = ((current + 1) % count + count) % count
+            prefs.edit()
+                .putInt("vehicles_current_index", next)
+                .putLong("widget_last_switch_ms", System.currentTimeMillis())
+                .commit()
+        }
+        val appContext = applicationContext
+        GlobalScope.launch(Dispatchers.Main) {
+            try { SavoWidget().updateAll(appContext) } catch (_: Exception) {}
+        }
+        finish()
+        overridePendingTransition(0, 0)
+    }
+}
+
 private const val WIDGET_PREFS = "savo_widget_prefs"
 private const val REFRESH_COOLDOWN_MS = 60_000L
 private const val MAX_WIDGET_VEHICLES = 10
@@ -82,34 +105,6 @@ class SavoWidget : GlanceAppWidget() {
                 prefs.getString("vehicle_${currentIndex}_roadside_name", "") ?: "Roadside"
             else "Roadside"
 
-            // Lambda actions: run in-process inside the widget host. Far more
-            // reliable than PendingIntent broadcasts — no launcher coalescing,
-            // no 30-second delay. Requires Glance 1.1+.
-            val onSwitch: () -> Unit = {
-                val p = context.getSharedPreferences(WIDGET_PREFS, Context.MODE_PRIVATE)
-                val cnt = p.getInt("vehicles_count", 0)
-                if (cnt > 1) {
-                    val cur = p.getInt("vehicles_current_index", 0)
-                    val next = ((cur + 1) % cnt + cnt) % cnt
-                    p.edit()
-                        .putInt("vehicles_current_index", next)
-                        .putLong("widget_last_switch_ms", System.currentTimeMillis())
-                        .commit()
-                }
-            }
-            val onRefresh: () -> Unit = {
-                val p = context.getSharedPreferences(WIDGET_PREFS, Context.MODE_PRIVATE)
-                val now = System.currentTimeMillis()
-                val last = p.getLong("last_manual_refresh_ms", 0L)
-                if (now - last >= REFRESH_COOLDOWN_MS) {
-                    p.edit()
-                        .putLong("last_manual_refresh_ms", now)
-                        .putBoolean("widget_refreshing", true)
-                        .commit()
-                    refreshFromBackend(context)
-                }
-            }
-
             WidgetBody(
                 rego = rego,
                 nickname = nickname,
@@ -122,8 +117,8 @@ class SavoWidget : GlanceAppWidget() {
                 currentIndexLabel = (currentIndex + 1).toString(),
                 vehicleCountLabel = vehicleCount.toString(),
                 isRefreshing = isRefreshing,
-                onSwitchTap = onSwitch,
-                onRefreshTap = onRefresh,
+                onSwitchTap = actionStartActivity(widgetSwitchIntent()),
+                onRefreshTap = actionRunCallback<RefreshWidgetAction>(),
             )
         }
     }
@@ -164,15 +159,13 @@ private fun WidgetBody(
     currentIndexLabel: String,
     vehicleCountLabel: String,
     isRefreshing: Boolean,
-    onSwitchTap: () -> Unit,
-    onRefreshTap: () -> Unit,
+    onSwitchTap: androidx.glance.action.Action,
+    onRefreshTap: androidx.glance.action.Action,
 ) {
     val bg = ColorProvider(Color(0xFFFFFFFF))
     val brand = ColorProvider(Color(0xFF1E3A5F))
     val text = ColorProvider(Color(0xFF0F172A))
     val muted = ColorProvider(Color(0xFF64748B))
-    val plateBg = ColorProvider(Color(0xFFFBBF24))
-    val plateFg = ColorProvider(Color(0xFF111827))
     val pillBg = ColorProvider(Color(0xFFF1F5F9))
     val pillFg = ColorProvider(Color(0xFF1E3A5F))
     val redSoft = ColorProvider(Color(0xFFFEE2E2))
@@ -192,31 +185,17 @@ private fun WidgetBody(
         // Top row: vehicle rego + refresh only. No SAVO header branding.
         Row(modifier = GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             if (rego.isNotEmpty()) {
-                // Tap the rego plate to switch vehicles. Use Glance's own
-                // ActionCallback so the tapped widget instance redraws
-                // immediately instead of waiting on launcher broadcast timing.
-                Box(
-                    contentAlignment = Alignment.Center,
+                // Render the plate as one clickable bitmap, matching the SAVO
+                // logo approach below. This avoids flaky hit testing on nested
+                // Glance Box/Column/Text layouts inside launcher widgets.
+                Image(
+                    provider = ImageProvider(regoPlateBitmap(rego, if (showSwitch) "tap to switch (${currentIndexLabel}/${vehicleCountLabel})" else "tap to refresh")),
+                    contentDescription = if (showSwitch) "Switch vehicle" else "Refresh vehicle data",
                     modifier = GlanceModifier
                         .defaultWeight()
-                        .clickable(
-                            if (showSwitch) onSwitchTap else onRefreshTap
-                        )
-                        .background(plateBg)
-                        .cornerRadius(8.dp)
-                        .padding(horizontal = 14.dp, vertical = 8.dp)
-                ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(rego, style = TextStyle(color = plateFg, fontSize = 18.sp, fontWeight = FontWeight.Bold))
-                        if (showSwitch) {
-                            Text(
-                                "tap to switch (${currentIndexLabel}/${vehicleCountLabel})",
-                                style = TextStyle(color = plateFg, fontSize = 9.sp, fontWeight = FontWeight.Medium),
-                                maxLines = 1,
-                            )
-                        }
-                    }
-                }
+                        .height(54.dp)
+                        .clickable(if (showSwitch) onSwitchTap else onRefreshTap)
+                )
             } else {
                 Spacer(GlanceModifier.defaultWeight())
             }
@@ -338,6 +317,43 @@ private fun WidgetBody(
 }
 
 private enum class WidgetActionIcon { Roadside, TowTruck, Emergency }
+
+private fun regoPlateBitmap(rego: String, helper: String): Bitmap {
+    val w = 760
+    val h = 180
+    val bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
+    val canvas = Canvas(bitmap)
+    val bg = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = 0xFFFBBF24.toInt()
+        style = Paint.Style.FILL
+    }
+    val stroke = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = 0xFF111827.toInt()
+        style = Paint.Style.STROKE
+        strokeWidth = 6f
+    }
+    val regoPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = 0xFF111827.toInt()
+        textAlign = Paint.Align.CENTER
+        isFakeBoldText = true
+        textSize = 74f
+        typeface = android.graphics.Typeface.create(android.graphics.Typeface.SANS_SERIF, android.graphics.Typeface.BOLD)
+    }
+    val helperPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = 0xFF111827.toInt()
+        alpha = 210
+        textAlign = Paint.Align.CENTER
+        isFakeBoldText = true
+        textSize = 32f
+    }
+
+    val rect = RectF(6f, 6f, w - 6f, h - 6f)
+    canvas.drawRoundRect(rect, 28f, 28f, bg)
+    canvas.drawRoundRect(rect, 28f, 28f, stroke)
+    canvas.drawText(rego.ifBlank { "SAVO" }, w / 2f, 78f, regoPaint)
+    canvas.drawText(helper, w / 2f, 130f, helperPaint)
+    return bitmap
+}
 
 @Composable
 private fun IconOnlyButton(
@@ -572,6 +588,13 @@ private fun callIntent(phone: String): Intent {
     }
     return Intent(Intent.ACTION_DIAL, Uri.parse("tel:$phone"))
         .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+}
+
+private fun widgetSwitchIntent(): Intent {
+    return Intent("nz.co.savo.app.widget.NEXT_VEHICLE").apply {
+        setClassName("nz.co.savo.app", "nz.co.savo.app.WidgetVehicleSwitchActivity")
+        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_NO_ANIMATION)
+    }
 }
 
 class NextVehicleAction : ActionCallback {
