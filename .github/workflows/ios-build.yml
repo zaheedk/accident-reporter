@@ -42,8 +42,9 @@ on:
 
 jobs:
   build:
-    # iOS toolchain only runs on macOS runners
-    runs-on: macos-15
+    # iOS toolchain only runs on macOS runners.
+    # macos-26 ships Xcode 26 (iOS 26 SDK), which Apple now requires for App Store uploads.
+    runs-on: macos-26
     timeout-minutes: 60
 
     env:
