@@ -361,9 +361,8 @@ jobs:
       # Optional: upload to TestFlight via App Store Connect API
       # ──────────────────────────────────────────────────────────────────
       - name: Upload to TestFlight
-        if: steps.mode.outputs.mode == 'signed' && env.HAS_ASC_KEY == 'true'
+        if: steps.mode.outputs.mode == 'signed' && secrets.APPSTORE_PRIVATE_KEY != '' && secrets.APPSTORE_KEY_ID != '' && secrets.APPSTORE_ISSUER_ID != ''
         env:
-          HAS_ASC_KEY: ${{ secrets.APPSTORE_PRIVATE_KEY != '' }}
           ASC_KEY_ID: ${{ secrets.APPSTORE_KEY_ID }}
           ASC_ISSUER_ID: ${{ secrets.APPSTORE_ISSUER_ID }}
           ASC_KEY: ${{ secrets.APPSTORE_PRIVATE_KEY }}
