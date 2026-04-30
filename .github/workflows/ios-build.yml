@@ -193,6 +193,7 @@ jobs:
             -scheme "$SCHEME" \
             -configuration Release \
             -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
             -archivePath build/App.xcarchive \
             ARCHS=arm64 \
             ONLY_ACTIVE_ARCH=NO \
@@ -304,6 +305,7 @@ jobs:
             -scheme "$SCHEME" \
             -configuration Release \
             -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
             -archivePath build/App.xcarchive \
             -xcconfig "$XCCONFIG" \
             -allowProvisioningUpdates=NO \
