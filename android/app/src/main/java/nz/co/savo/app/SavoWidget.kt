@@ -593,12 +593,10 @@ private suspend fun cycleVehicle(context: Context, glanceId: GlanceId, delta: In
             .putLong("widget_last_switch_ms", System.currentTimeMillis())
             .commit()
     }
-    // Force both the tapped instance and any launcher-cached instances to redraw immediately.
+    // Force the tapped instance to redraw first; updateAll catches any other
+    // pinned instances without making the user wait for the launcher's refresh.
     SavoWidget().update(context, glanceId)
     SavoWidget().updateAll(context)
-    // Reset the auto-advance ticker so the user gets a fresh window after
-    // manually navigating.
-    scheduleAutoAdvance(context)
 }
 
 class RefreshWidgetAction : ActionCallback {
@@ -628,12 +626,11 @@ class SavoWidgetReceiver : GlanceAppWidgetReceiver() {
     ) {
         super.onUpdate(context, appWidgetManager, appWidgetIds)
         refreshFromBackend(context)
-        scheduleAutoAdvance(context)
     }
 
     override fun onEnabled(context: Context) {
         super.onEnabled(context)
-        scheduleAutoAdvance(context)
+        cancelAutoAdvance(context)
     }
 
     override fun onDisabled(context: Context) {
