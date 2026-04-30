@@ -22,7 +22,6 @@ import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetReceiver
 import androidx.glance.appwidget.action.ActionCallback
 import androidx.glance.appwidget.action.actionRunCallback
-import androidx.glance.appwidget.action.actionSendBroadcast
 
 import androidx.glance.appwidget.action.actionStartActivity
 import androidx.glance.appwidget.cornerRadius
@@ -162,15 +161,15 @@ private fun WidgetBody(
         // Top row: vehicle rego + refresh only. No SAVO header branding.
         Row(modifier = GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             if (rego.isNotEmpty()) {
-                // Tap the rego plate to switch vehicles. Use the typed
-                // actionSendBroadcast<Receiver>() helper — the Intent overload
-                // is unreliable across Glance versions/launchers.
+                // Tap the rego plate to switch vehicles. Use Glance's own
+                // ActionCallback so the tapped widget instance redraws
+                // immediately instead of waiting on launcher broadcast timing.
                 Box(
                     contentAlignment = Alignment.Center,
                     modifier = GlanceModifier
                         .defaultWeight()
                         .clickable(
-                            if (showSwitch) actionSendBroadcast<NextVehicleReceiver>()
+                            if (showSwitch) actionRunCallback<NextVehicleAction>()
                             else actionRunCallback<RefreshWidgetAction>()
                         )
                         .background(plateBg)
@@ -557,32 +556,6 @@ class PrevVehicleAction : ActionCallback {
     }
 }
 
-class NextVehicleReceiver : android.content.BroadcastReceiver() {
-    override fun onReceive(context: Context, intent: Intent) {
-        val pendingResult = goAsync()
-        val prefs = context.getSharedPreferences(WIDGET_PREFS, Context.MODE_PRIVATE)
-        val count = prefs.getInt("vehicles_count", 0)
-        if (count > 1) {
-            val current = prefs.getInt("vehicles_current_index", 0)
-            val next = (current + 1) % count
-            prefs.edit()
-                .putInt("vehicles_current_index", next)
-                .putLong("widget_last_switch_ms", System.currentTimeMillis())
-                .commit()
-            GlobalScope.launch(Dispatchers.Main) {
-                try {
-                    SavoWidget().updateAll(context.applicationContext)
-                } finally {
-                    pendingResult.finish()
-                }
-            }
-            scheduleAutoAdvance(context)
-        } else {
-            pendingResult.finish()
-        }
-    }
-}
-
 private suspend fun cycleVehicle(context: Context, glanceId: GlanceId, delta: Int) {
     val prefs = context.getSharedPreferences(WIDGET_PREFS, Context.MODE_PRIVATE)
     val count = prefs.getInt("vehicles_count", 0)
@@ -594,12 +567,10 @@ private suspend fun cycleVehicle(context: Context, glanceId: GlanceId, delta: In
             .putLong("widget_last_switch_ms", System.currentTimeMillis())
             .commit()
     }
-    // Force both the tapped instance and any launcher-cached instances to redraw immediately.
+    // Force the tapped instance to redraw first; updateAll catches any other
+    // pinned instances without making the user wait for the launcher's refresh.
     SavoWidget().update(context, glanceId)
     SavoWidget().updateAll(context)
-    // Reset the auto-advance ticker so the user gets a fresh window after
-    // manually navigating.
-    scheduleAutoAdvance(context)
 }
 
 class RefreshWidgetAction : ActionCallback {
@@ -629,72 +600,14 @@ class SavoWidgetReceiver : GlanceAppWidgetReceiver() {
     ) {
         super.onUpdate(context, appWidgetManager, appWidgetIds)
         refreshFromBackend(context)
-        scheduleAutoAdvance(context)
     }
 
     override fun onEnabled(context: Context) {
         super.onEnabled(context)
-        scheduleAutoAdvance(context)
     }
 
     override fun onDisabled(context: Context) {
-        cancelAutoAdvance(context)
         super.onDisabled(context)
-    }
-}
-
-// Auto-advance: cycle to the next vehicle every 6s when 2+ vehicles are
-// present. Uses AlarmManager + a broadcast receiver to avoid keeping a
-// long-lived coroutine alive (Glance widgets are short-lived processes).
-private const val AUTO_ADVANCE_INTERVAL_MS = 6_000L
-private const val AUTO_ADVANCE_ACTION = "nz.co.savo.app.WIDGET_AUTO_ADVANCE"
-
-internal fun scheduleAutoAdvance(context: Context) {
-    val prefs = context.getSharedPreferences(WIDGET_PREFS, Context.MODE_PRIVATE)
-    if (prefs.getInt("vehicles_count", 0) < 2) {
-        cancelAutoAdvance(context)
-        return
-    }
-    val am = context.getSystemService(Context.ALARM_SERVICE) as android.app.AlarmManager
-    val pi = autoAdvancePendingIntent(context)
-    am.cancel(pi)
-    am.set(
-        android.app.AlarmManager.ELAPSED_REALTIME,
-        android.os.SystemClock.elapsedRealtime() + AUTO_ADVANCE_INTERVAL_MS,
-        pi,
-    )
-}
-
-internal fun cancelAutoAdvance(context: Context) {
-    val am = context.getSystemService(Context.ALARM_SERVICE) as android.app.AlarmManager
-    am.cancel(autoAdvancePendingIntent(context))
-}
-
-private fun autoAdvancePendingIntent(context: Context): android.app.PendingIntent {
-    val intent = Intent(context, AutoAdvanceReceiver::class.java).apply {
-        action = AUTO_ADVANCE_ACTION
-    }
-    return android.app.PendingIntent.getBroadcast(
-        context, 0, intent,
-        android.app.PendingIntent.FLAG_UPDATE_CURRENT or android.app.PendingIntent.FLAG_IMMUTABLE,
-    )
-}
-
-class AutoAdvanceReceiver : android.content.BroadcastReceiver() {
-    override fun onReceive(context: Context, intent: Intent) {
-        if (intent.action != AUTO_ADVANCE_ACTION) return
-        val prefs = context.getSharedPreferences(WIDGET_PREFS, Context.MODE_PRIVATE)
-        val count = prefs.getInt("vehicles_count", 0)
-        if (count > 1) {
-            val current = prefs.getInt("vehicles_current_index", 0)
-            val next = (current + 1) % count
-            prefs.edit().putInt("vehicles_current_index", next).commit()
-            GlobalScope.launch(Dispatchers.Main) {
-                SavoWidget().updateAll(context)
-            }
-        }
-        // Reschedule the next tick.
-        scheduleAutoAdvance(context)
     }
 }
 
