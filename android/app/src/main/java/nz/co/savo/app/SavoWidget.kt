@@ -82,34 +82,6 @@ class SavoWidget : GlanceAppWidget() {
                 prefs.getString("vehicle_${currentIndex}_roadside_name", "") ?: "Roadside"
             else "Roadside"
 
-            // Lambda actions: run in-process inside the widget host. Far more
-            // reliable than PendingIntent broadcasts — no launcher coalescing,
-            // no 30-second delay. Requires Glance 1.1+.
-            val onSwitch: () -> Unit = {
-                val p = context.getSharedPreferences(WIDGET_PREFS, Context.MODE_PRIVATE)
-                val cnt = p.getInt("vehicles_count", 0)
-                if (cnt > 1) {
-                    val cur = p.getInt("vehicles_current_index", 0)
-                    val next = ((cur + 1) % cnt + cnt) % cnt
-                    p.edit()
-                        .putInt("vehicles_current_index", next)
-                        .putLong("widget_last_switch_ms", System.currentTimeMillis())
-                        .commit()
-                }
-            }
-            val onRefresh: () -> Unit = {
-                val p = context.getSharedPreferences(WIDGET_PREFS, Context.MODE_PRIVATE)
-                val now = System.currentTimeMillis()
-                val last = p.getLong("last_manual_refresh_ms", 0L)
-                if (now - last >= REFRESH_COOLDOWN_MS) {
-                    p.edit()
-                        .putLong("last_manual_refresh_ms", now)
-                        .putBoolean("widget_refreshing", true)
-                        .commit()
-                    refreshFromBackend(context)
-                }
-            }
-
             WidgetBody(
                 rego = rego,
                 nickname = nickname,
@@ -122,8 +94,8 @@ class SavoWidget : GlanceAppWidget() {
                 currentIndexLabel = (currentIndex + 1).toString(),
                 vehicleCountLabel = vehicleCount.toString(),
                 isRefreshing = isRefreshing,
-                onSwitchTap = onSwitch,
-                onRefreshTap = onRefresh,
+                onSwitchTap = actionRunCallback<NextVehicleAction>(),
+                onRefreshTap = actionRunCallback<RefreshWidgetAction>(),
             )
         }
     }
@@ -164,8 +136,8 @@ private fun WidgetBody(
     currentIndexLabel: String,
     vehicleCountLabel: String,
     isRefreshing: Boolean,
-    onSwitchTap: () -> Unit,
-    onRefreshTap: () -> Unit,
+    onSwitchTap: androidx.glance.action.Action,
+    onRefreshTap: androidx.glance.action.Action,
 ) {
     val bg = ColorProvider(Color(0xFFFFFFFF))
     val brand = ColorProvider(Color(0xFF1E3A5F))
@@ -192,31 +164,17 @@ private fun WidgetBody(
         // Top row: vehicle rego + refresh only. No SAVO header branding.
         Row(modifier = GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             if (rego.isNotEmpty()) {
-                // Tap the rego plate to switch vehicles. Use Glance's own
-                // ActionCallback so the tapped widget instance redraws
-                // immediately instead of waiting on launcher broadcast timing.
-                Box(
-                    contentAlignment = Alignment.Center,
+                // Render the plate as one clickable bitmap, matching the SAVO
+                // logo approach below. This avoids flaky hit testing on nested
+                // Glance Box/Column/Text layouts inside launcher widgets.
+                Image(
+                    provider = ImageProvider(regoPlateBitmap(rego, if (showSwitch) "tap to switch (${currentIndexLabel}/${vehicleCountLabel})" else "tap to refresh")),
+                    contentDescription = if (showSwitch) "Switch vehicle" else "Refresh vehicle data",
                     modifier = GlanceModifier
                         .defaultWeight()
-                        .clickable(
-                            if (showSwitch) onSwitchTap else onRefreshTap
-                        )
-                        .background(plateBg)
-                        .cornerRadius(8.dp)
-                        .padding(horizontal = 14.dp, vertical = 8.dp)
-                ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(rego, style = TextStyle(color = plateFg, fontSize = 18.sp, fontWeight = FontWeight.Bold))
-                        if (showSwitch) {
-                            Text(
-                                "tap to switch (${currentIndexLabel}/${vehicleCountLabel})",
-                                style = TextStyle(color = plateFg, fontSize = 9.sp, fontWeight = FontWeight.Medium),
-                                maxLines = 1,
-                            )
-                        }
-                    }
-                }
+                        .height(54.dp)
+                        .clickable(if (showSwitch) onSwitchTap else onRefreshTap)
+                )
             } else {
                 Spacer(GlanceModifier.defaultWeight())
             }
