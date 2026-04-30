@@ -8,7 +8,7 @@ import android.graphics.Paint
 import android.graphics.RectF
 import android.net.Uri
 import androidx.compose.runtime.Composable
-import androidx.glance.LocalContext
+
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
