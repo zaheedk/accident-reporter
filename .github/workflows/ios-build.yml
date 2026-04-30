@@ -361,13 +361,17 @@ jobs:
       # Optional: upload to TestFlight via App Store Connect API
       # ──────────────────────────────────────────────────────────────────
       - name: Upload to TestFlight
-        if: steps.mode.outputs.mode == 'signed' && secrets.APPSTORE_PRIVATE_KEY != '' && secrets.APPSTORE_KEY_ID != '' && secrets.APPSTORE_ISSUER_ID != ''
+        if: steps.mode.outputs.mode == 'signed'
         env:
           ASC_KEY_ID: ${{ secrets.APPSTORE_KEY_ID }}
           ASC_ISSUER_ID: ${{ secrets.APPSTORE_ISSUER_ID }}
           ASC_KEY: ${{ secrets.APPSTORE_PRIVATE_KEY }}
         run: |
           set -e
+          if [ -z "$ASC_KEY_ID" ] || [ -z "$ASC_ISSUER_ID" ] || [ -z "$ASC_KEY" ]; then
+            echo "App Store Connect API secrets are not configured — skipping TestFlight upload."
+            exit 0
+          fi
           mkdir -p ~/.appstoreconnect/private_keys
           # APPSTORE_PRIVATE_KEY may be either base64 or the raw .p8 contents.
           # Detect a PEM header to decide.
