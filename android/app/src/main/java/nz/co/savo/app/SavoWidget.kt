@@ -204,8 +204,7 @@ private fun WidgetBody(
                     modifier = GlanceModifier
                         .defaultWeight()
                         .clickable(
-                            if (showSwitch) actionRunCallback<NextVehicleAction>()
-                            else actionRunCallback<RefreshWidgetAction>()
+                            if (showSwitch) onSwitchTap else onRefreshTap
                         )
                         .background(plateBg)
                         .cornerRadius(8.dp)
