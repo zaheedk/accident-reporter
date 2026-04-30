@@ -22,7 +22,6 @@ import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetReceiver
 import androidx.glance.appwidget.action.ActionCallback
 import androidx.glance.appwidget.action.actionRunCallback
-
 import androidx.glance.appwidget.action.actionStartActivity
 import androidx.glance.appwidget.cornerRadius
 import androidx.glance.appwidget.provideContent
@@ -83,6 +82,34 @@ class SavoWidget : GlanceAppWidget() {
                 prefs.getString("vehicle_${currentIndex}_roadside_name", "") ?: "Roadside"
             else "Roadside"
 
+            // Lambda actions: run in-process inside the widget host. Far more
+            // reliable than PendingIntent broadcasts — no launcher coalescing,
+            // no 30-second delay. Requires Glance 1.1+.
+            val onSwitch: () -> Unit = {
+                val p = context.getSharedPreferences(WIDGET_PREFS, Context.MODE_PRIVATE)
+                val cnt = p.getInt("vehicles_count", 0)
+                if (cnt > 1) {
+                    val cur = p.getInt("vehicles_current_index", 0)
+                    val next = ((cur + 1) % cnt + cnt) % cnt
+                    p.edit()
+                        .putInt("vehicles_current_index", next)
+                        .putLong("widget_last_switch_ms", System.currentTimeMillis())
+                        .commit()
+                }
+            }
+            val onRefresh: () -> Unit = {
+                val p = context.getSharedPreferences(WIDGET_PREFS, Context.MODE_PRIVATE)
+                val now = System.currentTimeMillis()
+                val last = p.getLong("last_manual_refresh_ms", 0L)
+                if (now - last >= REFRESH_COOLDOWN_MS) {
+                    p.edit()
+                        .putLong("last_manual_refresh_ms", now)
+                        .putBoolean("widget_refreshing", true)
+                        .commit()
+                    refreshFromBackend(context)
+                }
+            }
+
             WidgetBody(
                 rego = rego,
                 nickname = nickname,
@@ -95,6 +122,8 @@ class SavoWidget : GlanceAppWidget() {
                 currentIndexLabel = (currentIndex + 1).toString(),
                 vehicleCountLabel = vehicleCount.toString(),
                 isRefreshing = isRefreshing,
+                onSwitchTap = onSwitch,
+                onRefreshTap = onRefresh,
             )
         }
     }
@@ -135,6 +164,8 @@ private fun WidgetBody(
     currentIndexLabel: String,
     vehicleCountLabel: String,
     isRefreshing: Boolean,
+    onSwitchTap: () -> Unit,
+    onRefreshTap: () -> Unit,
 ) {
     val bg = ColorProvider(Color(0xFFFFFFFF))
     val brand = ColorProvider(Color(0xFF1E3A5F))
@@ -169,8 +200,7 @@ private fun WidgetBody(
                     modifier = GlanceModifier
                         .defaultWeight()
                         .clickable(
-                            if (showSwitch) actionRunCallback<NextVehicleAction>()
-                            else actionRunCallback<RefreshWidgetAction>()
+                            if (showSwitch) onSwitchTap else onRefreshTap
                         )
                         .background(plateBg)
                         .cornerRadius(8.dp)
@@ -199,7 +229,7 @@ private fun WidgetBody(
                     .size(40.dp)
                     .background(pillBg)
                     .cornerRadius(20.dp)
-                    .clickable(actionRunCallback<RefreshWidgetAction>())
+                    .clickable(onRefreshTap)
             ) {
                 Text(if (isRefreshing) "…" else "⟳", style = TextStyle(color = pillFg, fontSize = 18.sp, fontWeight = FontWeight.Bold))
             }
@@ -210,7 +240,7 @@ private fun WidgetBody(
                         .background(pillBg)
                         .cornerRadius(8.dp)
                         .padding(horizontal = 10.dp, vertical = 6.dp)
-                        .clickable(actionRunCallback<RefreshWidgetAction>())
+                    .clickable(onRefreshTap)
                 ) { Text("Tap ⟳", style = TextStyle(color = pillFg, fontSize = 11.sp, fontWeight = FontWeight.Bold)) }
             }
         }
@@ -228,7 +258,7 @@ private fun WidgetBody(
                     .background(pillBg)
                     .cornerRadius(20.dp)
                     .padding(horizontal = 12.dp, vertical = 18.dp)
-                    .clickable(actionRunCallback<RefreshWidgetAction>())
+                    .clickable(onRefreshTap)
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(
