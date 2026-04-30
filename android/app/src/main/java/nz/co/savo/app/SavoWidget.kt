@@ -524,12 +524,23 @@ private fun ActionButton(
     }
 }
 
-private fun deepLinkIntent(uri: String): Intent =
-    Intent(Intent.ACTION_VIEW, Uri.parse(uri)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+private fun deepLinkIntent(uri: String): Intent {
+    // Target our app explicitly. Widget PendingIntents fire from the launcher
+    // process; without setPackage the launcher can't always resolve a custom
+    // savo:// scheme, so taps silently do nothing.
+    return Intent(Intent.ACTION_VIEW, Uri.parse(uri)).apply {
+        setPackage("nz.co.savo.app")
+        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+    }
+}
 
 private fun callIntent(phone: String): Intent {
-    if (phone.isBlank()) return Intent(Intent.ACTION_VIEW, Uri.parse("savo://dashboard"))
-        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    if (phone.isBlank()) {
+        return Intent(Intent.ACTION_VIEW, Uri.parse("savo://dashboard")).apply {
+            setPackage("nz.co.savo.app")
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        }
+    }
     return Intent(Intent.ACTION_DIAL, Uri.parse("tel:$phone"))
         .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
 }
