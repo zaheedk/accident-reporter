@@ -244,7 +244,7 @@ private fun WidgetBody(
                         .background(pillBg)
                         .cornerRadius(8.dp)
                         .padding(horizontal = 10.dp, vertical = 6.dp)
-                        .clickable(actionRunCallback<RefreshWidgetAction>())
+                    .clickable(onRefreshTap)
                 ) { Text("Tap ⟳", style = TextStyle(color = pillFg, fontSize = 11.sp, fontWeight = FontWeight.Bold)) }
             }
         }
