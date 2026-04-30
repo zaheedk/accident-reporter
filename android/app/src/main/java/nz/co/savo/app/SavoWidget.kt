@@ -86,6 +86,34 @@ class SavoWidget : GlanceAppWidget() {
                 prefs.getString("vehicle_${currentIndex}_roadside_name", "") ?: "Roadside"
             else "Roadside"
 
+            // Lambda actions: run in-process inside the widget host. Far more
+            // reliable than PendingIntent broadcasts — no launcher coalescing,
+            // no 30-second delay. Requires Glance 1.1+.
+            val onSwitch: () -> Unit = {
+                val p = context.getSharedPreferences(WIDGET_PREFS, Context.MODE_PRIVATE)
+                val cnt = p.getInt("vehicles_count", 0)
+                if (cnt > 1) {
+                    val cur = p.getInt("vehicles_current_index", 0)
+                    val next = ((cur + 1) % cnt + cnt) % cnt
+                    p.edit()
+                        .putInt("vehicles_current_index", next)
+                        .putLong("widget_last_switch_ms", System.currentTimeMillis())
+                        .commit()
+                }
+            }
+            val onRefresh: () -> Unit = {
+                val p = context.getSharedPreferences(WIDGET_PREFS, Context.MODE_PRIVATE)
+                val now = System.currentTimeMillis()
+                val last = p.getLong("last_manual_refresh_ms", 0L)
+                if (now - last >= REFRESH_COOLDOWN_MS) {
+                    p.edit()
+                        .putLong("last_manual_refresh_ms", now)
+                        .putBoolean("widget_refreshing", true)
+                        .commit()
+                    refreshFromBackend(context)
+                }
+            }
+
             WidgetBody(
                 rego = rego,
                 nickname = nickname,
@@ -98,6 +126,8 @@ class SavoWidget : GlanceAppWidget() {
                 currentIndexLabel = (currentIndex + 1).toString(),
                 vehicleCountLabel = vehicleCount.toString(),
                 isRefreshing = isRefreshing,
+                onSwitchTap = onSwitch,
+                onRefreshTap = onRefresh,
             )
         }
     }
