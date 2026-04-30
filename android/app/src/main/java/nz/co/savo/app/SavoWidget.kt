@@ -7,6 +7,7 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.RectF
 import android.net.Uri
+import android.os.Bundle
 import androidx.compose.runtime.Composable
 
 import androidx.compose.ui.graphics.Color
@@ -44,6 +45,27 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.TimeZone
 import java.util.concurrent.TimeUnit
+
+class WidgetVehicleSwitchActivity : android.app.Activity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        val prefs = getSharedPreferences(WIDGET_PREFS, Context.MODE_PRIVATE)
+        val count = prefs.getInt("vehicles_count", 0)
+        if (count > 1) {
+            val current = prefs.getInt("vehicles_current_index", 0)
+            val next = ((current + 1) % count + count) % count
+            prefs.edit()
+                .putInt("vehicles_current_index", next)
+                .putLong("widget_last_switch_ms", System.currentTimeMillis())
+                .commit()
+        }
+        GlobalScope.launch(Dispatchers.Main) {
+            SavoWidget().updateAll(this@WidgetVehicleSwitchActivity)
+            finish()
+            overridePendingTransition(0, 0)
+        }
+    }
+}
 
 private const val WIDGET_PREFS = "savo_widget_prefs"
 private const val REFRESH_COOLDOWN_MS = 60_000L
