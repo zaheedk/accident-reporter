@@ -231,11 +231,21 @@ jobs:
           mkdir -p "$PROFILES_DIR"
           PROFILE_PATH="$RUNNER_TEMP/profile.mobileprovision"
           echo "$PROFILE_BASE64" | base64 --decode > "$PROFILE_PATH"
-          # Extract UUID and copy with that filename (Xcode looks them up by UUID)
-          UUID=$(/usr/libexec/PlistBuddy -c "Print :UUID" /dev/stdin <<< "$(security cms -D -i "$PROFILE_PATH")")
+          PROFILE_PLIST=$(security cms -D -i "$PROFILE_PATH")
+          UUID=$(/usr/libexec/PlistBuddy -c "Print :UUID" /dev/stdin <<< "$PROFILE_PLIST")
+          PROFILE_NAME=$(/usr/libexec/PlistBuddy -c "Print :Name" /dev/stdin <<< "$PROFILE_PLIST")
+          PROFILE_APP_ID=$(/usr/libexec/PlistBuddy -c "Print :Entitlements:application-identifier" /dev/stdin <<< "$PROFILE_PLIST")
+          # Strip the team prefix (e.g. "ABCDE12345.nz.co.savo.app" -> "nz.co.savo.app")
+          PROFILE_BUNDLE_ID="${PROFILE_APP_ID#*.}"
           cp "$PROFILE_PATH" "$PROFILES_DIR/$UUID.mobileprovision"
-          echo "Installed provisioning profile UUID=$UUID"
+          echo "Installed provisioning profile: $PROFILE_NAME (UUID=$UUID, bundle=$PROFILE_BUNDLE_ID)"
           echo "PROFILE_UUID=$UUID" >> "$GITHUB_ENV"
+          echo "PROFILE_NAME=$PROFILE_NAME" >> "$GITHUB_ENV"
+          echo "PROFILE_BUNDLE_ID=$PROFILE_BUNDLE_ID" >> "$GITHUB_ENV"
+
+          # Show which signing identities are available in our keychain
+          echo "--- Available codesign identities ---"
+          security find-identity -v -p codesigning "$RUNNER_TEMP/build.keychain-db" || true
 
       - name: Build & archive (signed)
         if: steps.mode.outputs.mode == 'signed'
@@ -245,6 +255,9 @@ jobs:
         run: |
           set -e
           mkdir -p build
+          # Use the bundle ID embedded in the provisioning profile so the
+          # profile/identifier always match. Override the App target only —
+          # SPM dependencies must stay un-signed.
           xcodebuild \
             -project App.xcodeproj \
             -scheme "$SCHEME" \
@@ -252,9 +265,11 @@ jobs:
             -sdk iphoneos \
             -destination "generic/platform=iOS" \
             -archivePath build/App.xcarchive \
+            -allowProvisioningUpdates=NO \
             DEVELOPMENT_TEAM="$TEAM_ID" \
-            PRODUCT_BUNDLE_IDENTIFIER="$BUNDLE_ID" \
+            PRODUCT_BUNDLE_IDENTIFIER="$PROFILE_BUNDLE_ID" \
             CODE_SIGN_STYLE=Manual \
+            CODE_SIGN_IDENTITY="Apple Distribution" \
             PROVISIONING_PROFILE_SPECIFIER="$PROFILE_UUID" \
             archive
 
@@ -278,7 +293,7 @@ jobs:
             <true/>
             <key>provisioningProfiles</key>
             <dict>
-              <key>${BUNDLE_ID}</key>
+              <key>${PROFILE_BUNDLE_ID}</key>
               <string>${PROFILE_UUID}</string>
             </dict>
           </dict>
