@@ -155,6 +155,29 @@ class SavoWidget {
     }
 }
 
+private fun daysUntil(dateStr: String?): Int? {
+    if (dateStr.isNullOrBlank()) return null
+    return try {
+        // Accept ISO yyyy-MM-dd (and trim any time portion).
+        val datePart = dateStr.substring(0, minOf(10, dateStr.length))
+        val fmt = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.US).apply {
+            isLenient = false
+            timeZone = java.util.TimeZone.getTimeZone("UTC")
+        }
+        val target = fmt.parse(datePart) ?: return null
+        val nowCal = java.util.Calendar.getInstance(java.util.TimeZone.getTimeZone("UTC")).apply {
+            set(java.util.Calendar.HOUR_OF_DAY, 0)
+            set(java.util.Calendar.MINUTE, 0)
+            set(java.util.Calendar.SECOND, 0)
+            set(java.util.Calendar.MILLISECOND, 0)
+        }
+        val diffMs = target.time - nowCal.timeInMillis
+        (diffMs / (1000L * 60 * 60 * 24)).toInt()
+    } catch (_: Exception) {
+        null
+    }
+}
+
 private fun vehicleRegoAt(prefs: SharedPreferences, index: Int): String =
     (prefs.getString("vehicle_${index}_rego", "") ?: "").trim()
 
