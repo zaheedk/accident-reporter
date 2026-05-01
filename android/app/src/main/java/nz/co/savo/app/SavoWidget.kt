@@ -173,8 +173,8 @@ private fun nextVehicleIndex(prefs: SharedPreferences, current: Int, count: Int)
 }
 
 private fun regoPlateBitmap(rego: String): Bitmap {
-    val w = 800
-    val h = 240
+    val w = 700
+    val h = 200
     val bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
     val canvas = Canvas(bitmap)
     val bg = Paint(Paint.ANTI_ALIAS_FLAG).apply {
