@@ -6,6 +6,7 @@ import android.appwidget.AppWidgetProvider
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Paint
@@ -154,7 +155,19 @@ class SavoWidget : GlanceAppWidget() {
     }
 }
 
-private fun regoPlateBitmap(rego: String, helper: String): Bitmap {
+private fun vehicleRegoAt(prefs: SharedPreferences, index: Int): String =
+    (prefs.getString("vehicle_${index}_rego", "") ?: "").trim()
+
+private fun nextVehicleIndex(prefs: SharedPreferences, current: Int, count: Int): Int {
+    if (count <= 1) return current.coerceAtLeast(0)
+    for (step in 1..count) {
+        val candidate = ((current + step) % count + count) % count
+        if (vehicleRegoAt(prefs, candidate).isNotBlank()) return candidate
+    }
+    return current.coerceAtLeast(0) % count
+}
+
+private fun regoPlateBitmap(rego: String): Bitmap {
     val w = 800
     val h = 240
     val bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
@@ -175,19 +188,10 @@ private fun regoPlateBitmap(rego: String, helper: String): Bitmap {
         textSize = 110f
         typeface = android.graphics.Typeface.create(android.graphics.Typeface.SANS_SERIF, android.graphics.Typeface.BOLD)
     }
-    val helperPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = 0xFF111827.toInt()
-        alpha = 200
-        textAlign = Paint.Align.CENTER
-        isFakeBoldText = true
-        textSize = 36f
-    }
-
     val rect = RectF(8f, 8f, w - 8f, h - 8f)
     canvas.drawRoundRect(rect, 36f, 36f, bg)
     canvas.drawRoundRect(rect, 36f, 36f, stroke)
-    canvas.drawText(rego.ifBlank { "SAVO" }, w / 2f, 130f, regoPaint)
-    canvas.drawText(helper, w / 2f, 190f, helperPaint)
+    canvas.drawText(rego.trim(), w / 2f, 155f, regoPaint)
     return bitmap
 }
 
