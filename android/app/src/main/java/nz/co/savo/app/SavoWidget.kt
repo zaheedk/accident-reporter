@@ -43,16 +43,17 @@ private const val ACTION_NEXT_VEHICLE = "nz.co.savo.app.widget.NEXT_VEHICLE"
 private const val MAX_WIDGET_VEHICLES = 10
 
 /**
- * Transparent activity invoked by tapping the rego plate. It increments
- * the cached current-vehicle index, redraws all widget instances, then
- * finishes immediately. Using a real Activity (not a BroadcastReceiver
- * or Glance ActionCallback) gives us the most reliable tap behaviour
- * across launchers — taps land in <100ms with no coalescing.
+ * Classic AppWidgetProvider — handles drawing and tap wiring.
+ * Glance is no longer used; we kept the GlanceAppWidget class shell
+ * only so existing references in the bridge compile.
  */
-class WidgetVehicleSwitchActivity : android.app.Activity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        val prefs = getSharedPreferences(WIDGET_PREFS, Context.MODE_PRIVATE)
+class SavoWidgetReceiver : AppWidgetProvider() {
+
+    override fun onReceive(context: Context, intent: Intent) {
+        super.onReceive(context, intent)
+        if (intent.action != ACTION_NEXT_VEHICLE) return
+
+        val prefs = context.getSharedPreferences(WIDGET_PREFS, Context.MODE_PRIVATE)
         val count = prefs.getInt("vehicles_count", 0)
         if (count > 1) {
             val current = prefs.getInt("vehicles_current_index", 0)
@@ -63,18 +64,8 @@ class WidgetVehicleSwitchActivity : android.app.Activity() {
                     .commit()
             }
         }
-        SavoWidgetReceiver.redrawAll(applicationContext)
-        finish()
-        overridePendingTransition(0, 0)
+        redrawAll(context.applicationContext)
     }
-}
-
-/**
- * Classic AppWidgetProvider — handles drawing and tap wiring.
- * Glance is no longer used; we kept the GlanceAppWidget class shell
- * only so existing references in the bridge compile.
- */
-class SavoWidgetReceiver : AppWidgetProvider() {
 
     override fun onUpdate(
         context: Context,
@@ -133,14 +124,12 @@ class SavoWidgetReceiver : AppWidgetProvider() {
         }
 
         private fun switchPendingIntent(context: Context): PendingIntent {
-            val intent = Intent(context, WidgetVehicleSwitchActivity::class.java).apply {
+            val intent = Intent(context, SavoWidgetReceiver::class.java).apply {
                 action = ACTION_NEXT_VEHICLE
-                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_NO_ANIMATION)
             }
             val flags = PendingIntent.FLAG_UPDATE_CURRENT or
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) PendingIntent.FLAG_IMMUTABLE else 0
-            // requestCode = 0 is fine since the intent is identical for all instances.
-            return PendingIntent.getActivity(context, 0, intent, flags)
+            return PendingIntent.getBroadcast(context, 1001, intent, flags)
         }
     }
 }
