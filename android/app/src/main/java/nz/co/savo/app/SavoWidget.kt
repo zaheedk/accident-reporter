@@ -177,25 +177,27 @@ private fun regoPlateBitmap(rego: String): Bitmap {
     val h = 200
     val bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
     val canvas = Canvas(bitmap)
+    // SAVO navy plate, white text — matches site header
     val bg = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = 0xFFFBBF24.toInt()
+        color = 0xFF1E3A5F.toInt()
         style = Paint.Style.FILL
     }
     val stroke = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = 0xFF111827.toInt()
+        color = 0xFF14283F.toInt()
         style = Paint.Style.STROKE
-        strokeWidth = 8f
+        strokeWidth = 6f
     }
     val regoPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = 0xFF111827.toInt()
+        color = 0xFFFFFFFF.toInt()
         textAlign = Paint.Align.CENTER
         isFakeBoldText = true
-        textSize = 110f
-        typeface = android.graphics.Typeface.create(android.graphics.Typeface.SANS_SERIF, android.graphics.Typeface.BOLD)
+        textSize = 108f
+        letterSpacing = 0.04f
+        typeface = android.graphics.Typeface.create("sans-serif-medium", android.graphics.Typeface.BOLD)
     }
     val rect = RectF(8f, 8f, w - 8f, h - 8f)
-    canvas.drawRoundRect(rect, 36f, 36f, bg)
-    canvas.drawRoundRect(rect, 36f, 36f, stroke)
+    canvas.drawRoundRect(rect, 28f, 28f, bg)
+    canvas.drawRoundRect(rect, 28f, 28f, stroke)
     canvas.drawText(rego.trim(), w / 2f, 135f, regoPaint)
     return bitmap
 }
@@ -244,7 +246,7 @@ private fun expiryRingsBitmap(rego: String, wof: String, ins: String): Bitmap {
     val stroke = 10f
 
     val trackPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = 0xFFE5E7EB.toInt()
+        color = 0xFFE8E8E5.toInt()
         style = Paint.Style.STROKE
         strokeWidth = stroke
         strokeCap = Paint.Cap.ROUND
@@ -255,16 +257,19 @@ private fun expiryRingsBitmap(rego: String, wof: String, ins: String): Bitmap {
         strokeCap = Paint.Cap.ROUND
     }
     val centerText = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = 0xFF111827.toInt()
+        color = 0xFF1E3A5F.toInt()
         textAlign = Paint.Align.CENTER
         isFakeBoldText = true
         textSize = 26f
+        typeface = android.graphics.Typeface.create("sans-serif-medium", android.graphics.Typeface.BOLD)
     }
     val labelPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = 0xFFFFFFFF.toInt()
         textAlign = Paint.Align.CENTER
         isFakeBoldText = true
         textSize = 20f
+        letterSpacing = 0.08f
+        typeface = android.graphics.Typeface.create("sans-serif-medium", android.graphics.Typeface.BOLD)
     }
 
     for (i in 0..2) {
@@ -276,10 +281,10 @@ private fun expiryRingsBitmap(rego: String, wof: String, ins: String): Bitmap {
             else -> (d.toFloat() / 365f).coerceIn(0f, 1f)
         }
         val color = when {
-            d == null -> 0xFF9CA3AF.toInt()
+            d == null -> 0xFFB8BCC4.toInt()
             d < 7 -> 0xFFDC2626.toInt()
             d < 30 -> 0xFFF59E0B.toInt()
-            else -> 0xFF10B981.toInt()
+            else -> 0xFF1E3A5F.toInt()
         }
         val radius = ringMax * (0.5f + 0.5f * fraction)
         val rect = RectF(cx - radius, cy - radius, cx + radius, cy + radius)
