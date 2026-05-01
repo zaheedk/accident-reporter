@@ -2,49 +2,58 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="10dp"
+    android:orientation="horizontal"
+    android:padding="14dp"
     android:background="@drawable/widget_background">
 
+    <!-- Left: rego title + legend + rings (tap to cycle vehicle) -->
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:orientation="horizontal"
-        android:gravity="center_vertical">
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="2.2"
+        android:orientation="vertical"
+        android:clickable="true"
+        android:focusable="true"
+        android:id="@+id/widget_plate_area">
 
         <ImageView
-            android:id="@+id/widget_savo_icon"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:id="@+id/widget_plate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:scaleType="fitStart"
+            android:contentDescription="@string/widget_label" />
+
+        <ImageView
+            android:id="@+id/widget_rings"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_marginTop="6dp"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
+            android:contentDescription="@string/widget_label" />
+    </LinearLayout>
+
+    <!-- Right: SAVO logo + label (tap → quick capture) -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:layout_marginStart="8dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:id="@+id/widget_savo_icon">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
             android:layout_weight="1"
             android:adjustViewBounds="true"
             android:scaleType="fitCenter"
             android:src="@drawable/ic_savo_widget"
-            android:clickable="true"
-            android:focusable="true"
             android:contentDescription="@string/widget_label" />
-
-        <ImageView
-            android:id="@+id/widget_plate"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="2.4"
-            android:layout_marginStart="8dp"
-            android:adjustViewBounds="true"
-            android:scaleType="fitCenter"
-            android:contentDescription="@string/widget_label"
-            android:clickable="true"
-            android:focusable="true" />
     </LinearLayout>
-
-    <ImageView
-        android:id="@+id/widget_rings"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="0.9"
-        android:layout_marginTop="6dp"
-        android:adjustViewBounds="true"
-        android:scaleType="fitCenter"
-        android:contentDescription="@string/widget_label" />
 </LinearLayout>
