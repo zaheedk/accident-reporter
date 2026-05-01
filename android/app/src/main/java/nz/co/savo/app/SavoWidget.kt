@@ -14,8 +14,6 @@ import android.graphics.RectF
 import android.os.Build
 import android.os.Bundle
 import android.widget.RemoteViews
-import androidx.glance.appwidget.GlanceAppWidget
-import androidx.glance.appwidget.GlanceAppWidgetReceiver
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -146,13 +144,10 @@ class SavoWidgetReceiver : AppWidgetProvider() {
 }
 
 /**
- * Kept as a compile-time placeholder for any lingering references in
- * the JS bridge — not actually used by Glance anymore.
+ * Compile-time placeholder for lingering references in the JS bridge.
+ * Glance is no longer used — we render via classic RemoteViews.
  */
-class SavoWidget : GlanceAppWidget() {
-    override suspend fun provideGlance(context: Context, id: androidx.glance.GlanceId) {
-        // No-op: we render via classic RemoteViews now.
-    }
+class SavoWidget {
     suspend fun updateAll(context: Context) {
         withContext(Dispatchers.Main) {
             SavoWidgetReceiver.redrawAll(context)
