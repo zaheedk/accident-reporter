@@ -246,7 +246,7 @@ private fun expiryRingsBitmap(rego: String, wof: String, ins: String): Bitmap {
     val stroke = 10f
 
     val trackPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = 0xFFE5E7EB.toInt()
+        color = 0xFFE8E8E5.toInt()
         style = Paint.Style.STROKE
         strokeWidth = stroke
         strokeCap = Paint.Cap.ROUND
@@ -257,16 +257,19 @@ private fun expiryRingsBitmap(rego: String, wof: String, ins: String): Bitmap {
         strokeCap = Paint.Cap.ROUND
     }
     val centerText = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = 0xFF111827.toInt()
+        color = 0xFF1E3A5F.toInt()
         textAlign = Paint.Align.CENTER
         isFakeBoldText = true
         textSize = 26f
+        typeface = android.graphics.Typeface.create("sans-serif-medium", android.graphics.Typeface.BOLD)
     }
     val labelPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = 0xFFFFFFFF.toInt()
         textAlign = Paint.Align.CENTER
         isFakeBoldText = true
         textSize = 20f
+        letterSpacing = 0.08f
+        typeface = android.graphics.Typeface.create("sans-serif-medium", android.graphics.Typeface.BOLD)
     }
 
     for (i in 0..2) {
