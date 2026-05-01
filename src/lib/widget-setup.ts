@@ -78,6 +78,7 @@ export async function writeWidgetVehiclesToDevice(vehicles: any[]): Promise<bool
     const mapped = vehicles
       .filter((v) => (v.isActive ?? v.is_active ?? true) !== false)
       .map(normaliseWidgetVehicle)
+      .filter((v) => v.rego.trim().length > 0)
       .sort((a, b) => Number(b.isDefault) - Number(a.isDefault));
     const w = window as any;
     if (w.SavoWidgetBridge?.setVehicles) {

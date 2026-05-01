@@ -6,6 +6,7 @@ import android.appwidget.AppWidgetProvider
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Paint
@@ -55,10 +56,12 @@ class WidgetVehicleSwitchActivity : android.app.Activity() {
         val count = prefs.getInt("vehicles_count", 0)
         if (count > 1) {
             val current = prefs.getInt("vehicles_current_index", 0)
-            val next = ((current + 1) % count + count) % count
-            prefs.edit()
-                .putInt("vehicles_current_index", next)
-                .commit()
+            val next = nextVehicleIndex(prefs, current, count)
+            if (next != current) {
+                prefs.edit()
+                    .putInt("vehicles_current_index", next)
+                    .commit()
+            }
         }
         SavoWidgetReceiver.redrawAll(applicationContext)
         finish()
@@ -108,19 +111,17 @@ class SavoWidgetReceiver : AppWidgetProvider() {
         ) {
             val prefs = context.getSharedPreferences(WIDGET_PREFS, Context.MODE_PRIVATE)
             val count = prefs.getInt("vehicles_count", 0)
-            val index = if (count > 0) {
-                prefs.getInt("vehicles_current_index", 0).coerceAtLeast(0) % count
-            } else 0
-            val rego = if (count > 0) prefs.getString("vehicle_${index}_rego", "") ?: "" else ""
-
-            val helper = when {
-                count == 0 -> "tap to set up"
-                count == 1 -> "tap to refresh"
-                else -> "tap to switch (${index + 1}/${count})"
+            val rawIndex = if (count > 0) prefs.getInt("vehicles_current_index", 0).coerceAtLeast(0) % count else 0
+            val index = when {
+                count <= 0 -> 0
+                vehicleRegoAt(prefs, rawIndex).isNotBlank() -> rawIndex
+                else -> nextVehicleIndex(prefs, rawIndex, count)
             }
+            if (index != rawIndex) prefs.edit().putInt("vehicles_current_index", index).commit()
+            val rego = if (count > 0) vehicleRegoAt(prefs, index) else ""
 
             val views = RemoteViews(context.packageName, R.layout.widget_savo)
-            views.setImageViewBitmap(R.id.widget_plate, regoPlateBitmap(rego, helper))
+            views.setImageViewBitmap(R.id.widget_plate, regoPlateBitmap(rego))
             views.setOnClickPendingIntent(R.id.widget_plate, switchPendingIntent(context))
 
             appWidgetManager.updateAppWidget(appWidgetId, views)
@@ -154,7 +155,19 @@ class SavoWidget : GlanceAppWidget() {
     }
 }
 
-private fun regoPlateBitmap(rego: String, helper: String): Bitmap {
+private fun vehicleRegoAt(prefs: SharedPreferences, index: Int): String =
+    (prefs.getString("vehicle_${index}_rego", "") ?: "").trim()
+
+private fun nextVehicleIndex(prefs: SharedPreferences, current: Int, count: Int): Int {
+    if (count <= 1) return current.coerceAtLeast(0)
+    for (step in 1..count) {
+        val candidate = ((current + step) % count + count) % count
+        if (vehicleRegoAt(prefs, candidate).isNotBlank()) return candidate
+    }
+    return current.coerceAtLeast(0) % count
+}
+
+private fun regoPlateBitmap(rego: String): Bitmap {
     val w = 800
     val h = 240
     val bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
@@ -175,19 +188,10 @@ private fun regoPlateBitmap(rego: String, helper: String): Bitmap {
         textSize = 110f
         typeface = android.graphics.Typeface.create(android.graphics.Typeface.SANS_SERIF, android.graphics.Typeface.BOLD)
     }
-    val helperPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = 0xFF111827.toInt()
-        alpha = 200
-        textAlign = Paint.Align.CENTER
-        isFakeBoldText = true
-        textSize = 36f
-    }
-
     val rect = RectF(8f, 8f, w - 8f, h - 8f)
     canvas.drawRoundRect(rect, 36f, 36f, bg)
     canvas.drawRoundRect(rect, 36f, 36f, stroke)
-    canvas.drawText(rego.ifBlank { "SAVO" }, w / 2f, 130f, regoPaint)
-    canvas.drawText(helper, w / 2f, 190f, helperPaint)
+    canvas.drawText(rego.trim(), w / 2f, 155f, regoPaint)
     return bitmap
 }
 
@@ -218,21 +222,27 @@ internal fun refreshFromBackend(context: Context) {
             val json = JSONObject(body)
 
             val vehiclesArr: JSONArray? = json.optJSONArray("vehicles")
-            val total = minOf(MAX_WIDGET_VEHICLES, vehiclesArr?.length() ?: 0)
+            val totalAvailable = vehiclesArr?.length() ?: 0
             val prevCount = prefs.getInt("vehicles_count", 0)
-            if (total == 0 && prevCount > 0) return@launch
+            if (totalAvailable == 0 && prevCount > 0) return@launch
 
             val editor = prefs.edit()
             for (i in 0 until maxOf(prevCount, MAX_WIDGET_VEHICLES)) {
                 editor.remove("vehicle_${i}_rego")
             }
-            editor.putInt("vehicles_count", total)
+            var total = 0
             if (vehiclesArr != null) {
-                for (i in 0 until total) {
+                for (i in 0 until totalAvailable) {
+                    if (total >= MAX_WIDGET_VEHICLES) break
                     val v = vehiclesArr.optJSONObject(i) ?: continue
-                    editor.putString("vehicle_${i}_rego", v.optString("rego", ""))
+                    val rego = v.optString("rego", "").trim()
+                    if (rego.isBlank()) continue
+                    editor.putString("vehicle_${total}_rego", rego)
+                    total++
                 }
             }
+            if (total == 0 && prevCount > 0) return@launch
+            editor.putInt("vehicles_count", total)
             val curIdx = prefs.getInt("vehicles_current_index", 0)
             if (total == 0 || curIdx >= total) editor.putInt("vehicles_current_index", 0)
             editor.commit()

@@ -53,18 +53,22 @@ class WidgetBridge(private val context: Context) {
                 editor.remove("vehicle_${i}_roadside_name")
                 editor.remove("vehicle_${i}_roadside_phone")
             }
-            val total = minOf(vehicles.length(), 10)
-            editor.putInt("vehicles_count", total)
-            for (i in 0 until total) {
+            var total = 0
+            for (i in 0 until vehicles.length()) {
+                if (total >= 10) break
                 val v = vehicles.optJSONObject(i) ?: continue
-                editor.putString("vehicle_${i}_rego", v.optString("rego", ""))
-                editor.putString("vehicle_${i}_nickname", v.optString("nickname", ""))
-                editor.putString("vehicle_${i}_rego_expiry", v.optString("regoExpiry", ""))
-                editor.putString("vehicle_${i}_wof_expiry", v.optString("wofExpiry", ""))
-                editor.putString("vehicle_${i}_insurance_expiry", v.optString("insuranceExpiry", ""))
-                editor.putString("vehicle_${i}_roadside_name", v.optString("roadsideName", "Roadside"))
-                editor.putString("vehicle_${i}_roadside_phone", v.optString("roadsidePhone", ""))
+                val rego = v.optString("rego", "").trim()
+                if (rego.isBlank()) continue
+                editor.putString("vehicle_${total}_rego", rego)
+                editor.putString("vehicle_${total}_nickname", v.optString("nickname", ""))
+                editor.putString("vehicle_${total}_rego_expiry", v.optString("regoExpiry", ""))
+                editor.putString("vehicle_${total}_wof_expiry", v.optString("wofExpiry", ""))
+                editor.putString("vehicle_${total}_insurance_expiry", v.optString("insuranceExpiry", ""))
+                editor.putString("vehicle_${total}_roadside_name", v.optString("roadsideName", "Roadside"))
+                editor.putString("vehicle_${total}_roadside_phone", v.optString("roadsidePhone", ""))
+                total++
             }
+            editor.putInt("vehicles_count", total)
             val current = prefs.getInt("vehicles_current_index", 0)
             if (total == 0 || current >= total) editor.putInt("vehicles_current_index", 0)
             editor.putBoolean("widget_refreshing", false)
