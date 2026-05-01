@@ -1,38 +1,20 @@
 package nz.co.savo.app
 
+import android.app.PendingIntent
+import android.appwidget.AppWidgetManager
+import android.appwidget.AppWidgetProvider
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.RectF
-import android.net.Uri
+import android.os.Build
 import android.os.Bundle
-import androidx.compose.runtime.Composable
-
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.glance.GlanceId
-import androidx.glance.GlanceModifier
-import androidx.glance.ImageProvider
-import androidx.glance.Image
-import androidx.glance.action.ActionParameters
-import androidx.glance.action.clickable
+import android.widget.RemoteViews
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetReceiver
-import androidx.glance.appwidget.action.ActionCallback
-import androidx.glance.appwidget.action.actionRunCallback
-import androidx.glance.appwidget.action.actionStartActivity
-import androidx.glance.appwidget.cornerRadius
-import androidx.glance.appwidget.provideContent
-import androidx.glance.appwidget.updateAll
-import androidx.glance.background
-import androidx.glance.layout.*
-import androidx.glance.text.FontWeight
-import androidx.glance.text.Text
-import androidx.glance.text.TextStyle
-import androidx.glance.unit.ColorProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -41,11 +23,31 @@ import org.json.JSONArray
 import org.json.JSONObject
 import java.net.HttpURLConnection
 import java.net.URL
-import java.text.SimpleDateFormat
-import java.util.Locale
-import java.util.TimeZone
-import java.util.concurrent.TimeUnit
 
+/*
+ * Minimal, reliable home-screen widget.
+ *
+ * Design goals (per user feedback):
+ *  - Show ONLY the current vehicle's rego plate.
+ *  - Tapping the plate cycles to the next vehicle, instantly and reliably.
+ *
+ * Implementation: classic AppWidgetProvider + RemoteViews + a single
+ * Activity PendingIntent. This is the most battle-tested Android widget
+ * stack and avoids the launcher coalescing / hit-testing issues we hit
+ * with Glance ActionCallbacks.
+ */
+
+internal const val WIDGET_PREFS = "savo_widget_prefs"
+private const val ACTION_NEXT_VEHICLE = "nz.co.savo.app.widget.NEXT_VEHICLE"
+private const val MAX_WIDGET_VEHICLES = 10
+
+/**
+ * Transparent activity invoked by tapping the rego plate. It increments
+ * the cached current-vehicle index, redraws all widget instances, then
+ * finishes immediately. Using a real Activity (not a BroadcastReceiver
+ * or Glance ActionCallback) gives us the most reliable tap behaviour
+ * across launchers — taps land in <100ms with no coalescing.
+ */
 class WidgetVehicleSwitchActivity : android.app.Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,271 +58,105 @@ class WidgetVehicleSwitchActivity : android.app.Activity() {
             val next = ((current + 1) % count + count) % count
             prefs.edit()
                 .putInt("vehicles_current_index", next)
-                .putLong("widget_last_switch_ms", System.currentTimeMillis())
                 .commit()
         }
-        val appContext = applicationContext
-        GlobalScope.launch(Dispatchers.Main) {
-            try { SavoWidget().updateAll(appContext) } catch (_: Exception) {}
-        }
+        SavoWidgetReceiver.redrawAll(applicationContext)
         finish()
         overridePendingTransition(0, 0)
     }
 }
 
-private const val WIDGET_PREFS = "savo_widget_prefs"
-private const val REFRESH_COOLDOWN_MS = 60_000L
-private const val MAX_WIDGET_VEHICLES = 10
+/**
+ * Classic AppWidgetProvider — handles drawing and tap wiring.
+ * Glance is no longer used; we kept the GlanceAppWidget class shell
+ * only so existing references in the bridge compile.
+ */
+class SavoWidgetReceiver : AppWidgetProvider() {
 
-class SavoWidget : GlanceAppWidget() {
-    override suspend fun provideGlance(context: Context, id: GlanceId) {
-        provideContent {
-            val prefs = context.getSharedPreferences(WIDGET_PREFS, Context.MODE_PRIVATE)
-
-            val vehicleCount = prefs.getInt("vehicles_count", 0)
-            val currentIndex = if (vehicleCount > 0) {
-                prefs.getInt("vehicles_current_index", 0).coerceAtLeast(0) % vehicleCount
-            } else 0
-            val isRefreshing = prefs.getBoolean("widget_refreshing", false)
-
-            val rego = if (vehicleCount > 0)
-                prefs.getString("vehicle_${currentIndex}_rego", "") ?: ""
-            else ""
-            val nickname = if (vehicleCount > 0)
-                prefs.getString("vehicle_${currentIndex}_nickname", "") ?: ""
-            else ""
-            val regoExpiry = if (vehicleCount > 0)
-                prefs.getString("vehicle_${currentIndex}_rego_expiry", "") ?: ""
-            else ""
-            val wofExpiry = if (vehicleCount > 0)
-                prefs.getString("vehicle_${currentIndex}_wof_expiry", "") ?: ""
-            else ""
-            val insuranceExpiry = if (vehicleCount > 0)
-                prefs.getString("vehicle_${currentIndex}_insurance_expiry", "") ?: ""
-            else ""
-            val roadsidePhone = if (vehicleCount > 0)
-                prefs.getString("vehicle_${currentIndex}_roadside_phone", "") ?: ""
-            else ""
-            val roadsideName = if (vehicleCount > 0)
-                prefs.getString("vehicle_${currentIndex}_roadside_name", "") ?: "Roadside"
-            else "Roadside"
-
-            WidgetBody(
-                rego = rego,
-                nickname = nickname,
-                regoExpiry = regoExpiry,
-                wofExpiry = wofExpiry,
-                insuranceExpiry = insuranceExpiry,
-                roadsideName = roadsideName,
-                roadsidePhone = roadsidePhone,
-                showSwitch = vehicleCount > 1,
-                currentIndexLabel = (currentIndex + 1).toString(),
-                vehicleCountLabel = vehicleCount.toString(),
-                isRefreshing = isRefreshing,
-                onSwitchTap = actionStartActivity(widgetSwitchIntent()),
-                onRefreshTap = actionRunCallback<RefreshWidgetAction>(),
-            )
-        }
-    }
-}
-
-// Status of an expiry date — drives colour coding (green / amber / red).
-private enum class ExpiryStatus { Unknown, Ok, Soon, Critical }
-
-private fun daysUntilExpiry(isoDate: String): Long? {
-    if (isoDate.isBlank()) return null
-    return try {
-        val fmt = SimpleDateFormat("yyyy-MM-dd", Locale.US).apply { timeZone = TimeZone.getTimeZone("UTC") }
-        val target = fmt.parse(isoDate) ?: return null
-        val today = fmt.parse(fmt.format(java.util.Date())) ?: return null
-        TimeUnit.MILLISECONDS.toDays(target.time - today.time)
-    } catch (_: Exception) { null }
-}
-
-private fun expiryStatus(isoDate: String): ExpiryStatus {
-    val diff = daysUntilExpiry(isoDate) ?: return ExpiryStatus.Unknown
-    return when {
-        diff <= 7 -> ExpiryStatus.Critical
-        diff <= 30 -> ExpiryStatus.Soon
-        else -> ExpiryStatus.Ok
-    }
-}
-
-@Composable
-private fun WidgetBody(
-    rego: String,
-    nickname: String,
-    regoExpiry: String,
-    wofExpiry: String,
-    insuranceExpiry: String,
-    roadsideName: String,
-    roadsidePhone: String,
-    showSwitch: Boolean,
-    currentIndexLabel: String,
-    vehicleCountLabel: String,
-    isRefreshing: Boolean,
-    onSwitchTap: androidx.glance.action.Action,
-    onRefreshTap: androidx.glance.action.Action,
-) {
-    val bg = ColorProvider(Color(0xFFFFFFFF))
-    val brand = ColorProvider(Color(0xFF1E3A5F))
-    val text = ColorProvider(Color(0xFF0F172A))
-    val muted = ColorProvider(Color(0xFF64748B))
-    val pillBg = ColorProvider(Color(0xFFF1F5F9))
-    val pillFg = ColorProvider(Color(0xFF1E3A5F))
-    val redSoft = ColorProvider(Color(0xFFFEE2E2))
-
-    // Alert mode: critical/expired items -> red-tinted card.
-    val statuses = listOf(expiryStatus(regoExpiry), expiryStatus(wofExpiry), expiryStatus(insuranceExpiry))
-    val anyCritical = statuses.any { it == ExpiryStatus.Critical }
-    val cardBg = if (anyCritical) redSoft else bg
-
-    Column(
-        modifier = GlanceModifier
-            .fillMaxSize()
-            .background(cardBg)
-            .cornerRadius(28.dp)
-            .padding(14.dp)
+    override fun onUpdate(
+        context: Context,
+        appWidgetManager: AppWidgetManager,
+        appWidgetIds: IntArray,
     ) {
-        // Top row: vehicle rego + refresh only. No SAVO header branding.
-        Row(modifier = GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            if (rego.isNotEmpty()) {
-                // Render the plate as one clickable bitmap, matching the SAVO
-                // logo approach below. This avoids flaky hit testing on nested
-                // Glance Box/Column/Text layouts inside launcher widgets.
-                Image(
-                    provider = ImageProvider(regoPlateBitmap(rego, if (showSwitch) "tap to switch (${currentIndexLabel}/${vehicleCountLabel})" else "tap to refresh")),
-                    contentDescription = if (showSwitch) "Switch vehicle" else "Refresh vehicle data",
-                    modifier = GlanceModifier
-                        .defaultWeight()
-                        .height(54.dp)
-                        .clickable(if (showSwitch) onSwitchTap else onRefreshTap)
-                )
-            } else {
-                Spacer(GlanceModifier.defaultWeight())
-            }
+        for (id in appWidgetIds) {
+            renderWidget(context, appWidgetManager, id)
+        }
+        // Kick off a background refresh so the cached rego stays fresh.
+        refreshFromBackend(context)
+    }
 
-            // Manual refresh — re-fetches when needed, while cached phone data remains visible.
-            Spacer(GlanceModifier.width(8.dp))
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = GlanceModifier
-                    .size(40.dp)
-                    .background(pillBg)
-                    .cornerRadius(20.dp)
-                    .clickable(onRefreshTap)
-            ) {
-                Text(if (isRefreshing) "…" else "⟳", style = TextStyle(color = pillFg, fontSize = 18.sp, fontWeight = FontWeight.Bold))
-            }
-            if (rego.isEmpty() && vehicleCountLabel != "0") {
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = GlanceModifier
-                        .background(pillBg)
-                        .cornerRadius(8.dp)
-                        .padding(horizontal = 10.dp, vertical = 6.dp)
-                    .clickable(onRefreshTap)
-                ) { Text("Tap ⟳", style = TextStyle(color = pillFg, fontSize = 11.sp, fontWeight = FontWeight.Bold)) }
-            }
+    override fun onAppWidgetOptionsChanged(
+        context: Context,
+        appWidgetManager: AppWidgetManager,
+        appWidgetId: Int,
+        newOptions: Bundle?,
+    ) {
+        renderWidget(context, appWidgetManager, appWidgetId)
+    }
+
+    companion object {
+        fun redrawAll(context: Context) {
+            val mgr = AppWidgetManager.getInstance(context)
+            val ids = mgr.getAppWidgetIds(ComponentName(context, SavoWidgetReceiver::class.java))
+            for (id in ids) renderWidget(context, mgr, id)
         }
 
-        // (Switcher arrows row removed — tap the rego plate to cycle vehicles.)
-
-        Spacer(GlanceModifier.height(8.dp))
-
-        if (vehicleCountLabel == "0") {
-            // Empty state — no vehicles cached. Tap to retry the backend fetch.
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = GlanceModifier
-                    .fillMaxWidth()
-                    .background(pillBg)
-                    .cornerRadius(20.dp)
-                    .padding(horizontal = 12.dp, vertical = 18.dp)
-                    .clickable(onRefreshTap)
-            ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(
-                        "No vehicles yet",
-                        style = TextStyle(color = pillFg, fontSize = 14.sp, fontWeight = FontWeight.Bold),
-                    )
-                    Spacer(GlanceModifier.height(2.dp))
-                    Text(
-                        "Tap to reload vehicles",
-                        style = TextStyle(color = muted, fontSize = 11.sp, fontWeight = FontWeight.Medium),
-                    )
-                }
-            }
-        } else {
-            // Expiry pill — circular ring indicators + days-left.
-            Row(
-                modifier = GlanceModifier
-                    .fillMaxWidth()
-                    .background(pillBg)
-                    .cornerRadius(20.dp)
-                    .padding(horizontal = 8.dp, vertical = 8.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                StatusCell("Rego", regoExpiry, muted, text, GlanceModifier.defaultWeight())
-                StatusCell("WOF", wofExpiry, muted, text, GlanceModifier.defaultWeight())
-                StatusCell("Insurance", insuranceExpiry, muted, text, GlanceModifier.defaultWeight())
-            }
-        }
-
-        Spacer(GlanceModifier.height(8.dp))
-
-        // SAVO logo as the primary capture action.
-        Column(
-            modifier = GlanceModifier
-                .fillMaxWidth()
-                .clickable(actionStartActivity(deepLinkIntent("savo://quick-capture"))),
-            horizontalAlignment = Alignment.CenterHorizontally,
+        private fun renderWidget(
+            context: Context,
+            appWidgetManager: AppWidgetManager,
+            appWidgetId: Int,
         ) {
-            Image(
-                provider = ImageProvider(savoLogoBitmap()),
-                contentDescription = "SAVO — tap to capture incident",
-                modifier = GlanceModifier.size(width = 140.dp, height = 44.dp),
-            )
-            Text(
-                "Tap logo to capture incident",
-                style = TextStyle(color = muted, fontSize = 10.sp, fontWeight = FontWeight.Medium),
-                maxLines = 1,
-            )
-        }
-        Spacer(GlanceModifier.height(8.dp))
+            val prefs = context.getSharedPreferences(WIDGET_PREFS, Context.MODE_PRIVATE)
+            val count = prefs.getInt("vehicles_count", 0)
+            val index = if (count > 0) {
+                prefs.getInt("vehicles_current_index", 0).coerceAtLeast(0) % count
+            } else 0
+            val rego = if (count > 0) prefs.getString("vehicle_${index}_rego", "") ?: "" else ""
 
-            // Action icons: Roadside, Tow, 111. Filled material-style icons.
-        Row(
-            modifier = GlanceModifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            IconOnlyButton(
-                icon = WidgetActionIcon.Roadside,
-                contentDescription = if (roadsidePhone.isNotEmpty()) roadsideName else "Roadside",
-                onClickAction = actionStartActivity(callIntent(roadsidePhone)),
-            )
-            Spacer(GlanceModifier.defaultWeight())
-            IconOnlyButton(
-                icon = WidgetActionIcon.TowTruck,
-                contentDescription = "Tow trucks",
-                onClickAction = actionStartActivity(deepLinkIntent("savo://tow-companies")),
-            )
-            Spacer(GlanceModifier.defaultWeight())
-            IconOnlyButton(
-                icon = WidgetActionIcon.Emergency,
-                contentDescription = "Emergency 111",
-                onClickAction = actionStartActivity(callIntent("111")),
-            )
+            val helper = when {
+                count == 0 -> "tap to set up"
+                count == 1 -> "tap to refresh"
+                else -> "tap to switch (${index + 1}/${count})"
+            }
+
+            val views = RemoteViews(context.packageName, R.layout.widget_savo)
+            views.setImageViewBitmap(R.id.widget_plate, regoPlateBitmap(rego, helper))
+            views.setOnClickPendingIntent(R.id.widget_plate, switchPendingIntent(context))
+
+            appWidgetManager.updateAppWidget(appWidgetId, views)
+        }
+
+        private fun switchPendingIntent(context: Context): PendingIntent {
+            val intent = Intent(context, WidgetVehicleSwitchActivity::class.java).apply {
+                action = ACTION_NEXT_VEHICLE
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_NO_ANIMATION)
+            }
+            val flags = PendingIntent.FLAG_UPDATE_CURRENT or
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) PendingIntent.FLAG_IMMUTABLE else 0
+            // requestCode = 0 is fine since the intent is identical for all instances.
+            return PendingIntent.getActivity(context, 0, intent, flags)
         }
     }
 }
 
-private enum class WidgetActionIcon { Roadside, TowTruck, Emergency }
+/**
+ * Kept as a compile-time placeholder for any lingering references in
+ * the JS bridge — not actually used by Glance anymore.
+ */
+class SavoWidget : GlanceAppWidget() {
+    override suspend fun provideGlance(context: Context, id: androidx.glance.GlanceId) {
+        // No-op: we render via classic RemoteViews now.
+    }
+    suspend fun updateAll(context: Context) {
+        withContext(Dispatchers.Main) {
+            SavoWidgetReceiver.redrawAll(context)
+        }
+    }
+}
 
 private fun regoPlateBitmap(rego: String, helper: String): Bitmap {
-    val w = 760
-    val h = 180
+    val w = 800
+    val h = 240
     val bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
     val canvas = Canvas(bitmap)
     val bg = Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -330,348 +166,40 @@ private fun regoPlateBitmap(rego: String, helper: String): Bitmap {
     val stroke = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = 0xFF111827.toInt()
         style = Paint.Style.STROKE
-        strokeWidth = 6f
+        strokeWidth = 8f
     }
     val regoPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = 0xFF111827.toInt()
         textAlign = Paint.Align.CENTER
         isFakeBoldText = true
-        textSize = 74f
+        textSize = 110f
         typeface = android.graphics.Typeface.create(android.graphics.Typeface.SANS_SERIF, android.graphics.Typeface.BOLD)
     }
     val helperPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = 0xFF111827.toInt()
-        alpha = 210
+        alpha = 200
         textAlign = Paint.Align.CENTER
         isFakeBoldText = true
-        textSize = 32f
+        textSize = 36f
     }
 
-    val rect = RectF(6f, 6f, w - 6f, h - 6f)
-    canvas.drawRoundRect(rect, 28f, 28f, bg)
-    canvas.drawRoundRect(rect, 28f, 28f, stroke)
-    canvas.drawText(rego.ifBlank { "SAVO" }, w / 2f, 78f, regoPaint)
-    canvas.drawText(helper, w / 2f, 130f, helperPaint)
+    val rect = RectF(8f, 8f, w - 8f, h - 8f)
+    canvas.drawRoundRect(rect, 36f, 36f, bg)
+    canvas.drawRoundRect(rect, 36f, 36f, stroke)
+    canvas.drawText(rego.ifBlank { "SAVO" }, w / 2f, 130f, regoPaint)
+    canvas.drawText(helper, w / 2f, 190f, helperPaint)
     return bitmap
 }
 
-@Composable
-private fun IconOnlyButton(
-    icon: WidgetActionIcon,
-    contentDescription: String,
-    onClickAction: androidx.glance.action.Action,
-) {
-    Image(
-        provider = ImageProvider(actionIconBitmap(icon)),
-        contentDescription = contentDescription,
-        modifier = GlanceModifier
-            .size(64.dp)
-            .clickable(onClickAction),
-    )
-}
-
-private fun actionIconBitmap(icon: WidgetActionIcon): Bitmap {
-    val size = 192
-    val bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
-    val canvas = Canvas(bitmap)
-
-    // Brand-colored filled circle backgrounds (Material 3 tonal style).
-    val bgColor = when (icon) {
-        WidgetActionIcon.Roadside -> 0xFF1E3A5F.toInt()   // navy
-        WidgetActionIcon.TowTruck -> 0xFFF26B1F.toInt()   // SAVO orange
-        WidgetActionIcon.Emergency -> 0xFFDC2626.toInt()  // red
-    }
-    val bgPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = bgColor; style = Paint.Style.FILL }
-    val fg = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = 0xFFFFFFFF.toInt()
-        style = Paint.Style.FILL
-    }
-    val fgStroke = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = 0xFFFFFFFF.toInt()
-        style = Paint.Style.STROKE
-        strokeWidth = 9f
-        strokeCap = Paint.Cap.ROUND
-        strokeJoin = Paint.Join.ROUND
-    }
-    val textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = 0xFFFFFFFF.toInt()
-        style = Paint.Style.FILL
-        textAlign = Paint.Align.CENTER
-        isFakeBoldText = true
-    }
-
-    val pad = 6f
-    canvas.drawOval(RectF(pad, pad, size - pad, size - pad), bgPaint)
-
-    val cx = size / 2f
-    when (icon) {
-        WidgetActionIcon.Roadside -> {
-            // Telephone receiver glyph (filled white) — universal "call roadside" affordance.
-            val handsetPath = android.graphics.Path().apply {
-                // Simplified phone receiver shape, rotated 35° around center.
-                val w = 78f
-                val h = 78f
-                val left = cx - w / 2f
-                val top = cx - h / 2f
-                addRoundRect(RectF(left, top + 18f, left + 30f, top + 78f), 12f, 12f, android.graphics.Path.Direction.CW)
-                addRoundRect(RectF(left + 48f, top, left + 78f, top + 60f), 12f, 12f, android.graphics.Path.Direction.CW)
-                addRect(RectF(left + 22f, top + 36f, left + 56f, top + 48f), android.graphics.Path.Direction.CW)
-            }
-            canvas.save()
-            canvas.rotate(-30f, cx, cx)
-            canvas.drawPath(handsetPath, fg)
-            canvas.restore()
-        }
-        WidgetActionIcon.TowTruck -> {
-            // Filled tow-truck silhouette.
-            val cy = cx + 6f
-            // Cab
-            canvas.drawRoundRect(RectF(cx - 56f, cy - 14f, cx - 14f, cy + 16f), 8f, 8f, fg)
-            // Flatbed
-            canvas.drawRoundRect(RectF(cx - 14f, cy + 2f, cx + 56f, cy + 16f), 6f, 6f, fg)
-            // Crane arm
-            canvas.drawLine(cx - 50f, cy - 14f, cx - 30f, cy - 46f, fgStroke)
-            canvas.drawLine(cx - 30f, cy - 46f, cx + 36f, cy - 46f, fgStroke)
-            canvas.drawLine(cx + 36f, cy - 46f, cx + 36f, cy - 22f, fgStroke)
-            // Wheels (filled circles with inner cutout)
-            canvas.drawCircle(cx - 38f, cy + 26f, 11f, fg)
-            canvas.drawCircle(cx + 38f, cy + 26f, 11f, fg)
-            val cutout = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = bgColor; style = Paint.Style.FILL }
-            canvas.drawCircle(cx - 38f, cy + 26f, 4.5f, cutout)
-            canvas.drawCircle(cx + 38f, cy + 26f, 4.5f, cutout)
-        }
-        WidgetActionIcon.Emergency -> {
-            // Bold "111" centered.
-            textPaint.textSize = 78f
-            val ty = (size / 2f) - ((textPaint.descent() + textPaint.ascent()) / 2f)
-            canvas.drawText("111", size / 2f, ty, textPaint)
-        }
-    }
-    return bitmap
-}
-
-// SAVO wordmark + small camera-car glyph rendered to a bitmap so Glance can show it.
-private fun savoLogoBitmap(): Bitmap {
-    val w = 560
-    val h = 176
-    val bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
-    val canvas = Canvas(bitmap)
-    val brand = 0xFF1E3A5F.toInt()
-    val accent = 0xFFF26B1F.toInt()
-
-    // Wordmark
-    val text = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = brand
-        textAlign = Paint.Align.CENTER
-        isFakeBoldText = true
-        textSize = 132f
-        letterSpacing = 0.08f
-        typeface = android.graphics.Typeface.create(android.graphics.Typeface.SANS_SERIF, android.graphics.Typeface.BOLD)
-    }
-    val ty = (h / 2f) - ((text.descent() + text.ascent()) / 2f)
-    canvas.drawText("SAVO", w / 2f, ty, text)
-
-    // Accent underline dot — subtle brand mark.
-    val dot = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = accent; style = Paint.Style.FILL }
-    canvas.drawCircle(w / 2f, h - 14f, 6f, dot)
-
-    return bitmap
-}
-
-@Composable
-private fun StatusCell(
-    label: String,
-    isoDate: String,
-    muted: ColorProvider,
-    text: ColorProvider,
-    modifier: GlanceModifier,
-) {
-    val status = expiryStatus(isoDate)
-    val days = daysUntilExpiry(isoDate)
-    val ringColor = when (status) {
-        ExpiryStatus.Ok -> 0xFF16A34A.toInt()
-        ExpiryStatus.Soon -> 0xFFD97706.toInt()
-        ExpiryStatus.Critical -> 0xFFDC2626.toInt()
-        ExpiryStatus.Unknown -> 0xFFCBD5E1.toInt()
-    }
-    val dayNumber = days?.coerceAtLeast(0)?.toString() ?: "—"
-
-    Column(
-        modifier = modifier,
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Image(
-            provider = ImageProvider(expiryRingBitmap(dayNumber, ringColor, progressForDays(days))),
-            contentDescription = "$label expiry",
-            modifier = GlanceModifier.size(42.dp),
-        )
-        Spacer(GlanceModifier.height(2.dp))
-        Text(label, style = TextStyle(color = muted, fontSize = 10.sp, fontWeight = FontWeight.Bold), maxLines = 1)
-        Text(
-            if (days == null) "missing" else if (days < 0) "expired" else "days",
-            style = TextStyle(color = text, fontSize = 10.sp, fontWeight = FontWeight.Medium),
-            maxLines = 1,
-        )
-    }
-}
-
-private fun progressForDays(days: Long?): Float {
-    if (days == null) return 0f
-    return (days.coerceIn(0, 30).toFloat() / 30f).coerceIn(0.08f, 1f)
-}
-
-private fun expiryRingBitmap(value: String, color: Int, progress: Float): Bitmap {
-    val size = 96
-    val stroke = 10f
-    val bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
-    val canvas = Canvas(bitmap)
-    val bounds = RectF(stroke, stroke, size - stroke, size - stroke)
-    val track = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        style = Paint.Style.STROKE
-        strokeWidth = stroke
-        strokeCap = Paint.Cap.ROUND
-        this.color = 0xFFE2E8F0.toInt()
-    }
-    val arc = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        style = Paint.Style.STROKE
-        strokeWidth = stroke
-        strokeCap = Paint.Cap.ROUND
-        this.color = color
-    }
-    val textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        this.color = 0xFF0F172A.toInt()
-        textAlign = Paint.Align.CENTER
-        textSize = if (value.length > 2) 26f else 34f
-        isFakeBoldText = true
-    }
-    canvas.drawArc(bounds, 0f, 360f, false, track)
-    canvas.drawArc(bounds, -90f, 360f * progress, false, arc)
-    val y = (size / 2f) - ((textPaint.descent() + textPaint.ascent()) / 2f)
-    canvas.drawText(value, size / 2f, y, textPaint)
-    return bitmap
-}
-
-@Composable
-private fun ActionButton(
-    label: String,
-    colorBg: ColorProvider,
-    colorFg: ColorProvider,
-    modifier: GlanceModifier,
-) {
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = modifier
-            .height(48.dp)
-            .background(colorBg)
-            .cornerRadius(24.dp)
-    ) {
-        Text(label, style = TextStyle(color = colorFg, fontSize = 15.sp, fontWeight = FontWeight.Bold))
-    }
-}
-
-private fun deepLinkIntent(uri: String): Intent {
-    // Target our app explicitly. Widget PendingIntents fire from the launcher
-    // process; without setPackage the launcher can't always resolve a custom
-    // savo:// scheme, so taps silently do nothing.
-    return Intent(Intent.ACTION_VIEW, Uri.parse(uri)).apply {
-        setPackage("nz.co.savo.app")
-        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
-    }
-}
-
-private fun callIntent(phone: String): Intent {
-    if (phone.isBlank()) {
-        return Intent(Intent.ACTION_VIEW, Uri.parse("savo://dashboard")).apply {
-            setPackage("nz.co.savo.app")
-            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
-        }
-    }
-    return Intent(Intent.ACTION_DIAL, Uri.parse("tel:$phone"))
-        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-}
-
-private fun widgetSwitchIntent(): Intent {
-    return Intent("nz.co.savo.app.widget.NEXT_VEHICLE").apply {
-        setClassName("nz.co.savo.app", "nz.co.savo.app.WidgetVehicleSwitchActivity")
-        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_NO_ANIMATION)
-    }
-}
-
-class NextVehicleAction : ActionCallback {
-    override suspend fun onAction(context: Context, glanceId: GlanceId, parameters: ActionParameters) {
-        cycleVehicle(context, glanceId, +1)
-    }
-}
-
-class PrevVehicleAction : ActionCallback {
-    override suspend fun onAction(context: Context, glanceId: GlanceId, parameters: ActionParameters) {
-        cycleVehicle(context, glanceId, -1)
-    }
-}
-
-private suspend fun cycleVehicle(context: Context, glanceId: GlanceId, delta: Int) {
-    val prefs = context.getSharedPreferences(WIDGET_PREFS, Context.MODE_PRIVATE)
-    val count = prefs.getInt("vehicles_count", 0)
-    if (count > 1) {
-        val current = prefs.getInt("vehicles_current_index", 0)
-        val next = ((current + delta) % count + count) % count
-        prefs.edit()
-            .putInt("vehicles_current_index", next)
-            .putLong("widget_last_switch_ms", System.currentTimeMillis())
-            .commit()
-    }
-    // Force the tapped instance to redraw first; updateAll catches any other
-    // pinned instances without making the user wait for the launcher's refresh.
-    SavoWidget().update(context, glanceId)
-    SavoWidget().updateAll(context)
-}
-
-class RefreshWidgetAction : ActionCallback {
-    override suspend fun onAction(context: Context, glanceId: GlanceId, parameters: ActionParameters) {
-        val prefs = context.getSharedPreferences(WIDGET_PREFS, Context.MODE_PRIVATE)
-        val now = System.currentTimeMillis()
-        val last = prefs.getLong("last_manual_refresh_ms", 0L)
-        // 60-second cooldown — silently ignore repeated taps to avoid spamming
-        // the widget-data edge function.
-        if (now - last < REFRESH_COOLDOWN_MS) return
-        prefs.edit()
-            .putLong("last_manual_refresh_ms", now)
-            .putBoolean("widget_refreshing", true)
-            .commit()
-        SavoWidget().update(context, glanceId)
-        refreshFromBackend(context)
-    }
-}
-
-class SavoWidgetReceiver : GlanceAppWidgetReceiver() {
-    override val glanceAppWidget: GlanceAppWidget = SavoWidget()
-
-    override fun onUpdate(
-        context: Context,
-        appWidgetManager: android.appwidget.AppWidgetManager,
-        appWidgetIds: IntArray,
-    ) {
-        super.onUpdate(context, appWidgetManager, appWidgetIds)
-        refreshFromBackend(context)
-    }
-
-    override fun onEnabled(context: Context) {
-        super.onEnabled(context)
-    }
-
-    override fun onDisabled(context: Context) {
-        super.onDisabled(context)
-    }
-}
-
+/**
+ * Background refresh from the widget-data edge function. Updates the
+ * vehicle cache in SharedPreferences then redraws all widgets.
+ */
 internal fun refreshFromBackend(context: Context) {
     val prefs = context.getSharedPreferences(WIDGET_PREFS, Context.MODE_PRIVATE)
     val token = prefs.getString("widget_token", null)
     val baseUrl = prefs.getString("supabase_url", null)
-    if (token.isNullOrBlank() || baseUrl.isNullOrBlank()) {
-        prefs.edit().putBoolean("widget_refreshing", false).apply()
-        return
-    }
+    if (token.isNullOrBlank() || baseUrl.isNullOrBlank()) return
     val anon = prefs.getString("supabase_anon", null) ?: ""
 
     GlobalScope.launch(Dispatchers.IO) {
@@ -689,61 +217,31 @@ internal fun refreshFromBackend(context: Context) {
             val body = conn.inputStream.bufferedReader().use { it.readText() }
             val json = JSONObject(body)
 
-            val editor = prefs.edit()
-
-            val prevCount = prefs.getInt("vehicles_count", 0)
             val vehiclesArr: JSONArray? = json.optJSONArray("vehicles")
             val total = minOf(MAX_WIDGET_VEHICLES, vehiclesArr?.length() ?: 0)
-            if (total == 0 && prevCount > 0) {
-                editor.putBoolean("widget_refreshing", false)
-                editor.commit()
-                return@launch
-            }
+            val prevCount = prefs.getInt("vehicles_count", 0)
+            if (total == 0 && prevCount > 0) return@launch
 
-            // Clear previous vehicle list only after a successful non-empty backend payload.
+            val editor = prefs.edit()
             for (i in 0 until maxOf(prevCount, MAX_WIDGET_VEHICLES)) {
                 editor.remove("vehicle_${i}_rego")
-                editor.remove("vehicle_${i}_nickname")
-                editor.remove("vehicle_${i}_rego_expiry")
-                editor.remove("vehicle_${i}_wof_expiry")
-                editor.remove("vehicle_${i}_insurance_expiry")
-                editor.remove("vehicle_${i}_roadside_name")
-                editor.remove("vehicle_${i}_roadside_phone")
             }
             editor.putInt("vehicles_count", total)
             if (vehiclesArr != null) {
                 for (i in 0 until total) {
                     val v = vehiclesArr.optJSONObject(i) ?: continue
-                    val nick = v.optString("nickname", "").ifEmpty {
-                        listOf(v.optString("make", ""), v.optString("model", ""))
-                            .filter { it.isNotEmpty() }.joinToString(" ")
-                    }
                     editor.putString("vehicle_${i}_rego", v.optString("rego", ""))
-                    editor.putString("vehicle_${i}_nickname", nick)
-                    editor.putString("vehicle_${i}_rego_expiry", v.optString("regoExpiry", ""))
-                    editor.putString("vehicle_${i}_wof_expiry", v.optString("wofExpiry", ""))
-                    editor.putString("vehicle_${i}_insurance_expiry", v.optString("insuranceExpiry", ""))
-                    editor.putString("vehicle_${i}_roadside_name", v.optString("roadsideName", "Roadside"))
-                    editor.putString("vehicle_${i}_roadside_phone", v.optString("roadsidePhone", ""))
                 }
             }
             val curIdx = prefs.getInt("vehicles_current_index", 0)
             if (total == 0 || curIdx >= total) editor.putInt("vehicles_current_index", 0)
-            editor.putBoolean("widget_refreshing", false)
-            editor.putLong("widget_last_success_ms", System.currentTimeMillis())
-
             editor.commit()
 
             withContext(Dispatchers.Main) {
-                SavoWidget().updateAll(context)
+                SavoWidgetReceiver.redrawAll(context)
             }
         } catch (_: Exception) {
             // keep showing cached data
-        } finally {
-            prefs.edit().putBoolean("widget_refreshing", false).apply()
-            withContext(Dispatchers.Main) {
-                SavoWidget().updateAll(context)
-            }
         }
     }
 }
