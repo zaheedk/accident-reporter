@@ -177,25 +177,27 @@ private fun regoPlateBitmap(rego: String): Bitmap {
     val h = 200
     val bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
     val canvas = Canvas(bitmap)
+    // SAVO navy plate, white text — matches site header
     val bg = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = 0xFFFBBF24.toInt()
+        color = 0xFF1E3A5F.toInt()
         style = Paint.Style.FILL
     }
     val stroke = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = 0xFF111827.toInt()
+        color = 0xFF14283F.toInt()
         style = Paint.Style.STROKE
-        strokeWidth = 8f
+        strokeWidth = 6f
     }
     val regoPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = 0xFF111827.toInt()
+        color = 0xFFFFFFFF.toInt()
         textAlign = Paint.Align.CENTER
         isFakeBoldText = true
-        textSize = 110f
-        typeface = android.graphics.Typeface.create(android.graphics.Typeface.SANS_SERIF, android.graphics.Typeface.BOLD)
+        textSize = 108f
+        letterSpacing = 0.04f
+        typeface = android.graphics.Typeface.create("sans-serif-medium", android.graphics.Typeface.BOLD)
     }
     val rect = RectF(8f, 8f, w - 8f, h - 8f)
-    canvas.drawRoundRect(rect, 36f, 36f, bg)
-    canvas.drawRoundRect(rect, 36f, 36f, stroke)
+    canvas.drawRoundRect(rect, 28f, 28f, bg)
+    canvas.drawRoundRect(rect, 28f, 28f, stroke)
     canvas.drawText(rego.trim(), w / 2f, 135f, regoPaint)
     return bitmap
 }
