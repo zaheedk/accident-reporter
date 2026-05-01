@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="64dp"
-    android:height="72dp"
+    android:width="120dp"
+    android:height="134dp"
     android:viewportWidth="500"
     android:viewportHeight="560">
-    <!-- White rounded background -->
+    <!-- White rounded card background -->
     <path
         android:pathData="M0,100 L0,460 A100,100 0 0 0 100,560 L400,560 A100,100 0 0 0 500,460 L500,100 A100,100 0 0 0 400,0 L100,0 A100,100 0 0 0 0,100 Z"
         android:fillColor="#FFFFFF"
         android:strokeColor="#E8E8E5"
         android:strokeWidth="2"/>
+
     <!-- Car body -->
     <path
-        android:pathData="M68,285 L432,285 L432,367 A18,18 0 0 1 414,385 L86,385 A18,18 0 0 1 68,367 Z"
+        android:pathData="M50,285 L450,285 L450,367 A18,18 0 0 1 432,385 L68,385 A18,18 0 0 1 50,367 Z"
         android:fillColor="#1e3a5f"/>
     <!-- Cabin -->
     <path
@@ -26,7 +27,8 @@
     <path
         android:pathData="M50,322 L450,322 L450,326 L50,326 Z"
         android:fillColor="#2a4a6f"/>
-    <!-- Left wheel outer -->
+
+    <!-- Left wheel -->
     <path
         android:pathData="M148,385 m-52,0 a52,52 0 1,0 104,0 a52,52 0 1,0 -104,0"
         android:fillColor="#1e3a5f"/>
@@ -46,13 +48,14 @@
     <path
         android:pathData="M352,385 m-20,0 a20,20 0 1,0 40,0 a20,20 0 1,0 -40,0"
         android:fillColor="#1e3a5f"/>
+
     <!-- Camera housing -->
     <path
         android:pathData="M212,165 L288,165 L288,195 L212,195 Z"
         android:fillColor="#1e3a5f"/>
     <!-- Camera lens -->
     <path
-        android:pathData="M250,218 m-52,0 a52,52 0 1,0 104,0 a52,52 0 1,0 -104,0"
+        android:pathData="M250,218 m-48,0 a48,48 0 1,0 96,0 a48,48 0 1,0 -96,0"
         android:fillColor="#6B7280"/>
     <path
         android:pathData="M250,218 m-37,0 a37,37 0 1,0 74,0 a37,37 0 1,0 -74,0"
@@ -63,19 +66,16 @@
     <path
         android:pathData="M250,218 m-11,0 a11,11 0 1,0 22,0 a11,11 0 1,0 -22,0"
         android:fillColor="#1e3a5f"/>
+
     <!-- SAVO wordmark -->
-    <path
-        android:pathData="M250,480 m0,0"
-        android:fillColor="#1e3a5f"/>
-    <!-- Letters S A V O drawn as filled paths -->
-    <group android:translateX="120" android:translateY="445">
+    <group android:translateX="138" android:translateY="450">
         <!-- S -->
-        <path android:fillColor="#1e3a5f" android:pathData="M0,30 C0,15 12,5 28,5 C42,5 52,12 54,22 L42,26 C40,20 35,17 28,17 C20,17 14,21 14,28 C14,35 20,37 30,40 C46,44 56,50 56,62 C56,76 44,86 28,86 C12,86 0,78 -2,66 L10,62 C12,70 18,75 28,75 C36,75 42,71 42,64 C42,57 36,55 26,52 C10,48 0,42 0,30 Z"/>
+        <path android:fillColor="#1e3a5f" android:pathData="M0,52 C0,32 16,18 36,18 C54,18 66,28 68,42 L54,46 C52,38 46,33 36,33 C26,33 18,39 18,48 C18,57 26,60 38,64 C58,69 70,77 70,92 C70,108 56,120 36,120 C16,120 2,110 0,96 L14,92 C16,102 24,107 36,107 C46,107 54,102 54,94 C54,86 46,83 34,79 C14,74 0,68 0,52 Z"/>
         <!-- A -->
-        <path android:fillColor="#1e3a5f" android:pathData="M75,86 L100,8 L116,8 L141,86 L127,86 L121,68 L95,68 L89,86 Z M99,57 L117,57 L108,30 Z"/>
+        <path android:fillColor="#1e3a5f" android:pathData="M85,118 L116,20 L136,20 L167,118 L150,118 L142,96 L110,96 L102,118 Z M115,82 L137,82 L126,48 Z"/>
         <!-- V -->
-        <path android:fillColor="#1e3a5f" android:pathData="M155,8 L169,8 L188,68 L207,8 L221,8 L195,86 L181,86 Z"/>
+        <path android:fillColor="#1e3a5f" android:pathData="M175,20 L192,20 L215,98 L238,20 L255,20 L223,118 L207,118 Z"/>
         <!-- O -->
-        <path android:fillColor="#1e3a5f" android:pathData="M270,46 C270,68 256,86 235,86 C214,86 200,68 200,46 C200,24 214,6 235,6 C256,6 270,24 270,46 Z M214,46 C214,60 222,73 235,73 C248,73 256,60 256,46 C256,32 248,19 235,19 C222,19 214,32 214,46 Z" android:strokeWidth="0"/>
+        <path android:fillColor="#1e3a5f" android:pathData="M335,69 C335,98 318,120 292,120 C266,120 249,98 249,69 C249,40 266,18 292,18 C318,18 335,40 335,69 Z M267,69 C267,87 277,103 292,103 C307,103 317,87 317,69 C317,51 307,35 292,35 C277,35 267,51 267,69 Z"/>
     </group>
 </vector>
