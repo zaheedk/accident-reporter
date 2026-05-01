@@ -120,8 +120,13 @@ class SavoWidgetReceiver : AppWidgetProvider() {
             if (index != rawIndex) prefs.edit().putInt("vehicles_current_index", index).commit()
             val rego = if (count > 0) vehicleRegoAt(prefs, index) else ""
 
+            val regoExpiry = if (count > 0) prefs.getString("vehicle_${index}_rego_expiry", "") ?: "" else ""
+            val wofExpiry = if (count > 0) prefs.getString("vehicle_${index}_wof_expiry", "") ?: "" else ""
+            val insExpiry = if (count > 0) prefs.getString("vehicle_${index}_insurance_expiry", "") ?: "" else ""
+
             val views = RemoteViews(context.packageName, R.layout.widget_savo)
             views.setImageViewBitmap(R.id.widget_plate, regoPlateBitmap(rego))
+            views.setImageViewBitmap(R.id.widget_rings, expiryRingsBitmap(regoExpiry, wofExpiry, insExpiry))
             views.setOnClickPendingIntent(R.id.widget_plate, switchPendingIntent(context))
 
             appWidgetManager.updateAppWidget(appWidgetId, views)
@@ -196,9 +201,121 @@ private fun regoPlateBitmap(rego: String): Bitmap {
 }
 
 /**
- * Background refresh from the widget-data edge function. Updates the
- * vehicle cache in SharedPreferences then redraws all widgets.
+ * Parse a yyyy-MM-dd (or ISO) date string and return whole days from
+ * today until that date. Returns null if unparseable / blank.
  */
+private fun daysUntil(dateStr: String): Int? {
+    val s = dateStr.trim()
+    if (s.isBlank()) return null
+    return try {
+        val datePart = s.substring(0, minOf(10, s.length))
+        val fmt = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.US)
+        fmt.isLenient = false
+        val target = fmt.parse(datePart) ?: return null
+        val cal = java.util.Calendar.getInstance().apply {
+            set(java.util.Calendar.HOUR_OF_DAY, 0)
+            set(java.util.Calendar.MINUTE, 0)
+            set(java.util.Calendar.SECOND, 0)
+            set(java.util.Calendar.MILLISECOND, 0)
+        }
+        val today = cal.timeInMillis
+        val diff = target.time - today
+        Math.floor(diff / (1000.0 * 60 * 60 * 24)).toInt()
+    } catch (_: Exception) {
+        null
+    }
+}
+
+/**
+ * Render three progress rings (REGO, WOF, Insurance) showing days
+ * remaining. Ring fill is proportional to days/365 (clamped 0..1).
+ * Color: green >=30 days, amber <30, red <7. Grey if unknown.
+ */
+private fun expiryRingsBitmap(rego: String, wof: String, ins: String): Bitmap {
+    val w = 900
+    val h = 320
+    val bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
+    val canvas = Canvas(bitmap)
+    val labels = listOf("REGO", "WOF", "INS")
+    val days = listOf(daysUntil(rego), daysUntil(wof), daysUntil(ins))
+    val cellW = w / 3f
+    val ringMax = 110f
+    val cy = 130f
+    val stroke = 18f
+
+    val trackPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = 0xFFE5E7EB.toInt()
+        style = Paint.Style.STROKE
+        strokeWidth = stroke
+        strokeCap = Paint.Cap.ROUND
+    }
+    val arcPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.STROKE
+        strokeWidth = stroke
+        strokeCap = Paint.Cap.ROUND
+    }
+    val centerText = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = 0xFF111827.toInt()
+        textAlign = Paint.Align.CENTER
+        isFakeBoldText = true
+        textSize = 44f
+    }
+    val unitText = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = 0xFF6B7280.toInt()
+        textAlign = Paint.Align.CENTER
+        textSize = 22f
+    }
+    val labelPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = 0xFFFFFFFF.toInt()
+        textAlign = Paint.Align.CENTER
+        isFakeBoldText = true
+        textSize = 32f
+    }
+
+    for (i in 0..2) {
+        val cx = cellW * i + cellW / 2f
+        val d = days[i]
+        val fraction = when {
+            d == null -> 0f
+            d <= 0 -> 0f
+            else -> (d.toFloat() / 365f).coerceIn(0f, 1f)
+        }
+        val color = when {
+            d == null -> 0xFF9CA3AF.toInt()
+            d < 7 -> 0xFFDC2626.toInt()
+            d < 30 -> 0xFFF59E0B.toInt()
+            else -> 0xFF10B981.toInt()
+        }
+        // Radius scales with fraction: full at 365+ days, shrink as days drop.
+        // Minimum 45% so the ring stays visible/legible even when expired.
+        val radius = ringMax * (0.45f + 0.55f * fraction)
+        val rect = RectF(cx - radius, cy - radius, cx + radius, cy + radius)
+        canvas.drawArc(rect, 0f, 360f, false, trackPaint)
+        arcPaint.color = color
+        if (fraction > 0f) {
+            canvas.drawArc(rect, -90f, 360f * fraction, false, arcPaint)
+        }
+        val centerStr = when {
+            d == null -> "—"
+            d <= 0 -> "0"
+            else -> d.toString()
+        }
+        canvas.drawText(centerStr, cx, cy + 12f, centerText)
+        canvas.drawText(if (d == null) "no date" else "days", cx, cy + 42f, unitText)
+
+        // Label pill below ring
+        val pillW = 130f
+        val pillH = 44f
+        val pillRect = RectF(cx - pillW / 2f, h - pillH - 12f, cx + pillW / 2f, h - 12f)
+        val pillBg = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            this.color = color
+            style = Paint.Style.FILL
+        }
+        canvas.drawRoundRect(pillRect, 22f, 22f, pillBg)
+        canvas.drawText(labels[i], cx, h - 22f, labelPaint)
+    }
+    return bitmap
+}
 internal fun refreshFromBackend(context: Context) {
     val prefs = context.getSharedPreferences(WIDGET_PREFS, Context.MODE_PRIVATE)
     val token = prefs.getString("widget_token", null)
@@ -229,6 +346,9 @@ internal fun refreshFromBackend(context: Context) {
             val editor = prefs.edit()
             for (i in 0 until maxOf(prevCount, MAX_WIDGET_VEHICLES)) {
                 editor.remove("vehicle_${i}_rego")
+                editor.remove("vehicle_${i}_rego_expiry")
+                editor.remove("vehicle_${i}_wof_expiry")
+                editor.remove("vehicle_${i}_insurance_expiry")
             }
             var total = 0
             if (vehiclesArr != null) {
@@ -238,6 +358,9 @@ internal fun refreshFromBackend(context: Context) {
                     val rego = v.optString("rego", "").trim()
                     if (rego.isBlank()) continue
                     editor.putString("vehicle_${total}_rego", rego)
+                    editor.putString("vehicle_${total}_rego_expiry", v.optString("regoExpiry", ""))
+                    editor.putString("vehicle_${total}_wof_expiry", v.optString("wofExpiry", ""))
+                    editor.putString("vehicle_${total}_insurance_expiry", v.optString("insuranceExpiry", ""))
                     total++
                 }
             }
