@@ -281,10 +281,10 @@ private fun expiryRingsBitmap(rego: String, wof: String, ins: String): Bitmap {
             else -> (d.toFloat() / 365f).coerceIn(0f, 1f)
         }
         val color = when {
-            d == null -> 0xFF9CA3AF.toInt()
+            d == null -> 0xFFB8BCC4.toInt()
             d < 7 -> 0xFFDC2626.toInt()
             d < 30 -> 0xFFF59E0B.toInt()
-            else -> 0xFF10B981.toInt()
+            else -> 0xFF1E3A5F.toInt()
         }
         val radius = ringMax * (0.5f + 0.5f * fraction)
         val rect = RectF(cx - radius, cy - radius, cx + radius, cy + radius)
