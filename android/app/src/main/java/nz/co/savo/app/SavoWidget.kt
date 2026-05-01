@@ -196,7 +196,7 @@ private fun regoPlateBitmap(rego: String): Bitmap {
     val rect = RectF(8f, 8f, w - 8f, h - 8f)
     canvas.drawRoundRect(rect, 36f, 36f, bg)
     canvas.drawRoundRect(rect, 36f, 36f, stroke)
-    canvas.drawText(rego.trim(), w / 2f, 155f, regoPaint)
+    canvas.drawText(rego.trim(), w / 2f, 135f, regoPaint)
     return bitmap
 }
 
