@@ -118,7 +118,7 @@ class SavoWidgetReceiver : AppWidgetProvider() {
             val views = RemoteViews(context.packageName, R.layout.widget_savo)
             views.setImageViewBitmap(R.id.widget_plate, regoPlateBitmap(rego))
             views.setImageViewBitmap(R.id.widget_rings, expiryRingsBitmap(regoExpiry, wofExpiry, insExpiry))
-            views.setOnClickPendingIntent(R.id.widget_plate, switchPendingIntent(context))
+            views.setOnClickPendingIntent(R.id.widget_plate_area, switchPendingIntent(context))
             views.setOnClickPendingIntent(R.id.widget_savo_icon, quickCapturePendingIntent(context))
 
             appWidgetManager.updateAppWidget(appWidgetId, views)
