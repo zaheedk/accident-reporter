@@ -172,81 +172,78 @@ private fun nextVehicleIndex(prefs: SharedPreferences, current: Int, count: Int)
     return current.coerceAtLeast(0) % count
 }
 
+/**
+ * Top section: large rego title + colored legend dots row.
+ * Drawn as a single bitmap so we keep tap targets simple.
+ */
 private fun regoPlateBitmap(rego: String): Bitmap {
-    val w = 700
-    val h = 200
+    val w = 900
+    val h = 220
     val bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
     val canvas = Canvas(bitmap)
-    // SAVO navy plate, white text — matches site header
-    val bg = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+
+    val titlePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = 0xFF1E3A5F.toInt()
-        style = Paint.Style.FILL
-    }
-    val stroke = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = 0xFF14283F.toInt()
-        style = Paint.Style.STROKE
-        strokeWidth = 6f
-    }
-    val regoPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = 0xFFFFFFFF.toInt()
-        textAlign = Paint.Align.CENTER
+        textAlign = Paint.Align.LEFT
         isFakeBoldText = true
-        textSize = 108f
-        letterSpacing = 0.04f
+        textSize = 110f
+        letterSpacing = 0.02f
         typeface = android.graphics.Typeface.create("sans-serif-medium", android.graphics.Typeface.BOLD)
     }
-    val rect = RectF(8f, 8f, w - 8f, h - 8f)
-    canvas.drawRoundRect(rect, 28f, 28f, bg)
-    canvas.drawRoundRect(rect, 28f, 28f, stroke)
-    canvas.drawText(rego.trim(), w / 2f, 135f, regoPaint)
+    canvas.drawText(rego.trim().ifBlank { "—" }, 4f, 110f, titlePaint)
+
+    // Legend: green Insurance, amber WOF, blue Rego
+    val items = listOf(
+        Triple("Insurance", 0xFF22C55E.toInt(), true),
+        Triple("WOF", 0xFFF5C56B.toInt(), false),
+        Triple("Rego", 0xFF6BB6F5.toInt(), false),
+    )
+    val dotR = 12f
+    val labelPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        textAlign = Paint.Align.LEFT
+        textSize = 36f
+        typeface = android.graphics.Typeface.create("sans-serif-medium", android.graphics.Typeface.NORMAL)
+    }
+    var x = 6f
+    val y = 185f
+    for ((label, color, bold) in items) {
+        val dot = Paint(Paint.ANTI_ALIAS_FLAG).apply { this.color = color; style = Paint.Style.FILL }
+        canvas.drawCircle(x + dotR, y - 10f, dotR, dot)
+        labelPaint.color = if (bold) 0xFF111827.toInt() else 0xFF9CA3AF.toInt()
+        labelPaint.isFakeBoldText = bold
+        canvas.drawText(label, x + dotR * 2 + 12f, y, labelPaint)
+        val labelWidth = labelPaint.measureText(label)
+        x += dotR * 2 + 12f + labelWidth + 32f
+    }
     return bitmap
 }
 
 /**
- * Parse a yyyy-MM-dd (or ISO) date string and return whole days from
- * today until that date. Returns null if unparseable / blank.
- */
-private fun daysUntil(dateStr: String): Int? {
-    val s = dateStr.trim()
-    if (s.isBlank()) return null
-    return try {
-        val datePart = s.substring(0, minOf(10, s.length))
-        val fmt = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.US)
-        fmt.isLenient = false
-        val target = fmt.parse(datePart) ?: return null
-        val cal = java.util.Calendar.getInstance().apply {
-            set(java.util.Calendar.HOUR_OF_DAY, 0)
-            set(java.util.Calendar.MINUTE, 0)
-            set(java.util.Calendar.SECOND, 0)
-            set(java.util.Calendar.MILLISECOND, 0)
-        }
-        val today = cal.timeInMillis
-        val diff = target.time - today
-        Math.floor(diff / (1000.0 * 60 * 60 * 24)).toInt()
-    } catch (_: Exception) {
-        null
-    }
-}
-
-/**
- * Render three progress rings (REGO, WOF, Insurance) showing days
- * remaining. Ring fill is proportional to days/365 (clamped 0..1).
- * Color: green >=30 days, amber <30, red <7. Grey if unknown.
+ * Concentric rings (Insurance outer → WOF middle → Rego inner).
+ * Each ring's stroke arc fills proportionally to days/365.
+ * Color: green ≥30, amber <30, red <7. Grey if unknown.
  */
 private fun expiryRingsBitmap(rego: String, wof: String, ins: String): Bitmap {
-    val w = 900
-    val h = 180
+    val w = 600
+    val h = 600
     val bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
     val canvas = Canvas(bitmap)
-    val labels = listOf("REGO", "WOF", "INS")
-    val days = listOf(daysUntil(rego), daysUntil(wof), daysUntil(ins))
-    val cellW = w / 3f
-    val ringMax = 58f
-    val cy = 62f
-    val stroke = 10f
+
+    val cx = w / 2f
+    val cy = h / 2f
+    val stroke = 44f
+
+    // Outer → Inner: Insurance, WOF, Rego (matches legend top-to-bottom)
+    data class Ring(val days: Int?, val baseColor: Int, val radius: Float)
+
+    val rings = listOf(
+        Ring(daysUntil(ins), 0xFF22C55E.toInt(), 230f),
+        Ring(daysUntil(wof), 0xFFF5C56B.toInt(), 175f),
+        Ring(daysUntil(rego), 0xFF6BB6F5.toInt(), 120f),
+    )
 
     val trackPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = 0xFFE8E8E5.toInt()
+        color = 0xFFE5E7EB.toInt()
         style = Paint.Style.STROKE
         strokeWidth = stroke
         strokeCap = Paint.Cap.ROUND
@@ -256,25 +253,12 @@ private fun expiryRingsBitmap(rego: String, wof: String, ins: String): Bitmap {
         strokeWidth = stroke
         strokeCap = Paint.Cap.ROUND
     }
-    val centerText = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = 0xFF1E3A5F.toInt()
-        textAlign = Paint.Align.CENTER
-        isFakeBoldText = true
-        textSize = 26f
-        typeface = android.graphics.Typeface.create("sans-serif-medium", android.graphics.Typeface.BOLD)
-    }
-    val labelPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = 0xFFFFFFFF.toInt()
-        textAlign = Paint.Align.CENTER
-        isFakeBoldText = true
-        textSize = 20f
-        letterSpacing = 0.08f
-        typeface = android.graphics.Typeface.create("sans-serif-medium", android.graphics.Typeface.BOLD)
-    }
 
-    for (i in 0..2) {
-        val cx = cellW * i + cellW / 2f
-        val d = days[i]
+    for (r in rings) {
+        val rect = RectF(cx - r.radius, cy - r.radius, cx + r.radius, cy + r.radius)
+        canvas.drawArc(rect, 0f, 360f, false, trackPaint)
+
+        val d = r.days
         val fraction = when {
             d == null -> 0f
             d <= 0 -> 0f
@@ -284,32 +268,12 @@ private fun expiryRingsBitmap(rego: String, wof: String, ins: String): Bitmap {
             d == null -> 0xFFB8BCC4.toInt()
             d < 7 -> 0xFFDC2626.toInt()
             d < 30 -> 0xFFF59E0B.toInt()
-            else -> 0xFF1E3A5F.toInt()
+            else -> r.baseColor
         }
-        val radius = ringMax * (0.5f + 0.5f * fraction)
-        val rect = RectF(cx - radius, cy - radius, cx + radius, cy + radius)
-        canvas.drawArc(rect, 0f, 360f, false, trackPaint)
-        arcPaint.color = color
         if (fraction > 0f) {
+            arcPaint.color = color
             canvas.drawArc(rect, -90f, 360f * fraction, false, arcPaint)
         }
-        val centerStr = when {
-            d == null -> "—"
-            d <= 0 -> "0"
-            else -> d.toString()
-        }
-        canvas.drawText(centerStr, cx, cy + 9f, centerText)
-
-        // Compact label pill below ring
-        val pillW = 84f
-        val pillH = 28f
-        val pillRect = RectF(cx - pillW / 2f, h - pillH - 6f, cx + pillW / 2f, h - 6f)
-        val pillBg = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            this.color = color
-            style = Paint.Style.FILL
-        }
-        canvas.drawRoundRect(pillRect, 14f, 14f, pillBg)
-        canvas.drawText(labels[i], cx, h - 13f, labelPaint)
     }
     return bitmap
 }
