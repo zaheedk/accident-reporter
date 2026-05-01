@@ -222,21 +222,27 @@ internal fun refreshFromBackend(context: Context) {
             val json = JSONObject(body)
 
             val vehiclesArr: JSONArray? = json.optJSONArray("vehicles")
-            val total = minOf(MAX_WIDGET_VEHICLES, vehiclesArr?.length() ?: 0)
+            val totalAvailable = vehiclesArr?.length() ?: 0
             val prevCount = prefs.getInt("vehicles_count", 0)
-            if (total == 0 && prevCount > 0) return@launch
+            if (totalAvailable == 0 && prevCount > 0) return@launch
 
             val editor = prefs.edit()
             for (i in 0 until maxOf(prevCount, MAX_WIDGET_VEHICLES)) {
                 editor.remove("vehicle_${i}_rego")
             }
-            editor.putInt("vehicles_count", total)
+            var total = 0
             if (vehiclesArr != null) {
-                for (i in 0 until total) {
+                for (i in 0 until totalAvailable) {
+                    if (total >= MAX_WIDGET_VEHICLES) break
                     val v = vehiclesArr.optJSONObject(i) ?: continue
-                    editor.putString("vehicle_${i}_rego", v.optString("rego", ""))
+                    val rego = v.optString("rego", "").trim()
+                    if (rego.isBlank()) continue
+                    editor.putString("vehicle_${total}_rego", rego)
+                    total++
                 }
             }
+            if (total == 0 && prevCount > 0) return@launch
+            editor.putInt("vehicles_count", total)
             val curIdx = prefs.getInt("vehicles_current_index", 0)
             if (total == 0 || curIdx >= total) editor.putInt("vehicles_current_index", 0)
             editor.commit()
