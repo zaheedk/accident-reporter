@@ -120,8 +120,13 @@ class SavoWidgetReceiver : AppWidgetProvider() {
             if (index != rawIndex) prefs.edit().putInt("vehicles_current_index", index).commit()
             val rego = if (count > 0) vehicleRegoAt(prefs, index) else ""
 
+            val regoExpiry = if (count > 0) prefs.getString("vehicle_${index}_rego_expiry", "") ?: "" else ""
+            val wofExpiry = if (count > 0) prefs.getString("vehicle_${index}_wof_expiry", "") ?: "" else ""
+            val insExpiry = if (count > 0) prefs.getString("vehicle_${index}_insurance_expiry", "") ?: "" else ""
+
             val views = RemoteViews(context.packageName, R.layout.widget_savo)
             views.setImageViewBitmap(R.id.widget_plate, regoPlateBitmap(rego))
+            views.setImageViewBitmap(R.id.widget_rings, expiryRingsBitmap(regoExpiry, wofExpiry, insExpiry))
             views.setOnClickPendingIntent(R.id.widget_plate, switchPendingIntent(context))
 
             appWidgetManager.updateAppWidget(appWidgetId, views)
