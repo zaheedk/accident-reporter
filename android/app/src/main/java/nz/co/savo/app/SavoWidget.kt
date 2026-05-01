@@ -173,8 +173,8 @@ private fun nextVehicleIndex(prefs: SharedPreferences, current: Int, count: Int)
 }
 
 private fun regoPlateBitmap(rego: String): Bitmap {
-    val w = 800
-    val h = 240
+    val w = 700
+    val h = 200
     val bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
     val canvas = Canvas(bitmap)
     val bg = Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -196,7 +196,7 @@ private fun regoPlateBitmap(rego: String): Bitmap {
     val rect = RectF(8f, 8f, w - 8f, h - 8f)
     canvas.drawRoundRect(rect, 36f, 36f, bg)
     canvas.drawRoundRect(rect, 36f, 36f, stroke)
-    canvas.drawText(rego.trim(), w / 2f, 155f, regoPaint)
+    canvas.drawText(rego.trim(), w / 2f, 135f, regoPaint)
     return bitmap
 }
 
@@ -233,15 +233,15 @@ private fun daysUntil(dateStr: String): Int? {
  */
 private fun expiryRingsBitmap(rego: String, wof: String, ins: String): Bitmap {
     val w = 900
-    val h = 320
+    val h = 180
     val bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
     val canvas = Canvas(bitmap)
     val labels = listOf("REGO", "WOF", "INS")
     val days = listOf(daysUntil(rego), daysUntil(wof), daysUntil(ins))
     val cellW = w / 3f
-    val ringMax = 110f
-    val cy = 130f
-    val stroke = 18f
+    val ringMax = 58f
+    val cy = 62f
+    val stroke = 10f
 
     val trackPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = 0xFFE5E7EB.toInt()
@@ -258,18 +258,13 @@ private fun expiryRingsBitmap(rego: String, wof: String, ins: String): Bitmap {
         color = 0xFF111827.toInt()
         textAlign = Paint.Align.CENTER
         isFakeBoldText = true
-        textSize = 44f
-    }
-    val unitText = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = 0xFF6B7280.toInt()
-        textAlign = Paint.Align.CENTER
-        textSize = 22f
+        textSize = 26f
     }
     val labelPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = 0xFFFFFFFF.toInt()
         textAlign = Paint.Align.CENTER
         isFakeBoldText = true
-        textSize = 32f
+        textSize = 20f
     }
 
     for (i in 0..2) {
@@ -286,9 +281,7 @@ private fun expiryRingsBitmap(rego: String, wof: String, ins: String): Bitmap {
             d < 30 -> 0xFFF59E0B.toInt()
             else -> 0xFF10B981.toInt()
         }
-        // Radius scales with fraction: full at 365+ days, shrink as days drop.
-        // Minimum 45% so the ring stays visible/legible even when expired.
-        val radius = ringMax * (0.45f + 0.55f * fraction)
+        val radius = ringMax * (0.5f + 0.5f * fraction)
         val rect = RectF(cx - radius, cy - radius, cx + radius, cy + radius)
         canvas.drawArc(rect, 0f, 360f, false, trackPaint)
         arcPaint.color = color
@@ -300,19 +293,18 @@ private fun expiryRingsBitmap(rego: String, wof: String, ins: String): Bitmap {
             d <= 0 -> "0"
             else -> d.toString()
         }
-        canvas.drawText(centerStr, cx, cy + 12f, centerText)
-        canvas.drawText(if (d == null) "no date" else "days", cx, cy + 42f, unitText)
+        canvas.drawText(centerStr, cx, cy + 9f, centerText)
 
-        // Label pill below ring
-        val pillW = 130f
-        val pillH = 44f
-        val pillRect = RectF(cx - pillW / 2f, h - pillH - 12f, cx + pillW / 2f, h - 12f)
+        // Compact label pill below ring
+        val pillW = 84f
+        val pillH = 28f
+        val pillRect = RectF(cx - pillW / 2f, h - pillH - 6f, cx + pillW / 2f, h - 6f)
         val pillBg = Paint(Paint.ANTI_ALIAS_FLAG).apply {
             this.color = color
             style = Paint.Style.FILL
         }
-        canvas.drawRoundRect(pillRect, 22f, 22f, pillBg)
-        canvas.drawText(labels[i], cx, h - 22f, labelPaint)
+        canvas.drawRoundRect(pillRect, 14f, 14f, pillBg)
+        canvas.drawText(labels[i], cx, h - 13f, labelPaint)
     }
     return bitmap
 }

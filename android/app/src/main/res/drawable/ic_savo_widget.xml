@@ -1,27 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="48dp"
-    android:height="48dp"
-    android:viewportWidth="200"
-    android:viewportHeight="200">
+    android:width="64dp"
+    android:height="72dp"
+    android:viewportWidth="500"
+    android:viewportHeight="560">
+    <!-- White rounded background -->
     <path
-        android:pathData="M0,44 L0,156 A44,44 0 0 0 44,200 L156,200 A44,44 0 0 0 200,156 L200,44 A44,44 0 0 0 156,0 L44,0 A44,44 0 0 0 0,44 Z"
+        android:pathData="M0,100 L0,460 A100,100 0 0 0 100,560 L400,560 A100,100 0 0 0 500,460 L500,100 A100,100 0 0 0 400,0 L100,0 A100,100 0 0 0 0,100 Z"
         android:fillColor="#FFFFFF"
         android:strokeColor="#E8E8E5"
         android:strokeWidth="2"/>
+    <!-- Car body -->
     <path
-        android:pathData="M18,120 L182,120 L182,154 A8,8 0 0 1 174,162 L26,162 A8,8 0 0 1 18,154 Z"
+        android:pathData="M68,285 L432,285 L432,367 A18,18 0 0 1 414,385 L86,385 A18,18 0 0 1 68,367 Z"
         android:fillColor="#1e3a5f"/>
+    <!-- Cabin -->
     <path
-        android:pathData="M44,112 L60,72 L140,72 L156,112 Z"
+        android:pathData="M120,285 L158,188 L342,188 L380,285 Z"
         android:fillColor="#1e3a5f"/>
+    <!-- Windscreen -->
     <path
-        android:pathData="M52,110 L66,78 L134,78 L148,110 Z"
+        android:pathData="M140,280 L172,200 L328,200 L360,280 Z"
         android:fillColor="#F4F4F2"/>
+    <!-- Body line -->
     <path
-        android:pathData="M56,176 m-22,0 a22,22 0 1,0 44,0 a22,22 0 1,0 -44,0"
+        android:pathData="M50,322 L450,322 L450,326 L50,326 Z"
+        android:fillColor="#2a4a6f"/>
+    <!-- Left wheel outer -->
+    <path
+        android:pathData="M148,385 m-52,0 a52,52 0 1,0 104,0 a52,52 0 1,0 -104,0"
         android:fillColor="#1e3a5f"/>
     <path
-        android:pathData="M144,176 m-22,0 a22,22 0 1,0 44,0 a22,22 0 1,0 -44,0"
+        android:pathData="M148,385 m-34,0 a34,34 0 1,0 68,0 a34,34 0 1,0 -68,0"
+        android:fillColor="#6B7280"/>
+    <path
+        android:pathData="M148,385 m-20,0 a20,20 0 1,0 40,0 a20,20 0 1,0 -40,0"
         android:fillColor="#1e3a5f"/>
+    <!-- Right wheel -->
+    <path
+        android:pathData="M352,385 m-52,0 a52,52 0 1,0 104,0 a52,52 0 1,0 -104,0"
+        android:fillColor="#1e3a5f"/>
+    <path
+        android:pathData="M352,385 m-34,0 a34,34 0 1,0 68,0 a34,34 0 1,0 -68,0"
+        android:fillColor="#6B7280"/>
+    <path
+        android:pathData="M352,385 m-20,0 a20,20 0 1,0 40,0 a20,20 0 1,0 -40,0"
+        android:fillColor="#1e3a5f"/>
+    <!-- Camera housing -->
+    <path
+        android:pathData="M212,165 L288,165 L288,195 L212,195 Z"
+        android:fillColor="#1e3a5f"/>
+    <!-- Camera lens -->
+    <path
+        android:pathData="M250,218 m-52,0 a52,52 0 1,0 104,0 a52,52 0 1,0 -104,0"
+        android:fillColor="#6B7280"/>
+    <path
+        android:pathData="M250,218 m-37,0 a37,37 0 1,0 74,0 a37,37 0 1,0 -74,0"
+        android:fillColor="#1e3a5f"/>
+    <path
+        android:pathData="M250,218 m-28,0 a28,28 0 1,0 56,0 a28,28 0 1,0 -56,0"
+        android:fillColor="#1A1A2E"/>
+    <path
+        android:pathData="M250,218 m-11,0 a11,11 0 1,0 22,0 a11,11 0 1,0 -22,0"
+        android:fillColor="#1e3a5f"/>
+    <!-- SAVO wordmark -->
+    <path
+        android:pathData="M250,480 m0,0"
+        android:fillColor="#1e3a5f"/>
+    <!-- Letters S A V O drawn as filled paths -->
+    <group android:translateX="120" android:translateY="445">
+        <!-- S -->
+        <path android:fillColor="#1e3a5f" android:pathData="M0,30 C0,15 12,5 28,5 C42,5 52,12 54,22 L42,26 C40,20 35,17 28,17 C20,17 14,21 14,28 C14,35 20,37 30,40 C46,44 56,50 56,62 C56,76 44,86 28,86 C12,86 0,78 -2,66 L10,62 C12,70 18,75 28,75 C36,75 42,71 42,64 C42,57 36,55 26,52 C10,48 0,42 0,30 Z"/>
+        <!-- A -->
+        <path android:fillColor="#1e3a5f" android:pathData="M75,86 L100,8 L116,8 L141,86 L127,86 L121,68 L95,68 L89,86 Z M99,57 L117,57 L108,30 Z"/>
+        <!-- V -->
+        <path android:fillColor="#1e3a5f" android:pathData="M155,8 L169,8 L188,68 L207,8 L221,8 L195,86 L181,86 Z"/>
+        <!-- O -->
+        <path android:fillColor="#1e3a5f" android:pathData="M270,46 C270,68 256,86 235,86 C214,86 200,68 200,46 C200,24 214,6 235,6 C256,6 270,24 270,46 Z M214,46 C214,60 222,73 235,73 C248,73 256,60 256,46 C256,32 248,19 235,19 C222,19 214,32 214,46 Z" android:strokeWidth="0"/>
+    </group>
 </vector>
