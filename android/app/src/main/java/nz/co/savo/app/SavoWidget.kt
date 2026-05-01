@@ -234,6 +234,9 @@ internal fun refreshFromBackend(context: Context) {
             val editor = prefs.edit()
             for (i in 0 until maxOf(prevCount, MAX_WIDGET_VEHICLES)) {
                 editor.remove("vehicle_${i}_rego")
+                editor.remove("vehicle_${i}_rego_expiry")
+                editor.remove("vehicle_${i}_wof_expiry")
+                editor.remove("vehicle_${i}_insurance_expiry")
             }
             var total = 0
             if (vehiclesArr != null) {
@@ -243,6 +246,9 @@ internal fun refreshFromBackend(context: Context) {
                     val rego = v.optString("rego", "").trim()
                     if (rego.isBlank()) continue
                     editor.putString("vehicle_${total}_rego", rego)
+                    editor.putString("vehicle_${total}_rego_expiry", v.optString("regoExpiry", ""))
+                    editor.putString("vehicle_${total}_wof_expiry", v.optString("wofExpiry", ""))
+                    editor.putString("vehicle_${total}_insurance_expiry", v.optString("insuranceExpiry", ""))
                     total++
                 }
             }
