@@ -55,10 +55,12 @@ class WidgetVehicleSwitchActivity : android.app.Activity() {
         val count = prefs.getInt("vehicles_count", 0)
         if (count > 1) {
             val current = prefs.getInt("vehicles_current_index", 0)
-            val next = ((current + 1) % count + count) % count
-            prefs.edit()
-                .putInt("vehicles_current_index", next)
-                .commit()
+            val next = nextVehicleIndex(prefs, current, count)
+            if (next != current) {
+                prefs.edit()
+                    .putInt("vehicles_current_index", next)
+                    .commit()
+            }
         }
         SavoWidgetReceiver.redrawAll(applicationContext)
         finish()
@@ -108,19 +110,17 @@ class SavoWidgetReceiver : AppWidgetProvider() {
         ) {
             val prefs = context.getSharedPreferences(WIDGET_PREFS, Context.MODE_PRIVATE)
             val count = prefs.getInt("vehicles_count", 0)
-            val index = if (count > 0) {
-                prefs.getInt("vehicles_current_index", 0).coerceAtLeast(0) % count
-            } else 0
-            val rego = if (count > 0) prefs.getString("vehicle_${index}_rego", "") ?: "" else ""
-
-            val helper = when {
-                count == 0 -> "tap to set up"
-                count == 1 -> "tap to refresh"
-                else -> "tap to switch (${index + 1}/${count})"
+            val rawIndex = if (count > 0) prefs.getInt("vehicles_current_index", 0).coerceAtLeast(0) % count else 0
+            val index = when {
+                count <= 0 -> 0
+                vehicleRegoAt(prefs, rawIndex).isNotBlank() -> rawIndex
+                else -> nextVehicleIndex(prefs, rawIndex, count)
             }
+            if (index != rawIndex) prefs.edit().putInt("vehicles_current_index", index).commit()
+            val rego = if (count > 0) vehicleRegoAt(prefs, index) else ""
 
             val views = RemoteViews(context.packageName, R.layout.widget_savo)
-            views.setImageViewBitmap(R.id.widget_plate, regoPlateBitmap(rego, helper))
+            views.setImageViewBitmap(R.id.widget_plate, regoPlateBitmap(rego))
             views.setOnClickPendingIntent(R.id.widget_plate, switchPendingIntent(context))
 
             appWidgetManager.updateAppWidget(appWidgetId, views)
