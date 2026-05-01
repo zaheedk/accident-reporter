@@ -119,8 +119,19 @@ class SavoWidgetReceiver : AppWidgetProvider() {
             views.setImageViewBitmap(R.id.widget_plate, regoPlateBitmap(rego))
             views.setImageViewBitmap(R.id.widget_rings, expiryRingsBitmap(regoExpiry, wofExpiry, insExpiry))
             views.setOnClickPendingIntent(R.id.widget_plate, switchPendingIntent(context))
+            views.setOnClickPendingIntent(R.id.widget_savo_icon, quickCapturePendingIntent(context))
 
             appWidgetManager.updateAppWidget(appWidgetId, views)
+        }
+
+        private fun quickCapturePendingIntent(context: Context): PendingIntent {
+            val intent = Intent(Intent.ACTION_VIEW, android.net.Uri.parse("savo://quick-capture")).apply {
+                setPackage(context.packageName)
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+            }
+            val flags = PendingIntent.FLAG_UPDATE_CURRENT or
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) PendingIntent.FLAG_IMMUTABLE else 0
+            return PendingIntent.getActivity(context, 1002, intent, flags)
         }
 
         private fun switchPendingIntent(context: Context): PendingIntent {
