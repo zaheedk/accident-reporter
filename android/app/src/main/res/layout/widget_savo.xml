@@ -80,10 +80,11 @@
             android:orientation="horizontal"
             android:gravity="center_vertical">
 
-            <View
+            <ImageView
                 android:layout_width="8dp"
                 android:layout_height="8dp"
-                android:background="@drawable/widget_dot_green" />
+                android:src="@drawable/widget_dot_green"
+                android:contentDescription="@null" />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -94,11 +95,12 @@
                 android:textStyle="bold"
                 android:fontFamily="sans-serif-medium" />
 
-            <View
+            <ImageView
                 android:layout_width="8dp"
                 android:layout_height="8dp"
                 android:layout_marginStart="14dp"
-                android:background="@drawable/widget_dot_amber" />
+                android:src="@drawable/widget_dot_amber"
+                android:contentDescription="@null" />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -109,11 +111,12 @@
                 android:textStyle="bold"
                 android:fontFamily="sans-serif-medium" />
 
-            <View
+            <ImageView
                 android:layout_width="8dp"
                 android:layout_height="8dp"
                 android:layout_marginStart="14dp"
-                android:background="@drawable/widget_dot_blue" />
+                android:src="@drawable/widget_dot_blue"
+                android:contentDescription="@null" />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
