@@ -243,16 +243,6 @@ private fun renderCardBitmap(
     val rightX = leftX + colW
 
     // ── LEFT COLUMN ────────────────────────────────────────────────────────
-    val titlePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = INK
-        textAlign = Paint.Align.LEFT
-        isFakeBoldText = true
-        textSize = 76f
-        letterSpacing = -0.01f
-        typeface = Typeface.create("sans-serif", Typeface.BOLD)
-    }
-    canvas.drawText(formatRego(rego), leftX, pad + 70f, titlePaint)
-
     // Single-line legend: ● Insurance   ● WOF   ● Rego
     val legendPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         textAlign = Paint.Align.LEFT
@@ -276,7 +266,20 @@ private fun renderCardBitmap(
         totalLegendW += dotR * 2f + dotTextGap + legendPaint.measureText(label)
     }
     totalLegendW += itemGap * (legendItems.size - 1)
-    var lx = leftX + (colW - totalLegendW) / 2f
+    val legendStartX = leftX + (colW - totalLegendW) / 2f
+
+    // Rego — left-aligned to the first legend bullet point
+    val titlePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = INK
+        textAlign = Paint.Align.LEFT
+        isFakeBoldText = true
+        textSize = 76f
+        letterSpacing = -0.01f
+        typeface = Typeface.create("sans-serif", Typeface.BOLD)
+    }
+    canvas.drawText(formatRego(rego), legendStartX, pad + 70f, titlePaint)
+
+    var lx = legendStartX
     for ((label, color) in legendItems) {
         val dot = Paint(Paint.ANTI_ALIAS_FLAG).apply { this.color = color; style = Paint.Style.FILL }
         canvas.drawCircle(lx + dotR, legendY - 12f, dotR, dot)
@@ -305,12 +308,26 @@ private fun renderCardBitmap(
     }
     canvas.drawLine(rightX, pad + 30f, rightX, CARD_H - pad - 30f, dividerPaint)
 
-    // ── RIGHT COLUMN — large SAVO logo, vertically centered ────────────────
-    val logoSize = minOf(colW * 0.85f, (CARD_H - pad * 2) * 0.95f)
+    // ── RIGHT COLUMN — "Click for Actions" caption + SAVO logo (60% size) ──
+    val baseLogo = minOf(colW * 0.85f, (CARD_H - pad * 2) * 0.95f)
+    val logoSize = baseLogo * 0.60f
     val logoLeft = rightX + (colW - logoSize) / 2f
-    val logoTop = (CARD_H - logoSize) / 2f
+    // Vertically center the (caption + gap + logo) block in the right column
+    val captionPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = INK
+        textAlign = Paint.Align.CENTER
+        isFakeBoldText = true
+        textSize = 34f
+        typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
+    }
+    val captionGap = 24f
+    val captionH = captionPaint.textSize
+    val blockH = captionH + captionGap + logoSize
+    val blockTop = (CARD_H - blockH) / 2f
+    val captionCx = rightX + colW / 2f
+    canvas.drawText("Click for Actions", captionCx, blockTop + captionH * 0.85f, captionPaint)
+    val logoTop = blockTop + captionH + captionGap
     drawSavoLogo(canvas, logoLeft, logoTop, logoSize)
-
 
     return bmp
 }
