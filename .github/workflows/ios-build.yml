@@ -143,6 +143,36 @@ jobs:
       - name: Sync Capacitor (iOS)
         run: npx cap sync ios
 
+      - name: Inject App Store icon into AppIcon.appiconset
+        run: |
+          set -e
+          SRC="resources/ios-app-icon-1024.png"
+          DEST_DIR="ios/App/App/Assets.xcassets/AppIcon.appiconset"
+          if [ ! -f "$SRC" ]; then
+            echo "::error::$SRC not found in repo. Commit the 1024x1024 icon to resources/ios-app-icon-1024.png."
+            exit 1
+          fi
+          if [ ! -d "$DEST_DIR" ]; then
+            echo "::error::$DEST_DIR not found. Did 'npx cap add ios' run successfully?"
+            exit 1
+          fi
+          # Capacitor's default AppIcon.appiconset uses a single 1024x1024 marketing icon
+          # named AppIcon-512@2x.png. Overwrite it with our branded SAVO icon.
+          cp "$SRC" "$DEST_DIR/AppIcon-512@2x.png"
+          echo "--- AppIcon.appiconset contents ---"
+          ls -la "$DEST_DIR"
+          # Sanity-check dimensions
+          python3 - <<'PY'
+          from pathlib import Path
+          import struct
+          p = Path("ios/App/App/Assets.xcassets/AppIcon.appiconset/AppIcon-512@2x.png")
+          data = p.read_bytes()
+          # PNG IHDR width/height at bytes 16..24
+          w, h = struct.unpack(">II", data[16:24])
+          assert (w, h) == (1024, 1024), f"Expected 1024x1024, got {w}x{h}"
+          print(f"OK: {p.name} is {w}x{h}")
+          PY
+
       - name: Inject required Info.plist usage strings
         run: |
           set -e
