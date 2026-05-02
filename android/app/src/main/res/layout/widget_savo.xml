@@ -3,8 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- The entire widget UI is rendered as a single bitmap that scales to
-         fit whatever size the user resizes the widget to. -->
+    <!-- Entire widget UI rendered as a single bitmap (landscape 4x2). -->
     <ImageView
         android:id="@+id/widget_canvas"
         android:layout_width="match_parent"
@@ -13,43 +12,35 @@
         android:adjustViewBounds="true"
         android:contentDescription="@string/widget_label" />
 
-    <!-- Tap regions overlay. The bitmap is rendered with the same proportions
-         (2 cols x 3 rows of content), so weights here line up with the art. -->
+    <!-- Tap regions overlay. The bitmap is laid out as three columns:
+         left 30% rego/rings, middle 25% SAVO logo, right 45% three call buttons. -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="horizontal">
 
-        <!-- Top 55% of the card: rego title + legend + rings + SAVO tile -->
+        <!-- Left: rego + rings → cycle vehicle -->
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="55"
-            android:orientation="horizontal">
+            android:id="@+id/widget_plate_area"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="30"
+            android:clickable="true"
+            android:focusable="true" />
 
-            <!-- Left 60%: title/legend/rings → cycles vehicle -->
-            <LinearLayout
-                android:id="@+id/widget_plate_area"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="60"
-                android:clickable="true"
-                android:focusable="true" />
-
-            <!-- Right 40%: SAVO tile → quick capture -->
-            <LinearLayout
-                android:id="@+id/widget_savo_icon"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="40"
-                android:clickable="true"
-                android:focusable="true" />
-        </LinearLayout>
-
-        <!-- Bottom 45%: TAP TO CALL row -->
+        <!-- Middle: SAVO logo → quick capture -->
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:id="@+id/widget_savo_icon"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="25"
+            android:clickable="true"
+            android:focusable="true" />
+
+        <!-- Right: three call buttons -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
             android:layout_weight="45"
             android:orientation="horizontal">
 
