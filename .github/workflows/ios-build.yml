@@ -193,6 +193,34 @@ jobs:
           echo "--- Final Info.plist ---"
           /usr/libexec/PlistBuddy -c "Print" "$PLIST" | grep -A0 "Usage" || true
 
+      - name: Stamp unique iOS TestFlight version
+        if: steps.mode.outputs.mode == 'signed'
+        run: |
+          set -e
+          PLIST="ios/App/App/Info.plist"
+          PROJECT="ios/App/App.xcodeproj/project.pbxproj"
+          MARKETING_VERSION="1.0"
+          BUILD_NUMBER="${GITHUB_RUN_NUMBER}"
+
+          /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString ${MARKETING_VERSION}" "$PLIST" 2>/dev/null || \
+            /usr/libexec/PlistBuddy -c "Add :CFBundleShortVersionString string ${MARKETING_VERSION}" "$PLIST"
+          /usr/libexec/PlistBuddy -c "Set :CFBundleVersion ${BUILD_NUMBER}" "$PLIST" 2>/dev/null || \
+            /usr/libexec/PlistBuddy -c "Add :CFBundleVersion string ${BUILD_NUMBER}" "$PLIST"
+
+          if [ -f "$PROJECT" ]; then
+            python3 - <<'PY'
+          from pathlib import Path
+          import os, re
+          project = Path("ios/App/App.xcodeproj/project.pbxproj")
+          text = project.read_text()
+          text = re.sub(r"MARKETING_VERSION = [^;]+;", "MARKETING_VERSION = 1.0;", text)
+          text = re.sub(r"CURRENT_PROJECT_VERSION = [^;]+;", f"CURRENT_PROJECT_VERSION = {os.environ['GITHUB_RUN_NUMBER']};", text)
+          project.write_text(text)
+          PY
+          fi
+
+          echo "Using iOS version ${MARKETING_VERSION} build ${BUILD_NUMBER}. Apple requires the build number to be unique for each TestFlight upload."
+
       - name: Install CocoaPods if project uses Podfile
         working-directory: ios/App
         run: |
