@@ -230,106 +230,136 @@ private fun renderCardBitmap(
     val bmp = Bitmap.createBitmap(CARD_W, CARD_H, Bitmap.Config.ARGB_8888)
     val canvas = Canvas(bmp)
 
-    // Card background
+    // Card background — soft off-white card on a transparent canvas
     val bgPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.WHITE }
     val cardRect = RectF(0f, 0f, CARD_W.toFloat(), CARD_H.toFloat())
-    canvas.drawRoundRect(cardRect, 36f, 36f, bgPaint)
+    canvas.drawRoundRect(cardRect, 40f, 40f, bgPaint)
 
-    val pad = 36f
+    val pad = 48f
 
-    // Two columns: left rego/legend/rings (50%), right large SAVO logo (50%).
-    val colW = (CARD_W - pad * 2) * 0.50f
-    val leftX = pad
-    val rightX = leftX + colW
-
-    // ── LEFT COLUMN ────────────────────────────────────────────────────────
-    // Single-line legend: ● Insurance   ● WOF   ● Rego
-    val legendPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        textAlign = Paint.Align.LEFT
-        textSize = 36f
-        color = INK
-        isFakeBoldText = true
-        typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
-    }
-    val legendItems = listOf(
-        "Insurance" to GREEN,
-        "WOF" to AMBER,
-        "Rego" to BLUE,
-    )
-    val legendY = pad + 130f
-    val dotR = 11f
-    val dotTextGap = 14f
-    val itemGap = 36f
-    // Measure total width to center horizontally in the left column
-    var totalLegendW = 0f
-    for ((label, _) in legendItems) {
-        totalLegendW += dotR * 2f + dotTextGap + legendPaint.measureText(label)
-    }
-    totalLegendW += itemGap * (legendItems.size - 1)
-    val legendStartX = leftX + (colW - totalLegendW) / 2f
-
-    // Rego — left-aligned to the first legend bullet point
-    val titlePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+    // ── TOP ROW ────────────────────────────────────────────────────────────
+    // Left: large rego (light weight, like reference "PNG 34")
+    val regoPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = INK
         textAlign = Paint.Align.LEFT
+        textSize = 92f
+        letterSpacing = 0.02f
+        typeface = Typeface.create("sans-serif-light", Typeface.NORMAL)
+    }
+    val regoBaseline = pad + 78f
+    canvas.drawText(formatRego(rego), pad, regoBaseline, regoPaint)
+
+    // Right: SAVO logo box + "SAVO" wordmark, top-right corner
+    val savoBoxSize = 92f
+    val savoBoxRight = CARD_W - pad
+    // Wordmark
+    val savoWord = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = INK
+        textAlign = Paint.Align.RIGHT
+        textSize = 44f
+        letterSpacing = 0.18f
         isFakeBoldText = true
-        textSize = 76f
-        letterSpacing = -0.01f
         typeface = Typeface.create("sans-serif", Typeface.BOLD)
     }
-    canvas.drawText(formatRego(rego), legendStartX, pad + 70f, titlePaint)
+    val wordW = savoWord.measureText("SAVO")
+    val wordX = savoBoxRight
+    val wordBaseline = pad + savoBoxSize / 2f + 16f
+    canvas.drawText("SAVO", wordX, wordBaseline, savoWord)
+    // Logo box left of wordmark
+    val savoBoxLeft = wordX - wordW - 22f - savoBoxSize
+    val savoBoxTop = pad
+    drawSavoLogo(canvas, savoBoxLeft, savoBoxTop, savoBoxSize)
 
-    var lx = legendStartX
-    for ((label, color) in legendItems) {
-        val dot = Paint(Paint.ANTI_ALIAS_FLAG).apply { this.color = color; style = Paint.Style.FILL }
+    // ── LEGEND ROW ─────────────────────────────────────────────────────────
+    // ● Insurance   ● WOF   ● Rego  (Insurance bold/dark, others muted)
+    val legendY = regoBaseline + 76f
+    val dotR = 13f
+    val dotTextGap = 16f
+    val itemGap = 44f
+    val legendItems = listOf(
+        Triple("Insurance", GREEN, INK),
+        Triple("WOF", AMBER, INK),
+        Triple("Rego", BLUE, MUTED),
+    )
+    val legendPaints = legendItems.map { (_, _, textColor) ->
+        Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            this.color = textColor
+            textAlign = Paint.Align.LEFT
+            textSize = 38f
+            isFakeBoldText = true
+            typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
+        }
+    }
+    var lx = pad
+    for (i in legendItems.indices) {
+        val (label, dotColor, _) = legendItems[i]
+        val tp = legendPaints[i]
+        val dot = Paint(Paint.ANTI_ALIAS_FLAG).apply { this.color = dotColor; style = Paint.Style.FILL }
         canvas.drawCircle(lx + dotR, legendY - 12f, dotR, dot)
-        canvas.drawText(label, lx + dotR * 2f + dotTextGap, legendY, legendPaint)
-        lx += dotR * 2f + dotTextGap + legendPaint.measureText(label) + itemGap
+        canvas.drawText(label, lx + dotR * 2f + dotTextGap, legendY, tp)
+        lx += dotR * 2f + dotTextGap + tp.measureText(label) + itemGap
     }
 
-    // Rings below the legend, centered in the left column
-    val ringsCx = leftX + colW / 2f
-    val ringsCy = legendY + 40f + 170f
+    // ── RINGS (left, with glow) ────────────────────────────────────────────
+    val ringsCx = pad + 200f
+    val ringsCy = CARD_H - pad - 200f
     drawRings(
         canvas,
         cx = ringsCx,
         cy = ringsCy,
-        outerR = 165f,
-        stroke = 30f,
+        outerR = 175f,
+        stroke = 32f,
         insDays = daysUntil(insExp),
         wofDays = daysUntil(wofExp),
         regoDays = daysUntil(regoExp),
     )
 
-    // Vertical divider between columns
-    val dividerPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = DIVIDER
-        strokeWidth = 1.5f
-    }
-    canvas.drawLine(rightX, pad + 30f, rightX, CARD_H - pad - 30f, dividerPaint)
+    // ── ACTIONS TILE (right) ───────────────────────────────────────────────
+    val tileSize = 280f
+    val tileLeft = CARD_W - pad - tileSize
+    val tileTop = CARD_H - pad - tileSize
+    val tileRect = RectF(tileLeft, tileTop, tileLeft + tileSize, tileTop + tileSize)
+    val tileBg = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = 0xFFEFEFF2.toInt() }
+    canvas.drawRoundRect(tileRect, 32f, 32f, tileBg)
 
-    // ── RIGHT COLUMN — "Click for Actions" caption + SAVO logo (60% size) ──
-    val baseLogo = minOf(colW * 0.85f, (CARD_H - pad * 2) * 0.95f)
-    val logoSize = baseLogo * 0.60f
-    val logoLeft = rightX + (colW - logoSize) / 2f
-    // Vertically center the (caption + gap + logo) block in the right column
-    val captionPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = INK
+    // Camera icon centered in upper portion of tile
+    val iconCx = tileLeft + tileSize / 2f
+    val iconCy = tileTop + tileSize / 2f - 20f
+    drawCameraIcon(canvas, iconCx, iconCy, 56f)
+
+    // "ACTIONS" caption
+    val tilePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = MUTED
         textAlign = Paint.Align.CENTER
-        isFakeBoldText = true
         textSize = 34f
+        letterSpacing = 0.22f
+        isFakeBoldText = true
         typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
     }
-    val captionGap = 24f
-    val captionH = captionPaint.textSize
-    val blockH = captionH + captionGap + logoSize
-    val blockTop = (CARD_H - blockH) / 2f
-    val captionCx = rightX + colW / 2f
-    canvas.drawText("Click for Actions", captionCx, blockTop + captionH * 0.85f, captionPaint)
-    val logoTop = blockTop + captionH + captionGap
-    drawSavoLogo(canvas, logoLeft, logoTop, logoSize)
+    canvas.drawText("ACTIONS", iconCx, tileTop + tileSize - 44f, tilePaint)
 
     return bmp
+}
+
+/** Camera icon styled to match the SAVO brand (navy body + orange lens dot). */
+private fun drawCameraIcon(canvas: Canvas, cx: Float, cy: Float, r: Float) {
+    val s = r / 32f
+    val stroke = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = LENS_GREY; style = Paint.Style.STROKE; strokeWidth = 4.5f * s; strokeCap = Paint.Cap.ROUND
+    }
+    val orange = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = ORANGE; style = Paint.Style.FILL }
+    val body = RectF(cx - 32f * s, cy - 18f * s, cx + 32f * s, cy + 22f * s)
+    canvas.drawRoundRect(body, 8f * s, 8f * s, stroke)
+    // Top hump
+    val hump = RectF(cx - 12f * s, cy - 26f * s, cx + 8f * s, cy - 18f * s)
+    canvas.drawRoundRect(hump, 3f * s, 3f * s, stroke)
+    // Lens (concentric)
+    canvas.drawCircle(cx, cy + 4f * s, 14f * s, stroke)
+    val lensInner = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = ORANGE; style = Paint.Style.STROKE; strokeWidth = 3.5f * s }
+    canvas.drawCircle(cx, cy + 4f * s, 8f * s, lensInner)
+    canvas.drawCircle(cx, cy + 4f * s, 3f * s, orange)
+    // Top-right indicator dot
+    canvas.drawCircle(cx + 22f * s, cy - 10f * s, 3f * s, orange)
 }
 
 /** Draws the actual SAVO brand logo (navy car with rooftop camera). */
