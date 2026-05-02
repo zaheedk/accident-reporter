@@ -3,11 +3,11 @@ name: iOS Build
 # Builds the SAVO iOS app via Capacitor.
 #
 # Two modes:
-#   1. Unsigned simulator/archive build  → always runs, no Apple secrets needed.
-#                                          Useful for sanity-checking the Xcode project.
-#   2. Signed App Store / TestFlight IPA → runs only when ALL signing secrets are
+#   1. Signed App Store / TestFlight IPA → default mode. Runs only when ALL signing secrets are
 #                                          configured. Uploads to TestFlight automatically
 #                                          when APP_STORE_CONNECT_* secrets are present.
+#   2. Unsigned simulator/archive build  → only when explicitly selected. Useful for
+#                                          sanity-checking Xcode, but will NOT appear in TestFlight.
 #
 # Required GitHub Secrets for a signed build:
 #   IOS_P12_BASE64               base64 of your Apple Distribution .p12 certificate
@@ -32,12 +32,12 @@ on:
       build_mode:
         description: "Build mode"
         required: true
-        default: "auto"
+        default: "signed"
         type: choice
         options:
+          - signed       # default: App Store/TestFlight upload, fails if secrets missing
           - auto         # signed if secrets exist, otherwise unsigned
           - unsigned     # always unsigned (no signing required)
-          - signed       # always signed (fails if secrets missing)
 
 jobs:
   build:
@@ -259,6 +259,7 @@ jobs:
             CODE_SIGNING_ALLOWED=NO \
             archive
           echo "Unsigned archive built. An IPA cannot be exported without signing."
+          echo "::warning::This was an unsigned archive-only build. It will not appear in TestFlight. Re-run the workflow with build_mode=signed to upload to TestFlight."
 
       - name: Upload unsigned archive
         if: steps.mode.outputs.mode == 'unsigned'
@@ -441,6 +442,10 @@ jobs:
           xcrun altool --upload-app -f "$IPA" -t ios \
             --apiKey "$ASC_KEY_ID" \
             --apiIssuer "$ASC_ISSUER_ID"
+          echo "✅ TestFlight upload command completed. Apple may take 10–60 minutes to process the build before it appears in TestFlight."
+          echo "### TestFlight upload submitted" >> "$GITHUB_STEP_SUMMARY"
+          echo "Apple accepted the upload command for: $IPA" >> "$GITHUB_STEP_SUMMARY"
+          echo "If it is not visible immediately, check App Store Connect → TestFlight → Builds/Processing after 10–60 minutes." >> "$GITHUB_STEP_SUMMARY"
 
       - name: Cleanup keychain
         if: always() && steps.mode.outputs.mode == 'signed'
