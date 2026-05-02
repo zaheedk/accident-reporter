@@ -38,7 +38,7 @@
                 android:textColor="#1F2937"
                 android:textSize="26sp"
                 android:fontFamily="sans-serif-light"
-                android:letterSpacing="0.04"
+                android:letterSpacing="0"
                 android:singleLine="true"
                 android:ellipsize="end" />
 
