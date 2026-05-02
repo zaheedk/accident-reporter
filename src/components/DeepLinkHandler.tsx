@@ -39,6 +39,8 @@ export default function DeepLinkHandler() {
               navigate('/claims');
             } else if (host === 'tow-companies' || host === 'tow') {
               navigate('/tow-companies');
+            } else if (host === 'widget-actions') {
+              navigate('/dashboard?widgetActions=1');
             }
           } catch (e) {
             console.warn('deep-link parse failed', event.url, e);
