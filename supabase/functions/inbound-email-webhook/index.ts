@@ -46,6 +46,12 @@ function firstNonEmpty(...values: unknown[]): string {
   return '';
 }
 
+function extractEmailAddress(raw: string): string {
+  if (!raw) return '';
+  const m = raw.match(/<([^>]+)>/);
+  return (m ? m[1] : raw).trim();
+}
+
 function htmlToText(html: string): string {
   if (!html) return '';
   return html
