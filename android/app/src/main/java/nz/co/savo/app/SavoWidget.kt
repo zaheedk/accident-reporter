@@ -219,6 +219,7 @@ private const val CARD_H = 600
 private val GREEN = 0xFF22C55E.toInt()
 private val AMBER = 0xFFF5C56B.toInt()
 private val BLUE = 0xFF6BB6F5.toInt()
+private val ORANGE = 0xFFFF6A2C.toInt()
 private val NAVY = 0xFF1E3A5F.toInt()
 private val NAVY_DARK = 0xFF2A4A6F.toInt()
 private val ACCENT_GREEN = 0xFF7CB342.toInt()
