@@ -110,14 +110,22 @@ class SavoWidgetReceiver : AppWidgetProvider() {
             val insExpiry = if (count > 0) prefs.getString("vehicle_${index}_insurance_expiry", "") ?: "" else ""
             val roadsidePhone = if (count > 0) prefs.getString("vehicle_${index}_roadside_phone", "") ?: "" else ""
 
-            // Render at a fixed high-resolution canvas; the ImageView (fitCenter)
-            // scales it crisply to whatever cell size the user picks.
+            // Build RemoteViews — text/legend/tile use native widgets so they
+            // stay crisp at any cell size; only the ring donut is bitmap.
             val views = RemoteViews(context.packageName, R.layout.widget_savo)
-            val bmp = renderCardBitmap(rego, regoExpiry, wofExpiry, insExpiry)
-            views.setImageViewBitmap(R.id.widget_canvas, bmp)
+            views.setTextViewText(R.id.widget_rego, formatRego(rego))
+            views.setImageViewResource(R.id.widget_actions_icon, R.drawable.ic_widget_actions_camera)
+            val ringsBmp = renderRingsBitmap(
+                insDays = daysUntil(insExp),
+                wofDays = daysUntil(wofExp),
+                regoDays = daysUntil(regoExp),
+            )
+            views.setImageViewBitmap(R.id.widget_rings, ringsBmp)
 
             views.setOnClickPendingIntent(R.id.widget_plate_area, switchPendingIntent(context))
-            views.setOnClickPendingIntent(R.id.widget_savo_icon, deepLinkPendingIntent(context, 1002, "savo://widget-actions"))
+            val actionsPI = deepLinkPendingIntent(context, 1002, "savo://widget-actions")
+            views.setOnClickPendingIntent(R.id.widget_savo_icon, actionsPI)
+            views.setOnClickPendingIntent(R.id.widget_savo_badge, actionsPI)
 
             appWidgetManager.updateAppWidget(appWidgetId, views)
         }
