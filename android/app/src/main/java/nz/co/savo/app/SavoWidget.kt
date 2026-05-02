@@ -469,8 +469,17 @@ private fun drawRings(
         canvas.drawArc(rect, 0f, 360f, false, track)
         val d = days[i]
         if (d != null) {
-            // Map days remaining (clamped 0..365) to a sweep angle (0..360)
             val frac = (d.coerceIn(0, 365)) / 365f
+            // Soft glow pass underneath the colored arc
+            val glow = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                color = colors[i]
+                alpha = 130
+                style = Paint.Style.STROKE
+                strokeWidth = stroke + 18f
+                strokeCap = Paint.Cap.ROUND
+                maskFilter = android.graphics.BlurMaskFilter(22f, android.graphics.BlurMaskFilter.Blur.NORMAL)
+            }
+            canvas.drawArc(rect, -90f, 360f * frac, false, glow)
             arc.color = colors[i]
             canvas.drawArc(rect, -90f, 360f * frac, false, arc)
         }
