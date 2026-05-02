@@ -455,8 +455,11 @@ private fun drawSavoLogo(canvas: Canvas, left: Float, top: Float, size: Float) {
 }
 
 private fun formatRego(rego: String): String {
-    val cleaned = rego.trim().uppercase()
-    return if (cleaned.isBlank()) "— — —" else cleaned
+    val cleaned = rego.trim().uppercase().replace(" ", "")
+    if (cleaned.isBlank()) return "— — —"
+    // Insert a single space at the letter→digit boundary, e.g. "PNG34" → "PNG 34"
+    val m = Regex("^([A-Z]+)(\\d.*)$").matchEntire(cleaned)
+    return if (m != null) "${m.groupValues[1]} ${m.groupValues[2]}" else cleaned
 }
 
 private fun drawRings(
