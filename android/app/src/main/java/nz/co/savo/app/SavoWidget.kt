@@ -454,75 +454,65 @@ private fun drawRings(
 }
 
 // ─── Tiny vector icons drawn directly onto the canvas ────────────────────────
-private fun drawRoadsideIcon(canvas: Canvas, cx: Float, cy: Float) {
+// `r` is the surrounding pill radius — icons scale to fit.
+private fun drawRoadsideIcon(canvas: Canvas, cx: Float, cy: Float, r: Float) {
+    val s = r / 32f
     val stroke = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = INK; style = Paint.Style.STROKE; strokeWidth = 3.5f; strokeCap = Paint.Cap.ROUND
+        color = INK; style = Paint.Style.STROKE; strokeWidth = 4.5f * s; strokeCap = Paint.Cap.ROUND
     }
     val orange = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = ORANGE; style = Paint.Style.FILL }
-    // car body
-    val body = RectF(cx - 28f, cy - 4f, cx + 28f, cy + 14f)
-    canvas.drawRoundRect(body, 6f, 6f, stroke)
-    // roof
+    val body = RectF(cx - 28f * s, cy - 4f * s, cx + 28f * s, cy + 14f * s)
+    canvas.drawRoundRect(body, 6f * s, 6f * s, stroke)
     val roof = Path().apply {
-        moveTo(cx - 18f, cy - 4f); lineTo(cx - 12f, cy - 16f)
-        lineTo(cx + 12f, cy - 16f); lineTo(cx + 18f, cy - 4f); close()
+        moveTo(cx - 18f * s, cy - 4f * s); lineTo(cx - 12f * s, cy - 16f * s)
+        lineTo(cx + 12f * s, cy - 16f * s); lineTo(cx + 18f * s, cy - 4f * s); close()
     }
     canvas.drawPath(roof, stroke)
-    // wheels
-    canvas.drawCircle(cx - 16f, cy + 16f, 4f, Paint(Paint.ANTI_ALIAS_FLAG).apply { color = INK })
-    canvas.drawCircle(cx + 16f, cy + 16f, 4f, Paint(Paint.ANTI_ALIAS_FLAG).apply { color = INK })
-    // light bar (orange triangle on roof)
+    canvas.drawCircle(cx - 16f * s, cy + 16f * s, 4f * s, Paint(Paint.ANTI_ALIAS_FLAG).apply { color = INK })
+    canvas.drawCircle(cx + 16f * s, cy + 16f * s, 4f * s, Paint(Paint.ANTI_ALIAS_FLAG).apply { color = INK })
     val light = Path().apply {
-        moveTo(cx - 5f, cy - 16f); lineTo(cx, cy - 24f); lineTo(cx + 5f, cy - 16f); close()
+        moveTo(cx - 5f * s, cy - 16f * s); lineTo(cx, cy - 24f * s); lineTo(cx + 5f * s, cy - 16f * s); close()
     }
     canvas.drawPath(light, orange)
 }
 
-private fun drawTowTruckIcon(canvas: Canvas, cx: Float, cy: Float) {
+private fun drawTowTruckIcon(canvas: Canvas, cx: Float, cy: Float, r: Float) {
+    val s = r / 32f
     val stroke = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = INK; style = Paint.Style.STROKE; strokeWidth = 3.5f; strokeCap = Paint.Cap.ROUND
+        color = INK; style = Paint.Style.STROKE; strokeWidth = 4.5f * s; strokeCap = Paint.Cap.ROUND
     }
     val orange = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = ORANGE; style = Paint.Style.FILL }
-    // cab
-    val cab = RectF(cx - 26f, cy - 2f, cx - 6f, cy + 14f)
-    canvas.drawRoundRect(cab, 4f, 4f, stroke)
-    // bed
-    val bed = RectF(cx - 6f, cy + 4f, cx + 26f, cy + 14f)
-    canvas.drawRoundRect(bed, 3f, 3f, stroke)
-    // boom (diagonal line)
-    canvas.drawLine(cx + 20f, cy + 4f, cx - 8f, cy - 18f, stroke)
-    // flag at boom tip
+    val cab = RectF(cx - 26f * s, cy - 2f * s, cx - 6f * s, cy + 14f * s)
+    canvas.drawRoundRect(cab, 4f * s, 4f * s, stroke)
+    val bed = RectF(cx - 6f * s, cy + 4f * s, cx + 26f * s, cy + 14f * s)
+    canvas.drawRoundRect(bed, 3f * s, 3f * s, stroke)
+    canvas.drawLine(cx + 20f * s, cy + 4f * s, cx - 8f * s, cy - 18f * s, stroke)
     val flag = Path().apply {
-        moveTo(cx - 8f, cy - 18f); lineTo(cx - 22f, cy - 14f); lineTo(cx - 8f, cy - 10f); close()
+        moveTo(cx - 8f * s, cy - 18f * s); lineTo(cx - 22f * s, cy - 14f * s); lineTo(cx - 8f * s, cy - 10f * s); close()
     }
     canvas.drawPath(flag, orange)
-    // wheels
     val wheels = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = INK }
-    canvas.drawCircle(cx - 18f, cy + 16f, 4f, wheels)
-    canvas.drawCircle(cx + 6f, cy + 16f, 4f, wheels)
-    canvas.drawCircle(cx + 18f, cy + 16f, 4f, wheels)
+    canvas.drawCircle(cx - 18f * s, cy + 16f * s, 4f * s, wheels)
+    canvas.drawCircle(cx + 6f * s, cy + 16f * s, 4f * s, wheels)
+    canvas.drawCircle(cx + 18f * s, cy + 16f * s, 4f * s, wheels)
 }
 
-private fun drawEmergencyIcon(canvas: Canvas, cx: Float, cy: Float) {
+private fun drawEmergencyIcon(canvas: Canvas, cx: Float, cy: Float, r: Float) {
+    val s = r / 32f
     val stroke = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = INK; style = Paint.Style.STROKE; strokeWidth = 3.5f; strokeCap = Paint.Cap.ROUND
+        color = INK; style = Paint.Style.STROKE; strokeWidth = 4.5f * s; strokeCap = Paint.Cap.ROUND
     }
     val orange = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = ORANGE; style = Paint.Style.FILL }
-    // van body
-    val body = RectF(cx - 26f, cy - 10f, cx + 22f, cy + 14f)
-    canvas.drawRoundRect(body, 5f, 5f, stroke)
-    // window
-    canvas.drawLine(cx + 6f, cy - 10f, cx + 6f, cy + 4f, stroke)
-    // wheels
+    val body = RectF(cx - 26f * s, cy - 10f * s, cx + 22f * s, cy + 14f * s)
+    canvas.drawRoundRect(body, 5f * s, 5f * s, stroke)
+    canvas.drawLine(cx + 6f * s, cy - 10f * s, cx + 6f * s, cy + 4f * s, stroke)
     val wheels = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = INK }
-    canvas.drawCircle(cx - 16f, cy + 16f, 4f, wheels)
-    canvas.drawCircle(cx + 14f, cy + 16f, 4f, wheels)
-    // orange + cross
-    val crossPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = ORANGE; style = Paint.Style.STROKE; strokeWidth = 3f; strokeCap = Paint.Cap.ROUND }
-    canvas.drawLine(cx - 8f, cy - 4f, cx - 8f, cy + 8f, crossPaint)
-    canvas.drawLine(cx - 14f, cy + 2f, cx - 2f, cy + 2f, crossPaint)
-    // small light
-    canvas.drawCircle(cx + 18f, cy - 12f, 3f, orange)
+    canvas.drawCircle(cx - 16f * s, cy + 16f * s, 4f * s, wheels)
+    canvas.drawCircle(cx + 14f * s, cy + 16f * s, 4f * s, wheels)
+    val crossPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = ORANGE; style = Paint.Style.STROKE; strokeWidth = 3.5f * s; strokeCap = Paint.Cap.ROUND }
+    canvas.drawLine(cx - 8f * s, cy - 4f * s, cx - 8f * s, cy + 8f * s, crossPaint)
+    canvas.drawLine(cx - 14f * s, cy + 2f * s, cx - 2f * s, cy + 2f * s, crossPaint)
+    canvas.drawCircle(cx + 18f * s, cy - 12f * s, 3f * s, orange)
 }
 
 // =============================================================================
