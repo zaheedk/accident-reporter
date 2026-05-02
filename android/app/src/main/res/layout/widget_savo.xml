@@ -37,39 +37,19 @@
                 android:singleLine="true"
                 android:ellipsize="end" />
 
-            <!-- SAVO badge: orange square + bold caps wordmark -->
-            <LinearLayout
+            <!-- SAVO wordmark (tap target for actions sheet) -->
+            <TextView
                 android:id="@+id/widget_savo_badge"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
+                android:text="SAVO"
+                android:textColor="#1F2937"
+                android:textSize="17sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.20"
+                android:padding="2dp"
                 android:clickable="true"
-                android:focusable="true"
-                android:padding="2dp">
-
-                <FrameLayout
-                    android:layout_width="22dp"
-                    android:layout_height="22dp"
-                    android:background="@drawable/widget_savo_badge">
-                    <ImageView
-                        android:layout_width="14dp"
-                        android:layout_height="14dp"
-                        android:layout_gravity="center"
-                        android:src="@drawable/ic_widget_badge_camera"
-                        android:contentDescription="@string/widget_label" />
-                </FrameLayout>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="6dp"
-                    android:text="SAVO"
-                    android:textColor="#1F2937"
-                    android:textSize="13sp"
-                    android:textStyle="bold"
-                    android:letterSpacing="0.20" />
-            </LinearLayout>
+                android:focusable="true" />
         </LinearLayout>
 
         <!-- LEGEND ROW: Insurance / WOF / Rego with colored dots -->
