@@ -116,9 +116,9 @@ class SavoWidgetReceiver : AppWidgetProvider() {
             views.setTextViewText(R.id.widget_rego, formatRego(rego))
             views.setImageViewResource(R.id.widget_actions_icon, R.drawable.ic_widget_actions_camera)
             val ringsBmp = renderRingsBitmap(
-                insDays = daysUntil(insExp),
-                wofDays = daysUntil(wofExp),
-                regoDays = daysUntil(regoExp),
+                insDays = daysUntil(insExpiry),
+                wofDays = daysUntil(wofExpiry),
+                regoDays = daysUntil(regoExpiry),
             )
             views.setImageViewBitmap(R.id.widget_rings, ringsBmp)
 
