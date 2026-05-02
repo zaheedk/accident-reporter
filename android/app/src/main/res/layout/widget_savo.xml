@@ -48,11 +48,17 @@
                 android:focusable="true"
                 android:padding="2dp">
 
-                <ImageView
+                <FrameLayout
                     android:layout_width="22dp"
                     android:layout_height="22dp"
-                    android:src="@drawable/widget_savo_badge"
-                    android:contentDescription="@string/widget_label" />
+                    android:background="@drawable/widget_savo_badge">
+                    <ImageView
+                        android:layout_width="14dp"
+                        android:layout_height="14dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_widget_badge_camera"
+                        android:contentDescription="@string/widget_label" />
+                </FrameLayout>
 
                 <TextView
                     android:layout_width="wrap_content"
