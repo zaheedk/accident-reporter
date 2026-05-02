@@ -29,21 +29,15 @@ import java.net.HttpURLConnection
 import java.net.URL
 
 /*
- * Home-screen widget — 2x3 cells.
+ * Home-screen widget — 4x2 cells (landscape).
  *
  * Layout (single bitmap that scales to fit):
- *   ┌──────────────────────────────┐
- *   │ QPY 356                      │
- *   │ • Insurance  • WOF  • Rego   │
- *   │ ┌────────┐  ┌──────┐         │
- *   │ │ rings  │  │ SAVO │         │
- *   │ │  ◯◯◯  │  │ tile │         │
- *   │ └────────┘  └──────┘         │
- *   │ ──────────────────────────── │
- *   │         TAP TO CALL          │
- *   │   ⊙        🚛        🚑      │
- *   │ Roadside  Tow Truck Emergency│
- *   └──────────────────────────────┘
+ *   ┌────────────────────────────────────────────────────────────────┐
+ *   │ QPY 356        │   [SAVO logo]   │        TAP TO CALL          │
+ *   │ • Insurance    │      SAVO       │   ⊙        🚛        🚑     │
+ *   │ • WOF  • Rego  │  PROTECT YOUR…  │ Roadside  Tow Truck Emerg.  │
+ *   │   ◯◯◯ rings   │                 │                              │
+ *   └────────────────────────────────────────────────────────────────┘
  */
 
 internal const val WIDGET_PREFS = "savo_widget_prefs"
@@ -212,19 +206,27 @@ private fun nextVehicleIndex(prefs: SharedPreferences, current: Int, count: Int)
 // Card renderer — draws the entire widget UI as a single high-res bitmap.
 // =============================================================================
 
-// Canvas designed at 2:3 portrait aspect → matches the 2x3 cell widget shape.
-private const val CARD_W = 600
-private const val CARD_H = 900
+// Canvas designed at 2:1 landscape aspect → matches the 4x2 cell widget shape.
+private const val CARD_W = 1200
+private const val CARD_H = 600
 
 private val GREEN = 0xFF22C55E.toInt()
 private val AMBER = 0xFFF5C56B.toInt()
 private val BLUE = 0xFF6BB6F5.toInt()
 private val ORANGE = 0xFFFF6A2C.toInt()
+private val NAVY = 0xFF1E3A5F.toInt()
+private val NAVY_DARK = 0xFF2A4A6F.toInt()
+private val ACCENT_GREEN = 0xFF7CB342.toInt()
 private val INK = 0xFF111113.toInt()
 private val MUTED = 0xFF9CA3AF.toInt()
 private val TRACK = 0xFFE5E7EB.toInt()
 private val DIVIDER = 0xFFEDEDEF.toInt()
 private val PILL_BG = 0xFFF1F1F4.toInt()
+private val LOGO_BG = 0xFFFFFFFF.toInt()
+private val LOGO_BORDER = 0xFFE8E8E5.toInt()
+private val WINDSCREEN = 0xFFF4F4F2.toInt()
+private val LENS_GREY = 0xFF6B7280.toInt()
+private val LENS_DARK = 0xFF1A1A2E.toInt()
 
 private fun renderCardBitmap(
     rego: String,
@@ -241,54 +243,54 @@ private fun renderCardBitmap(
     canvas.drawRoundRect(cardRect, 36f, 36f, bgPaint)
 
     val pad = 36f
-    var y = pad + 28f
 
-    // ── Title ───────────────────────────────────────────────────────────────
+    // Three columns: left rego/rings (30%), middle SAVO logo (25%), right calls (45%)
+    val leftW = (CARD_W - pad * 2) * 0.30f
+    val midW = (CARD_W - pad * 2) * 0.25f
+    val rightW = (CARD_W - pad * 2) * 0.45f
+    val leftX = pad
+    val midX = leftX + leftW
+    val rightX = midX + midW
+
+    // ── LEFT COLUMN ────────────────────────────────────────────────────────
     val titlePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = INK
         textAlign = Paint.Align.LEFT
         isFakeBoldText = true
-        textSize = 70f
+        textSize = 64f
         letterSpacing = -0.01f
         typeface = Typeface.create("sans-serif", Typeface.BOLD)
     }
-    val titleText = formatRego(rego)
-    canvas.drawText(titleText, pad, y + 50f, titlePaint)
-    y += 80f
+    canvas.drawText(formatRego(rego), leftX, pad + 60f, titlePaint)
 
-    // ── Legend row ──────────────────────────────────────────────────────────
+    // Legend
     val legendPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         textAlign = Paint.Align.LEFT
-        textSize = 24f
+        textSize = 22f
         typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
     }
-    val dotR = 7f
     val items = listOf(
         Triple("Insurance", GREEN, true),
         Triple("WOF", AMBER, false),
         Triple("Rego", BLUE, false),
     )
-    var lx = pad
-    val ly = y + 24f
+    var ly = pad + 100f
     for ((label, color, bold) in items) {
         val dot = Paint(Paint.ANTI_ALIAS_FLAG).apply { this.color = color; style = Paint.Style.FILL }
-        canvas.drawCircle(lx + dotR, ly - 8f, dotR, dot)
+        canvas.drawCircle(leftX + 7f, ly - 6f, 7f, dot)
         legendPaint.color = if (bold) INK else MUTED
         legendPaint.isFakeBoldText = bold
-        canvas.drawText(label, lx + dotR * 2 + 8f, ly, legendPaint)
-        lx += dotR * 2 + 8f + legendPaint.measureText(label) + 22f
+        canvas.drawText(label, leftX + 24f, ly, legendPaint)
+        ly += 30f
     }
-    y += 50f
 
-    // ── Rings + SAVO tile row ──────────────────────────────────────────────
-    val rowH = 280f
-    val rowTop = y
-    val rowBottom = y + rowH
-
-    // Rings (left)
-    drawRings(canvas,
-        cx = pad + 130f,
-        cy = (rowTop + rowBottom) / 2f,
+    // Rings (centered in the bottom of left column)
+    val ringsCx = leftX + leftW * 0.55f
+    val ringsCy = CARD_H * 0.62f
+    drawRings(
+        canvas,
+        cx = ringsCx,
+        cy = ringsCy,
         outerR = 110f,
         stroke = 22f,
         insDays = daysUntil(insExp),
@@ -296,32 +298,42 @@ private fun renderCardBitmap(
         regoDays = daysUntil(regoExp),
     )
 
-    // SAVO tile (right)
-    val tileSize = 150f
-    val tileLeft = CARD_W - pad - tileSize - 10f
-    val tileTop = rowTop + 30f
-    drawSavoTile(canvas, tileLeft, tileTop, tileSize)
-    val savoLabelPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = INK
-        textAlign = Paint.Align.CENTER
-        isFakeBoldText = true
-        textSize = 28f
-        letterSpacing = 0.18f
-        typeface = Typeface.create("sans-serif", Typeface.BOLD)
-    }
-    canvas.drawText("SAVO", tileLeft + tileSize / 2f, tileTop + tileSize + 44f, savoLabelPaint)
-
-    y = rowBottom + 16f
-
-    // ── Divider ─────────────────────────────────────────────────────────────
+    // Vertical divider between left and middle
     val dividerPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = DIVIDER
         strokeWidth = 1.5f
     }
-    canvas.drawLine(pad, y, CARD_W - pad, y, dividerPaint)
-    y += 36f
+    canvas.drawLine(midX - 8f, pad + 40f, midX - 8f, CARD_H - pad - 40f, dividerPaint)
 
-    // ── TAP TO CALL label ──────────────────────────────────────────────────
+    // ── MIDDLE COLUMN — Real SAVO logo ─────────────────────────────────────
+    val logoSize = minOf(midW * 0.85f, CARD_H - pad * 2 - 80f)
+    val logoLeft = midX + (midW - logoSize) / 2f
+    val logoTop = pad + 60f
+    drawSavoLogo(canvas, logoLeft, logoTop, logoSize)
+
+    // SAVO wordmark + tagline below logo
+    val wordmark = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = NAVY
+        textAlign = Paint.Align.CENTER
+        isFakeBoldText = true
+        textSize = 36f
+        letterSpacing = 0.22f
+        typeface = Typeface.create("sans-serif", Typeface.BOLD)
+    }
+    canvas.drawText("SAVO", midX + midW / 2f, logoTop + logoSize + 50f, wordmark)
+    val tagline = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = MUTED
+        textAlign = Paint.Align.CENTER
+        textSize = 16f
+        letterSpacing = 0.18f
+        typeface = Typeface.create("sans-serif", Typeface.NORMAL)
+    }
+    canvas.drawText("PROTECT YOUR CLAIM", midX + midW / 2f, logoTop + logoSize + 78f, tagline)
+
+    // Vertical divider between middle and right
+    canvas.drawLine(rightX - 8f, pad + 40f, rightX - 8f, CARD_H - pad - 40f, dividerPaint)
+
+    // ── RIGHT COLUMN — Tap to call ─────────────────────────────────────────
     val tapLabel = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = MUTED
         textAlign = Paint.Align.CENTER
@@ -330,13 +342,11 @@ private fun renderCardBitmap(
         isFakeBoldText = true
         typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
     }
-    canvas.drawText("TAP TO CALL", CARD_W / 2f, y, tapLabel)
-    y += 30f
+    canvas.drawText("TAP TO CALL", rightX + rightW / 2f, pad + 60f, tapLabel)
 
-    // ── Three call buttons ─────────────────────────────────────────────────
-    val btnR = 48f
-    val cellW = (CARD_W - pad * 2) / 3f
-    val centersY = y + btnR + 8f
+    val btnR = 54f
+    val cellW = rightW / 3f
+    val centersY = CARD_H * 0.55f
     val labels = listOf("Roadside", "Tow Truck", "Emergency")
     val drawers: List<(Canvas, Float, Float) -> Unit> = listOf(
         ::drawRoadsideIcon,
@@ -351,7 +361,7 @@ private fun renderCardBitmap(
         typeface = Typeface.create("sans-serif", Typeface.NORMAL)
     }
     for (i in 0..2) {
-        val cx = pad + cellW * i + cellW / 2f
+        val cx = rightX + cellW * i + cellW / 2f
         canvas.drawCircle(cx, centersY, btnR, pillPaint)
         drawers[i](canvas, cx, centersY)
         canvas.drawText(labels[i], cx, centersY + btnR + 38f, itemLabel)
@@ -360,82 +370,74 @@ private fun renderCardBitmap(
     return bmp
 }
 
-private fun formatRego(rego: String): String {
-    val r = rego.trim().uppercase()
-    if (r.isBlank()) return "—"
-    // Insert a space between the letter group and the digit group, NZI style.
-    val m = Regex("^([A-Z]+)([0-9].*)$").find(r)
-    return if (m != null) "${m.groupValues[1]} ${m.groupValues[2]}" else r
-}
+/** Draws the actual SAVO brand logo (navy car with rooftop camera). */
+private fun drawSavoLogo(canvas: Canvas, left: Float, top: Float, size: Float) {
+    // Scale factor — original svg viewBox is 200x200
+    val s = size / 200f
+    fun x(v: Float) = left + v * s
+    fun y(v: Float) = top + v * s
+    fun r(v: Float) = v * s
 
-private fun drawRings(
-    canvas: Canvas,
-    cx: Float,
-    cy: Float,
-    outerR: Float,
-    stroke: Float,
-    insDays: Int?,
-    wofDays: Int?,
-    regoDays: Int?,
-) {
-    data class Ring(val days: Int?, val baseColor: Int, val radius: Float)
-    val gap = stroke + 8f
-    val rings = listOf(
-        Ring(insDays, GREEN, outerR),
-        Ring(wofDays, AMBER, outerR - gap),
-        Ring(regoDays, BLUE, outerR - gap * 2),
-    )
-    val track = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = TRACK
-        style = Paint.Style.STROKE
-        strokeWidth = stroke
-        strokeCap = Paint.Cap.ROUND
+    // White rounded background card
+    val bg = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = LOGO_BG }
+    val border = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = LOGO_BORDER; style = Paint.Style.STROKE; strokeWidth = r(2f)
     }
-    val arc = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        style = Paint.Style.STROKE
-        strokeWidth = stroke
-        strokeCap = Paint.Cap.ROUND
-    }
-    for (r in rings) {
-        if (r.radius < stroke) continue
-        val rect = RectF(cx - r.radius, cy - r.radius, cx + r.radius, cy + r.radius)
-        canvas.drawArc(rect, 0f, 360f, false, track)
-        val d = r.days
-        val fraction = when {
-            d == null -> 0f
-            d <= 0 -> 0f
-            else -> (d.toFloat() / 365f).coerceIn(0f, 1f)
-        }
-        val color = when {
-            d == null -> 0xFFB8BCC4.toInt()
-            d < 7 -> 0xFFDC2626.toInt()
-            d < 30 -> 0xFFF59E0B.toInt()
-            else -> r.baseColor
-        }
-        if (fraction > 0f) {
-            arc.color = color
-            canvas.drawArc(rect, -90f, 360f * fraction, false, arc)
-        }
-    }
-}
-
-private fun drawSavoTile(canvas: Canvas, left: Float, top: Float, size: Float) {
-    val tile = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = ORANGE }
     val rect = RectF(left, top, left + size, top + size)
-    canvas.drawRoundRect(rect, 28f, 28f, tile)
+    canvas.drawRoundRect(rect, r(44f), r(44f), bg)
+    canvas.drawRoundRect(rect, r(44f), r(44f), border)
 
-    // Camera-shutter mark in the center
-    val cx = left + size / 2f
-    val cy = top + size / 2f
-    val ringR = size * 0.28f
-    val ringPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.WHITE
-        style = Paint.Style.STROKE
-        strokeWidth = size * 0.05f
+    val navy = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = NAVY }
+    val navyDark = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = NAVY_DARK }
+    val windscreen = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = WINDSCREEN }
+    val grey = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = LENS_GREY }
+    val dark = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = LENS_DARK }
+    val white = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.WHITE }
+    val whiteSoft = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.WHITE; alpha = 178 }
+    val accentRing = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = ACCENT_GREEN; style = Paint.Style.STROKE; strokeWidth = r(2.5f)
     }
-    canvas.drawCircle(cx, cy, ringR, ringPaint)
-    val dotPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.WHITE; style = Paint.Style.FILL }
-    canvas.drawCircle(cx, cy, size * 0.07f, dotPaint)
+    val whiteRing = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.WHITE; style = Paint.Style.STROKE; strokeWidth = r(3f)
+    }
+
+    // Car body (rect)
+    canvas.drawRoundRect(RectF(x(18f), y(112f), x(182f), y(154f)), r(8f), r(8f), navy)
+    // Cabin (trapezoid)
+    val cabin = Path().apply {
+        moveTo(x(44f), y(112f)); lineTo(x(60f), y(72f))
+        lineTo(x(140f), y(72f)); lineTo(x(156f), y(112f)); close()
+    }
+    canvas.drawPath(cabin, navy)
+    // Windscreen
+    val wind = Path().apply {
+        moveTo(x(52f), y(110f)); lineTo(x(66f), y(78f))
+        lineTo(x(134f), y(78f)); lineTo(x(148f), y(110f)); close()
+    }
+    canvas.drawPath(wind, windscreen)
+    // Body line
+    canvas.drawRect(x(18f), y(128f), x(182f), y(130f), navyDark)
+
+    // Left wheel
+    canvas.drawCircle(x(56f), y(154f), r(22f), navy)
+    canvas.drawCircle(x(56f), y(154f), r(14f), grey)
+    canvas.drawCircle(x(56f), y(154f), r(8f), navy)
+    canvas.drawCircle(x(56f), y(154f), r(3f), Paint(Paint.ANTI_ALIAS_FLAG).apply { color = LOGO_BORDER })
+    canvas.drawCircle(x(56f), y(154f), r(23f), whiteRing)
+    // Right wheel
+    canvas.drawCircle(x(144f), y(154f), r(22f), navy)
+    canvas.drawCircle(x(144f), y(154f), r(14f), grey)
+    canvas.drawCircle(x(144f), y(154f), r(8f), navy)
+    canvas.drawCircle(x(144f), y(154f), r(3f), Paint(Paint.ANTI_ALIAS_FLAG).apply { color = LOGO_BORDER })
+    canvas.drawCircle(x(144f), y(154f), r(23f), whiteRing)
+
+    // Camera lens on roof (concentric circles + green accent ring)
+    canvas.drawCircle(x(100f), y(86f), r(23.5f), accentRing)
+    canvas.drawCircle(x(100f), y(86f), r(22f), grey)
+    canvas.drawCircle(x(100f), y(86f), r(16f), navy)
+    canvas.drawCircle(x(100f), y(86f), r(11f), dark)
+    canvas.drawCircle(x(100f), y(86f), r(6f), navy)
+    canvas.drawCircle(x(93f), y(79f), r(3f), whiteSoft)
 }
 
 // ─── Tiny vector icons drawn directly onto the canvas ────────────────────────
