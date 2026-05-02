@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ACTIONS tile camera glyph: grey body, orange concentric lens. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="64"
+    android:viewportHeight="64">
+
+    <!-- Camera body outline -->
+    <path
+        android:strokeColor="#6B7280"
+        android:strokeWidth="3.5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:fillColor="#00000000"
+        android:pathData="M6,20 L18,20 L22,14 L42,14 L46,20 L58,20 A2,2 0 0 1 60,22 L60,50 A2,2 0 0 1 58,52 L6,52 A2,2 0 0 1 4,50 L4,22 A2,2 0 0 1 6,20 Z" />
+
+    <!-- Outer lens ring (grey) -->
+    <path
+        android:strokeColor="#6B7280"
+        android:strokeWidth="3"
+        android:fillColor="#00000000"
+        android:pathData="M32,36 m-12,0 a12,12 0 1,0 24,0 a12,12 0 1,0 -24,0" />
+
+    <!-- Inner orange ring -->
+    <path
+        android:strokeColor="#FF6A2C"
+        android:strokeWidth="2.5"
+        android:fillColor="#00000000"
+        android:pathData="M32,36 m-7,0 a7,7 0 1,0 14,0 a7,7 0 1,0 -14,0" />
+
+    <!-- Lens dot -->
+    <path
+        android:fillColor="#FF6A2C"
+        android:pathData="M32,36 m-2.5,0 a2.5,2.5 0 1,0 5,0 a2.5,2.5 0 1,0 -5,0" />
+
+    <!-- Top-right indicator -->
+    <path
+        android:fillColor="#FF6A2C"
+        android:pathData="M52,18 m-2.5,0 a2.5,2.5 0 1,0 5,0 a2.5,2.5 0 1,0 -5,0" />
+</vector>
