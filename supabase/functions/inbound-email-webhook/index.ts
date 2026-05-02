@@ -303,7 +303,7 @@ serve(async (req) => {
           user_id: admin.user_id,
           type: 'unmatched_email',
           title: 'Unmatched inbound email',
-          message: `An email from ${fromEmail} referenced CLM-${String(claimNumber).padStart(4, '0')} but the sender doesn't match any registered user. Subject: ${subject}`,
+          message: `An email from ${fromEmail} matched a claim but the sender doesn't match the claim owner. Subject: ${subject}`,
         }));
         await supabase.from('notifications').insert(notifications);
       }
