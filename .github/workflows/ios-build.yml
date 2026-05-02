@@ -193,6 +193,40 @@ jobs:
           echo "--- Final Info.plist ---"
           /usr/libexec/PlistBuddy -c "Print" "$PLIST" | grep -A0 "Usage" || true
 
+      # ──────────────────────────────────────────────────────────────────
+      # Decide whether we have what we need for a signed build
+      # ──────────────────────────────────────────────────────────────────
+      - name: Determine signing mode
+        id: mode
+        env:
+          INPUT_MODE: ${{ github.event.inputs.build_mode }}
+          P12: ${{ secrets.IOS_P12_BASE64 }}
+          PROFILE: ${{ secrets.IOS_MOBILEPROVISION_BASE64 }}
+          TEAM: ${{ secrets.IOS_TEAM_ID }}
+          ASC_KEY_ID: ${{ secrets.APPSTORE_KEY_ID || secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.APPSTORE_ISSUER_ID || secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+          ASC_KEY: ${{ secrets.APPSTORE_PRIVATE_KEY || secrets.APP_STORE_CONNECT_API_KEY_BASE64 }}
+        run: |
+          set -e
+          HAVE_SECRETS=no
+          if [ -n "$P12" ] && [ -n "$PROFILE" ] && [ -n "$TEAM" ]; then
+            HAVE_SECRETS=yes
+          fi
+          MODE="$INPUT_MODE"
+          if [ "$MODE" = "auto" ] || [ -z "$MODE" ]; then
+            if [ "$HAVE_SECRETS" = "yes" ]; then MODE="signed"; else MODE="unsigned"; fi
+          fi
+          if [ "$MODE" = "signed" ] && [ "$HAVE_SECRETS" != "yes" ]; then
+            echo "::error::Signed build requested but IOS_P12_BASE64 / IOS_MOBILEPROVISION_BASE64 / IOS_TEAM_ID are missing."
+            exit 1
+          fi
+          if [ "$MODE" = "signed" ] && { [ -z "$ASC_KEY_ID" ] || [ -z "$ASC_ISSUER_ID" ] || [ -z "$ASC_KEY" ]; }; then
+            echo "::error::Signed build is configured, but TestFlight upload secrets are missing. Add APPSTORE_KEY_ID, APPSTORE_ISSUER_ID, and APPSTORE_PRIVATE_KEY GitHub secrets."
+            exit 1
+          fi
+          echo "mode=$MODE" >> "$GITHUB_OUTPUT"
+          echo "Build mode: $MODE"
+
       - name: Stamp unique iOS TestFlight version
         if: steps.mode.outputs.mode == 'signed'
         run: |
@@ -230,40 +264,6 @@ jobs:
           else
             echo "No Podfile found; Capacitor iOS is using Swift Package Manager."
           fi
-
-      # ──────────────────────────────────────────────────────────────────
-      # Decide whether we have what we need for a signed build
-      # ──────────────────────────────────────────────────────────────────
-      - name: Determine signing mode
-        id: mode
-        env:
-          INPUT_MODE: ${{ github.event.inputs.build_mode }}
-          P12: ${{ secrets.IOS_P12_BASE64 }}
-          PROFILE: ${{ secrets.IOS_MOBILEPROVISION_BASE64 }}
-          TEAM: ${{ secrets.IOS_TEAM_ID }}
-          ASC_KEY_ID: ${{ secrets.APPSTORE_KEY_ID || secrets.APP_STORE_CONNECT_API_KEY_ID }}
-          ASC_ISSUER_ID: ${{ secrets.APPSTORE_ISSUER_ID || secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
-          ASC_KEY: ${{ secrets.APPSTORE_PRIVATE_KEY || secrets.APP_STORE_CONNECT_API_KEY_BASE64 }}
-        run: |
-          set -e
-          HAVE_SECRETS=no
-          if [ -n "$P12" ] && [ -n "$PROFILE" ] && [ -n "$TEAM" ]; then
-            HAVE_SECRETS=yes
-          fi
-          MODE="$INPUT_MODE"
-          if [ "$MODE" = "auto" ] || [ -z "$MODE" ]; then
-            if [ "$HAVE_SECRETS" = "yes" ]; then MODE="signed"; else MODE="unsigned"; fi
-          fi
-          if [ "$MODE" = "signed" ] && [ "$HAVE_SECRETS" != "yes" ]; then
-            echo "::error::Signed build requested but IOS_P12_BASE64 / IOS_MOBILEPROVISION_BASE64 / IOS_TEAM_ID are missing."
-            exit 1
-          fi
-          if [ "$MODE" = "signed" ] && { [ -z "$ASC_KEY_ID" ] || [ -z "$ASC_ISSUER_ID" ] || [ -z "$ASC_KEY" ]; }; then
-            echo "::error::Signed build is configured, but TestFlight upload secrets are missing. Add APPSTORE_KEY_ID, APPSTORE_ISSUER_ID, and APPSTORE_PRIVATE_KEY GitHub secrets."
-            exit 1
-          fi
-          echo "mode=$MODE" >> "$GITHUB_OUTPUT"
-          echo "Build mode: $MODE"
 
       # ──────────────────────────────────────────────────────────────────
       # Unsigned: archive without code signing (for verification only)
