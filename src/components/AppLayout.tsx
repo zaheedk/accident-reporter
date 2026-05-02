@@ -1,6 +1,7 @@
 import { Link, useLocation } from 'react-router-dom';
 import { LayoutDashboard, Car, FileText, Plus, Wrench, Truck, Info, HelpCircle, BookOpen, Shield, Menu, X, LogOut, Newspaper, Home, Phone, FolderOpen, Sun, Moon, Users } from 'lucide-react';
 import NotificationBell from '@/components/NotificationBell';
+import WidgetActionsSheet from '@/components/WidgetActionsSheet';
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -167,6 +168,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           );
         })}
       </nav>
+      <WidgetActionsSheet />
     </div>
   );
 }
