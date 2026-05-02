@@ -237,7 +237,7 @@ private fun renderCardBitmap(
 
     val pad = 36f
 
-    // Two columns: left rego/rings (50%), right SAVO logo on top + icons below (50%)
+    // Two columns: left rego/legend/rings (50%), right large SAVO logo (50%).
     val colW = (CARD_W - pad * 2) * 0.50f
     val leftX = pad
     val rightX = leftX + colW
@@ -253,36 +253,46 @@ private fun renderCardBitmap(
     }
     canvas.drawText(formatRego(rego), leftX, pad + 70f, titlePaint)
 
-    // Legend (bigger text)
+    // Single-line legend: ● Insurance   ● WOF   ● Rego
     val legendPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         textAlign = Paint.Align.LEFT
-        textSize = 38f
+        textSize = 36f
+        color = INK
+        isFakeBoldText = true
         typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
     }
-    val items = listOf(
-        Triple("Insurance", GREEN, true),
-        Triple("WOF", AMBER, false),
-        Triple("Rego", BLUE, false),
+    val legendItems = listOf(
+        "Insurance" to GREEN,
+        "WOF" to AMBER,
+        "Rego" to BLUE,
     )
-    var ly = pad + 130f
-    for ((label, color, bold) in items) {
+    val legendY = pad + 130f
+    val dotR = 11f
+    val dotTextGap = 14f
+    val itemGap = 36f
+    // Measure total width to center horizontally in the left column
+    var totalLegendW = 0f
+    for ((label, _) in legendItems) {
+        totalLegendW += dotR * 2f + dotTextGap + legendPaint.measureText(label)
+    }
+    totalLegendW += itemGap * (legendItems.size - 1)
+    var lx = leftX + (colW - totalLegendW) / 2f
+    for ((label, color) in legendItems) {
         val dot = Paint(Paint.ANTI_ALIAS_FLAG).apply { this.color = color; style = Paint.Style.FILL }
-        canvas.drawCircle(leftX + 12f, ly - 12f, 12f, dot)
-        legendPaint.color = if (bold) INK else MUTED
-        legendPaint.isFakeBoldText = bold
-        canvas.drawText(label, leftX + 36f, ly, legendPaint)
-        ly += 50f
+        canvas.drawCircle(lx + dotR, legendY - 12f, dotR, dot)
+        canvas.drawText(label, lx + dotR * 2f + dotTextGap, legendY, legendPaint)
+        lx += dotR * 2f + dotTextGap + legendPaint.measureText(label) + itemGap
     }
 
-    // Rings (right side of left column)
-    val ringsCx = leftX + colW * 0.72f
-    val ringsCy = CARD_H * 0.55f
+    // Rings below the legend, centered in the left column
+    val ringsCx = leftX + colW / 2f
+    val ringsCy = legendY + 40f + 170f
     drawRings(
         canvas,
         cx = ringsCx,
         cy = ringsCy,
-        outerR = 150f,
-        stroke = 28f,
+        outerR = 165f,
+        stroke = 30f,
         insDays = daysUntil(insExp),
         wofDays = daysUntil(wofExp),
         regoDays = daysUntil(regoExp),
@@ -293,40 +303,14 @@ private fun renderCardBitmap(
         color = DIVIDER
         strokeWidth = 1.5f
     }
-    canvas.drawLine(rightX - 8f, pad + 30f, rightX - 8f, CARD_H - pad - 30f, dividerPaint)
+    canvas.drawLine(rightX, pad + 30f, rightX, CARD_H - pad - 30f, dividerPaint)
 
-    // ── RIGHT COLUMN — SAVO logo on top, 3 big icons below ─────────────────
-    val rightTopH = (CARD_H - pad * 2) * 0.40f
-    val logoSize = minOf(rightTopH - 10f, colW * 0.55f)
+    // ── RIGHT COLUMN — large SAVO logo, vertically centered ────────────────
+    val logoSize = minOf(colW * 0.85f, (CARD_H - pad * 2) * 0.95f)
     val logoLeft = rightX + (colW - logoSize) / 2f
-    val logoTop = pad + (rightTopH - logoSize) / 2f
+    val logoTop = (CARD_H - logoSize) / 2f
     drawSavoLogo(canvas, logoLeft, logoTop, logoSize)
 
-    val iconsTop = pad + rightTopH
-    val iconsH = (CARD_H - pad * 2) * 0.60f
-    val cellW = colW / 3f
-    val centersY = iconsTop + iconsH * 0.42f
-    val btnR = minOf(cellW * 0.36f, iconsH * 0.34f)
-    val labels = listOf("Roadside", "Tow Truck", "Emergency")
-    val drawers: List<(Canvas, Float, Float, Float) -> Unit> = listOf(
-        ::drawRoadsideIcon,
-        ::drawTowTruckIcon,
-        ::drawEmergencyIcon,
-    )
-    val pillPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = PILL_BG; style = Paint.Style.FILL }
-    val itemLabel = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = INK
-        textAlign = Paint.Align.CENTER
-        textSize = 30f
-        isFakeBoldText = true
-        typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
-    }
-    for (i in 0..2) {
-        val cx = rightX + cellW * i + cellW / 2f
-        canvas.drawCircle(cx, centersY, btnR, pillPaint)
-        drawers[i](canvas, cx, centersY, btnR)
-        canvas.drawText(labels[i], cx, centersY + btnR + 48f, itemLabel)
-    }
 
     return bmp
 }
