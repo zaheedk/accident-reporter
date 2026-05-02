@@ -204,8 +204,8 @@ private const val CARD_W = 1400
 private const val CARD_H = 560
 
 private val GREEN = 0xFF22C55E.toInt()
-private val AMBER = 0xFFF5C56B.toInt()
-private val BLUE = 0xFF6BB6F5.toInt()
+private val AMBER = 0xFFFF8A3D.toInt() // WOF dot — solid orange per reference
+private val BLUE = 0xFFB9D4EE.toInt()  // Rego dot — soft blue
 private val ORANGE = 0xFFFF6A2C.toInt()
 private val NAVY = 0xFF1E3A5F.toInt()
 private val NAVY_DARK = 0xFF2A4A6F.toInt()
