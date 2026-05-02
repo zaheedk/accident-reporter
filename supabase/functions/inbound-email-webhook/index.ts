@@ -150,6 +150,10 @@ serve(async (req) => {
       throw new Error('Missing required fields in webhook payload');
     }
 
+    const fromEmailEarly = extractEmailAddress(from).toLowerCase();
+    const subjectNorm = subject.toLowerCase();
+    const subjectCompact = subjectNorm.replace(/[\s\-_/]+/g, '');
+
     // --- Extract claim number from to-address OR subject line ---
     const claimNumber = extractClaimNumber(toAddress, subject);
 
@@ -161,32 +165,94 @@ serve(async (req) => {
         .from('claims')
         .select('id, user_id, insurance_company')
         .eq('claim_number', claimNumber)
-        .single();
+        .maybeSingle();
       claim = data;
     }
 
-    // If no match by CLM number, try matching the subject against user_claim_number
+    // Try matching by report_number (8-char public id) appearing in subject
     if (!claim) {
-      // Search for any claim whose user_claim_number appears in the subject
-      const { data: allClaims } = await supabase
-        .from('claims')
-        .select('id, user_id, insurance_company, user_claim_number')
-        .neq('user_claim_number', '');
+      const tokens = (subject.toUpperCase().match(/\b[A-Z0-9]{8}\b/g) || []);
+      for (const t of tokens) {
+        const { data } = await supabase
+          .from('claims')
+          .select('id, user_id, insurance_company')
+          .eq('report_number', t)
+          .maybeSingle();
+        if (data) { claim = data; break; }
+      }
+    }
 
-      if (allClaims) {
-        const subjectLower = subject.toLowerCase();
-        claim = allClaims.find(c => c.user_claim_number && subjectLower.includes(c.user_claim_number.toLowerCase())) || null;
+    // Try matching the subject against user_claim_number
+    // Prefer claims belonging to the sender; fall back to any claim.
+    if (!claim) {
+      // Resolve sender -> user_id (profile email or auth email)
+      let senderUserId: string | null = null;
+      if (fromEmailEarly) {
+        const { data: profileMatch } = await supabase
+          .from('profiles')
+          .select('user_id')
+          .eq('email', fromEmailEarly)
+          .maybeSingle();
+        if (profileMatch?.user_id) senderUserId = profileMatch.user_id;
+      }
+
+      const matchUcn = (rows: Array<{ user_claim_number: string | null }> | null, row: any) => {
+        const ucn = (row.user_claim_number || '').trim();
+        if (!ucn) return false;
+        const ucnLower = ucn.toLowerCase();
+        const ucnCompact = ucnLower.replace(/[\s\-_/]+/g, '');
+        return subjectNorm.includes(ucnLower) ||
+               (ucnCompact.length >= 4 && subjectCompact.includes(ucnCompact));
+      };
+
+      if (senderUserId) {
+        const { data: ownClaims } = await supabase
+          .from('claims')
+          .select('id, user_id, insurance_company, user_claim_number')
+          .eq('user_id', senderUserId)
+          .neq('user_claim_number', '');
+        const hit = (ownClaims || []).find((c) => matchUcn(ownClaims as any, c));
+        if (hit) claim = { id: hit.id, user_id: hit.user_id, insurance_company: hit.insurance_company };
+      }
+
+      if (!claim) {
+        const { data: allClaims } = await supabase
+          .from('claims')
+          .select('id, user_id, insurance_company, user_claim_number')
+          .neq('user_claim_number', '');
+        const hit = (allClaims || []).find((c) => matchUcn(allClaims as any, c));
+        if (hit) claim = { id: hit.id, user_id: hit.user_id, insurance_company: hit.insurance_company };
       }
     }
 
     if (!claim) {
-      console.log('No claim found for inbound email. Subject:', subject, 'To:', toAddress);
-      // Auto-reply to the sender so they know to include CLM-XXXX
-      await sendAutoReply(from, subject, 'no_claim_ref');
-      return new Response(JSON.stringify({ success: true, skipped: true, reason: 'Claim not found' }), {
-        status: 200,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+      console.log('No claim matched. Forwarding to inbound-document-webhook. Subject:', subject, 'To:', toAddress);
+      // Fallback: hand the raw payload to the document webhook so any
+      // attachments get filed against the sender's vehicle/profile.
+      try {
+        const docUrl = `${Deno.env.get('SUPABASE_URL')}/functions/v1/inbound-document-webhook`;
+        const forwardRes = await fetch(docUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')}`,
+          },
+          body: JSON.stringify(payload),
+        });
+        const forwardBody = await forwardRes.text();
+        return new Response(JSON.stringify({
+          success: true,
+          forwarded_to: 'inbound-document-webhook',
+          downstream_status: forwardRes.status,
+          downstream_body: forwardBody,
+        }), { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      } catch (fwdErr) {
+        console.error('Forward to document webhook failed:', fwdErr);
+        return new Response(JSON.stringify({ success: true, skipped: true, reason: 'Claim not found and forward failed' }), {
+          status: 200,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
     }
 
     const fromEmail = (from || 'unknown@unknown').toLowerCase();
