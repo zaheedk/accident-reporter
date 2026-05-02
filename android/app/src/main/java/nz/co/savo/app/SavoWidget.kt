@@ -440,6 +440,51 @@ private fun drawSavoLogo(canvas: Canvas, left: Float, top: Float, size: Float) {
     canvas.drawCircle(x(93f), y(79f), r(3f), whiteSoft)
 }
 
+private fun formatRego(rego: String): String {
+    val cleaned = rego.trim().uppercase()
+    return if (cleaned.isBlank()) "— — —" else cleaned
+}
+
+private fun drawRings(
+    canvas: Canvas,
+    cx: Float,
+    cy: Float,
+    outerR: Float,
+    stroke: Float,
+    insDays: Int?,
+    wofDays: Int?,
+    regoDays: Int?,
+) {
+    val gap = stroke * 0.55f
+    val radii = floatArrayOf(outerR, outerR - stroke - gap, outerR - 2f * (stroke + gap))
+    val colors = intArrayOf(GREEN, AMBER, BLUE)
+    val days = arrayOf(insDays, wofDays, regoDays)
+
+    val track = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = TRACK
+        style = Paint.Style.STROKE
+        strokeWidth = stroke
+        strokeCap = Paint.Cap.ROUND
+    }
+    val arc = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.STROKE
+        strokeWidth = stroke
+        strokeCap = Paint.Cap.ROUND
+    }
+    for (i in 0..2) {
+        val r = radii[i]
+        val rect = RectF(cx - r, cy - r, cx + r, cy + r)
+        canvas.drawArc(rect, 0f, 360f, false, track)
+        val d = days[i]
+        if (d != null) {
+            // Map days remaining (clamped 0..365) to a sweep angle (0..360)
+            val frac = (d.coerceIn(0, 365)) / 365f
+            arc.color = colors[i]
+            canvas.drawArc(rect, -90f, 360f * frac, false, arc)
+        }
+    }
+}
+
 // ─── Tiny vector icons drawn directly onto the canvas ────────────────────────
 private fun drawRoadsideIcon(canvas: Canvas, cx: Float, cy: Float) {
     val stroke = Paint(Paint.ANTI_ALIAS_FLAG).apply {
