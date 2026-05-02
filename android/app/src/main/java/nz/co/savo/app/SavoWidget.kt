@@ -244,29 +244,26 @@ private fun renderCardBitmap(
 
     val pad = 36f
 
-    // Three columns: left rego/rings (30%), middle SAVO logo (25%), right calls (45%)
-    val leftW = (CARD_W - pad * 2) * 0.30f
-    val midW = (CARD_W - pad * 2) * 0.25f
-    val rightW = (CARD_W - pad * 2) * 0.45f
+    // Two columns: left rego/rings (50%), right SAVO logo on top + icons below (50%)
+    val colW = (CARD_W - pad * 2) * 0.50f
     val leftX = pad
-    val midX = leftX + leftW
-    val rightX = midX + midW
+    val rightX = leftX + colW
 
     // ── LEFT COLUMN ────────────────────────────────────────────────────────
     val titlePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = INK
         textAlign = Paint.Align.LEFT
         isFakeBoldText = true
-        textSize = 64f
+        textSize = 76f
         letterSpacing = -0.01f
         typeface = Typeface.create("sans-serif", Typeface.BOLD)
     }
-    canvas.drawText(formatRego(rego), leftX, pad + 60f, titlePaint)
+    canvas.drawText(formatRego(rego), leftX, pad + 70f, titlePaint)
 
-    // Legend
+    // Legend (bigger text)
     val legendPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         textAlign = Paint.Align.LEFT
-        textSize = 22f
+        textSize = 38f
         typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
     }
     val items = listOf(
@@ -274,97 +271,68 @@ private fun renderCardBitmap(
         Triple("WOF", AMBER, false),
         Triple("Rego", BLUE, false),
     )
-    var ly = pad + 100f
+    var ly = pad + 130f
     for ((label, color, bold) in items) {
         val dot = Paint(Paint.ANTI_ALIAS_FLAG).apply { this.color = color; style = Paint.Style.FILL }
-        canvas.drawCircle(leftX + 7f, ly - 6f, 7f, dot)
+        canvas.drawCircle(leftX + 12f, ly - 12f, 12f, dot)
         legendPaint.color = if (bold) INK else MUTED
         legendPaint.isFakeBoldText = bold
-        canvas.drawText(label, leftX + 24f, ly, legendPaint)
-        ly += 30f
+        canvas.drawText(label, leftX + 36f, ly, legendPaint)
+        ly += 50f
     }
 
-    // Rings (centered in the bottom of left column)
-    val ringsCx = leftX + leftW * 0.55f
-    val ringsCy = CARD_H * 0.62f
+    // Rings (right side of left column)
+    val ringsCx = leftX + colW * 0.72f
+    val ringsCy = CARD_H * 0.55f
     drawRings(
         canvas,
         cx = ringsCx,
         cy = ringsCy,
-        outerR = 110f,
-        stroke = 22f,
+        outerR = 150f,
+        stroke = 28f,
         insDays = daysUntil(insExp),
         wofDays = daysUntil(wofExp),
         regoDays = daysUntil(regoExp),
     )
 
-    // Vertical divider between left and middle
+    // Vertical divider between columns
     val dividerPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = DIVIDER
         strokeWidth = 1.5f
     }
-    canvas.drawLine(midX - 8f, pad + 40f, midX - 8f, CARD_H - pad - 40f, dividerPaint)
+    canvas.drawLine(rightX - 8f, pad + 30f, rightX - 8f, CARD_H - pad - 30f, dividerPaint)
 
-    // ── MIDDLE COLUMN — Real SAVO logo ─────────────────────────────────────
-    val logoSize = minOf(midW * 0.85f, CARD_H - pad * 2 - 80f)
-    val logoLeft = midX + (midW - logoSize) / 2f
-    val logoTop = pad + 60f
+    // ── RIGHT COLUMN — SAVO logo on top, 3 big icons below ─────────────────
+    val rightTopH = (CARD_H - pad * 2) * 0.40f
+    val logoSize = minOf(rightTopH - 10f, colW * 0.55f)
+    val logoLeft = rightX + (colW - logoSize) / 2f
+    val logoTop = pad + (rightTopH - logoSize) / 2f
     drawSavoLogo(canvas, logoLeft, logoTop, logoSize)
 
-    // SAVO wordmark + tagline below logo
-    val wordmark = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = NAVY
-        textAlign = Paint.Align.CENTER
-        isFakeBoldText = true
-        textSize = 36f
-        letterSpacing = 0.22f
-        typeface = Typeface.create("sans-serif", Typeface.BOLD)
-    }
-    canvas.drawText("SAVO", midX + midW / 2f, logoTop + logoSize + 50f, wordmark)
-    val tagline = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = MUTED
-        textAlign = Paint.Align.CENTER
-        textSize = 16f
-        letterSpacing = 0.18f
-        typeface = Typeface.create("sans-serif", Typeface.NORMAL)
-    }
-    canvas.drawText("PROTECT YOUR CLAIM", midX + midW / 2f, logoTop + logoSize + 78f, tagline)
-
-    // Vertical divider between middle and right
-    canvas.drawLine(rightX - 8f, pad + 40f, rightX - 8f, CARD_H - pad - 40f, dividerPaint)
-
-    // ── RIGHT COLUMN — Tap to call ─────────────────────────────────────────
-    val tapLabel = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = MUTED
-        textAlign = Paint.Align.CENTER
-        textSize = 22f
-        letterSpacing = 0.22f
-        isFakeBoldText = true
-        typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
-    }
-    canvas.drawText("TAP TO CALL", rightX + rightW / 2f, pad + 60f, tapLabel)
-
-    val btnR = 54f
-    val cellW = rightW / 3f
-    val centersY = CARD_H * 0.55f
+    val iconsTop = pad + rightTopH
+    val iconsH = (CARD_H - pad * 2) * 0.60f
+    val cellW = colW / 3f
+    val centersY = iconsTop + iconsH * 0.42f
+    val btnR = minOf(cellW * 0.36f, iconsH * 0.34f)
     val labels = listOf("Roadside", "Tow Truck", "Emergency")
-    val drawers: List<(Canvas, Float, Float) -> Unit> = listOf(
+    val drawers: List<(Canvas, Float, Float, Float) -> Unit> = listOf(
         ::drawRoadsideIcon,
         ::drawTowTruckIcon,
         ::drawEmergencyIcon,
     )
     val pillPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = PILL_BG; style = Paint.Style.FILL }
     val itemLabel = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = MUTED
+        color = INK
         textAlign = Paint.Align.CENTER
-        textSize = 22f
-        typeface = Typeface.create("sans-serif", Typeface.NORMAL)
+        textSize = 30f
+        isFakeBoldText = true
+        typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
     }
     for (i in 0..2) {
         val cx = rightX + cellW * i + cellW / 2f
         canvas.drawCircle(cx, centersY, btnR, pillPaint)
-        drawers[i](canvas, cx, centersY)
-        canvas.drawText(labels[i], cx, centersY + btnR + 38f, itemLabel)
+        drawers[i](canvas, cx, centersY, btnR)
+        canvas.drawText(labels[i], cx, centersY + btnR + 48f, itemLabel)
     }
 
     return bmp
@@ -486,75 +454,65 @@ private fun drawRings(
 }
 
 // ─── Tiny vector icons drawn directly onto the canvas ────────────────────────
-private fun drawRoadsideIcon(canvas: Canvas, cx: Float, cy: Float) {
+// `r` is the surrounding pill radius — icons scale to fit.
+private fun drawRoadsideIcon(canvas: Canvas, cx: Float, cy: Float, r: Float) {
+    val s = r / 32f
     val stroke = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = INK; style = Paint.Style.STROKE; strokeWidth = 3.5f; strokeCap = Paint.Cap.ROUND
+        color = INK; style = Paint.Style.STROKE; strokeWidth = 4.5f * s; strokeCap = Paint.Cap.ROUND
     }
     val orange = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = ORANGE; style = Paint.Style.FILL }
-    // car body
-    val body = RectF(cx - 28f, cy - 4f, cx + 28f, cy + 14f)
-    canvas.drawRoundRect(body, 6f, 6f, stroke)
-    // roof
+    val body = RectF(cx - 28f * s, cy - 4f * s, cx + 28f * s, cy + 14f * s)
+    canvas.drawRoundRect(body, 6f * s, 6f * s, stroke)
     val roof = Path().apply {
-        moveTo(cx - 18f, cy - 4f); lineTo(cx - 12f, cy - 16f)
-        lineTo(cx + 12f, cy - 16f); lineTo(cx + 18f, cy - 4f); close()
+        moveTo(cx - 18f * s, cy - 4f * s); lineTo(cx - 12f * s, cy - 16f * s)
+        lineTo(cx + 12f * s, cy - 16f * s); lineTo(cx + 18f * s, cy - 4f * s); close()
     }
     canvas.drawPath(roof, stroke)
-    // wheels
-    canvas.drawCircle(cx - 16f, cy + 16f, 4f, Paint(Paint.ANTI_ALIAS_FLAG).apply { color = INK })
-    canvas.drawCircle(cx + 16f, cy + 16f, 4f, Paint(Paint.ANTI_ALIAS_FLAG).apply { color = INK })
-    // light bar (orange triangle on roof)
+    canvas.drawCircle(cx - 16f * s, cy + 16f * s, 4f * s, Paint(Paint.ANTI_ALIAS_FLAG).apply { color = INK })
+    canvas.drawCircle(cx + 16f * s, cy + 16f * s, 4f * s, Paint(Paint.ANTI_ALIAS_FLAG).apply { color = INK })
     val light = Path().apply {
-        moveTo(cx - 5f, cy - 16f); lineTo(cx, cy - 24f); lineTo(cx + 5f, cy - 16f); close()
+        moveTo(cx - 5f * s, cy - 16f * s); lineTo(cx, cy - 24f * s); lineTo(cx + 5f * s, cy - 16f * s); close()
     }
     canvas.drawPath(light, orange)
 }
 
-private fun drawTowTruckIcon(canvas: Canvas, cx: Float, cy: Float) {
+private fun drawTowTruckIcon(canvas: Canvas, cx: Float, cy: Float, r: Float) {
+    val s = r / 32f
     val stroke = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = INK; style = Paint.Style.STROKE; strokeWidth = 3.5f; strokeCap = Paint.Cap.ROUND
+        color = INK; style = Paint.Style.STROKE; strokeWidth = 4.5f * s; strokeCap = Paint.Cap.ROUND
     }
     val orange = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = ORANGE; style = Paint.Style.FILL }
-    // cab
-    val cab = RectF(cx - 26f, cy - 2f, cx - 6f, cy + 14f)
-    canvas.drawRoundRect(cab, 4f, 4f, stroke)
-    // bed
-    val bed = RectF(cx - 6f, cy + 4f, cx + 26f, cy + 14f)
-    canvas.drawRoundRect(bed, 3f, 3f, stroke)
-    // boom (diagonal line)
-    canvas.drawLine(cx + 20f, cy + 4f, cx - 8f, cy - 18f, stroke)
-    // flag at boom tip
+    val cab = RectF(cx - 26f * s, cy - 2f * s, cx - 6f * s, cy + 14f * s)
+    canvas.drawRoundRect(cab, 4f * s, 4f * s, stroke)
+    val bed = RectF(cx - 6f * s, cy + 4f * s, cx + 26f * s, cy + 14f * s)
+    canvas.drawRoundRect(bed, 3f * s, 3f * s, stroke)
+    canvas.drawLine(cx + 20f * s, cy + 4f * s, cx - 8f * s, cy - 18f * s, stroke)
     val flag = Path().apply {
-        moveTo(cx - 8f, cy - 18f); lineTo(cx - 22f, cy - 14f); lineTo(cx - 8f, cy - 10f); close()
+        moveTo(cx - 8f * s, cy - 18f * s); lineTo(cx - 22f * s, cy - 14f * s); lineTo(cx - 8f * s, cy - 10f * s); close()
     }
     canvas.drawPath(flag, orange)
-    // wheels
     val wheels = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = INK }
-    canvas.drawCircle(cx - 18f, cy + 16f, 4f, wheels)
-    canvas.drawCircle(cx + 6f, cy + 16f, 4f, wheels)
-    canvas.drawCircle(cx + 18f, cy + 16f, 4f, wheels)
+    canvas.drawCircle(cx - 18f * s, cy + 16f * s, 4f * s, wheels)
+    canvas.drawCircle(cx + 6f * s, cy + 16f * s, 4f * s, wheels)
+    canvas.drawCircle(cx + 18f * s, cy + 16f * s, 4f * s, wheels)
 }
 
-private fun drawEmergencyIcon(canvas: Canvas, cx: Float, cy: Float) {
+private fun drawEmergencyIcon(canvas: Canvas, cx: Float, cy: Float, r: Float) {
+    val s = r / 32f
     val stroke = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = INK; style = Paint.Style.STROKE; strokeWidth = 3.5f; strokeCap = Paint.Cap.ROUND
+        color = INK; style = Paint.Style.STROKE; strokeWidth = 4.5f * s; strokeCap = Paint.Cap.ROUND
     }
     val orange = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = ORANGE; style = Paint.Style.FILL }
-    // van body
-    val body = RectF(cx - 26f, cy - 10f, cx + 22f, cy + 14f)
-    canvas.drawRoundRect(body, 5f, 5f, stroke)
-    // window
-    canvas.drawLine(cx + 6f, cy - 10f, cx + 6f, cy + 4f, stroke)
-    // wheels
+    val body = RectF(cx - 26f * s, cy - 10f * s, cx + 22f * s, cy + 14f * s)
+    canvas.drawRoundRect(body, 5f * s, 5f * s, stroke)
+    canvas.drawLine(cx + 6f * s, cy - 10f * s, cx + 6f * s, cy + 4f * s, stroke)
     val wheels = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = INK }
-    canvas.drawCircle(cx - 16f, cy + 16f, 4f, wheels)
-    canvas.drawCircle(cx + 14f, cy + 16f, 4f, wheels)
-    // orange + cross
-    val crossPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = ORANGE; style = Paint.Style.STROKE; strokeWidth = 3f; strokeCap = Paint.Cap.ROUND }
-    canvas.drawLine(cx - 8f, cy - 4f, cx - 8f, cy + 8f, crossPaint)
-    canvas.drawLine(cx - 14f, cy + 2f, cx - 2f, cy + 2f, crossPaint)
-    // small light
-    canvas.drawCircle(cx + 18f, cy - 12f, 3f, orange)
+    canvas.drawCircle(cx - 16f * s, cy + 16f * s, 4f * s, wheels)
+    canvas.drawCircle(cx + 14f * s, cy + 16f * s, 4f * s, wheels)
+    val crossPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = ORANGE; style = Paint.Style.STROKE; strokeWidth = 3.5f * s; strokeCap = Paint.Cap.ROUND }
+    canvas.drawLine(cx - 8f * s, cy - 4f * s, cx - 8f * s, cy + 8f * s, crossPaint)
+    canvas.drawLine(cx - 14f * s, cy + 2f * s, cx - 2f * s, cy + 2f * s, crossPaint)
+    canvas.drawCircle(cx + 18f * s, cy - 12f * s, 3f * s, orange)
 }
 
 // =============================================================================

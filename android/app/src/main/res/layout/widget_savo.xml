@@ -12,8 +12,8 @@
         android:adjustViewBounds="true"
         android:contentDescription="@string/widget_label" />
 
-    <!-- Tap regions overlay. The bitmap is laid out as three columns:
-         left 30% rego/rings, middle 25% SAVO logo, right 45% three call buttons. -->
+    <!-- Tap regions overlay. Two columns:
+         left 50% rego/rings, right 50% SAVO logo (top) + 3 call icons (bottom). -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -24,49 +24,57 @@
             android:id="@+id/widget_plate_area"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="30"
+            android:layout_weight="50"
             android:clickable="true"
             android:focusable="true" />
 
-        <!-- Middle: SAVO logo → quick capture -->
-        <LinearLayout
-            android:id="@+id/widget_savo_icon"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="25"
-            android:clickable="true"
-            android:focusable="true" />
-
-        <!-- Right: three call buttons -->
+        <!-- Right column: logo on top, 3 icons below -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="45"
-            android:orientation="horizontal">
+            android:layout_weight="50"
+            android:orientation="vertical">
 
+            <!-- SAVO logo → quick capture -->
             <LinearLayout
-                android:id="@+id/widget_call_roadside"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
+                android:id="@+id/widget_savo_icon"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="40"
                 android:clickable="true"
                 android:focusable="true" />
 
+            <!-- Three call icons row -->
             <LinearLayout
-                android:id="@+id/widget_call_tow"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:clickable="true"
-                android:focusable="true" />
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="60"
+                android:orientation="horizontal">
 
-            <LinearLayout
-                android:id="@+id/widget_call_emergency"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:clickable="true"
-                android:focusable="true" />
+                <LinearLayout
+                    android:id="@+id/widget_call_roadside"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:clickable="true"
+                    android:focusable="true" />
+
+                <LinearLayout
+                    android:id="@+id/widget_call_tow"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:clickable="true"
+                    android:focusable="true" />
+
+                <LinearLayout
+                    android:id="@+id/widget_call_emergency"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:clickable="true"
+                    android:focusable="true" />
+            </LinearLayout>
         </LinearLayout>
     </LinearLayout>
 </FrameLayout>
