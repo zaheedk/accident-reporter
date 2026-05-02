@@ -204,16 +204,12 @@ private fun nextVehicleIndex(prefs: SharedPreferences, current: Int, count: Int)
 }
 
 // =============================================================================
-// Card renderer — draws the entire widget UI as a single high-res bitmap.
+// Rings renderer — only the donut chart is bitmap; everything else is native.
 // =============================================================================
 
-// Canvas designed at 2.5:1 landscape aspect → matches the 4x2 cell widget shape.
-private const val CARD_W = 1400
-private const val CARD_H = 560
-
 private val GREEN = 0xFF22C55E.toInt()
-private val AMBER = 0xFFFF8A3D.toInt() // WOF dot — solid orange per reference
-private val BLUE = 0xFFB9D4EE.toInt()  // Rego dot — soft blue
+private val AMBER = 0xFFFF8A3D.toInt()
+private val BLUE = 0xFFB9D4EE.toInt()
 private val ORANGE = 0xFFFF6A2C.toInt()
 private val NAVY = 0xFF1E3A5F.toInt()
 private val NAVY_DARK = 0xFF2A4A6F.toInt()
@@ -221,140 +217,38 @@ private val ACCENT_GREEN = 0xFF7CB342.toInt()
 private val INK = 0xFF111113.toInt()
 private val MUTED = 0xFF9CA3AF.toInt()
 private val TRACK = 0xFFE5E7EB.toInt()
-private val DIVIDER = 0xFFEDEDEF.toInt()
-private val PILL_BG = 0xFFF1F1F4.toInt()
 private val LOGO_BG = 0xFFFFFFFF.toInt()
 private val LOGO_BORDER = 0xFFE8E8E5.toInt()
 private val WINDSCREEN = 0xFFF4F4F2.toInt()
 private val LENS_GREY = 0xFF6B7280.toInt()
 private val LENS_DARK = 0xFF1A1A2E.toInt()
 
-private fun renderCardBitmap(
-    rego: String,
-    regoExp: String,
-    wofExp: String,
-    insExp: String,
-): Bitmap {
-    val bmp = Bitmap.createBitmap(CARD_W, CARD_H, Bitmap.Config.ARGB_8888)
+/**
+ * Renders just the concentric ring donut as a square bitmap.
+ * The ImageView in the layout uses fitCenter, so the rings always fill
+ * their column proportionally regardless of cell size.
+ */
+private fun renderRingsBitmap(insDays: Int?, wofDays: Int?, regoDays: Int?): Bitmap {
+    val size = 360
+    val bmp = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
     val canvas = Canvas(bmp)
-
-    // Card background — soft off-white card on a transparent canvas
-    val bgPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.WHITE }
-    val cardRect = RectF(0f, 0f, CARD_W.toFloat(), CARD_H.toFloat())
-    canvas.drawRoundRect(cardRect, 40f, 40f, bgPaint)
-
-    val pad = 56f
-
-    // ── TOP-LEFT: large rego "PNG 34" (light weight, dark grey) ────────────
-    val regoPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = 0xFF1F2937.toInt()
-        textAlign = Paint.Align.LEFT
-        textSize = 110f
-        letterSpacing = 0.04f
-        typeface = Typeface.create("sans-serif-light", Typeface.NORMAL)
-    }
-    val regoBaseline = pad + 96f
-    canvas.drawText(formatRego(rego), pad, regoBaseline, regoPaint)
-
-    // ── TOP-RIGHT: orange camera badge + "SAVO" bold caps ──────────────────
-    val savoWord = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = 0xFF1F2937.toInt()
-        textAlign = Paint.Align.RIGHT
-        textSize = 44f
-        letterSpacing = 0.20f
-        isFakeBoldText = true
-        typeface = Typeface.create("sans-serif", Typeface.BOLD)
-    }
-    val wordRight = CARD_W - pad
-    val wordBaseline = pad + 70f
-    canvas.drawText("SAVO", wordRight, wordBaseline, savoWord)
-    val wordW = savoWord.measureText("SAVO")
-    val badgeSize = 84f
-    val badgeRight = wordRight - wordW - 22f
-    val badgeLeft = badgeRight - badgeSize
-    val badgeTop = pad + 8f
-    val badgeRect = RectF(badgeLeft, badgeTop, badgeLeft + badgeSize, badgeTop + badgeSize)
-    // Soft orange glow behind the badge
-    val badgeGlow = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = ORANGE
-        alpha = 90
-        maskFilter = android.graphics.BlurMaskFilter(28f, android.graphics.BlurMaskFilter.Blur.NORMAL)
-    }
-    canvas.drawRoundRect(badgeRect, 22f, 22f, badgeGlow)
-    val badgeBg = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = ORANGE }
-    canvas.drawRoundRect(badgeRect, 22f, 22f, badgeBg)
-    // White camera glyph inside the badge
-    drawWhiteCameraGlyph(canvas, badgeLeft + badgeSize / 2f, badgeTop + badgeSize / 2f, badgeSize * 0.30f)
-
-    // ── LEGEND ROW ─────────────────────────────────────────────────────────
-    val legendY = regoBaseline + 64f
-    val dotR = 12f
-    val dotTextGap = 14f
-    val itemGap = 36f
-    val legendItems = listOf(
-        Triple("Insurance", GREEN, 0xFF1F2937.toInt()),
-        Triple("WOF", AMBER, 0xFF1F2937.toInt()),
-        Triple("Rego", BLUE, 0xFFB6BBC4.toInt()),
-    )
-    val legendPaints = legendItems.map { (_, _, textColor) ->
-        Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            this.color = textColor
-            textAlign = Paint.Align.LEFT
-            textSize = 36f
-            isFakeBoldText = textColor != 0xFFB6BBC4.toInt()
-            typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
-        }
-    }
-    var lx = pad
-    for (i in legendItems.indices) {
-        val (label, dotColor, _) = legendItems[i]
-        val tp = legendPaints[i]
-        val dot = Paint(Paint.ANTI_ALIAS_FLAG).apply { this.color = dotColor; style = Paint.Style.FILL }
-        canvas.drawCircle(lx + dotR, legendY - 11f, dotR, dot)
-        canvas.drawText(label, lx + dotR * 2f + dotTextGap, legendY, tp)
-        lx += dotR * 2f + dotTextGap + tp.measureText(label) + itemGap
-    }
-
-    // ── RINGS (bottom-left, with glow) ─────────────────────────────────────
-    val ringsCx = pad + 170f
-    val ringsCy = legendY + 200f
+    val cx = size / 2f
+    val cy = size / 2f
+    val outerR = size / 2f - 28f // leave room for outer glow
+    val stroke = outerR * 0.22f
     drawRings(
         canvas,
-        cx = ringsCx,
-        cy = ringsCy,
-        outerR = 150f,
-        stroke = 36f,
-        insDays = daysUntil(insExp),
-        wofDays = daysUntil(wofExp),
-        regoDays = daysUntil(regoExp),
+        cx = cx,
+        cy = cy,
+        outerR = outerR,
+        stroke = stroke,
+        insDays = insDays,
+        wofDays = wofDays,
+        regoDays = regoDays,
     )
-
-    // ── ACTIONS TILE (right) ───────────────────────────────────────────────
-    val tileSize = 230f
-    val tileLeft = CARD_W - pad - tileSize
-    val tileTop = CARD_H - pad - tileSize
-    val tileRect = RectF(tileLeft, tileTop, tileLeft + tileSize, tileTop + tileSize)
-    val tileBg = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = 0xFFEEEFF2.toInt() }
-    canvas.drawRoundRect(tileRect, 30f, 30f, tileBg)
-
-    // Camera icon centered in upper portion of tile
-    val iconCx = tileLeft + tileSize / 2f
-    val iconCy = tileTop + tileSize / 2f - 12f
-    drawCameraIcon(canvas, iconCx, iconCy, 50f)
-
-    // "ACTIONS" caption
-    val tilePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = 0xFF8A8F98.toInt()
-        textAlign = Paint.Align.CENTER
-        textSize = 28f
-        letterSpacing = 0.24f
-        isFakeBoldText = true
-        typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
-    }
-    canvas.drawText("ACTIONS", iconCx, tileTop + tileSize - 38f, tilePaint)
-
     return bmp
 }
+
 
 /** Small white camera glyph drawn inside the orange SAVO badge. */
 private fun drawWhiteCameraGlyph(canvas: Canvas, cx: Float, cy: Float, r: Float) {
