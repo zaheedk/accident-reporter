@@ -13,13 +13,14 @@
         android:contentDescription="@string/widget_label" />
 
     <!-- Tap regions overlay. Two columns:
-         left 50% rego/rings, right 50% SAVO logo (top) + 3 call icons (bottom). -->
+         left 50% rego/legend/rings → cycle vehicle.
+         right 50% large SAVO logo → opens in-app actions drawer. -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal">
 
-        <!-- Left: rego + rings → cycle vehicle -->
+        <!-- Left: rego + legend + rings → cycle vehicle -->
         <LinearLayout
             android:id="@+id/widget_plate_area"
             android:layout_width="0dp"
@@ -28,53 +29,13 @@
             android:clickable="true"
             android:focusable="true" />
 
-        <!-- Right column: logo on top, 3 icons below -->
+        <!-- Right: SAVO logo (vertically centered) → open actions drawer -->
         <LinearLayout
+            android:id="@+id/widget_savo_icon"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="50"
-            android:orientation="vertical">
-
-            <!-- SAVO logo → quick capture -->
-            <LinearLayout
-                android:id="@+id/widget_savo_icon"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="40"
-                android:clickable="true"
-                android:focusable="true" />
-
-            <!-- Three call icons row -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="60"
-                android:orientation="horizontal">
-
-                <LinearLayout
-                    android:id="@+id/widget_call_roadside"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:clickable="true"
-                    android:focusable="true" />
-
-                <LinearLayout
-                    android:id="@+id/widget_call_tow"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:clickable="true"
-                    android:focusable="true" />
-
-                <LinearLayout
-                    android:id="@+id/widget_call_emergency"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:clickable="true"
-                    android:focusable="true" />
-            </LinearLayout>
-        </LinearLayout>
+            android:clickable="true"
+            android:focusable="true" />
     </LinearLayout>
 </FrameLayout>
