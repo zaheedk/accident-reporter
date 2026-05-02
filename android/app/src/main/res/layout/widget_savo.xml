@@ -1,59 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="horizontal"
-    android:padding="14dp"
-    android:background="@drawable/widget_background">
+    android:layout_height="match_parent">
 
-    <!-- Left: rego title + legend + rings (tap to cycle vehicle) -->
-    <LinearLayout
-        android:layout_width="0dp"
+    <!-- The entire widget UI is rendered as a single bitmap that scales to
+         fit whatever size the user resizes the widget to. -->
+    <ImageView
+        android:id="@+id/widget_canvas"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="2.2"
-        android:orientation="vertical"
-        android:clickable="true"
-        android:focusable="true"
-        android:id="@+id/widget_plate_area">
+        android:scaleType="fitCenter"
+        android:adjustViewBounds="true"
+        android:contentDescription="@string/widget_label" />
 
-        <ImageView
-            android:id="@+id/widget_plate"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:adjustViewBounds="true"
-            android:scaleType="fitStart"
-            android:contentDescription="@string/widget_label" />
+    <!-- Tap regions overlay. The bitmap is rendered with the same proportions
+         (2 cols x 3 rows of content), so weights here line up with the art. -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-        <ImageView
-            android:id="@+id/widget_rings"
+        <!-- Top 55% of the card: rego title + legend + rings + SAVO tile -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
-            android:layout_marginTop="6dp"
-            android:adjustViewBounds="true"
-            android:scaleType="fitCenter"
-            android:contentDescription="@string/widget_label" />
-    </LinearLayout>
+            android:layout_weight="55"
+            android:orientation="horizontal">
 
-    <!-- Right: SAVO logo + label (tap → quick capture) -->
-    <LinearLayout
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:layout_marginStart="8dp"
-        android:clickable="true"
-        android:focusable="true"
-        android:id="@+id/widget_savo_icon">
+            <!-- Left 60%: title/legend/rings → cycles vehicle -->
+            <LinearLayout
+                android:id="@+id/widget_plate_area"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="60"
+                android:clickable="true"
+                android:focusable="true" />
 
-        <ImageView
+            <!-- Right 40%: SAVO tile → quick capture -->
+            <LinearLayout
+                android:id="@+id/widget_savo_icon"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="40"
+                android:clickable="true"
+                android:focusable="true" />
+        </LinearLayout>
+
+        <!-- Bottom 45%: TAP TO CALL row -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
-            android:adjustViewBounds="true"
-            android:scaleType="fitCenter"
-            android:src="@drawable/ic_savo_widget"
-            android:contentDescription="@string/widget_label" />
+            android:layout_weight="45"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:id="@+id/widget_call_roadside"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:clickable="true"
+                android:focusable="true" />
+
+            <LinearLayout
+                android:id="@+id/widget_call_tow"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:clickable="true"
+                android:focusable="true" />
+
+            <LinearLayout
+                android:id="@+id/widget_call_emergency"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:clickable="true"
+                android:focusable="true" />
+        </LinearLayout>
     </LinearLayout>
-</LinearLayout>
+</FrameLayout>
