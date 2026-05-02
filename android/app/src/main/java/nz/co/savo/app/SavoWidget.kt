@@ -29,21 +29,15 @@ import java.net.HttpURLConnection
 import java.net.URL
 
 /*
- * Home-screen widget — 2x3 cells.
+ * Home-screen widget — 4x2 cells (landscape).
  *
  * Layout (single bitmap that scales to fit):
- *   ┌──────────────────────────────┐
- *   │ QPY 356                      │
- *   │ • Insurance  • WOF  • Rego   │
- *   │ ┌────────┐  ┌──────┐         │
- *   │ │ rings  │  │ SAVO │         │
- *   │ │  ◯◯◯  │  │ tile │         │
- *   │ └────────┘  └──────┘         │
- *   │ ──────────────────────────── │
- *   │         TAP TO CALL          │
- *   │   ⊙        🚛        🚑      │
- *   │ Roadside  Tow Truck Emergency│
- *   └──────────────────────────────┘
+ *   ┌────────────────────────────────────────────────────────────────┐
+ *   │ QPY 356        │   [SAVO logo]   │        TAP TO CALL          │
+ *   │ • Insurance    │      SAVO       │   ⊙        🚛        🚑     │
+ *   │ • WOF  • Rego  │  PROTECT YOUR…  │ Roadside  Tow Truck Emerg.  │
+ *   │   ◯◯◯ rings   │                 │                              │
+ *   └────────────────────────────────────────────────────────────────┘
  */
 
 internal const val WIDGET_PREFS = "savo_widget_prefs"
