@@ -199,9 +199,9 @@ private fun nextVehicleIndex(prefs: SharedPreferences, current: Int, count: Int)
 // Card renderer — draws the entire widget UI as a single high-res bitmap.
 // =============================================================================
 
-// Canvas designed at 2:1 landscape aspect → matches the 4x2 cell widget shape.
-private const val CARD_W = 1200
-private const val CARD_H = 600
+// Canvas designed at 2.5:1 landscape aspect → matches the 4x2 cell widget shape.
+private const val CARD_W = 1400
+private const val CARD_H = 560
 
 private val GREEN = 0xFF22C55E.toInt()
 private val AMBER = 0xFFF5C56B.toInt()
