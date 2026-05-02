@@ -333,7 +333,7 @@ serve(async (req) => {
       user_id: claim.user_id,
       type: 'insurer_reply',
       title: 'New email filed to your incident',
-      message: `An email has been filed against CLM-${String(claimNumber).padStart(4, '0')}. Subject: ${subject}`,
+      message: `An email has been filed against your incident. Subject: ${subject}`,
     });
 
     return new Response(JSON.stringify({ success: true, claimId: claim.id, claimNumber, stored: true }), {
