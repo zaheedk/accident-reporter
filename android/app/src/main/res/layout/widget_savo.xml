@@ -51,7 +51,7 @@
                 <ImageView
                     android:layout_width="22dp"
                     android:layout_height="22dp"
-                    android:src="@drawable/ic_savo_widget"
+                    android:src="@drawable/widget_savo_badge"
                     android:contentDescription="@string/widget_label" />
 
                 <TextView
