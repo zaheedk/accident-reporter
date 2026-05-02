@@ -249,26 +249,16 @@ private fun renderCardBitmap(
     val regoBaseline = pad + 78f
     canvas.drawText(formatRego(rego), pad, regoBaseline, regoPaint)
 
-    // Right: SAVO logo box + "SAVO" wordmark, top-right corner
-    val savoBoxSize = 92f
-    val savoBoxRight = CARD_W - pad
-    // Wordmark
+    // Right: just "SAVO" text in caps (no logo), top-right corner
     val savoWord = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = INK
+        color = NAVY
         textAlign = Paint.Align.RIGHT
-        textSize = 44f
-        letterSpacing = 0.18f
+        textSize = 72f
+        letterSpacing = 0.22f
         isFakeBoldText = true
         typeface = Typeface.create("sans-serif", Typeface.BOLD)
     }
-    val wordW = savoWord.measureText("SAVO")
-    val wordX = savoBoxRight
-    val wordBaseline = pad + savoBoxSize / 2f + 16f
-    canvas.drawText("SAVO", wordX, wordBaseline, savoWord)
-    // Logo box left of wordmark
-    val savoBoxLeft = wordX - wordW - 22f - savoBoxSize
-    val savoBoxTop = pad
-    drawSavoLogo(canvas, savoBoxLeft, savoBoxTop, savoBoxSize)
+    canvas.drawText("SAVO", CARD_W - pad, regoBaseline, savoWord)
 
     // ── LEGEND ROW ─────────────────────────────────────────────────────────
     // ● Insurance   ● WOF   ● Rego  (Insurance bold/dark, others muted)
