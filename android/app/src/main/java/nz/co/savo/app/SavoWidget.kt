@@ -117,14 +117,7 @@ class SavoWidgetReceiver : AppWidgetProvider() {
             views.setImageViewBitmap(R.id.widget_canvas, bmp)
 
             views.setOnClickPendingIntent(R.id.widget_plate_area, switchPendingIntent(context))
-            views.setOnClickPendingIntent(R.id.widget_savo_icon, deepLinkPendingIntent(context, 1002, "savo://quick-capture"))
-            views.setOnClickPendingIntent(
-                R.id.widget_call_roadside,
-                if (roadsidePhone.isNotBlank()) telPendingIntent(context, 1003, roadsidePhone)
-                else deepLinkPendingIntent(context, 1003, "savo://dashboard"),
-            )
-            views.setOnClickPendingIntent(R.id.widget_call_tow, deepLinkPendingIntent(context, 1004, "savo://tow-companies"))
-            views.setOnClickPendingIntent(R.id.widget_call_emergency, telPendingIntent(context, 1005, "111"))
+            views.setOnClickPendingIntent(R.id.widget_savo_icon, deepLinkPendingIntent(context, 1002, "savo://widget-actions"))
 
             appWidgetManager.updateAppWidget(appWidgetId, views)
         }
