@@ -42,24 +42,38 @@ import java.net.URL
 
 internal const val WIDGET_PREFS = "savo_widget_prefs"
 private const val ACTION_NEXT_VEHICLE = "nz.co.savo.app.widget.NEXT_VEHICLE"
+private const val ACTION_SHOW_ACTIONS = "nz.co.savo.app.widget.SHOW_ACTIONS"
+private const val ACTION_HIDE_ACTIONS = "nz.co.savo.app.widget.HIDE_ACTIONS"
 private const val MAX_WIDGET_VEHICLES = 10
 
 class SavoWidgetReceiver : AppWidgetProvider() {
 
     override fun onReceive(context: Context, intent: Intent) {
         super.onReceive(context, intent)
-        if (intent.action != ACTION_NEXT_VEHICLE) return
-
-        val prefs = context.getSharedPreferences(WIDGET_PREFS, Context.MODE_PRIVATE)
-        val count = prefs.getInt("vehicles_count", 0)
-        if (count > 1) {
-            val current = prefs.getInt("vehicles_current_index", 0)
-            val next = nextVehicleIndex(prefs, current, count)
-            if (next != current) {
-                prefs.edit().putInt("vehicles_current_index", next).commit()
+        when (intent.action) {
+            ACTION_NEXT_VEHICLE -> {
+                val prefs = context.getSharedPreferences(WIDGET_PREFS, Context.MODE_PRIVATE)
+                val count = prefs.getInt("vehicles_count", 0)
+                if (count > 1) {
+                    val current = prefs.getInt("vehicles_current_index", 0)
+                    val next = nextVehicleIndex(prefs, current, count)
+                    if (next != current) {
+                        prefs.edit().putInt("vehicles_current_index", next).commit()
+                    }
+                }
+                redrawAll(context.applicationContext)
+            }
+            ACTION_SHOW_ACTIONS -> {
+                context.getSharedPreferences(WIDGET_PREFS, Context.MODE_PRIVATE)
+                    .edit().putBoolean("actions_panel_open", true).commit()
+                redrawAll(context.applicationContext)
+            }
+            ACTION_HIDE_ACTIONS -> {
+                context.getSharedPreferences(WIDGET_PREFS, Context.MODE_PRIVATE)
+                    .edit().putBoolean("actions_panel_open", false).commit()
+                redrawAll(context.applicationContext)
             }
         }
-        redrawAll(context.applicationContext)
     }
 
     override fun onUpdate(
