@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-    SAVO home-screen widget — 4x2 cell layout, fully filling the tile.
-    Top bar:   rego plate (left)  •  SAVO wordmark (right)
-    Body:      large rings (left)  •  vertical legend  •  camera tile (right)
+    SAVO home-screen widget — 2x3 cell layout (portrait).
+    Top:    rego plate centered + SAVO wordmark
+    Middle: large rings (centered)
+    Bottom: legend (3 rows) and camera tile centered
 -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
@@ -14,171 +15,137 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:background="@drawable/widget_background"
-        android:paddingStart="14dp"
-        android:paddingEnd="14dp"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
         android:paddingTop="12dp"
-        android:paddingBottom="12dp">
+        android:paddingBottom="12dp"
+        android:gravity="center_horizontal">
 
-        <!-- Top bar: rego plate + SAVO wordmark -->
-        <LinearLayout
-            android:layout_width="match_parent"
+        <!-- Top: SAVO wordmark -->
+        <TextView
+            android:id="@+id/widget_savo_badge"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
+            android:text="SAVO"
+            android:textColor="#1F2937"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:letterSpacing="0.22"
+            android:includeFontPadding="false"
+            android:clickable="true"
+            android:focusable="true" />
 
-            <FrameLayout
-                android:id="@+id/widget_plate_area"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:clickable="true"
-                android:focusable="true">
-
-                <TextView
-                    android:id="@+id/widget_rego"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="— — —"
-                    android:textColor="#1F2937"
-                    android:textSize="22sp"
-                    android:textStyle="bold"
-                    android:fontFamily="sans-serif-condensed"
-                    android:letterSpacing="0.05"
-                    android:singleLine="true"
-                    android:ellipsize="end"
-                    android:background="@drawable/widget_rego_plate"
-                    android:paddingStart="12dp"
-                    android:paddingEnd="12dp"
-                    android:paddingTop="4dp"
-                    android:paddingBottom="4dp"
-                    android:includeFontPadding="false" />
-            </FrameLayout>
-
-            <View
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_weight="1" />
+        <!-- Rego plate -->
+        <FrameLayout
+            android:id="@+id/widget_plate_area"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:clickable="true"
+            android:focusable="true">
 
             <TextView
-                android:id="@+id/widget_savo_badge"
+                android:id="@+id/widget_rego"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="SAVO"
+                android:text="— — —"
                 android:textColor="#1F2937"
-                android:textSize="22sp"
+                android:textSize="20sp"
                 android:textStyle="bold"
-                android:letterSpacing="0.22"
-                android:includeFontPadding="false"
-                android:clickable="true"
-                android:focusable="true" />
-        </LinearLayout>
+                android:fontFamily="sans-serif-condensed"
+                android:letterSpacing="0.05"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:background="@drawable/widget_rego_plate"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:includeFontPadding="false" />
+        </FrameLayout>
 
-        <!-- Body: rings + legend + camera tile, filling all remaining space -->
-        <LinearLayout
+        <!-- Rings (fills remaining vertical space) -->
+        <ImageView
+            android:id="@+id/widget_rings"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="8dp"
+            android:scaleType="fitCenter"
+            android:adjustViewBounds="true"
+            android:contentDescription="@string/widget_label" />
+
+        <!-- Legend row -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:baselineAligned="false">
+            android:gravity="center_vertical">
 
             <ImageView
-                android:id="@+id/widget_rings"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1.2"
+                android:layout_width="7dp"
+                android:layout_height="7dp"
+                android:src="@drawable/widget_dot_green"
+                android:contentDescription="@null" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:text="Ins"
+                android:textColor="#1F2937"
+                android:textSize="11sp"
+                android:fontFamily="sans-serif-medium" />
+
+            <ImageView
+                android:layout_width="7dp"
+                android:layout_height="7dp"
+                android:layout_marginStart="10dp"
+                android:src="@drawable/widget_dot_amber"
+                android:contentDescription="@null" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:text="WOF"
+                android:textColor="#1F2937"
+                android:textSize="11sp"
+                android:fontFamily="sans-serif-medium" />
+
+            <ImageView
+                android:layout_width="7dp"
+                android:layout_height="7dp"
+                android:layout_marginStart="10dp"
+                android:src="@drawable/widget_dot_blue"
+                android:contentDescription="@null" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:text="Rego"
+                android:textColor="#1F2937"
+                android:textSize="11sp"
+                android:fontFamily="sans-serif-medium" />
+        </LinearLayout>
+
+        <!-- Camera action tile -->
+        <FrameLayout
+            android:id="@+id/widget_savo_icon"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/widget_actions_tile"
+            android:clickable="true"
+            android:focusable="true">
+
+            <ImageView
+                android:id="@+id/widget_actions_icon"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_gravity="center"
                 android:scaleType="fitCenter"
                 android:adjustViewBounds="true"
                 android:contentDescription="@string/widget_label" />
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1.4"
-                android:layout_marginStart="10dp"
-                android:orientation="vertical"
-                android:gravity="start|center_vertical">
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical">
-                    <ImageView
-                        android:layout_width="8dp"
-                        android:layout_height="8dp"
-                        android:src="@drawable/widget_dot_green"
-                        android:contentDescription="@null" />
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="6dp"
-                        android:text="Insurance"
-                        android:textColor="#1F2937"
-                        android:textSize="13sp"
-                        android:fontFamily="sans-serif-medium" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical">
-                    <ImageView
-                        android:layout_width="8dp"
-                        android:layout_height="8dp"
-                        android:src="@drawable/widget_dot_amber"
-                        android:contentDescription="@null" />
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="6dp"
-                        android:text="WOF"
-                        android:textColor="#1F2937"
-                        android:textSize="13sp"
-                        android:fontFamily="sans-serif-medium" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical">
-                    <ImageView
-                        android:layout_width="8dp"
-                        android:layout_height="8dp"
-                        android:src="@drawable/widget_dot_blue"
-                        android:contentDescription="@null" />
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="6dp"
-                        android:text="Rego"
-                        android:textColor="#1F2937"
-                        android:textSize="13sp"
-                        android:fontFamily="sans-serif-medium" />
-                </LinearLayout>
-            </LinearLayout>
-
-            <FrameLayout
-                android:id="@+id/widget_savo_icon"
-                android:layout_width="64dp"
-                android:layout_height="64dp"
-                android:background="@drawable/widget_actions_tile"
-                android:clickable="true"
-                android:focusable="true">
-
-                <ImageView
-                    android:id="@+id/widget_actions_icon"
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
-                    android:layout_gravity="center"
-                    android:scaleType="fitCenter"
-                    android:adjustViewBounds="true"
-                    android:contentDescription="@string/widget_label" />
-            </FrameLayout>
-        </LinearLayout>
+        </FrameLayout>
     </LinearLayout>
 </FrameLayout>
