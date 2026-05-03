@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Apple-style raised glass tile: soft drop shadow + subtle gradient face. -->
+<!-- Apple-style raised glass tile: rounded rectangle with soft shadow + subtle gradient face. -->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- Outer soft shadow -->
     <item
@@ -7,8 +7,9 @@
         android:top="2dp"
         android:right="0dp"
         android:bottom="0dp">
-        <shape android:shape="oval">
+        <shape android:shape="rectangle">
             <solid android:color="#26000000" />
+            <corners android:radius="18dp" />
         </shape>
     </item>
     <item
@@ -16,8 +17,9 @@
         android:top="3dp"
         android:right="1dp"
         android:bottom="-1dp">
-        <shape android:shape="oval">
+        <shape android:shape="rectangle">
             <solid android:color="#14000000" />
+            <corners android:radius="18dp" />
         </shape>
     </item>
     <!-- Glass face with vertical highlight gradient -->
@@ -26,7 +28,7 @@
         android:top="0dp"
         android:right="0dp"
         android:bottom="3dp">
-        <shape android:shape="oval">
+        <shape android:shape="rectangle">
             <gradient
                 android:type="linear"
                 android:angle="270"
@@ -34,6 +36,7 @@
                 android:centerColor="#FFF7F8FA"
                 android:endColor="#FFE8ECF1" />
             <stroke android:width="0.6dp" android:color="#1A000000" />
+            <corners android:radius="18dp" />
         </shape>
     </item>
     <!-- Inner top highlight (rim light) -->
@@ -42,8 +45,9 @@
         android:top="3dp"
         android:right="6dp"
         android:bottom="22dp">
-        <shape android:shape="oval">
-            <solid android:color="#66FFFFFF" />
+        <shape android:shape="rectangle">
+            <solid android:color="#33FFFFFF" />
+            <corners android:radius="14dp" />
         </shape>
     </item>
 </layer-list>
