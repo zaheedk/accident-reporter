@@ -115,11 +115,13 @@ class SavoWidgetReceiver : AppWidgetProvider() {
             val views = RemoteViews(context.packageName, R.layout.widget_savo)
             views.setTextViewText(R.id.widget_rego, formatRego(rego))
             views.setImageViewResource(R.id.widget_actions_icon, R.drawable.ic_widget_actions_camera)
-            val ringsBmp = renderRingsBitmap(
-                insDays = daysUntil(insExpiry),
-                wofDays = daysUntil(wofExpiry),
-                regoDays = daysUntil(regoExpiry),
-            )
+            val insD = daysUntil(insExpiry)
+            val wofD = daysUntil(wofExpiry)
+            val regoD = daysUntil(regoExpiry)
+            views.setTextViewText(R.id.widget_ins_days, formatDays(insD))
+            views.setTextViewText(R.id.widget_wof_days, formatDays(wofD))
+            views.setTextViewText(R.id.widget_rego_days, formatDays(regoD))
+            val ringsBmp = renderRingsBitmap(insDays = insD, wofDays = wofD, regoDays = regoD)
             views.setImageViewBitmap(R.id.widget_rings, ringsBmp)
 
             views.setOnClickPendingIntent(R.id.widget_plate_area, switchPendingIntent(context))
@@ -360,6 +362,12 @@ private fun formatRego(rego: String): String {
     val cleaned = rego.trim().uppercase().replace(" ", "")
     if (cleaned.isBlank()) return "— — —"
     return cleaned
+}
+
+private fun formatDays(days: Int?): String {
+    if (days == null) return "—"
+    if (days < 0) return "exp"
+    return "${days}d"
 }
 
 private fun drawRings(

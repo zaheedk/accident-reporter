@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-    SAVO home-screen widget — 3x2 cell layout.
-    Top:    SAVO wordmark (full width)
-    Bottom: rego plate + legend | rings | camera tile
+    SAVO home-screen widget — 3x2 cell layout (redesign v3).
+    Left column:  "NEW ZEALAND" label, rego plate, rings
+    Right column: SAVO header, legend (Insurance/WOF/Rego + days), Quick Actions tile
 -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
@@ -12,154 +12,250 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
+        android:orientation="horizontal"
         android:background="@drawable/widget_background"
-        android:paddingStart="12dp"
-        android:paddingEnd="12dp"
-        android:paddingTop="8dp"
-        android:paddingBottom="10dp">
+        android:paddingStart="14dp"
+        android:paddingEnd="14dp"
+        android:paddingTop="12dp"
+        android:paddingBottom="12dp"
+        android:baselineAligned="false">
 
-        <!-- Top: SAVO wordmark -->
-        <TextView
-            android:id="@+id/widget_savo_badge"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="SAVO"
-            android:textColor="#FFFFFF"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:letterSpacing="0.25"
-            android:gravity="center_horizontal"
-            android:includeFontPadding="false"
-            android:clickable="true"
-            android:focusable="true" />
-
-        <!-- Bottom row -->
+        <!-- ============ LEFT COLUMN ============ -->
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
             android:layout_weight="1"
-            android:layout_marginTop="6dp"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
+            android:orientation="vertical"
+            android:gravity="start">
 
-            <!-- Left: rego plate + legend -->
-            <LinearLayout
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:gravity="start">
+                android:text="NEW ZEALAND"
+                android:textColor="#5FA8FF"
+                android:textSize="9sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.18"
+                android:includeFontPadding="false"
+                android:layout_marginBottom="3dp" />
 
-                <FrameLayout
-                    android:id="@+id/widget_plate_area"
+            <FrameLayout
+                android:id="@+id/widget_plate_area"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:focusable="true">
+
+                <TextView
+                    android:id="@+id/widget_rego"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:clickable="true"
-                    android:focusable="true">
+                    android:text="— — —"
+                    android:textColor="#FFFFFF"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    android:fontFamily="sans-serif-condensed"
+                    android:letterSpacing="0.08"
+                    android:singleLine="true"
+                    android:ellipsize="end"
+                    android:background="@drawable/widget_rego_plate"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"
+                    android:paddingTop="5dp"
+                    android:paddingBottom="5dp"
+                    android:includeFontPadding="false" />
+            </FrameLayout>
 
-                    <TextView
-                        android:id="@+id/widget_rego"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="— — —"
-                        android:textColor="#1F2937"
-                        android:textSize="23sp"
-                        android:textStyle="bold"
-                        android:fontFamily="sans-serif-condensed"
-                        android:letterSpacing="0.05"
-                        android:singleLine="true"
-                        android:ellipsize="end"
-                        android:background="@drawable/widget_rego_plate"
-                        android:paddingStart="12dp"
-                        android:paddingEnd="12dp"
-                        android:paddingTop="4dp"
-                        android:paddingBottom="4dp"
-                        android:includeFontPadding="false" />
-                </FrameLayout>
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical">
-
-                    <ImageView
-                        android:layout_width="7dp"
-                        android:layout_height="7dp"
-                        android:src="@drawable/widget_dot_green"
-                        android:contentDescription="@null" />
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="4dp"
-                        android:text="Ins"
-                        android:textColor="#FFFFFF"
-                        android:textSize="10sp"
-                        android:fontFamily="sans-serif-medium" />
-
-                    <ImageView
-                        android:layout_width="7dp"
-                        android:layout_height="7dp"
-                        android:layout_marginStart="8dp"
-                        android:src="@drawable/widget_dot_amber"
-                        android:contentDescription="@null" />
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="4dp"
-                        android:text="WOF"
-                        android:textColor="#FFFFFF"
-                        android:textSize="10sp"
-                        android:fontFamily="sans-serif-medium" />
-
-                    <ImageView
-                        android:layout_width="7dp"
-                        android:layout_height="7dp"
-                        android:layout_marginStart="8dp"
-                        android:src="@drawable/widget_dot_blue"
-                        android:contentDescription="@null" />
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="4dp"
-                        android:text="Rego"
-                        android:textColor="#FFFFFF"
-                        android:textSize="10sp"
-                        android:fontFamily="sans-serif-medium" />
-                </LinearLayout>
-            </LinearLayout>
-
-            <!-- Center: rings (reduced 25% via padding) -->
             <ImageView
                 android:id="@+id/widget_rings"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
                 android:layout_weight="1"
-                android:padding="10dp"
-                android:scaleType="fitCenter"
+                android:layout_marginTop="6dp"
+                android:paddingTop="2dp"
+                android:paddingEnd="6dp"
+                android:scaleType="fitStart"
                 android:adjustViewBounds="true"
                 android:contentDescription="@string/widget_label" />
+        </LinearLayout>
 
-            <!-- Right: camera tile (25% bigger) -->
-            <FrameLayout
+        <!-- ============ RIGHT COLUMN ============ -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1.15"
+            android:orientation="vertical"
+            android:gravity="end">
+
+            <!-- SAVO header -->
+            <TextView
+                android:id="@+id/widget_savo_badge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="SAVO"
+                android:textColor="#FFFFFF"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.15"
+                android:includeFontPadding="false"
+                android:clickable="true"
+                android:focusable="true" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="PROTECT YOUR CLAIM"
+                android:textColor="#9DB4D0"
+                android:textSize="8sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.15"
+                android:includeFontPadding="false"
+                android:layout_marginTop="1dp" />
+
+            <!-- Legend rows -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+                <ImageView
+                    android:layout_width="7dp"
+                    android:layout_height="7dp"
+                    android:src="@drawable/widget_dot_green"
+                    android:contentDescription="@null" />
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="6dp"
+                    android:text="Insurance"
+                    android:textColor="#FFFFFF"
+                    android:textSize="11sp"
+                    android:fontFamily="sans-serif-medium"
+                    android:includeFontPadding="false" />
+                <TextView
+                    android:id="@+id/widget_ins_days"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="—"
+                    android:textColor="#22C55E"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    android:includeFontPadding="false" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="3dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+                <ImageView
+                    android:layout_width="7dp"
+                    android:layout_height="7dp"
+                    android:src="@drawable/widget_dot_amber"
+                    android:contentDescription="@null" />
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="6dp"
+                    android:text="WOF"
+                    android:textColor="#FFFFFF"
+                    android:textSize="11sp"
+                    android:fontFamily="sans-serif-medium"
+                    android:includeFontPadding="false" />
+                <TextView
+                    android:id="@+id/widget_wof_days"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="—"
+                    android:textColor="#FF8A3D"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    android:includeFontPadding="false" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="3dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+                <ImageView
+                    android:layout_width="7dp"
+                    android:layout_height="7dp"
+                    android:src="@drawable/widget_dot_blue"
+                    android:contentDescription="@null" />
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="6dp"
+                    android:text="Rego"
+                    android:textColor="#9DB4D0"
+                    android:textSize="11sp"
+                    android:fontFamily="sans-serif-medium"
+                    android:includeFontPadding="false" />
+                <TextView
+                    android:id="@+id/widget_rego_days"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="—"
+                    android:textColor="#9DB4D0"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    android:includeFontPadding="false" />
+            </LinearLayout>
+
+            <!-- Quick Actions tile (camera icon retained) -->
+            <LinearLayout
                 android:id="@+id/widget_savo_icon"
-                android:layout_width="70dp"
-                android:layout_height="70dp"
-                android:layout_marginStart="8dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
                 android:background="@drawable/widget_actions_tile"
+                android:paddingStart="10dp"
+                android:paddingEnd="12dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
                 android:clickable="true"
                 android:focusable="true">
 
                 <ImageView
                     android:id="@+id/widget_actions_icon"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:layout_gravity="center"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
                     android:scaleType="fitCenter"
                     android:adjustViewBounds="true"
                     android:contentDescription="@string/widget_label" />
-            </FrameLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    android:orientation="vertical">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Quick Actions"
+                        android:textColor="#FFFFFF"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:includeFontPadding="false" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Tap to open"
+                        android:textColor="#9DB4D0"
+                        android:textSize="9sp"
+                        android:includeFontPadding="false" />
+                </LinearLayout>
+            </LinearLayout>
         </LinearLayout>
     </LinearLayout>
 </FrameLayout>
