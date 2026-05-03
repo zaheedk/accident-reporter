@@ -1,38 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Clean iOS-style camera glyph: navy body, orange lens dot. -->
+<!-- Flat cartoon-style camera: grey body with darker grey band, teal lens. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="32dp"
-    android:height="32dp"
+    android:width="64dp"
+    android:height="64dp"
     android:viewportWidth="64"
     android:viewportHeight="64">
 
-    <!-- Camera body (filled rounded rect) -->
+    <!-- Left small viewfinder bump -->
     <path
-        android:fillColor="#1E3A5F"
-        android:pathData="M8,18 L20,18 L23.5,13 L40.5,13 L44,18 L56,18 A4,4 0 0 1 60,22 L60,48 A4,4 0 0 1 56,52 L8,52 A4,4 0 0 1 4,48 L4,22 A4,4 0 0 1 8,18 Z" />
+        android:fillColor="#9CA3AF"
+        android:pathData="M6,18 L16,18 L16,22 L6,22 Z" />
 
-    <!-- Lens outer ring -->
+    <!-- Top hump (lens housing top) -->
+    <path
+        android:fillColor="#9CA3AF"
+        android:pathData="M22,12 L42,12 L44,18 L20,18 Z" />
+
+    <!-- Camera body (light grey rounded) -->
+    <path
+        android:fillColor="#B8BCC2"
+        android:pathData="M6,18 L58,18 A2,2 0 0 1 60,20 L60,52 A2,2 0 0 1 58,54 L6,54 A2,2 0 0 1 4,52 L4,20 A2,2 0 0 1 6,18 Z" />
+
+    <!-- Dark grey middle band -->
+    <path
+        android:fillColor="#4B5563"
+        android:pathData="M4,28 L60,28 L60,40 L4,40 Z" />
+
+    <!-- Lens outer dark ring -->
+    <path
+        android:fillColor="#1F2937"
+        android:pathData="M32,36 m-14,0 a14,14 0 1,0 28,0 a14,14 0 1,0 -28,0" />
+
+    <!-- Lens teal glass -->
+    <path
+        android:fillColor="#7FCFC4"
+        android:pathData="M32,36 m-9,0 a9,9 0 1,0 18,0 a9,9 0 1,0 -18,0" />
+
+    <!-- Lens inner darker teal -->
+    <path
+        android:fillColor="#5BB0A4"
+        android:pathData="M32,36 m-5,0 a5,5 0 1,0 10,0 a5,5 0 1,0 -10,0" />
+
+    <!-- Lens highlight glint -->
     <path
         android:fillColor="#FFFFFF"
-        android:pathData="M32,35 m-11,0 a11,11 0 1,0 22,0 a11,11 0 1,0 -22,0" />
+        android:pathData="M28,32 m-2.2,0 a2.2,2.2 0 1,0 4.4,0 a2.2,2.2 0 1,0 -4.4,0" />
 
-    <!-- Lens inner glass -->
+    <!-- Top-right flash window (yellow) -->
     <path
-        android:fillColor="#1E3A5F"
-        android:pathData="M32,35 m-8,0 a8,8 0 1,0 16,0 a8,8 0 1,0 -16,0" />
-
-    <!-- Orange lens dot -->
-    <path
-        android:fillColor="#FF6A2C"
-        android:pathData="M32,35 m-3.5,0 a3.5,3.5 0 1,0 7,0 a3.5,3.5 0 1,0 -7,0" />
-
-    <!-- Highlight glint on lens -->
-    <path
-        android:fillColor="#80FFFFFF"
-        android:pathData="M28,31 m-1.6,0 a1.6,1.6 0 1,0 3.2,0 a1.6,1.6 0 1,0 -3.2,0" />
-
-    <!-- Top-right indicator dot -->
-    <path
-        android:fillColor="#FF6A2C"
-        android:pathData="M52,23 m-2,0 a2,2 0 1,0 4,0 a2,2 0 1,0 -4,0" />
+        android:fillColor="#FCE38A"
+        android:pathData="M48,21 L55,21 L55,25 L48,25 Z" />
 </vector>
