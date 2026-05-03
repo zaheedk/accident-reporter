@@ -364,6 +364,12 @@ private fun formatRego(rego: String): String {
     return cleaned
 }
 
+private fun formatDays(days: Int?): String {
+    if (days == null) return "—"
+    if (days < 0) return "exp"
+    return "${days}d"
+}
+
 private fun drawRings(
     canvas: Canvas,
     cx: Float,
