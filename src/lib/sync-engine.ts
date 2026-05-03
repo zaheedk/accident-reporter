@@ -77,7 +77,8 @@ export async function runSync(): Promise<void> {
     }
 
     // 2) Drain queued photos (best-effort — uploads can be large)
-    const { data: { user } } = await supabase.auth.getUser();
+    const { data: { session } } = await supabase.auth.getSession();
+    const user = session?.user ?? null;
     if (user) {
       const photos = await getQueuedPhotosForUser(user.id);
       for (const p of photos) {
