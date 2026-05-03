@@ -10,11 +10,22 @@ import {
 import { isOnline } from '@/lib/sync-engine';
 import { writeWidgetVehiclesToDevice } from '@/lib/widget-setup';
 
-// Helper to resolve user id – skips the network call when already known
+// Helper to resolve user id – uses getSession() (reads from local storage,
+// no Web Lock) instead of getUser() to avoid "Lock was stolen by another
+// request" AbortErrors when many callers race in parallel.
+let _sessionUidPromise: Promise<string | null> | null = null;
 async function resolveUserId(userId?: string): Promise<string | null> {
   if (userId) return userId;
-  const { data: { user } } = await supabase.auth.getUser();
-  return user?.id ?? null;
+  if (!_sessionUidPromise) {
+    _sessionUidPromise = supabase.auth
+      .getSession()
+      .then(({ data }) => data.session?.user?.id ?? null)
+      .finally(() => {
+        // Release shortly after so a fresh login is picked up
+        setTimeout(() => { _sessionUidPromise = null; }, 1000);
+      });
+  }
+  return _sessionUidPromise;
 }
 
 // ── Vehicle helpers ──
