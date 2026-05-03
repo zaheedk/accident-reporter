@@ -26,27 +26,32 @@
             android:orientation="horizontal"
             android:gravity="center_vertical">
 
-            <TextView
-                android:id="@+id/widget_rego"
+            <FrameLayout
+                android:id="@+id/widget_plate_area"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="— — —"
-                android:textColor="#1F2937"
-                android:textSize="22sp"
-                android:textStyle="bold"
-                android:fontFamily="sans-serif-condensed"
-                android:letterSpacing="0.05"
-                android:singleLine="true"
-                android:ellipsize="end"
-                android:background="@drawable/widget_rego_plate"
-                android:paddingStart="12dp"
-                android:paddingEnd="12dp"
-                android:paddingTop="4dp"
-                android:paddingBottom="4dp"
-                android:includeFontPadding="false"
                 android:clickable="true"
-                android:focusable="true"
-                android:id/widget_plate_area_legacy="@+id/widget_plate_area" />
+                android:focusable="true">
+
+                <TextView
+                    android:id="@+id/widget_rego"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="— — —"
+                    android:textColor="#1F2937"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    android:fontFamily="sans-serif-condensed"
+                    android:letterSpacing="0.05"
+                    android:singleLine="true"
+                    android:ellipsize="end"
+                    android:background="@drawable/widget_rego_plate"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"
+                    android:paddingTop="4dp"
+                    android:paddingBottom="4dp"
+                    android:includeFontPadding="false" />
+            </FrameLayout>
 
             <View
                 android:layout_width="0dp"
@@ -77,7 +82,6 @@
             android:gravity="center_vertical"
             android:baselineAligned="false">
 
-            <!-- Rings (large, fills column height) -->
             <ImageView
                 android:id="@+id/widget_rings"
                 android:layout_width="0dp"
@@ -87,7 +91,6 @@
                 android:adjustViewBounds="true"
                 android:contentDescription="@string/widget_label" />
 
-            <!-- Legend column -->
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -158,14 +161,6 @@
                         android:fontFamily="sans-serif-medium" />
                 </LinearLayout>
             </LinearLayout>
-
-            <!-- Right: hidden plate-tap target + camera tile -->
-            <FrameLayout
-                android:id="@+id/widget_plate_area"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_weight="0"
-                android:visibility="gone" />
 
             <FrameLayout
                 android:id="@+id/widget_savo_icon"
