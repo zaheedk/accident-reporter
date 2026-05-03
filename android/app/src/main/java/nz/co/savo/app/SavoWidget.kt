@@ -42,24 +42,38 @@ import java.net.URL
 
 internal const val WIDGET_PREFS = "savo_widget_prefs"
 private const val ACTION_NEXT_VEHICLE = "nz.co.savo.app.widget.NEXT_VEHICLE"
+private const val ACTION_SHOW_ACTIONS = "nz.co.savo.app.widget.SHOW_ACTIONS"
+private const val ACTION_HIDE_ACTIONS = "nz.co.savo.app.widget.HIDE_ACTIONS"
 private const val MAX_WIDGET_VEHICLES = 10
 
 class SavoWidgetReceiver : AppWidgetProvider() {
 
     override fun onReceive(context: Context, intent: Intent) {
         super.onReceive(context, intent)
-        if (intent.action != ACTION_NEXT_VEHICLE) return
-
-        val prefs = context.getSharedPreferences(WIDGET_PREFS, Context.MODE_PRIVATE)
-        val count = prefs.getInt("vehicles_count", 0)
-        if (count > 1) {
-            val current = prefs.getInt("vehicles_current_index", 0)
-            val next = nextVehicleIndex(prefs, current, count)
-            if (next != current) {
-                prefs.edit().putInt("vehicles_current_index", next).commit()
+        when (intent.action) {
+            ACTION_NEXT_VEHICLE -> {
+                val prefs = context.getSharedPreferences(WIDGET_PREFS, Context.MODE_PRIVATE)
+                val count = prefs.getInt("vehicles_count", 0)
+                if (count > 1) {
+                    val current = prefs.getInt("vehicles_current_index", 0)
+                    val next = nextVehicleIndex(prefs, current, count)
+                    if (next != current) {
+                        prefs.edit().putInt("vehicles_current_index", next).commit()
+                    }
+                }
+                redrawAll(context.applicationContext)
+            }
+            ACTION_SHOW_ACTIONS -> {
+                context.getSharedPreferences(WIDGET_PREFS, Context.MODE_PRIVATE)
+                    .edit().putBoolean("actions_panel_open", true).commit()
+                redrawAll(context.applicationContext)
+            }
+            ACTION_HIDE_ACTIONS -> {
+                context.getSharedPreferences(WIDGET_PREFS, Context.MODE_PRIVATE)
+                    .edit().putBoolean("actions_panel_open", false).commit()
+                redrawAll(context.applicationContext)
             }
         }
-        redrawAll(context.applicationContext)
     }
 
     override fun onUpdate(
@@ -124,10 +138,34 @@ class SavoWidgetReceiver : AppWidgetProvider() {
             val ringsBmp = renderRingsBitmap(insDays = insD, wofDays = wofD, regoDays = regoD)
             views.setImageViewBitmap(R.id.widget_rings, ringsBmp)
 
+            val panelOpen = prefs.getBoolean("actions_panel_open", false)
+            views.setDisplayedChild(R.id.widget_flipper, if (panelOpen) 1 else 0)
+
             views.setOnClickPendingIntent(R.id.widget_plate_area, switchPendingIntent(context))
-            val actionsPI = deepLinkPendingIntent(context, 1002, "savo://widget-actions")
-            views.setOnClickPendingIntent(R.id.widget_savo_icon, actionsPI)
-            views.setOnClickPendingIntent(R.id.widget_savo_badge, actionsPI)
+            views.setOnClickPendingIntent(R.id.widget_savo_icon, broadcastPendingIntent(context, 1002, ACTION_SHOW_ACTIONS))
+            views.setOnClickPendingIntent(R.id.widget_savo_badge, deepLinkPendingIntent(context, 1003, "savo://dashboard"))
+            views.setOnClickPendingIntent(R.id.widget_actions_close, broadcastPendingIntent(context, 1004, ACTION_HIDE_ACTIONS))
+
+            // Quick action buttons inside the panel — open the app via deep links / dialer.
+            views.setOnClickPendingIntent(
+                R.id.widget_action_capture,
+                deepLinkPendingIntent(context, 1010, "savo://quick-capture")
+            )
+            views.setOnClickPendingIntent(
+                R.id.widget_action_roadside,
+                if (roadsidePhone.isNotBlank())
+                    telPendingIntent(context, 1011, roadsidePhone)
+                else
+                    deepLinkPendingIntent(context, 1011, "savo://dashboard")
+            )
+            views.setOnClickPendingIntent(
+                R.id.widget_action_tow,
+                deepLinkPendingIntent(context, 1012, "savo://tow-companies")
+            )
+            views.setOnClickPendingIntent(
+                R.id.widget_action_emergency,
+                telPendingIntent(context, 1013, "111")
+            )
 
             appWidgetManager.updateAppWidget(appWidgetId, views)
         }
@@ -140,6 +178,15 @@ class SavoWidgetReceiver : AppWidgetProvider() {
             val flags = PendingIntent.FLAG_UPDATE_CURRENT or
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) PendingIntent.FLAG_IMMUTABLE else 0
             return PendingIntent.getActivity(context, requestCode, intent, flags)
+        }
+
+        private fun broadcastPendingIntent(context: Context, requestCode: Int, action: String): PendingIntent {
+            val intent = Intent(context, SavoWidgetReceiver::class.java).apply {
+                this.action = action
+            }
+            val flags = PendingIntent.FLAG_UPDATE_CURRENT or
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) PendingIntent.FLAG_IMMUTABLE else 0
+            return PendingIntent.getBroadcast(context, requestCode, intent, flags)
         }
 
         private fun telPendingIntent(context: Context, requestCode: Int, phone: String): PendingIntent {
