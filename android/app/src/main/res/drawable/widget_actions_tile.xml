@@ -8,21 +8,11 @@
         android:right="0dp"
         android:bottom="0dp">
         <shape android:shape="rectangle">
-            <solid android:color="#26000000" />
+            <solid android:color="#33000000" />
             <corners android:radius="18dp" />
         </shape>
     </item>
-    <item
-        android:left="1dp"
-        android:top="3dp"
-        android:right="1dp"
-        android:bottom="-1dp">
-        <shape android:shape="rectangle">
-            <solid android:color="#14000000" />
-            <corners android:radius="18dp" />
-        </shape>
-    </item>
-    <!-- Glass face with vertical highlight gradient -->
+    <!-- Glass face with vertical highlight gradient + heavier border -->
     <item
         android:left="0dp"
         android:top="0dp"
@@ -35,7 +25,7 @@
                 android:startColor="#FFFFFFFF"
                 android:centerColor="#FFF7F8FA"
                 android:endColor="#FFE8ECF1" />
-            <stroke android:width="0.6dp" android:color="#1A000000" />
+            <stroke android:width="2.5dp" android:color="#1F2937" />
             <corners android:radius="18dp" />
         </shape>
     </item>
@@ -44,7 +34,7 @@
         android:left="6dp"
         android:top="3dp"
         android:right="6dp"
-        android:bottom="22dp">
+        android:bottom="28dp">
         <shape android:shape="rectangle">
             <solid android:color="#33FFFFFF" />
             <corners android:radius="14dp" />

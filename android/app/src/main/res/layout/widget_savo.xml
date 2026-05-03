@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-    SAVO home-screen widget — 3x2 cell layout (landscape).
-    Left:   SAVO wordmark + rego plate + legend
-    Center: rings
-    Right:  camera tile
+    SAVO home-screen widget — 3x2 cell layout.
+    Top:    SAVO wordmark (full width)
+    Bottom: rego plate + legend | rings | camera tile
 -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
@@ -13,144 +12,154 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:background="@drawable/widget_background"
         android:paddingStart="12dp"
         android:paddingEnd="12dp"
-        android:paddingTop="10dp"
-        android:paddingBottom="10dp"
-        android:gravity="center_vertical">
+        android:paddingTop="8dp"
+        android:paddingBottom="10dp">
 
-        <!-- Left column: branding + plate + legend -->
-        <LinearLayout
-            android:layout_width="0dp"
+        <!-- Top: SAVO wordmark -->
+        <TextView
+            android:id="@+id/widget_savo_badge"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:text="SAVO"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:letterSpacing="0.25"
+            android:gravity="center_horizontal"
+            android:includeFontPadding="false"
+            android:clickable="true"
+            android:focusable="true" />
+
+        <!-- Bottom row -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
             android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="start">
+            android:layout_marginTop="6dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
 
-            <TextView
-                android:id="@+id/widget_savo_badge"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="SAVO"
-                android:textColor="#1F2937"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:letterSpacing="0.22"
-                android:includeFontPadding="false"
-                android:clickable="true"
-                android:focusable="true" />
-
-            <FrameLayout
-                android:id="@+id/widget_plate_area"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
-                android:clickable="true"
-                android:focusable="true">
-
-                <TextView
-                    android:id="@+id/widget_rego"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="— — —"
-                    android:textColor="#1F2937"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:fontFamily="sans-serif-condensed"
-                    android:letterSpacing="0.05"
-                    android:singleLine="true"
-                    android:ellipsize="end"
-                    android:background="@drawable/widget_rego_plate"
-                    android:paddingStart="10dp"
-                    android:paddingEnd="10dp"
-                    android:paddingTop="3dp"
-                    android:paddingBottom="3dp"
-                    android:includeFontPadding="false" />
-            </FrameLayout>
-
+            <!-- Left: rego plate + legend -->
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:orientation="horizontal"
-                android:gravity="center_vertical">
+                android:orientation="vertical"
+                android:gravity="start">
 
-                <ImageView
-                    android:layout_width="7dp"
-                    android:layout_height="7dp"
-                    android:src="@drawable/widget_dot_green"
-                    android:contentDescription="@null" />
-                <TextView
+                <FrameLayout
+                    android:id="@+id/widget_plate_area"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="4dp"
-                    android:text="Ins"
-                    android:textColor="#1F2937"
-                    android:textSize="10sp"
-                    android:fontFamily="sans-serif-medium" />
+                    android:clickable="true"
+                    android:focusable="true">
 
-                <ImageView
-                    android:layout_width="7dp"
-                    android:layout_height="7dp"
-                    android:layout_marginStart="8dp"
-                    android:src="@drawable/widget_dot_amber"
-                    android:contentDescription="@null" />
-                <TextView
+                    <TextView
+                        android:id="@+id/widget_rego"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="— — —"
+                        android:textColor="#1F2937"
+                        android:textSize="23sp"
+                        android:textStyle="bold"
+                        android:fontFamily="sans-serif-condensed"
+                        android:letterSpacing="0.05"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:background="@drawable/widget_rego_plate"
+                        android:paddingStart="12dp"
+                        android:paddingEnd="12dp"
+                        android:paddingTop="4dp"
+                        android:paddingBottom="4dp"
+                        android:includeFontPadding="false" />
+                </FrameLayout>
+
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="4dp"
-                    android:text="WOF"
-                    android:textColor="#1F2937"
-                    android:textSize="10sp"
-                    android:fontFamily="sans-serif-medium" />
+                    android:layout_marginTop="8dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
 
-                <ImageView
-                    android:layout_width="7dp"
-                    android:layout_height="7dp"
-                    android:layout_marginStart="8dp"
-                    android:src="@drawable/widget_dot_blue"
-                    android:contentDescription="@null" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="4dp"
-                    android:text="Rego"
-                    android:textColor="#1F2937"
-                    android:textSize="10sp"
-                    android:fontFamily="sans-serif-medium" />
+                    <ImageView
+                        android:layout_width="7dp"
+                        android:layout_height="7dp"
+                        android:src="@drawable/widget_dot_green"
+                        android:contentDescription="@null" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:text="Ins"
+                        android:textColor="#FFFFFF"
+                        android:textSize="10sp"
+                        android:fontFamily="sans-serif-medium" />
+
+                    <ImageView
+                        android:layout_width="7dp"
+                        android:layout_height="7dp"
+                        android:layout_marginStart="8dp"
+                        android:src="@drawable/widget_dot_amber"
+                        android:contentDescription="@null" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:text="WOF"
+                        android:textColor="#FFFFFF"
+                        android:textSize="10sp"
+                        android:fontFamily="sans-serif-medium" />
+
+                    <ImageView
+                        android:layout_width="7dp"
+                        android:layout_height="7dp"
+                        android:layout_marginStart="8dp"
+                        android:src="@drawable/widget_dot_blue"
+                        android:contentDescription="@null" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:text="Rego"
+                        android:textColor="#FFFFFF"
+                        android:textSize="10sp"
+                        android:fontFamily="sans-serif-medium" />
+                </LinearLayout>
             </LinearLayout>
-        </LinearLayout>
 
-        <!-- Center: rings -->
-        <ImageView
-            android:id="@+id/widget_rings"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:scaleType="fitCenter"
-            android:adjustViewBounds="true"
-            android:contentDescription="@string/widget_label" />
-
-        <!-- Right: camera tile -->
-        <FrameLayout
-            android:id="@+id/widget_savo_icon"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
-            android:layout_marginStart="8dp"
-            android:background="@drawable/widget_actions_tile"
-            android:clickable="true"
-            android:focusable="true">
-
+            <!-- Center: rings (reduced 25% via padding) -->
             <ImageView
-                android:id="@+id/widget_actions_icon"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:layout_gravity="center"
+                android:id="@+id/widget_rings"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:padding="10dp"
                 android:scaleType="fitCenter"
                 android:adjustViewBounds="true"
                 android:contentDescription="@string/widget_label" />
-        </FrameLayout>
+
+            <!-- Right: camera tile (25% bigger) -->
+            <FrameLayout
+                android:id="@+id/widget_savo_icon"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/widget_actions_tile"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:id="@+id/widget_actions_icon"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_gravity="center"
+                    android:scaleType="fitCenter"
+                    android:adjustViewBounds="true"
+                    android:contentDescription="@string/widget_label" />
+            </FrameLayout>
+        </LinearLayout>
     </LinearLayout>
 </FrameLayout>
