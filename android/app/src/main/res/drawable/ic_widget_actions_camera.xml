@@ -1,53 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Flat cartoon-style camera: grey body with darker grey band, teal lens. -->
+<!-- Minimal line-style camera icon matching widget redesign v2 (navy stroke on transparent). -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="64dp"
     android:height="64dp"
     android:viewportWidth="64"
     android:viewportHeight="64">
 
-    <!-- Left small viewfinder bump -->
+    <!-- Camera body outline (rounded rectangle with viewfinder hump) -->
     <path
-        android:fillColor="#9CA3AF"
-        android:pathData="M6,18 L16,18 L16,22 L6,22 Z" />
+        android:strokeColor="#1F2937"
+        android:strokeWidth="3"
+        android:fillColor="#00000000"
+        android:strokeLineJoin="round"
+        android:strokeLineCap="round"
+        android:pathData="M8,20 L20,20 L24,14 L40,14 L44,20 L56,20 A2,2 0 0 1 58,22 L58,48 A2,2 0 0 1 56,50 L8,50 A2,2 0 0 1 6,48 L6,22 A2,2 0 0 1 8,20 Z" />
 
-    <!-- Top hump (lens housing top) -->
+    <!-- Lens outer circle -->
     <path
-        android:fillColor="#9CA3AF"
-        android:pathData="M22,12 L42,12 L44,18 L20,18 Z" />
+        android:strokeColor="#1F2937"
+        android:strokeWidth="3"
+        android:fillColor="#00000000"
+        android:pathData="M32,34 m-10,0 a10,10 0 1,0 20,0 a10,10 0 1,0 -20,0" />
 
-    <!-- Camera body (light grey rounded) -->
+    <!-- Lens inner circle -->
     <path
-        android:fillColor="#B8BCC2"
-        android:pathData="M6,18 L58,18 A2,2 0 0 1 60,20 L60,52 A2,2 0 0 1 58,54 L6,54 A2,2 0 0 1 4,52 L4,20 A2,2 0 0 1 6,18 Z" />
+        android:strokeColor="#1F2937"
+        android:strokeWidth="2"
+        android:fillColor="#00000000"
+        android:pathData="M32,34 m-4,0 a4,4 0 1,0 8,0 a4,4 0 1,0 -8,0" />
 
-    <!-- Dark grey middle band -->
-    <path
-        android:fillColor="#4B5563"
-        android:pathData="M4,28 L60,28 L60,40 L4,40 Z" />
-
-    <!-- Lens outer dark ring -->
+    <!-- Small flash/indicator on top right -->
     <path
         android:fillColor="#1F2937"
-        android:pathData="M32,36 m-14,0 a14,14 0 1,0 28,0 a14,14 0 1,0 -28,0" />
-
-    <!-- Lens teal glass -->
-    <path
-        android:fillColor="#7FCFC4"
-        android:pathData="M32,36 m-9,0 a9,9 0 1,0 18,0 a9,9 0 1,0 -18,0" />
-
-    <!-- Lens inner darker teal -->
-    <path
-        android:fillColor="#5BB0A4"
-        android:pathData="M32,36 m-5,0 a5,5 0 1,0 10,0 a5,5 0 1,0 -10,0" />
-
-    <!-- Lens highlight glint -->
-    <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M28,32 m-2.2,0 a2.2,2.2 0 1,0 4.4,0 a2.2,2.2 0 1,0 -4.4,0" />
-
-    <!-- Top-right flash window (yellow) -->
-    <path
-        android:fillColor="#FCE38A"
-        android:pathData="M48,21 L55,21 L55,25 L48,25 Z" />
+        android:pathData="M49,24 m-1.5,0 a1.5,1.5 0 1,0 3,0 a1.5,1.5 0 1,0 -3,0" />
 </vector>
