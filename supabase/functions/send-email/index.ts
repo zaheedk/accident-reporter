@@ -47,8 +47,8 @@ function generateClaimPdf(data: Record<string, string>, photoImages: { label: st
     if (y + needed > pageHeight - 20) { doc.addPage(); y = 18; }
   };
 
-  // ── Header bar ──
-  doc.setFillColor(232, 85, 30);
+  // ── Header bar (SAVO navy) ──
+  doc.setFillColor(30, 58, 95);
   doc.rect(0, 0, pageWidth, 26, 'F');
   doc.setTextColor(255, 255, 255);
   doc.setFontSize(16);
