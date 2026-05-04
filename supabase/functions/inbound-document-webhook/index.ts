@@ -112,7 +112,8 @@ function isAcceptedFile(filename: string, mime: string): boolean {
 }
 
 async function fetchReceivedEmailAttachments(emailId: string): Promise<unknown[]> {
-  const resendApiKey = Deno.env.get("RESEND_API_KEY");
+  const resendApiKey =
+    Deno.env.get("RESEND_RECEIVING_API_KEY") || Deno.env.get("RESEND_API_KEY");
   if (!emailId || !resendApiKey) return [];
 
   const response = await fetch(
