@@ -47,8 +47,8 @@ function generateClaimPdf(data: Record<string, string>, photoImages: { label: st
     if (y + needed > pageHeight - 20) { doc.addPage(); y = 18; }
   };
 
-  // ── Header bar ──
-  doc.setFillColor(232, 85, 30);
+  // ── Header bar (SAVO navy) ──
+  doc.setFillColor(30, 58, 95);
   doc.rect(0, 0, pageWidth, 26, 'F');
   doc.setTextColor(255, 255, 255);
   doc.setFontSize(16);
@@ -85,10 +85,12 @@ function generateClaimPdf(data: Record<string, string>, photoImages: { label: st
   // ── Data row ──
   const addRow = (label: string, value: string) => {
     if (!value || value === '\u2014' || value.trim() === '') return;
-    // Pre-calculate wrapped lines to know how much space we need
+    // Insert zero-width break opportunities after punctuation so very long
+    // tokens (addresses, URLs) can wrap even without whitespace.
+    const breakable = String(value).replace(/([,/;:_\-])(?=\S)/g, '$1 ');
     doc.setFontSize(9);
     doc.setFont('helvetica', 'bold');
-    const lines = doc.splitTextToSize(value, valueWidth);
+    const lines = doc.splitTextToSize(breakable, valueWidth);
     const rowHeight = Math.max(lines.length * 4.2, 5.5);
     checkPage(rowHeight + 1);
 
@@ -97,10 +99,10 @@ function generateClaimPdf(data: Record<string, string>, photoImages: { label: st
     doc.setTextColor(120, 120, 120);
     doc.text(label, margin + 2, y);
 
-    // Value
+    // Value (maxWidth as safety net against overflow)
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(30, 30, 30);
-    doc.text(lines, valueX, y);
+    doc.text(lines, valueX, y, { maxWidth: valueWidth });
     y += rowHeight + 1;
   };
 
