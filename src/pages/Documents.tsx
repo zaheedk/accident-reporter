@@ -1,4 +1,4 @@
-import { ArrowLeft, ChevronDown, Car } from 'lucide-react';
+import { ArrowLeft, ChevronDown, Car, Mail } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import AppLayout from '@/components/AppLayout';
 import DocumentVault from '@/components/DocumentVault';
@@ -58,6 +58,28 @@ export default function Documents() {
                 </p>
               )}
             </div>
+          </div>
+        </div>
+
+        {/* Email-in tip */}
+        <div className="card-soft !p-3 flex items-start gap-3">
+          <div className="w-9 h-9 rounded-lg bg-foreground text-background flex items-center justify-center shrink-0">
+            <Mail className="w-4 h-4" strokeWidth={2} />
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="text-[13px] font-semibold text-foreground leading-tight">
+              Email documents straight to your vault
+            </p>
+            <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+              Send any PDF, image or Office file as an attachment from your registered email to{' '}
+              <a
+                href="mailto:documents@replies.savo.co.nz"
+                className="font-semibold text-foreground underline underline-offset-2 break-all"
+              >
+                documents@replies.savo.co.nz
+              </a>
+              {' '}and it will appear here automatically.
+            </p>
           </div>
         </div>
 
