@@ -111,6 +111,24 @@ function isAcceptedFile(filename: string, mime: string): boolean {
   return ACCEPTED_EXTENSIONS.has(extOf(filename));
 }
 
+async function fetchReceivedEmailAttachments(emailId: string): Promise<unknown[]> {
+  const resendApiKey = Deno.env.get("RESEND_API_KEY");
+  if (!emailId || !resendApiKey) return [];
+
+  const response = await fetch(
+    `https://api.resend.com/emails/receiving/${encodeURIComponent(emailId)}/attachments`,
+    { headers: { Authorization: `Bearer ${resendApiKey}` } },
+  );
+
+  if (!response.ok) {
+    console.error("attachment list fetch failed", response.status, await response.text());
+    return [];
+  }
+
+  const result = await response.json();
+  return Array.isArray(result?.data) ? result.data : [];
+}
+
 function base64ToBytes(b64: string): Uint8Array {
   const clean = b64.replace(/\s+/g, "");
   const bin = atob(clean);
@@ -148,6 +166,11 @@ async function normalizeAttachments(raw: unknown): Promise<NormalizedAttachment[
     } else if (typeof obj.url === "string" && obj.url.length > 0) {
       try {
         const r = await fetch(obj.url);
+        if (r.ok) bytes = new Uint8Array(await r.arrayBuffer());
+      } catch (_) { /* ignore */ }
+    } else if (typeof obj.download_url === "string" && obj.download_url.length > 0) {
+      try {
+        const r = await fetch(obj.download_url);
         if (r.ok) bytes = new Uint8Array(await r.arrayBuffer());
       } catch (_) { /* ignore */ }
     }
@@ -205,13 +228,25 @@ serve(async (req) => {
 
     const subject = firstNonEmpty(data.subject, "(No subject)");
 
-    // Collect attachments from common provider shapes.
-    const rawAttachments =
+    // Collect attachments from common provider shapes. Resend's inbound webhook
+    // sends metadata only, so fetch temporary download URLs using email_id.
+    const emailId = firstNonEmpty(data.email_id, data.id, payload?.email_id);
+    let rawAttachments =
       (data.attachments as unknown) ||
       (data.Attachments as unknown) ||
       ((data.email as Record<string, unknown> | undefined)?.attachments) ||
       [];
+
+    if (emailId && Array.isArray(rawAttachments) && rawAttachments.length > 0) {
+      const fetchedAttachments = await fetchReceivedEmailAttachments(emailId);
+      if (fetchedAttachments.length > 0) rawAttachments = fetchedAttachments;
+    }
     const attachments = await normalizeAttachments(rawAttachments);
+    console.log("inbound-document-webhook: attachments parsed", {
+      emailId,
+      metadataCount: Array.isArray(rawAttachments) ? rawAttachments.length : 0,
+      acceptedCount: attachments.length,
+    });
 
     if (attachments.length === 0) {
       return new Response(
