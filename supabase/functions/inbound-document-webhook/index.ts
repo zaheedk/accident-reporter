@@ -111,6 +111,24 @@ function isAcceptedFile(filename: string, mime: string): boolean {
   return ACCEPTED_EXTENSIONS.has(extOf(filename));
 }
 
+async function fetchReceivedEmailAttachments(emailId: string): Promise<unknown[]> {
+  const resendApiKey = Deno.env.get("RESEND_API_KEY");
+  if (!emailId || !resendApiKey) return [];
+
+  const response = await fetch(
+    `https://api.resend.com/emails/receiving/${encodeURIComponent(emailId)}/attachments`,
+    { headers: { Authorization: `Bearer ${resendApiKey}` } },
+  );
+
+  if (!response.ok) {
+    console.error("attachment list fetch failed", response.status, await response.text());
+    return [];
+  }
+
+  const result = await response.json();
+  return Array.isArray(result?.data) ? result.data : [];
+}
+
 function base64ToBytes(b64: string): Uint8Array {
   const clean = b64.replace(/\s+/g, "");
   const bin = atob(clean);
@@ -148,6 +166,11 @@ async function normalizeAttachments(raw: unknown): Promise<NormalizedAttachment[
     } else if (typeof obj.url === "string" && obj.url.length > 0) {
       try {
         const r = await fetch(obj.url);
+        if (r.ok) bytes = new Uint8Array(await r.arrayBuffer());
+      } catch (_) { /* ignore */ }
+    } else if (typeof obj.download_url === "string" && obj.download_url.length > 0) {
+      try {
+        const r = await fetch(obj.download_url);
         if (r.ok) bytes = new Uint8Array(await r.arrayBuffer());
       } catch (_) { /* ignore */ }
     }
