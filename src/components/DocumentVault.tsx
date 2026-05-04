@@ -152,25 +152,23 @@ export default function DocumentVault({ vehicleId = null, showCategories }: Docu
     }
   };
 
-  const handleDownload = async (doc: Document) => {
+  const handleView = async (doc: Document) => {
     try {
+      // Open the tab synchronously so mobile/in-app browsers don't block it
+      const win = window.open('about:blank', '_blank');
+
       const { data, error } = await supabase.storage
         .from('user-documents')
-        .download(doc.file_path);
-      if (error || !data) throw error || new Error('No data');
-      const blobUrl = URL.createObjectURL(data);
-      const win = window.open(blobUrl, '_blank');
-      if (!win) {
-        // Popup blocked — fall back to forced download
-        const a = document.createElement('a');
-        a.href = blobUrl;
-        a.download = doc.file_name;
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
+        .createSignedUrl(doc.file_path, 60 * 10); // 10 minutes
+
+      if (error || !data?.signedUrl) throw error || new Error('No signed URL');
+
+      if (win && !win.closed) {
+        win.location.href = data.signedUrl;
+      } else {
+        // Popup blocked — navigate the current tab/webview instead of forcing download
+        window.location.href = data.signedUrl;
       }
-      // Revoke after a delay so the new tab has time to load
-      setTimeout(() => URL.revokeObjectURL(blobUrl), 60_000);
     } catch (err: any) {
       toast.error(err.message || 'Could not open document');
     }
@@ -291,7 +289,7 @@ export default function DocumentVault({ vehicleId = null, showCategories }: Docu
                 </div>
                 <div className="flex items-center gap-0.5 shrink-0">
                   <button
-                    onClick={() => handleDownload(doc)}
+                    onClick={() => handleView(doc)}
                     className="w-9 h-9 inline-flex items-center justify-center rounded-lg text-foreground hover:bg-muted transition-colors"
                     aria-label="View"
                   >
