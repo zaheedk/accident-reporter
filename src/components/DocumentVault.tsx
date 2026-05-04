@@ -289,7 +289,7 @@ export default function DocumentVault({ vehicleId = null, showCategories }: Docu
                 </div>
                 <div className="flex items-center gap-0.5 shrink-0">
                   <button
-                    onClick={() => handleDownload(doc)}
+                    onClick={() => handleView(doc)}
                     className="w-9 h-9 inline-flex items-center justify-center rounded-lg text-foreground hover:bg-muted transition-colors"
                     aria-label="View"
                   >
