@@ -228,13 +228,25 @@ serve(async (req) => {
 
     const subject = firstNonEmpty(data.subject, "(No subject)");
 
-    // Collect attachments from common provider shapes.
-    const rawAttachments =
+    // Collect attachments from common provider shapes. Resend's inbound webhook
+    // sends metadata only, so fetch temporary download URLs using email_id.
+    const emailId = firstNonEmpty(data.email_id, data.id, payload?.email_id);
+    let rawAttachments =
       (data.attachments as unknown) ||
       (data.Attachments as unknown) ||
       ((data.email as Record<string, unknown> | undefined)?.attachments) ||
       [];
+
+    if (emailId && Array.isArray(rawAttachments) && rawAttachments.length > 0) {
+      const fetchedAttachments = await fetchReceivedEmailAttachments(emailId);
+      if (fetchedAttachments.length > 0) rawAttachments = fetchedAttachments;
+    }
     const attachments = await normalizeAttachments(rawAttachments);
+    console.log("inbound-document-webhook: attachments parsed", {
+      emailId,
+      metadataCount: Array.isArray(rawAttachments) ? rawAttachments.length : 0,
+      acceptedCount: attachments.length,
+    });
 
     if (attachments.length === 0) {
       return new Response(
