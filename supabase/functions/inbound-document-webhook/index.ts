@@ -181,6 +181,13 @@ serve(async (req) => {
       (data.envelope as Record<string, unknown> | undefined)?.from,
     );
     const fromEmail = extractEmail(fromRaw);
+    console.log("inbound-document-webhook: parsed sender", {
+      fromRaw,
+      fromEmail,
+      subject: data.subject,
+      envelope: data.envelope,
+      keys: Object.keys(data),
+    });
     if (!fromEmail) {
       return new Response(JSON.stringify({ skipped: true, reason: "no_sender" }), {
         status: 200,
