@@ -331,7 +331,12 @@ export default function Dashboard() {
               <Activity className="w-3.5 h-3.5 text-muted-foreground/70 shrink-0" strokeWidth={2} />
               <div className="flex-1 min-w-0">
                 <div className="text-[13px] font-medium text-foreground truncate">
-                  {c.userClaimNumber ? `#${c.userClaimNumber}` : 'Draft'} · <span className="opacity-70 capitalize">{c.status}</span>
+                  {c.userClaimNumber
+                    ? `#${c.userClaimNumber}`
+                    : (c as any).reportNumber
+                      ? `#${(c as any).reportNumber}`
+                      : (c.status === 'draft' ? 'Draft' : 'Report')}
+                  {' '}<span className="opacity-70 capitalize">· {c.status === 'draft' ? 'draft' : 'submitted'}</span>
                 </div>
                 <div className="text-[11px] text-muted-foreground truncate">
                   {(() => {
