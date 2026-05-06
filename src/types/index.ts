@@ -1,5 +1,6 @@
 export interface Vehicle {
   id: string;
+  userId?: string;
   slug?: string;
   year: string;
   make: string;
