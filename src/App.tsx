@@ -84,7 +84,17 @@ if (typeof window !== 'undefined') {
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { session, loading, isDeactivated, signOut } = useAuth();
   if (loading) return <div className="min-h-screen bg-background flex items-center justify-center"><Loader2 className="w-6 h-6 animate-spin text-muted-foreground" /></div>;
-  if (!session) return <Navigate to="/auth" replace />;
+  if (!session) {
+    // Preserve a family invite code across the auth round-trip so it can be
+    // auto-accepted after sign in (Google OAuth strips query params).
+    if (typeof window !== 'undefined' && window.location.pathname === '/family') {
+      const code = new URLSearchParams(window.location.search).get('code');
+      if (code) {
+        try { localStorage.setItem('pending_family_invite', code); } catch {}
+      }
+    }
+    return <Navigate to="/auth" replace />;
+  }
   if (isDeactivated) return (
     <div className="min-h-screen bg-background flex items-center justify-center p-6">
       <div className="text-center space-y-4 max-w-sm">
