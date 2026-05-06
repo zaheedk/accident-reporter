@@ -53,10 +53,10 @@ export async function hydrateUserData(
       const results = await Promise.allSettled([
         // Profile
         supabase.from('profiles').select('*').eq('user_id', userId).maybeSingle(),
-        // Vehicles (used by storage.ts → key: vehicles:<uid>)
-        supabase.from('vehicles').select('*').eq('user_id', userId).order('created_at', { ascending: false }),
-        // Claims (key: claims:<uid>)
-        supabase.from('claims').select('*').eq('user_id', userId).order('created_at', { ascending: false }),
+        // Vehicles (used by storage.ts → key: vehicles:<uid>). RLS returns own + family rows.
+        supabase.from('vehicles').select('*').order('created_at', { ascending: false }),
+        // Claims (key: claims:<uid>). RLS returns own + family rows.
+        supabase.from('claims').select('*').order('created_at', { ascending: false }),
         // Claim photos metadata
         supabase.from('claim_photos').select('*').eq('user_id', userId).order('created_at', { ascending: false }),
         // Third-party photos metadata
