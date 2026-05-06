@@ -204,7 +204,36 @@ export default function QuickCapture() {
       .then(() => { /* fire and forget */ });
   }, [claimId, location]);
 
-  const openCamera = () => cameraRef.current?.click();
+  const openCamera = async () => {
+    // On native (Capacitor), the hidden <input type="file" capture> is unreliable
+    // inside the WebView. Use the Camera plugin to open the system camera directly.
+    try {
+      const { Capacitor } = await import('@capacitor/core');
+      if (Capacitor.isNativePlatform()) {
+        const { Camera, CameraResultType, CameraSource } = await import('@capacitor/camera');
+        const photo = await Camera.getPhoto({
+          quality: 85,
+          allowEditing: false,
+          resultType: CameraResultType.Uri,
+          source: CameraSource.Camera,
+          saveToGallery: false,
+          correctOrientation: true,
+        });
+        if (!photo?.webPath) return;
+        const res = await fetch(photo.webPath);
+        const blob = await res.blob();
+        const ext = (photo.format || 'jpg').toLowerCase();
+        const file = new File([blob], `capture-${Date.now()}.${ext}`, { type: blob.type || `image/${ext}` });
+        const dt = new DataTransfer();
+        dt.items.add(file);
+        handleFiles(dt.files);
+        return;
+      }
+    } catch (e) {
+      console.warn('Native camera failed, falling back to file input', e);
+    }
+    cameraRef.current?.click();
+  };
 
   const handleFiles = useCallback((files: FileList | null) => {
     if (!files || !user || !claimId || !step.target) return;
