@@ -157,6 +157,30 @@ serve(async (req) => {
     }
 
     const fromEmailEarly = extractEmailAddress(from).toLowerCase();
+
+    // Guard: ignore self-loops where our own outbound system addresses are
+    // re-delivered into this webhook. These create false "Unmatched inbound
+    // email" notifications when our claim emails bounce back through the
+    // inbound mailbox.
+    const SELF_ADDRESSES = new Set([
+      'claims@savo.co.nz',
+      'info@savo.co.nz',
+      'noreply@savo.co.nz',
+      'no-reply@savo.co.nz',
+      'support@savo.co.nz',
+    ]);
+    if (
+      SELF_ADDRESSES.has(fromEmailEarly) ||
+      fromEmailEarly.endsWith('@notify.savo.co.nz') ||
+      fromEmailEarly.endsWith('@replies.savo.co.nz')
+    ) {
+      console.log('Ignoring self-loop inbound email from:', fromEmailEarly);
+      return new Response(JSON.stringify({ ok: true, ignored: 'self_loop' }), {
+        status: 200,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
     const subjectNorm = subject.toLowerCase();
     const subjectCompact = subjectNorm.replace(/[\s\-_/]+/g, '');
 
