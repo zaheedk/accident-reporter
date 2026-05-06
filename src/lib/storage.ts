@@ -41,7 +41,6 @@ export async function getVehicles(userId?: string): Promise<Vehicle[]> {
     const { data, error } = await supabase
       .from('vehicles')
       .select('*')
-      .eq('user_id', uid)
       .order('created_at', { ascending: false });
     if (!error && data) {
       void setCache(cacheKey, data);
@@ -101,6 +100,7 @@ export async function deleteVehicle(id: string): Promise<void> {
 function dbVehicleToVehicle(row: any): Vehicle {
   return {
     id: row.id,
+    userId: row.user_id,
     slug: row.slug || '',
     year: row.year,
     make: row.make,
@@ -142,7 +142,6 @@ export async function getClaims(userId?: string): Promise<ClaimReport[]> {
     const { data, error } = await supabase
       .from('claims')
       .select('*')
-      .eq('user_id', uid)
       .order('created_at', { ascending: false });
     if (!error && data) {
       void setCache(cacheKey, data);
