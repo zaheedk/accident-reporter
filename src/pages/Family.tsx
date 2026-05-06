@@ -101,6 +101,38 @@ export default function Family() {
 
   useEffect(() => { load(); }, [user?.id]);
 
+  // Auto-accept an invite code coming from URL or stashed in localStorage
+  // (e.g. after a Google OAuth round-trip that strips query params).
+  useEffect(() => {
+    if (!user) return;
+    let code = searchParams.get('code') || '';
+    if (!code) {
+      try { code = localStorage.getItem('pending_family_invite') || ''; } catch {}
+    }
+    if (!code) return;
+    // Don't try to accept if already in a family
+    if (myMembership) {
+      try { localStorage.removeItem('pending_family_invite'); } catch {}
+      return;
+    }
+    (async () => {
+      setBusy(true);
+      const { data, error } = await supabase.functions.invoke('family-invite', {
+        body: { action: 'accept', code: code.trim() },
+      });
+      setBusy(false);
+      try { localStorage.removeItem('pending_family_invite'); } catch {}
+      if (error || (data as any)?.error) {
+        toast({ title: 'Could not accept invite', description: (data as any)?.error || error?.message, variant: 'destructive' });
+        return;
+      }
+      toast({ title: 'Welcome to the family!' });
+      setAcceptCode('');
+      setSearchParams({});
+      load();
+    })();
+  }, [user?.id, myMembership]);
+
   const createInvite = async (withEmail: boolean) => {
     if (withEmail && !inviteEmail.trim()) {
       toast({ title: 'Email required', variant: 'destructive' });
