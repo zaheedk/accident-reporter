@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Check, Camera, X, Loader2, AlertTriangle, Car, FileText, Phone, Shield } from 'lucide-react';
+import { ArrowLeft, Check, Camera, X, Loader2, AlertTriangle, Car, FileText, Phone, Shield, ScanLine } from 'lucide-react';
 import DocumentVault from '@/components/DocumentVault';
 import { getVehicles, saveVehicle } from '@/lib/storage';
 import { Vehicle } from '@/types';
@@ -33,6 +33,47 @@ export default function VehicleForm() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [saving, setSaving] = useState(false);
   const [customInsurer, setCustomInsurer] = useState('');
+  const [scanning, setScanning] = useState<null | 'wof' | 'rego'>(null);
+  const wofScanRef = useRef<HTMLInputElement>(null);
+  const regoScanRef = useRef<HTMLInputElement>(null);
+
+  const handleLabelScan = async (e: React.ChangeEvent<HTMLInputElement>, kind: 'wof' | 'rego') => {
+    const file = e.target.files?.[0];
+    if (e.target) e.target.value = '';
+    if (!file) return;
+    setScanning(kind);
+    try {
+      const compressed = await compressImage(file);
+      // Convert to data URL — avoids needing storage upload for a transient scan
+      const dataUrl: string = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(compressed);
+      });
+      const { data, error } = await supabase.functions.invoke('analyze-photo', {
+        body: { imageUrl: dataUrl, type: kind === 'wof' ? 'wof_label' : 'rego_label' },
+      });
+      if (error) throw error;
+      let raw = (data?.result || '').trim();
+      // Strip ```json fences if model adds them
+      raw = raw.replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/i, '');
+      const parsed = JSON.parse(raw);
+      if (!parsed.expiry) {
+        alert(`Couldn't read the ${kind === 'wof' ? 'WOF' : 'Rego'} expiry. Try a clearer, well-lit photo.`);
+        return;
+      }
+      setForm(prev => ({
+        ...prev,
+        [kind === 'wof' ? 'wofExpiry' : 'regoExpiry']: parsed.expiry,
+        ...(parsed.rego && !prev.regoNumber ? { regoNumber: String(parsed.rego).toUpperCase() } : {}),
+      }));
+    } catch (err: any) {
+      alert(`Scan failed: ${err?.message || 'Unknown error'}`);
+    } finally {
+      setScanning(null);
+    }
+  };
 
   useEffect(() => {
     supabase.from('insurance_companies').select('id, name').order('name').then(({ data }) => {
@@ -328,10 +369,30 @@ export default function VehicleForm() {
               <div>
                 <label className={labelCls}>WOF expiry</label>
                 <input type="date" className={`${inputCls} tabular-nums`} value={form.wofExpiry} onChange={e => update('wofExpiry', e.target.value)} />
+                <button
+                  type="button"
+                  onClick={() => wofScanRef.current?.click()}
+                  disabled={scanning !== null}
+                  className="mt-1.5 inline-flex items-center gap-1.5 text-[12px] font-medium text-foreground/80 hover:text-foreground disabled:opacity-50"
+                >
+                  {scanning === 'wof' ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <ScanLine className="w-3.5 h-3.5" />}
+                  {scanning === 'wof' ? 'Reading label…' : 'Scan WOF label'}
+                </button>
+                <input ref={wofScanRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={e => handleLabelScan(e, 'wof')} />
               </div>
               <div>
                 <label className={labelCls}>Rego expiry</label>
                 <input type="date" className={`${inputCls} tabular-nums`} value={form.regoExpiry} onChange={e => update('regoExpiry', e.target.value)} />
+                <button
+                  type="button"
+                  onClick={() => regoScanRef.current?.click()}
+                  disabled={scanning !== null}
+                  className="mt-1.5 inline-flex items-center gap-1.5 text-[12px] font-medium text-foreground/80 hover:text-foreground disabled:opacity-50"
+                >
+                  {scanning === 'rego' ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <ScanLine className="w-3.5 h-3.5" />}
+                  {scanning === 'rego' ? 'Reading label…' : 'Scan Rego label'}
+                </button>
+                <input ref={regoScanRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={e => handleLabelScan(e, 'rego')} />
               </div>
             </div>
           </div>

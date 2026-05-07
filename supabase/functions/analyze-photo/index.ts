@@ -37,6 +37,19 @@ Return ONLY a JSON object with these fields:
 - "address": the address if visible, or null
 - "dateOfBirth": date of birth if visible, or null
 Do not include any other text, just the JSON.`;
+    } else if (type === "wof_label" || type === "rego_label") {
+      const which = type === "wof_label" ? "Warrant of Fitness (WOF)" : "Vehicle Licence (Rego)";
+      systemPrompt = `You are an NZ ${which} label extraction system. Analyze the photo of a New Zealand ${which} windscreen label and extract the EXPIRY date.
+
+The label clearly prints an expiry month and year (e.g. "JUL 2026" or "07/2026"). For WOF labels the expiry is typically the last day of the printed month. For Rego (vehicle licence) labels the expiry is the printed date.
+
+Also try to extract the plate number if visible.
+
+Return ONLY a JSON object with these fields:
+- "expiry": the expiry date in ISO format YYYY-MM-DD, or null if not readable. For WOF, use the last day of the printed month. For Rego, use the exact date if shown, otherwise the last day of the printed month.
+- "rego": the registration/plate number if visible (uppercase, no spaces), or null
+- "confidence": "high", "medium", or "low"
+Do not include any other text, just the JSON.`;
     }
 
     // Download the image and convert to base64 data URL.
@@ -73,7 +86,7 @@ Do not include any other text, just the JSON.`;
           {
             role: "user",
             content: [
-              { type: "text", text: type === "damage" ? "Analyze the damage in this vehicle photo." : type === "rego" ? "Extract the registration number from this photo." : "Extract the driver license details from this photo." },
+              { type: "text", text: type === "damage" ? "Analyze the damage in this vehicle photo." : type === "rego" ? "Extract the registration number from this photo." : type === "wof_label" ? "Extract the WOF expiry date from this label." : type === "rego_label" ? "Extract the Rego (vehicle licence) expiry date from this label." : "Extract the driver license details from this photo." },
               { type: "image_url", image_url: { url: imagePayload } },
             ],
           },
