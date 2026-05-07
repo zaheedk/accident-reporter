@@ -165,6 +165,21 @@ export default function ClaimList() {
             </Link>
           </motion.div>
 
+          {/* Mobile Fault Guide entry */}
+          <Link
+            to="/fault-guide"
+            className="md:hidden flex items-center gap-3 rounded-xl border border-border bg-card px-3.5 py-3 -mt-2 hover:border-foreground/20 transition-colors"
+          >
+            <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
+              <Scale className="w-4 h-4" strokeWidth={2} />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="text-[13px] font-semibold text-foreground">Who was at fault?</div>
+              <div className="text-[11px] text-muted-foreground">Step-by-step assessment with cited road rule</div>
+            </div>
+            <ChevronRight className="w-4 h-4 text-muted-foreground/50" />
+          </Link>
+
           {/* Body */}
           <div className="md:grid md:grid-cols-[240px_1fr] md:gap-6 lg:grid-cols-[260px_1fr] lg:gap-8 space-y-6 md:space-y-0">
             {/* Left rail */}
