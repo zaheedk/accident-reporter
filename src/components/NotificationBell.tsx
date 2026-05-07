@@ -12,6 +12,7 @@ interface Notification {
   message: string;
   is_read: boolean;
   created_at: string;
+  vehicle_id?: string | null;
 }
 
 export default function NotificationBell() {
@@ -42,22 +43,49 @@ export default function NotificationBell() {
 
   const handleNotificationClick = async (n: Notification) => {
     await markRead(n.id);
-    // Navigate to claim if it's a message notification
+    setOpen(false);
+
+    // Insurer reply → open the claim
     if (n.type === 'insurer_reply') {
       const match = n.message.match(/CLM-(\d+)/);
       if (match) {
         const claimNum = parseInt(match[1], 10);
-        const { data: claim } = await supabase.from('claims').select('id, report_number').eq('claim_number', claimNum).single();
+        const { data: claim } = await supabase.from('claims').select('id, report_number').eq('claim_number', claimNum).maybeSingle();
         if (claim) {
-          setOpen(false);
           navigate(`/claims/${(claim as any).report_number || claim.id}`);
           return;
         }
       }
+      navigate('/claims');
+      return;
+    }
+
+    // Unmatched inbound email / inbound document → documents vault (or vehicle if linked)
+    if (n.type === 'inbound_document' || n.type === 'unmatched_email') {
+      if (n.vehicle_id) {
+        navigate(`/vehicles/${n.vehicle_id}/edit`);
+      } else {
+        navigate('/documents');
+      }
+      return;
+    }
+
+    // Expiry reminders (WOF / Rego / Insurance) → vehicle edit page if linked, else garage
+    if (n.type.includes('expiry_reminder')) {
+      if (n.vehicle_id) {
+        navigate(`/vehicles/${n.vehicle_id}/edit`);
+      } else {
+        navigate('/vehicles');
+      }
+      return;
     }
   };
 
   const markRead = async (id: string) => {
+    const { error } = await supabase.from('notifications').update({ is_read: true } as any).eq('id', id);
+    if (!error) {
+      setNotifications(prev => prev.map(n => n.id === id ? { ...n, is_read: true } : n));
+    }
   };
 
   const markAllRead = async () => {
