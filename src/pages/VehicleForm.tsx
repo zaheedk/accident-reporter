@@ -369,10 +369,30 @@ export default function VehicleForm() {
               <div>
                 <label className={labelCls}>WOF expiry</label>
                 <input type="date" className={`${inputCls} tabular-nums`} value={form.wofExpiry} onChange={e => update('wofExpiry', e.target.value)} />
+                <button
+                  type="button"
+                  onClick={() => wofScanRef.current?.click()}
+                  disabled={scanning !== null}
+                  className="mt-1.5 inline-flex items-center gap-1.5 text-[12px] font-medium text-foreground/80 hover:text-foreground disabled:opacity-50"
+                >
+                  {scanning === 'wof' ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <ScanLine className="w-3.5 h-3.5" />}
+                  {scanning === 'wof' ? 'Reading label…' : 'Scan WOF label'}
+                </button>
+                <input ref={wofScanRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={e => handleLabelScan(e, 'wof')} />
               </div>
               <div>
                 <label className={labelCls}>Rego expiry</label>
                 <input type="date" className={`${inputCls} tabular-nums`} value={form.regoExpiry} onChange={e => update('regoExpiry', e.target.value)} />
+                <button
+                  type="button"
+                  onClick={() => regoScanRef.current?.click()}
+                  disabled={scanning !== null}
+                  className="mt-1.5 inline-flex items-center gap-1.5 text-[12px] font-medium text-foreground/80 hover:text-foreground disabled:opacity-50"
+                >
+                  {scanning === 'rego' ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <ScanLine className="w-3.5 h-3.5" />}
+                  {scanning === 'rego' ? 'Reading label…' : 'Scan Rego label'}
+                </button>
+                <input ref={regoScanRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={e => handleLabelScan(e, 'rego')} />
               </div>
             </div>
           </div>
