@@ -52,6 +52,7 @@ const DeleteDataRequest = lazy(() => import("./pages/DeleteDataRequest"));
 const Documents = lazy(() => import("./pages/Documents"));
 const Family = lazy(() => import("./pages/Family"));
 const WidgetSetup = lazy(() => import("./pages/WidgetSetup"));
+const FaultGuide = lazy(() => import("./pages/FaultGuide"));
 
 const PageLoader = () => (
   <div className="min-h-screen bg-background flex items-center justify-center">
@@ -152,6 +153,7 @@ const App = () => (
               <Route path="/documents" element={<ProtectedRoute><Documents /></ProtectedRoute>} />
               <Route path="/family" element={<ProtectedRoute><Family /></ProtectedRoute>} />
               <Route path="/widget-setup" element={<ProtectedRoute><WidgetSetup /></ProtectedRoute>} />
+              <Route path="/fault-guide" element={<FaultGuide />} />
               <Route path="/about" element={<About />} />
               <Route path="/how-it-works" element={<HowItWorks />} />
               <Route path="/faq" element={<FAQ />} />

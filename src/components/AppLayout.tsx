@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Car, FileText, Plus, Wrench, Truck, Info, HelpCircle, BookOpen, Shield, Menu, X, LogOut, Newspaper, Home, Phone, FolderOpen, Sun, Moon, Users } from 'lucide-react';
+import { LayoutDashboard, Car, FileText, Plus, Wrench, Truck, Info, HelpCircle, BookOpen, Shield, Menu, X, LogOut, Newspaper, Home, Phone, FolderOpen, Sun, Moon, Users, Scale } from 'lucide-react';
 import NotificationBell from '@/components/NotificationBell';
 import WidgetActionsSheet from '@/components/WidgetActionsSheet';
 import { useState, useEffect } from 'react';
@@ -46,6 +46,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     ...(user ? [{ to: '/family', icon: Users, label: 'Family' }] : []),
     { to: '/panel-shops', icon: Wrench, label: 'Shops' },
     { to: '/tow-companies', icon: Truck, label: 'Tow Trucks' },
+    { to: '/fault-guide', icon: Scale, label: 'Fault Guide' },
     { to: '/how-it-works', icon: BookOpen, label: 'How It Works' },
     { to: '/blog', icon: Newspaper, label: 'Blog' },
     { to: '/faq', icon: HelpCircle, label: 'FAQ & Help' },
