@@ -14,32 +14,19 @@ export default function AdminDashboard() {
   const [vehicleSearch, setVehicleSearch] = useState('');
   const [claimSearch, setClaimSearch] = useState('');
 
-  const { data: profiles = [] } = useQuery({
-    queryKey: ['admin-all-profiles'],
+  const { data: overview } = useQuery({
+    queryKey: ['admin-overview'],
     queryFn: async () => {
-      const { data } = await supabase.from('profiles').select('user_id, display_name').order('created_at');
-      return data || [];
+      const { data, error } = await supabase.functions.invoke('admin-overview');
+      if (error) throw error;
+      return data as { profiles: any[]; vehicles: any[]; claims: any[] };
     },
     enabled: isAdmin,
   });
 
-  const { data: vehicles = [] } = useQuery({
-    queryKey: ['admin-all-vehicles'],
-    queryFn: async () => {
-      const { data } = await supabase.from('vehicles').select('*').order('created_at', { ascending: false });
-      return data || [];
-    },
-    enabled: isAdmin,
-  });
-
-  const { data: claims = [] } = useQuery({
-    queryKey: ['admin-all-claims'],
-    queryFn: async () => {
-      const { data } = await supabase.from('claims').select('*').order('created_at', { ascending: false });
-      return data || [];
-    },
-    enabled: isAdmin,
-  });
+  const profiles = overview?.profiles || [];
+  const vehicles = overview?.vehicles || [];
+  const claims = overview?.claims || [];
 
   if (!isAdmin) return <Navigate to="/dashboard" replace />;
 
