@@ -86,7 +86,7 @@ Do not include any other text, just the JSON.`;
           {
             role: "user",
             content: [
-              { type: "text", text: type === "damage" ? "Analyze the damage in this vehicle photo." : type === "rego" ? "Extract the registration number from this photo." : "Extract the driver license details from this photo." },
+              { type: "text", text: type === "damage" ? "Analyze the damage in this vehicle photo." : type === "rego" ? "Extract the registration number from this photo." : type === "wof_label" ? "Extract the WOF expiry date from this label." : type === "rego_label" ? "Extract the Rego (vehicle licence) expiry date from this label." : "Extract the driver license details from this photo." },
               { type: "image_url", image_url: { url: imagePayload } },
             ],
           },
