@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
-import { Plus, ChevronRight, Search, X, Calendar, Car, ArrowLeft, Trash2, AlertTriangle, FileEdit, CheckCircle2, Phone, Shield } from 'lucide-react';
+import { Plus, ChevronRight, Search, X, Calendar, Car, ArrowLeft, Trash2, AlertTriangle, FileEdit, CheckCircle2, Phone, Shield, Scale } from 'lucide-react';
 import { getClaims, getVehicles, deleteClaim } from '@/lib/storage';
 import { ClaimReport, Vehicle } from '@/types';
 import AppLayout from '@/components/AppLayout';
@@ -165,6 +165,21 @@ export default function ClaimList() {
             </Link>
           </motion.div>
 
+          {/* Mobile Fault Guide entry */}
+          <Link
+            to="/fault-guide"
+            className="md:hidden flex items-center gap-3 rounded-xl border border-border bg-card px-3.5 py-3 -mt-2 hover:border-foreground/20 transition-colors"
+          >
+            <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
+              <Scale className="w-4 h-4" strokeWidth={2} />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="text-[13px] font-semibold text-foreground">Who was at fault?</div>
+              <div className="text-[11px] text-muted-foreground">Step-by-step assessment with cited road rule</div>
+            </div>
+            <ChevronRight className="w-4 h-4 text-muted-foreground/50" />
+          </Link>
+
           {/* Body */}
           <div className="md:grid md:grid-cols-[240px_1fr] md:gap-6 lg:grid-cols-[260px_1fr] lg:gap-8 space-y-6 md:space-y-0">
             {/* Left rail */}
@@ -212,6 +227,16 @@ export default function ClaimList() {
                     <div className="flex-1 min-w-0">
                       <div className="text-[13px] font-medium text-foreground">New report</div>
                       <div className="text-[11px] text-muted-foreground">Start a fresh claim</div>
+                    </div>
+                    <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/40" />
+                  </Link>
+                  <Link to="/fault-guide" className="flex items-center gap-3 px-3.5 py-2.5 hover:bg-muted/50 transition-colors">
+                    <div className="w-7 h-7 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                      <Scale className="w-3.5 h-3.5" strokeWidth={2} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-[13px] font-medium text-foreground">Fault guide</div>
+                      <div className="text-[11px] text-muted-foreground">Assess who's at fault</div>
                     </div>
                     <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/40" />
                   </Link>
