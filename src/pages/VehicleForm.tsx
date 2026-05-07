@@ -33,6 +33,47 @@ export default function VehicleForm() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [saving, setSaving] = useState(false);
   const [customInsurer, setCustomInsurer] = useState('');
+  const [scanning, setScanning] = useState<null | 'wof' | 'rego'>(null);
+  const wofScanRef = useRef<HTMLInputElement>(null);
+  const regoScanRef = useRef<HTMLInputElement>(null);
+
+  const handleLabelScan = async (e: React.ChangeEvent<HTMLInputElement>, kind: 'wof' | 'rego') => {
+    const file = e.target.files?.[0];
+    if (e.target) e.target.value = '';
+    if (!file) return;
+    setScanning(kind);
+    try {
+      const compressed = await compressImage(file);
+      // Convert to data URL — avoids needing storage upload for a transient scan
+      const dataUrl: string = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(compressed);
+      });
+      const { data, error } = await supabase.functions.invoke('analyze-photo', {
+        body: { imageUrl: dataUrl, type: kind === 'wof' ? 'wof_label' : 'rego_label' },
+      });
+      if (error) throw error;
+      let raw = (data?.result || '').trim();
+      // Strip ```json fences if model adds them
+      raw = raw.replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/i, '');
+      const parsed = JSON.parse(raw);
+      if (!parsed.expiry) {
+        alert(`Couldn't read the ${kind === 'wof' ? 'WOF' : 'Rego'} expiry. Try a clearer, well-lit photo.`);
+        return;
+      }
+      setForm(prev => ({
+        ...prev,
+        [kind === 'wof' ? 'wofExpiry' : 'regoExpiry']: parsed.expiry,
+        ...(parsed.rego && !prev.regoNumber ? { regoNumber: String(parsed.rego).toUpperCase() } : {}),
+      }));
+    } catch (err: any) {
+      alert(`Scan failed: ${err?.message || 'Unknown error'}`);
+    } finally {
+      setScanning(null);
+    }
+  };
 
   useEffect(() => {
     supabase.from('insurance_companies').select('id, name').order('name').then(({ data }) => {
