@@ -144,7 +144,8 @@ export default function ClaimDetail() {
       // Fetch user phone from profile
       const { data: { user: currentUser } } = await supabase.auth.getUser();
       if (currentUser) {
-        const { data: profile } = await supabase.from('profiles').select('phone_number').eq('user_id', currentUser.id).single();
+        const { data: profile } = await supabase.from('profiles').select('phone_number, display_name').eq('user_id', currentUser.id).single();
+        if (profile?.display_name && !defaultSignerName) setDefaultSignerName(profile.display_name);
         if (profile?.phone_number) setUserPhone(profile.phone_number);
       }
       
