@@ -165,6 +165,9 @@ export type Database = {
           courtesy_car_requested: boolean
           created_at: string
           damage_description: string
+          declaration_signature: string | null
+          declaration_signed_at: string | null
+          declaration_signed_name: string | null
           description: string
           driver_consumed_substance: boolean
           id: string
@@ -210,6 +213,9 @@ export type Database = {
           courtesy_car_requested?: boolean
           created_at?: string
           damage_description?: string
+          declaration_signature?: string | null
+          declaration_signed_at?: string | null
+          declaration_signed_name?: string | null
           description?: string
           driver_consumed_substance?: boolean
           id?: string
@@ -255,6 +261,9 @@ export type Database = {
           courtesy_car_requested?: boolean
           created_at?: string
           damage_description?: string
+          declaration_signature?: string | null
+          declaration_signed_at?: string | null
+          declaration_signed_name?: string | null
           description?: string
           driver_consumed_substance?: boolean
           id?: string
