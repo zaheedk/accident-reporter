@@ -15,6 +15,8 @@ import { toast } from 'sonner';
 import { getMediumUrl, getFullUrl } from '@/lib/image-url';
 import DashcamUploader from '@/components/DashcamUploader';
 import CallRecorder from '@/components/CallRecorder';
+import SignaturePad, { DECLARATION_TEXT } from '@/components/SignaturePad';
+import { FileSignature, CheckCircle2 } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 
 export default function ClaimDetail() {
@@ -53,6 +55,9 @@ export default function ClaimDetail() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [userPhone, setUserPhone] = useState('');
+  const [signature, setSignature] = useState<{ dataUrl: string; name: string; signedAt: string } | null>(null);
+  const [signatureOpen, setSignatureOpen] = useState(false);
+  const [defaultSignerName, setDefaultSignerName] = useState('');
 
   const handleDelete = async () => {
     if (!claim) return;
@@ -107,6 +112,11 @@ export default function ClaimDetail() {
       };
       setClaim(foundClaim);
       setVehicles(vehs);
+      const sig = (claimRow as any).declaration_signature;
+      const sigName = (claimRow as any).declaration_signed_name;
+      const sigAt = (claimRow as any).declaration_signed_at;
+      if (sig && sigName && sigAt) setSignature({ dataUrl: sig, name: sigName, signedAt: sigAt });
+      if (sigName) setDefaultSignerName(sigName);
       if (claimNumData?.claim_number) setClaimNumber(String(claimNumData.claim_number));
       if (claimNumData?.report_number) {
         setReportNumber(claimNumData.report_number);
@@ -134,7 +144,8 @@ export default function ClaimDetail() {
       // Fetch user phone from profile
       const { data: { user: currentUser } } = await supabase.auth.getUser();
       if (currentUser) {
-        const { data: profile } = await supabase.from('profiles').select('phone_number').eq('user_id', currentUser.id).single();
+        const { data: profile } = await supabase.from('profiles').select('phone_number, display_name').eq('user_id', currentUser.id).single();
+        if (profile?.display_name && !defaultSignerName) setDefaultSignerName(profile.display_name);
         if (profile?.phone_number) setUserPhone(profile.phone_number);
       }
       
@@ -207,6 +218,19 @@ export default function ClaimDetail() {
     }
     setEditingInsurance(false);
     setSavingInsurance(false);
+  };
+
+  const handleSaveSignature = async (dataUrl: string, name: string) => {
+    if (!claim?.id) return;
+    const signedAt = new Date().toISOString();
+    const { error } = await supabase.from('claims').update({
+      declaration_signature: dataUrl,
+      declaration_signed_name: name,
+      declaration_signed_at: signedAt,
+    } as any).eq('id', claim.id);
+    if (error) { toast.error('Could not save signature'); return; }
+    setSignature({ dataUrl, name, signedAt });
+    toast.success('Declaration signed');
   };
 
   const handlePrint = async () => {
@@ -310,7 +334,38 @@ export default function ClaimDetail() {
       ['Repairer Address', claim.repairerAddress],
     ]);
 
-    // Footer
+    // Declaration & signature
+    const decl = document.createElement('div');
+    decl.style.cssText = 'margin-top:24px;padding:14px;border:1px solid #e5e7eb;border-radius:8px;page-break-inside:avoid;';
+    const declLines = DECLARATION_TEXT.map(l => `<p style="margin:0 0 6px 0;font-size:11px;color:#374151;line-height:1.45;">${l}</p>`).join('');
+    let sigBlock = '';
+    if (signature) {
+      const signedDate = new Date(signature.signedAt).toLocaleString('en-NZ');
+      sigBlock = `
+        <div style="margin-top:14px;display:flex;justify-content:space-between;align-items:flex-end;gap:24px;">
+          <div style="flex:1;">
+            <img src="${signature.dataUrl}" alt="Signature" style="max-height:70px;max-width:280px;display:block;" />
+            <div style="border-top:1px solid #1f2937;margin-top:4px;padding-top:4px;font-size:11px;color:#374151;">
+              <strong>${signature.name}</strong> &middot; Signed by the driver
+            </div>
+          </div>
+          <div style="font-size:11px;color:#6b7280;text-align:right;">Date<br/><strong style="color:#1f2937;">${signedDate}</strong></div>
+        </div>`;
+    } else {
+      sigBlock = `
+        <div style="margin-top:14px;display:flex;justify-content:space-between;gap:24px;">
+          <div style="flex:1;border-top:1px solid #9ca3af;padding-top:4px;font-size:11px;color:#9ca3af;">Signed by the driver</div>
+          <div style="width:140px;border-top:1px solid #9ca3af;padding-top:4px;font-size:11px;color:#9ca3af;">Date</div>
+        </div>`;
+    }
+    decl.innerHTML = `
+      <h2 style="font-size:13px;font-weight:700;color:#1e3a5f;margin:0 0 8px 0;text-transform:uppercase;letter-spacing:0.05em;">Declaration &amp; Signature</h2>
+      <p style="margin:0 0 8px 0;font-size:11px;font-weight:600;color:#1f2937;">I declare that:</p>
+      ${declLines}
+      ${sigBlock}
+    `;
+    printDiv.appendChild(decl);
+
     const footer = document.createElement('div');
     footer.style.cssText = 'margin-top:32px;padding-top:12px;border-top:1px solid #e5e7eb;text-align:center;';
     footer.innerHTML = `<p style="font-size:11px;color:#9ca3af;">Generated by SAVO · savo.co.nz · ${new Date().toLocaleDateString()}</p>`;
@@ -755,6 +810,31 @@ export default function ClaimDetail() {
               <CallRecorder claimId={claim.id} insurerPhone={insurerPhone} userPhone={userPhone} />
             </Section>
 
+            {/* ── Section 6: Declaration & Signature ── */}
+            <Section title="Declaration & Signature" icon={<FileSignature className="w-4 h-4 text-primary" />}>
+              <div className="space-y-3">
+                <div className="rounded-lg bg-muted/40 border border-border p-3 text-[12px] leading-relaxed text-foreground space-y-1.5 max-h-40 overflow-y-auto">
+                  <p className="font-semibold">I declare that:</p>
+                  {DECLARATION_TEXT.map((l, i) => <p key={i}>{l}</p>)}
+                </div>
+                {signature ? (
+                  <div className="rounded-lg border border-border p-3 bg-background space-y-2">
+                    <div className="flex items-center gap-2 text-[12px] text-emerald-600">
+                      <CheckCircle2 className="w-4 h-4" /> Signed
+                    </div>
+                    <img src={signature.dataUrl} alt="Signature" className="max-h-20 object-contain" />
+                    <div className="text-[12px] text-foreground"><strong>{signature.name}</strong></div>
+                    <div className="text-[11px] text-muted-foreground">{new Date(signature.signedAt).toLocaleString('en-NZ')}</div>
+                    <button type="button" onClick={() => setSignatureOpen(true)} className="text-[12px] text-primary hover:underline">Re-sign</button>
+                  </div>
+                ) : (
+                  <Button onClick={() => setSignatureOpen(true)} className="w-full sm:w-auto">
+                    <FileSignature className="w-4 h-4 mr-1.5" /> Sign declaration
+                  </Button>
+                )}
+              </div>
+            </Section>
+
           </div>
         </div>
 
@@ -867,6 +947,13 @@ export default function ClaimDetail() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <SignaturePad
+        open={signatureOpen}
+        onOpenChange={setSignatureOpen}
+        onSave={handleSaveSignature}
+        defaultName={signature?.name || defaultSignerName}
+      />
     </AppLayout>
   );
 }
