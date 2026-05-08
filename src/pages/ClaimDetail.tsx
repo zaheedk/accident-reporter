@@ -41,7 +41,8 @@ export default function ClaimDetail() {
   const [editRepairerAddress, setEditRepairerAddress] = useState('');
   const [editUserClaimNumber, setEditUserClaimNumber] = useState('');
   const [savingInsurance, setSavingInsurance] = useState(false);
-  const [panelShops, setPanelShops] = useState<{ id: string; name: string; phone: string; address: string }[]>([]);
+  const [panelShops, setPanelShops] = useState<{ id: string; name: string; phone: string; address: string; email?: string }[]>([]);
+  const [selectedQuoteShopId, setSelectedQuoteShopId] = useState('');
   const printRef = useRef<HTMLDivElement>(null);
   const [emailDialogOpen, setEmailDialogOpen] = useState(false);
   const [emailTo, setEmailTo] = useState('');
