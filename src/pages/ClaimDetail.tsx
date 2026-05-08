@@ -947,6 +947,13 @@ export default function ClaimDetail() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <SignaturePad
+        open={signatureOpen}
+        onOpenChange={setSignatureOpen}
+        onSave={handleSaveSignature}
+        defaultName={signature?.name || defaultSignerName}
+      />
     </AppLayout>
   );
 }
