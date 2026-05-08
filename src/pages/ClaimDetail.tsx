@@ -41,7 +41,8 @@ export default function ClaimDetail() {
   const [editRepairerAddress, setEditRepairerAddress] = useState('');
   const [editUserClaimNumber, setEditUserClaimNumber] = useState('');
   const [savingInsurance, setSavingInsurance] = useState(false);
-  const [panelShops, setPanelShops] = useState<{ id: string; name: string; phone: string; address: string }[]>([]);
+  const [panelShops, setPanelShops] = useState<{ id: string; name: string; phone: string; address: string; email?: string }[]>([]);
+  const [selectedQuoteShopId, setSelectedQuoteShopId] = useState('');
   const printRef = useRef<HTMLDivElement>(null);
   const [emailDialogOpen, setEmailDialogOpen] = useState(false);
   const [emailTo, setEmailTo] = useState('');
@@ -130,7 +131,7 @@ export default function ClaimDetail() {
         supabase.from('claim_photos').select('*').eq('claim_id', resolvedId),
         supabase.from('tp_photos').select('*').eq('claim_id', resolvedId),
         supabase.from('insurance_companies').select('id, name').order('name'),
-        supabase.from('panel_shops').select('id, name, phone, address').order('name'),
+        supabase.from('panel_shops').select('id, name, phone, address, email').order('name'),
       ]);
 
       if (foundClaim.insuranceCompany) {
@@ -778,16 +779,35 @@ export default function ClaimDetail() {
 
               {photos.length > 0 && (
                 <>
-                  <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center justify-between gap-2 flex-wrap">
                     <SubHeading>Damage Photos</SubHeading>
-                    <button
-                      type="button"
-                      onClick={() => { setPhotosEmailTo(''); setPhotosMessage(''); setPhotosDialogOpen(true); }}
-                      className="print:hidden inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:underline"
-                    >
-                      <Mail className="w-3.5 h-3.5" />
-                      Email photos
-                    </button>
+                    <div className="flex items-center gap-3 print:hidden">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedQuoteShopId('');
+                          setPhotosEmailTo('');
+                          const veh = vehicles.find(v => v.id === claim.vehicleId);
+                          const vehDesc = veh ? `${veh.year} ${veh.make} ${veh.model} (${veh.regoNumber})` : '';
+                          setPhotosMessage(
+                            `Hi,\n\nPlease find attached damage photos from a recent incident${vehDesc ? ` involving my ${vehDesc}` : ''}. Could you please provide a quote for repairs?\n\nThanks.`
+                          );
+                          setPhotosDialogOpen(true);
+                        }}
+                        className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:underline"
+                      >
+                        <Wrench className="w-3.5 h-3.5" />
+                        Request quote
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => { setSelectedQuoteShopId(''); setPhotosEmailTo(''); setPhotosMessage(''); setPhotosDialogOpen(true); }}
+                        className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:underline"
+                      >
+                        <Mail className="w-3.5 h-3.5" />
+                        Email photos
+                      </button>
+                    </div>
                   </div>
                   <div className="grid grid-cols-3 gap-2">
                     {photos.map(p => (
@@ -895,17 +915,34 @@ export default function ClaimDetail() {
           </DialogHeader>
           <div className="space-y-4">
             <p className="text-sm text-muted-foreground">
-              Send {photos.length} damage photo{photos.length === 1 ? '' : 's'} as attachments to any email address.
+              Send {photos.length} damage photo{photos.length === 1 ? '' : 's'} as attachments. Pick a panel shop from your local list, or type any email.
             </p>
+            <div>
+              <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Send to panel shop</label>
+              <select
+                value={selectedQuoteShopId}
+                onChange={(e) => {
+                  const shopId = e.target.value;
+                  setSelectedQuoteShopId(shopId);
+                  const shop = panelShops.find(s => s.id === shopId);
+                  if (shop?.email) setPhotosEmailTo(shop.email);
+                }}
+                className="form-input text-sm"
+              >
+                <option value="">— Choose a shop (optional) —</option>
+                {panelShops.filter(s => s.email).map(s => (
+                  <option key={s.id} value={s.id}>{s.name}</option>
+                ))}
+              </select>
+            </div>
             <div>
               <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Recipient email</label>
               <input
                 type="email"
                 value={photosEmailTo}
-                onChange={(e) => setPhotosEmailTo(e.target.value)}
+                onChange={(e) => { setPhotosEmailTo(e.target.value); setSelectedQuoteShopId(''); }}
                 placeholder="name@example.com"
                 maxLength={255}
-                autoFocus
                 className="w-full px-3 py-2 text-sm rounded-lg border border-border bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring/30"
               />
             </div>
