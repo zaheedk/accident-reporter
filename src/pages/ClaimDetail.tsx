@@ -810,6 +810,31 @@ export default function ClaimDetail() {
               <CallRecorder claimId={claim.id} insurerPhone={insurerPhone} userPhone={userPhone} />
             </Section>
 
+            {/* ── Section 6: Declaration & Signature ── */}
+            <Section title="Declaration & Signature" icon={<FileSignature className="w-4 h-4 text-primary" />}>
+              <div className="space-y-3">
+                <div className="rounded-lg bg-muted/40 border border-border p-3 text-[12px] leading-relaxed text-foreground space-y-1.5 max-h-40 overflow-y-auto">
+                  <p className="font-semibold">I declare that:</p>
+                  {DECLARATION_TEXT.map((l, i) => <p key={i}>{l}</p>)}
+                </div>
+                {signature ? (
+                  <div className="rounded-lg border border-border p-3 bg-background space-y-2">
+                    <div className="flex items-center gap-2 text-[12px] text-emerald-600">
+                      <CheckCircle2 className="w-4 h-4" /> Signed
+                    </div>
+                    <img src={signature.dataUrl} alt="Signature" className="max-h-20 object-contain" />
+                    <div className="text-[12px] text-foreground"><strong>{signature.name}</strong></div>
+                    <div className="text-[11px] text-muted-foreground">{new Date(signature.signedAt).toLocaleString('en-NZ')}</div>
+                    <button type="button" onClick={() => setSignatureOpen(true)} className="text-[12px] text-primary hover:underline">Re-sign</button>
+                  </div>
+                ) : (
+                  <Button onClick={() => setSignatureOpen(true)} className="w-full sm:w-auto">
+                    <FileSignature className="w-4 h-4 mr-1.5" /> Sign declaration
+                  </Button>
+                )}
+              </div>
+            </Section>
+
           </div>
         </div>
 
