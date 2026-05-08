@@ -779,16 +779,35 @@ export default function ClaimDetail() {
 
               {photos.length > 0 && (
                 <>
-                  <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center justify-between gap-2 flex-wrap">
                     <SubHeading>Damage Photos</SubHeading>
-                    <button
-                      type="button"
-                      onClick={() => { setPhotosEmailTo(''); setPhotosMessage(''); setPhotosDialogOpen(true); }}
-                      className="print:hidden inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:underline"
-                    >
-                      <Mail className="w-3.5 h-3.5" />
-                      Email photos
-                    </button>
+                    <div className="flex items-center gap-3 print:hidden">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedQuoteShopId('');
+                          setPhotosEmailTo('');
+                          const veh = vehicles.find(v => v.id === claim.vehicleId);
+                          const vehDesc = veh ? `${veh.year} ${veh.make} ${veh.model} (${veh.regoNumber})` : '';
+                          setPhotosMessage(
+                            `Hi,\n\nPlease find attached damage photos from a recent incident${vehDesc ? ` involving my ${vehDesc}` : ''}. Could you please provide a quote for repairs?\n\nThanks.`
+                          );
+                          setPhotosDialogOpen(true);
+                        }}
+                        className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:underline"
+                      >
+                        <Wrench className="w-3.5 h-3.5" />
+                        Request quote
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => { setSelectedQuoteShopId(''); setPhotosEmailTo(''); setPhotosMessage(''); setPhotosDialogOpen(true); }}
+                        className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:underline"
+                      >
+                        <Mail className="w-3.5 h-3.5" />
+                        Email photos
+                      </button>
+                    </div>
                   </div>
                   <div className="grid grid-cols-3 gap-2">
                     {photos.map(p => (
