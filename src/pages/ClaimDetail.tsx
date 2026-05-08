@@ -233,6 +233,7 @@ export default function ClaimDetail() {
     toast.success('Declaration signed');
   };
 
+  const handlePrint = async () => {
     const html2pdf = (await import('html2pdf.js')).default;
     const element = printRef.current;
     if (!element) return;
