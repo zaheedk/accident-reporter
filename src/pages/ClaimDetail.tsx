@@ -915,17 +915,34 @@ export default function ClaimDetail() {
           </DialogHeader>
           <div className="space-y-4">
             <p className="text-sm text-muted-foreground">
-              Send {photos.length} damage photo{photos.length === 1 ? '' : 's'} as attachments to any email address.
+              Send {photos.length} damage photo{photos.length === 1 ? '' : 's'} as attachments. Pick a panel shop from your local list, or type any email.
             </p>
+            <div>
+              <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Send to panel shop</label>
+              <select
+                value={selectedQuoteShopId}
+                onChange={(e) => {
+                  const shopId = e.target.value;
+                  setSelectedQuoteShopId(shopId);
+                  const shop = panelShops.find(s => s.id === shopId);
+                  if (shop?.email) setPhotosEmailTo(shop.email);
+                }}
+                className="form-input text-sm"
+              >
+                <option value="">— Choose a shop (optional) —</option>
+                {panelShops.filter(s => s.email).map(s => (
+                  <option key={s.id} value={s.id}>{s.name}</option>
+                ))}
+              </select>
+            </div>
             <div>
               <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Recipient email</label>
               <input
                 type="email"
                 value={photosEmailTo}
-                onChange={(e) => setPhotosEmailTo(e.target.value)}
+                onChange={(e) => { setPhotosEmailTo(e.target.value); setSelectedQuoteShopId(''); }}
                 placeholder="name@example.com"
                 maxLength={255}
-                autoFocus
                 className="w-full px-3 py-2 text-sm rounded-lg border border-border bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring/30"
               />
             </div>
