@@ -131,7 +131,7 @@ export default function ClaimDetail() {
         supabase.from('claim_photos').select('*').eq('claim_id', resolvedId),
         supabase.from('tp_photos').select('*').eq('claim_id', resolvedId),
         supabase.from('insurance_companies').select('id, name').order('name'),
-        supabase.from('panel_shops').select('id, name, phone, address').order('name'),
+        supabase.from('panel_shops').select('id, name, phone, address, email').order('name'),
       ]);
 
       if (foundClaim.insuranceCompany) {
