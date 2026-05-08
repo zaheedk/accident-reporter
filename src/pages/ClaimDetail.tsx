@@ -220,7 +220,19 @@ export default function ClaimDetail() {
     setSavingInsurance(false);
   };
 
-  const handlePrint = async () => {
+  const handleSaveSignature = async (dataUrl: string, name: string) => {
+    if (!claim?.id) return;
+    const signedAt = new Date().toISOString();
+    const { error } = await supabase.from('claims').update({
+      declaration_signature: dataUrl,
+      declaration_signed_name: name,
+      declaration_signed_at: signedAt,
+    } as any).eq('id', claim.id);
+    if (error) { toast.error('Could not save signature'); return; }
+    setSignature({ dataUrl, name, signedAt });
+    toast.success('Declaration signed');
+  };
+
     const html2pdf = (await import('html2pdf.js')).default;
     const element = printRef.current;
     if (!element) return;
