@@ -112,6 +112,11 @@ export default function ClaimDetail() {
       };
       setClaim(foundClaim);
       setVehicles(vehs);
+      const sig = (claimRow as any).declaration_signature;
+      const sigName = (claimRow as any).declaration_signed_name;
+      const sigAt = (claimRow as any).declaration_signed_at;
+      if (sig && sigName && sigAt) setSignature({ dataUrl: sig, name: sigName, signedAt: sigAt });
+      if (sigName) setDefaultSignerName(sigName);
       if (claimNumData?.claim_number) setClaimNumber(String(claimNumData.claim_number));
       if (claimNumData?.report_number) {
         setReportNumber(claimNumData.report_number);
