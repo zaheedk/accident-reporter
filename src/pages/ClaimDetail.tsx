@@ -16,7 +16,8 @@ import { getMediumUrl, getFullUrl } from '@/lib/image-url';
 import DashcamUploader from '@/components/DashcamUploader';
 import CallRecorder from '@/components/CallRecorder';
 import SignaturePad, { DECLARATION_TEXT } from '@/components/SignaturePad';
-import { FileSignature, CheckCircle2 } from 'lucide-react';
+import DamageAssessor from '@/components/DamageAssessor';
+import { FileSignature, CheckCircle2, Sparkles } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 
 export default function ClaimDetail() {
