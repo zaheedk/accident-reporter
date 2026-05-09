@@ -16,7 +16,8 @@ import { getMediumUrl, getFullUrl } from '@/lib/image-url';
 import DashcamUploader from '@/components/DashcamUploader';
 import CallRecorder from '@/components/CallRecorder';
 import SignaturePad, { DECLARATION_TEXT } from '@/components/SignaturePad';
-import { FileSignature, CheckCircle2 } from 'lucide-react';
+import DamageAssessor from '@/components/DamageAssessor';
+import { FileSignature, CheckCircle2, Sparkles } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 
 export default function ClaimDetail() {
@@ -818,6 +819,14 @@ export default function ClaimDetail() {
                   </div>
                 </>
               )}
+
+              <div className="pt-1">
+                <div className="flex items-center gap-1.5 mb-2">
+                  <Sparkles className="w-3.5 h-3.5 text-primary" />
+                  <SubHeading>AI Damage Assessment</SubHeading>
+                </div>
+                <DamageAssessor claimId={claim.id} hasPhotos={photos.length > 0} />
+              </div>
             </Section>
 
             {/* ── Section 4: Dashcam Footage ── */}

@@ -310,6 +310,60 @@ export type Database = {
           },
         ]
       }
+      damage_assessments: {
+        Row: {
+          claim_id: string
+          confidence: number
+          cost_high: number
+          cost_low: number
+          created_at: string
+          currency: string
+          id: string
+          model: string
+          notes: string
+          overall_severity: string
+          raw_response: Json | null
+          updated_at: string
+          user_id: string
+          zones: Json
+          zones_count: number
+        }
+        Insert: {
+          claim_id: string
+          confidence?: number
+          cost_high?: number
+          cost_low?: number
+          created_at?: string
+          currency?: string
+          id?: string
+          model?: string
+          notes?: string
+          overall_severity?: string
+          raw_response?: Json | null
+          updated_at?: string
+          user_id: string
+          zones?: Json
+          zones_count?: number
+        }
+        Update: {
+          claim_id?: string
+          confidence?: number
+          cost_high?: number
+          cost_low?: number
+          created_at?: string
+          currency?: string
+          id?: string
+          model?: string
+          notes?: string
+          overall_severity?: string
+          raw_response?: Json | null
+          updated_at?: string
+          user_id?: string
+          zones?: Json
+          zones_count?: number
+        }
+        Relationships: []
+      }
       dashcam_videos: {
         Row: {
           claim_id: string
