@@ -622,6 +622,144 @@ export type Database = {
           },
         ]
       }
+      fleet_invites: {
+        Row: {
+          accepted_at: string | null
+          accepted_by: string | null
+          code: string
+          created_at: string
+          email: string | null
+          expires_at: string
+          fleet_id: string
+          id: string
+          invited_by: string
+          status: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          accepted_by?: string | null
+          code: string
+          created_at?: string
+          email?: string | null
+          expires_at?: string
+          fleet_id: string
+          id?: string
+          invited_by: string
+          status?: string
+        }
+        Update: {
+          accepted_at?: string | null
+          accepted_by?: string | null
+          code?: string
+          created_at?: string
+          email?: string | null
+          expires_at?: string
+          fleet_id?: string
+          id?: string
+          invited_by?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fleet_invites_fleet_id_fkey"
+            columns: ["fleet_id"]
+            isOneToOne: false
+            referencedRelation: "fleets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      fleet_members: {
+        Row: {
+          fleet_id: string
+          id: string
+          joined_at: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          fleet_id: string
+          id?: string
+          joined_at?: string
+          role?: string
+          user_id: string
+        }
+        Update: {
+          fleet_id?: string
+          id?: string
+          joined_at?: string
+          role?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fleet_members_fleet_id_fkey"
+            columns: ["fleet_id"]
+            isOneToOne: false
+            referencedRelation: "fleets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      fleet_vehicle_assignments: {
+        Row: {
+          assigned_at: string
+          assigned_by: string
+          driver_user_id: string | null
+          fleet_id: string
+          id: string
+          vehicle_id: string
+        }
+        Insert: {
+          assigned_at?: string
+          assigned_by: string
+          driver_user_id?: string | null
+          fleet_id: string
+          id?: string
+          vehicle_id: string
+        }
+        Update: {
+          assigned_at?: string
+          assigned_by?: string
+          driver_user_id?: string | null
+          fleet_id?: string
+          id?: string
+          vehicle_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fleet_vehicle_assignments_fleet_id_fkey"
+            columns: ["fleet_id"]
+            isOneToOne: false
+            referencedRelation: "fleets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      fleets: {
+        Row: {
+          created_at: string
+          id: string
+          manager_user_id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          manager_user_id: string
+          name?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          manager_user_id?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       insurance_companies: {
         Row: {
           claims_method: string
@@ -1207,6 +1345,10 @@ export type Database = {
         Args: { message_id: number; queue_name: string }
         Returns: boolean
       }
+      driver_can_see_vehicle: {
+        Args: { _user_id: string; _vehicle_id: string }
+        Returns: boolean
+      }
       enqueue_email: {
         Args: { payload: Json; queue_name: string }
         Returns: number
@@ -1221,6 +1363,10 @@ export type Database = {
       }
       is_family_head: {
         Args: { _family_id: string; _user_id: string }
+        Returns: boolean
+      }
+      is_fleet_manager: {
+        Args: { _fleet_id: string; _user_id: string }
         Returns: boolean
       }
       move_to_dlq: {
@@ -1241,6 +1387,7 @@ export type Database = {
         }[]
       }
       user_family_id: { Args: { _user_id: string }; Returns: string }
+      user_fleet_id: { Args: { _user_id: string }; Returns: string }
     }
     Enums: {
       app_role: "admin" | "user"
