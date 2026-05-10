@@ -153,6 +153,7 @@ const App = () => (
               <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
               <Route path="/documents" element={<ProtectedRoute><Documents /></ProtectedRoute>} />
               <Route path="/family" element={<ProtectedRoute><Family /></ProtectedRoute>} />
+              <Route path="/fleet" element={<ProtectedRoute><Fleet /></ProtectedRoute>} />
               <Route path="/widget-setup" element={<ProtectedRoute><WidgetSetup /></ProtectedRoute>} />
               <Route path="/fault-guide" element={<FaultGuide />} />
               <Route path="/about" element={<About />} />
