@@ -51,6 +51,7 @@ const DeleteAccount = lazy(() => import("./pages/DeleteAccount"));
 const DeleteDataRequest = lazy(() => import("./pages/DeleteDataRequest"));
 const Documents = lazy(() => import("./pages/Documents"));
 const Family = lazy(() => import("./pages/Family"));
+const Fleet = lazy(() => import("./pages/Fleet"));
 const WidgetSetup = lazy(() => import("./pages/WidgetSetup"));
 const FaultGuide = lazy(() => import("./pages/FaultGuide"));
 
