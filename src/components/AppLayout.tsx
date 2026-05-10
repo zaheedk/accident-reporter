@@ -44,6 +44,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const contentLinks = [
     { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
     ...(user ? [{ to: '/family', icon: Users, label: 'Family' }] : []),
+    ...(user ? [{ to: '/fleet', icon: Briefcase, label: 'Fleet' }] : []),
     { to: '/panel-shops', icon: Wrench, label: 'Shops' },
     { to: '/tow-companies', icon: Truck, label: 'Tow Trucks' },
     { to: '/fault-guide', icon: Scale, label: 'Fault Guide' },
