@@ -77,17 +77,11 @@ export default function UserManagement() {
     enabled: isAdmin,
   });
 
-  const { data: roles = [] } = useQuery({
-    queryKey: ['admin-user-roles'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('user_roles')
-        .select('user_id, role');
-      if (error) throw error;
-      return data as UserRole[];
-    },
-    enabled: isAdmin,
-  });
+  const roleMap = useMemo(() => {
+    const m = new Map<string, string>();
+    roles.forEach(r => m.set(r.user_id, r.role));
+    return m;
+  }, [roles]);
 
   const { data: fleets = [] } = useQuery({
     queryKey: ['admin-fleets'],
