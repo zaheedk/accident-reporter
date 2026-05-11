@@ -77,11 +77,34 @@ export default function UserManagement() {
     enabled: isAdmin,
   });
 
-  const roleMap = useMemo(() => {
-    const m = new Map<string, string>();
-    roles.forEach(r => m.set(r.user_id, r.role));
-    return m;
-  }, [roles]);
+  const { data: roles = [] } = useQuery({
+    queryKey: ['admin-user-roles'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('user_roles')
+        .select('user_id, role');
+      if (error) throw error;
+      return data as UserRole[];
+    },
+    enabled: isAdmin,
+  });
+
+  const { data: fleets = [] } = useQuery({
+    queryKey: ['admin-fleets'],
+    queryFn: async () => {
+      const { data, error } = await supabase.functions.invoke('admin-fleet-manager', {
+        body: { action: 'list', target_user_id: '00000000-0000-0000-0000-000000000000' },
+      });
+      if (error) throw error;
+      return (data?.fleets || []) as Array<{ id: string; name: string; manager_user_id: string }>;
+    },
+    enabled: isAdmin,
+  });
+
+  const fleetManagerSet = useMemo(
+    () => new Set(fleets.map(f => f.manager_user_id)),
+    [fleets]
+  );
 
   if (!isAdmin) return <Navigate to="/dashboard" replace />;
 
