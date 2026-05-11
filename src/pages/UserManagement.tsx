@@ -45,6 +45,12 @@ export default function UserManagement() {
     name: string;
     action: 'activate' | 'deactivate';
   } | null>(null);
+  const [fleetAction, setFleetAction] = useState<{
+    userId: string;
+    name: string;
+    action: 'assign' | 'revoke';
+  } | null>(null);
+  const [fleetBusy, setFleetBusy] = useState(false);
 
   const { data: profiles = [], isLoading } = useQuery({
     queryKey: ['admin-users'],
