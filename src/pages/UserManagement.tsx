@@ -262,6 +262,7 @@ export default function UserManagement() {
             {filtered.map(profile => {
               const role = getUserRole(profile.user_id);
               const isSelf = profile.user_id === user?.id;
+              const isFleetManager = fleetManagerSet.has(profile.user_id);
               const joined = new Date(profile.created_at).toLocaleDateString();
 
               return (
@@ -295,6 +296,12 @@ export default function UserManagement() {
                           <Link2 className="w-2.5 h-2.5" />
                           {profile.source === 'jamesblond' ? 'James Blond' : 'Direct'}
                         </Badge>
+                        {isFleetManager && (
+                          <Badge variant="default" className="text-[10px] gap-1">
+                            <Briefcase className="w-2.5 h-2.5" />
+                            Fleet manager
+                          </Badge>
+                        )}
                       </div>
                       <div className="mt-2 space-y-0.5">
                         {profile.email && (
@@ -310,6 +317,21 @@ export default function UserManagement() {
                         <p className="text-[11px] text-muted-foreground flex items-center gap-1.5">
                           <Calendar className="w-3 h-3 shrink-0" />Joined {joined}
                         </p>
+                      </div>
+                      <div className="mt-3">
+                        <Button
+                          variant={isFleetManager ? 'outline' : 'secondary'}
+                          size="sm"
+                          className="h-7 text-xs gap-1.5"
+                          onClick={() => setFleetAction({
+                            userId: profile.user_id,
+                            name: profile.display_name || 'this user',
+                            action: isFleetManager ? 'revoke' : 'assign',
+                          })}
+                        >
+                          <Briefcase className="w-3 h-3" />
+                          {isFleetManager ? 'Revoke fleet manager' : 'Make fleet manager'}
+                        </Button>
                       </div>
                     </div>
 
