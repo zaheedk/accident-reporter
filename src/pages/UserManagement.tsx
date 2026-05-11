@@ -144,6 +144,24 @@ export default function UserManagement() {
     queryClient.invalidateQueries({ queryKey: ['admin-users'] });
   };
 
+  const handleFleetAction = async () => {
+    if (!fleetAction) return;
+    setFleetBusy(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('admin-fleet-manager', {
+        body: { action: fleetAction.action, target_user_id: fleetAction.userId },
+      });
+      if (error || data?.error) throw new Error(data?.error || error?.message);
+      toast.success(fleetAction.action === 'assign' ? 'Fleet manager assigned' : 'Fleet manager revoked');
+      setFleetAction(null);
+      queryClient.invalidateQueries({ queryKey: ['admin-fleets'] });
+    } catch (e: any) {
+      toast.error(e?.message || 'Failed to update fleet manager');
+    } finally {
+      setFleetBusy(false);
+    }
+  };
+
   return (
     <AppLayout>
       <div className="space-y-5">
