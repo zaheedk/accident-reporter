@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Search, Shield, ShieldOff, UserCheck, UserX, Mail, Phone, Calendar, Link2 } from 'lucide-react';
+import { Search, Shield, ShieldOff, UserCheck, UserX, Mail, Phone, Calendar, Link2, Briefcase } from 'lucide-react';
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
@@ -45,6 +45,12 @@ export default function UserManagement() {
     name: string;
     action: 'activate' | 'deactivate';
   } | null>(null);
+  const [fleetAction, setFleetAction] = useState<{
+    userId: string;
+    name: string;
+    action: 'assign' | 'revoke';
+  } | null>(null);
+  const [fleetBusy, setFleetBusy] = useState(false);
 
   const { data: profiles = [], isLoading } = useQuery({
     queryKey: ['admin-users'],
@@ -76,6 +82,23 @@ export default function UserManagement() {
     roles.forEach(r => m.set(r.user_id, r.role));
     return m;
   }, [roles]);
+
+  const { data: fleets = [] } = useQuery({
+    queryKey: ['admin-fleets'],
+    queryFn: async () => {
+      const { data, error } = await supabase.functions.invoke('admin-fleet-manager', {
+        body: { action: 'list', target_user_id: '00000000-0000-0000-0000-000000000000' },
+      });
+      if (error) throw error;
+      return (data?.fleets || []) as Array<{ id: string; name: string; manager_user_id: string }>;
+    },
+    enabled: isAdmin,
+  });
+
+  const fleetManagerSet = useMemo(
+    () => new Set(fleets.map(f => f.manager_user_id)),
+    [fleets]
+  );
 
   if (!isAdmin) return <Navigate to="/dashboard" replace />;
 
@@ -119,6 +142,24 @@ export default function UserManagement() {
     toast.success(`User ${confirmAction.action}d`);
     setConfirmAction(null);
     queryClient.invalidateQueries({ queryKey: ['admin-users'] });
+  };
+
+  const handleFleetAction = async () => {
+    if (!fleetAction) return;
+    setFleetBusy(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('admin-fleet-manager', {
+        body: { action: fleetAction.action, target_user_id: fleetAction.userId },
+      });
+      if (error || data?.error) throw new Error(data?.error || error?.message);
+      toast.success(fleetAction.action === 'assign' ? 'Fleet manager assigned' : 'Fleet manager revoked');
+      setFleetAction(null);
+      queryClient.invalidateQueries({ queryKey: ['admin-fleets'] });
+    } catch (e: any) {
+      toast.error(e?.message || 'Failed to update fleet manager');
+    } finally {
+      setFleetBusy(false);
+    }
   };
 
   return (
@@ -221,6 +262,7 @@ export default function UserManagement() {
             {filtered.map(profile => {
               const role = getUserRole(profile.user_id);
               const isSelf = profile.user_id === user?.id;
+              const isFleetManager = fleetManagerSet.has(profile.user_id);
               const joined = new Date(profile.created_at).toLocaleDateString();
 
               return (
@@ -254,6 +296,12 @@ export default function UserManagement() {
                           <Link2 className="w-2.5 h-2.5" />
                           {profile.source === 'jamesblond' ? 'James Blond' : 'Direct'}
                         </Badge>
+                        {isFleetManager && (
+                          <Badge variant="default" className="text-[10px] gap-1">
+                            <Briefcase className="w-2.5 h-2.5" />
+                            Fleet manager
+                          </Badge>
+                        )}
                       </div>
                       <div className="mt-2 space-y-0.5">
                         {profile.email && (
@@ -269,6 +317,21 @@ export default function UserManagement() {
                         <p className="text-[11px] text-muted-foreground flex items-center gap-1.5">
                           <Calendar className="w-3 h-3 shrink-0" />Joined {joined}
                         </p>
+                      </div>
+                      <div className="mt-3">
+                        <Button
+                          variant={isFleetManager ? 'outline' : 'secondary'}
+                          size="sm"
+                          className="h-7 text-xs gap-1.5"
+                          onClick={() => setFleetAction({
+                            userId: profile.user_id,
+                            name: profile.display_name || 'this user',
+                            action: isFleetManager ? 'revoke' : 'assign',
+                          })}
+                        >
+                          <Briefcase className="w-3 h-3" />
+                          {isFleetManager ? 'Revoke fleet manager' : 'Make fleet manager'}
+                        </Button>
                       </div>
                     </div>
 
@@ -321,6 +384,35 @@ export default function UserManagement() {
               }
             >
               {confirmAction?.action === 'deactivate' ? 'Deactivate' : 'Reactivate'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={!!fleetAction} onOpenChange={(open) => !open && !fleetBusy && setFleetAction(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {fleetAction?.action === 'assign' ? 'Make fleet manager?' : 'Revoke fleet manager?'}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {fleetAction?.action === 'assign'
+                ? `Create a fleet for ${fleetAction.name}. They will be able to invite drivers and assign vehicles from the Fleet section.`
+                : `Remove ${fleetAction?.name} as fleet manager. Their fleet, drivers and vehicle assignments will be deleted. Driver accounts and vehicles themselves are not deleted.`
+              }
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={fleetBusy}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => { e.preventDefault(); handleFleetAction(); }}
+              disabled={fleetBusy}
+              className={fleetAction?.action === 'revoke'
+                ? 'bg-destructive text-destructive-foreground hover:bg-destructive/90'
+                : ''
+              }
+            >
+              {fleetBusy ? 'Working...' : fleetAction?.action === 'assign' ? 'Make manager' : 'Revoke'}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
