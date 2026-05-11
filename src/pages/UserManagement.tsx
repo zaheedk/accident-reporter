@@ -388,6 +388,35 @@ export default function UserManagement() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <AlertDialog open={!!fleetAction} onOpenChange={(open) => !open && !fleetBusy && setFleetAction(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {fleetAction?.action === 'assign' ? 'Make fleet manager?' : 'Revoke fleet manager?'}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {fleetAction?.action === 'assign'
+                ? `Create a fleet for ${fleetAction.name}. They will be able to invite drivers and assign vehicles from the Fleet section.`
+                : `Remove ${fleetAction?.name} as fleet manager. Their fleet, drivers and vehicle assignments will be deleted. Driver accounts and vehicles themselves are not deleted.`
+              }
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={fleetBusy}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => { e.preventDefault(); handleFleetAction(); }}
+              disabled={fleetBusy}
+              className={fleetAction?.action === 'revoke'
+                ? 'bg-destructive text-destructive-foreground hover:bg-destructive/90'
+                : ''
+              }
+            >
+              {fleetBusy ? 'Working...' : fleetAction?.action === 'assign' ? 'Make manager' : 'Revoke'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </AppLayout>
   );
 }
