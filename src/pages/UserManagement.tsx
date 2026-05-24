@@ -381,7 +381,7 @@ export default function UserManagement() {
                           <Calendar className="w-3 h-3 shrink-0" />Joined {joined}
                         </p>
                       </div>
-                      <div className="mt-3">
+                      <div className="mt-3 flex flex-wrap gap-2">
                         <Button
                           variant={isFleetManager ? 'outline' : 'secondary'}
                           size="sm"
@@ -395,6 +395,17 @@ export default function UserManagement() {
                           <Briefcase className="w-3 h-3" />
                           {isFleetManager ? 'Revoke fleet manager' : 'Make fleet manager'}
                         </Button>
+                        {isBroker && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="h-7 text-xs gap-1.5"
+                            onClick={() => setRevokeBroker({ userId: profile.user_id, name: profile.display_name || 'this user' })}
+                          >
+                            <ShieldCheck className="w-3 h-3" />
+                            Revoke broker
+                          </Button>
+                        )}
                       </div>
                     </div>
 
