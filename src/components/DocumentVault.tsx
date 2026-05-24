@@ -94,7 +94,7 @@ export default function DocumentVault({ vehicleId = null, showCategories, client
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file || !user) return;
+    if (!file || !ownerId) return;
 
     if (!selectedCategory) {
       toast.error('Please choose a document type first');
@@ -111,7 +111,8 @@ export default function DocumentVault({ vehicleId = null, showCategories, client
     try {
       const ext = file.name.split('.').pop();
       const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-      const filePath = `${user.id}/${vehicleId || 'profile'}/${fileName}`;
+      // Storage path is rooted at the owner (client) folder so RLS finds it via is_broker_for
+      const filePath = `${ownerId}/${vehicleId || 'profile'}/${fileName}`;
 
       const { error: uploadError } = await supabase.storage
         .from('user-documents')
@@ -120,7 +121,7 @@ export default function DocumentVault({ vehicleId = null, showCategories, client
       if (uploadError) throw uploadError;
 
       const { error: dbError } = await supabase.from('user_documents' as any).insert({
-        user_id: user.id,
+        user_id: ownerId,
         vehicle_id: vehicleId || null,
         file_name: file.name,
         file_path: filePath,
@@ -130,7 +131,7 @@ export default function DocumentVault({ vehicleId = null, showCategories, client
 
       if (dbError) throw dbError;
 
-      toast.success('Document uploaded');
+      toast.success(isBrokerView ? 'Document uploaded for client' : 'Document uploaded');
       setSelectedCategory('');
       await loadDocuments();
     } catch (err: any) {
@@ -143,6 +144,11 @@ export default function DocumentVault({ vehicleId = null, showCategories, client
 
   const handleDelete = async () => {
     if (!deleteTarget) return;
+    if (isBrokerView) {
+      toast.error("Brokers can't delete a client's documents");
+      setDeleteTarget(null);
+      return;
+    }
     setDeleting(true);
     try {
       await supabase.storage.from('user-documents').remove([deleteTarget.file_path]);
