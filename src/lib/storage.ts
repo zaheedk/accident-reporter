@@ -118,6 +118,8 @@ function dbVehicleToVehicle(row: any): Vehicle {
     insuranceCompany: row.insurance_company || '',
     insurancePolicyNumber: row.insurance_policy_number || '',
     insuranceExpiry: row.insurance_expiry || '',
+    brokerName: row.broker_name || '',
+    brokerEmail: row.broker_email || '',
     roadsideProvider: row.roadside_provider || '',
     roadsidePhone: row.roadside_phone || '',
     photoUrl: row.photo_url || '',
