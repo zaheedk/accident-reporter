@@ -116,6 +116,12 @@ export default function ClaimDetail() {
       };
       setClaim(foundClaim);
       setVehicles(vehs);
+      // Vehicle-level broker email takes precedence
+      const claimVehicle = vehs.find(v => v.id === foundClaim.vehicleId);
+      if (claimVehicle?.brokerEmail) {
+        setBrokerEmail(claimVehicle.brokerEmail);
+        setBrokerName(claimVehicle.brokerName || 'your broker');
+      }
       const sig = (claimRow as any).declaration_signature;
       const sigName = (claimRow as any).declaration_signed_name;
       const sigAt = (claimRow as any).declaration_signed_at;
