@@ -85,7 +85,7 @@ export default function PanelShops() {
   return (
     <AppLayout>
       <SEO
-        title="Panel Beaters Directory NZ — Find Trusted Repair Shops | SAVO"
+        title="Panel Beaters NZ — Trusted Repair Shops | SAVO"
         description="Browse over 200 highly rated panel beaters across New Zealand. Find local collision repair specialists by region, get directions and contact details fast."
         path="/panel-shops"
       />
