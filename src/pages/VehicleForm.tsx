@@ -24,6 +24,8 @@ export default function VehicleForm() {
   const { id: routeParam } = useParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const [searchParams] = useSearchParams();
+  const clientUserId = searchParams.get('client') || '';
   const isEdit = Boolean(routeParam);
   const [vehicleUuid, setVehicleUuid] = useState<string | null>(null);
   const [form, setForm] = useState(emptyVehicle);
@@ -34,8 +36,16 @@ export default function VehicleForm() {
   const [saving, setSaving] = useState(false);
   const [customInsurer, setCustomInsurer] = useState('');
   const [scanning, setScanning] = useState<null | 'wof' | 'rego'>(null);
+  const [clientName, setClientName] = useState('');
   const wofScanRef = useRef<HTMLInputElement>(null);
   const regoScanRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (!clientUserId) return;
+    supabase.from('broker_clients').select('client_name, client_email')
+      .eq('client_user_id', clientUserId).maybeSingle()
+      .then(({ data }) => setClientName((data as any)?.client_name || (data as any)?.client_email || 'Client'));
+  }, [clientUserId]);
 
   const handleLabelScan = async (e: React.ChangeEvent<HTMLInputElement>, kind: 'wof' | 'rego') => {
     const file = e.target.files?.[0];
