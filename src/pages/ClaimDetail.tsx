@@ -158,15 +158,17 @@ export default function ClaimDetail() {
         if (profile?.display_name && !defaultSignerName) setDefaultSignerName(profile.display_name);
         if (profile?.phone_number) setUserPhone(profile.phone_number);
 
-        // Look up an active broker link for the current user
-        const { data: bc } = await supabase.from('broker_clients')
-          .select('brokerage_id').eq('client_user_id', currentUser.id).eq('status', 'active').maybeSingle();
-        if (bc?.brokerage_id) {
-          const { data: bk } = await supabase.from('brokerages')
-            .select('company_name, contact_email').eq('id', bc.brokerage_id).maybeSingle();
-          if (bk?.contact_email) {
-            setBrokerEmail(bk.contact_email);
-            setBrokerName(bk.company_name || 'your broker');
+        // Fall back to a SAVO-linked brokerage only if the vehicle didn't supply one
+        if (!claimVehicle?.brokerEmail) {
+          const { data: bc } = await supabase.from('broker_clients')
+            .select('brokerage_id').eq('client_user_id', currentUser.id).eq('status', 'active').maybeSingle();
+          if (bc?.brokerage_id) {
+            const { data: bk } = await supabase.from('brokerages')
+              .select('company_name, contact_email').eq('id', bc.brokerage_id).maybeSingle();
+            if (bk?.contact_email) {
+              setBrokerEmail(bk.contact_email);
+              setBrokerName(bk.company_name || 'your broker');
+            }
           }
         }
       }
