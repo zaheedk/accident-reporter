@@ -233,6 +233,18 @@ export default function VehicleForm() {
             )}
           </div>
 
+          {clientUserId && (
+            <div className="rounded-xl border border-primary/30 bg-primary/5 p-3 flex items-center gap-3">
+              <div className="w-9 h-9 rounded-lg bg-primary text-primary-foreground flex items-center justify-center shrink-0">
+                <Briefcase className="w-4 h-4" strokeWidth={2} />
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="text-[13px] font-semibold text-foreground leading-tight">Adding a vehicle for {clientName || 'your client'}</p>
+                <p className="text-xs text-muted-foreground mt-0.5">This vehicle is owned by the client. They can edit or delete it from their own garage.</p>
+              </div>
+            </div>
+          )}
+
           {/* Body */}
           <div className="md:grid md:grid-cols-[240px_1fr] md:gap-6 lg:grid-cols-[260px_1fr] lg:gap-8 space-y-6 md:space-y-0">
             {/* Left rail — Garage-style cards */}
