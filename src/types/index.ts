@@ -16,6 +16,8 @@ export interface Vehicle {
   insuranceCompany: string;
   insurancePolicyNumber: string;
   insuranceExpiry: string;
+  brokerName?: string;
+  brokerEmail?: string;
   roadsideProvider?: string;
   roadsidePhone?: string;
   photoUrl: string;
