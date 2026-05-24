@@ -164,9 +164,13 @@ export default function VehicleForm() {
       if (finalForm.insuranceCompany === '__other__') {
         finalForm.insuranceCompany = customInsurer.trim();
       }
-      await saveVehicle({ ...finalForm, id: vehicleUuid || undefined });
+      await saveVehicle({ ...finalForm, id: vehicleUuid || undefined }, clientUserId || undefined);
       queryClient.invalidateQueries({ queryKey: ['vehicles'] });
-      navigate('/vehicles');
+      if (clientUserId) {
+        navigate('/broker');
+      } else {
+        navigate('/vehicles');
+      }
     } catch (err: any) {
       const msg = err?.message || 'Failed to save vehicle';
       if (msg.includes('vehicles_user_rego_unique') || msg.includes('duplicate key')) {
