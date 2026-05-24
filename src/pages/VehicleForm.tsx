@@ -15,6 +15,7 @@ const emptyVehicle: Omit<Vehicle, 'id' | 'createdAt'> = {
   wofExpiry: '', regoExpiry: '',
   financeArrangement: false, financeDetails: '', modified: false, modificationDetails: '',
   insuranceCompany: '', insurancePolicyNumber: '', insuranceExpiry: '',
+  brokerName: '', brokerEmail: '',
   roadsideProvider: '', roadsidePhone: '',
   photoUrl: '',
   isActive: true,
