@@ -544,6 +544,27 @@ export default function UserManagement() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <AlertDialog open={!!revokeBroker} onOpenChange={(open) => !open && setRevokeBroker(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Revoke broker access?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Remove {revokeBroker?.name} as an approved broker. Their brokerage, client links and pending invites will be deleted. Client accounts and their data are not affected.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={!!brokerBusy}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => { e.preventDefault(); handleRevokeBroker(); }}
+              disabled={!!brokerBusy}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {brokerBusy ? 'Working...' : 'Revoke'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </AppLayout>
   );
 }
