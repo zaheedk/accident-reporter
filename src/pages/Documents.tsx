@@ -1,9 +1,10 @@
-import { ArrowLeft, ChevronDown, Car, Mail } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { ArrowLeft, ChevronDown, Car, Mail, Briefcase } from 'lucide-react';
+import { Link, useSearchParams } from 'react-router-dom';
 import AppLayout from '@/components/AppLayout';
 import DocumentVault from '@/components/DocumentVault';
 import { useAuth } from '@/contexts/AuthContext';
 import { useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 import { getVehicles } from '@/lib/storage';
 import { Vehicle } from '@/types';
 import {
@@ -15,24 +16,37 @@ import {
 
 export default function Documents() {
   const { user } = useAuth();
+  const [searchParams] = useSearchParams();
+  const clientId = searchParams.get('client') || '';
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [selected, setSelected] = useState('personal');
+  const [clientName, setClientName] = useState('');
 
   useEffect(() => {
-    if (user) getVehicles(user.id).then(setVehicles);
-  }, [user]);
+    if (!user) return;
+    if (clientId) {
+      // Broker viewing client docs: pull all accessible vehicles, filter to this client
+      getVehicles().then(all => setVehicles(all.filter(v => v.userId === clientId)));
+      supabase.from('broker_clients').select('client_name, client_email')
+        .eq('client_user_id', clientId).maybeSingle()
+        .then(({ data }) => setClientName((data as any)?.client_name || (data as any)?.client_email || 'Client'));
+    } else {
+      getVehicles(user.id).then(setVehicles);
+    }
+  }, [user, clientId]);
 
   const selectedVehicle = vehicles.find(v => v.id === selected);
 
   const selectorLabel = selected === 'personal'
-    ? { primary: 'Personal', secondary: 'Your documents' }
+    ? { primary: 'Personal', secondary: clientId ? `${clientName}'s documents` : 'Your documents' }
     : selectedVehicle
       ? { primary: selectedVehicle.regoNumber, secondary: `${selectedVehicle.year} ${selectedVehicle.make} ${selectedVehicle.model}` }
       : { primary: 'Select', secondary: '' };
 
   const docContextLabel = selected === 'personal'
-    ? 'Personal'
+    ? (clientId ? `${clientName} · Personal` : 'Personal')
     : selectedVehicle ? selectedVehicle.regoNumber : '';
+
 
   return (
     <AppLayout>
