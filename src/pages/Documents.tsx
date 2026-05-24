@@ -138,14 +138,27 @@ export default function Documents() {
         </DropdownMenu>
         </div>
 
+        {clientId && (
+          <div className="card-soft !p-3 flex items-center gap-3 border-primary/30 bg-primary/5">
+            <div className="w-9 h-9 rounded-lg bg-primary text-primary-foreground flex items-center justify-center shrink-0">
+              <Briefcase className="w-4 h-4" strokeWidth={2} />
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="text-[13px] font-semibold text-foreground leading-tight">Uploading on behalf of {clientName}</p>
+              <p className="text-xs text-muted-foreground mt-0.5">Files are saved to the client's vault. You can't delete their existing documents.</p>
+            </div>
+          </div>
+        )}
+
         {/* Vault content */}
         {selected === 'personal' ? (
-          <DocumentVault title="Personal documents" showCategories={['drivers_license', 'other']} />
+          <DocumentVault title="Personal documents" showCategories={['drivers_license', 'other']} clientUserId={clientId || null} />
         ) : selectedVehicle ? (
           <DocumentVault
             vehicleId={selectedVehicle.id}
             title={`${selectedVehicle.year} ${selectedVehicle.make} ${selectedVehicle.model}`}
             showCategories={['insurance_policy', 'registration', 'wof_certificate', 'purchase_receipt', 'service_record', 'other']}
+            clientUserId={clientId || null}
           />
         ) : null}
         </div>
