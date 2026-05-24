@@ -29,7 +29,7 @@ export default function HowItWorks() {
   return (
     <AppLayout>
       <SEO
-        title="How SAVO Works — Document, Lodge & Track Car Accident Claims | NZ"
+        title="How SAVO Works — Lodge Car Accident Claims | NZ"
         description="See how SAVO walks NZ drivers through documenting an accident, lodging an insurance claim, requesting a courtesy car and choosing a panel beater — step by step."
         path="/how-it-works"
       />
