@@ -95,6 +95,62 @@ export default function UserManagement() {
     enabled: isAdmin,
   });
 
+  const { data: brokerData } = useQuery({
+    queryKey: ['admin-brokers'],
+    queryFn: async () => {
+      const { data, error } = await supabase.functions.invoke('admin-broker', {
+        body: { action: 'list' },
+      });
+      if (error) throw error;
+      return data as {
+        brokerages: Array<{ id: string; owner_user_id: string; company_name: string }>;
+        applications: Array<{ id: string; user_id: string; status: string; company_name: string; license_number: string; phone: string; contact_email: string; admin_notes: string; created_at: string }>;
+      };
+    },
+    enabled: isAdmin,
+  });
+
+  const brokerages = brokerData?.brokerages || [];
+  const applications = brokerData?.applications || [];
+  const pendingApplications = applications.filter(a => a.status === 'pending');
+  const brokerSet = useMemo(() => new Set(brokerages.map(b => b.owner_user_id)), [brokerages]);
+  const [brokerBusy, setBrokerBusy] = useState<string>('');
+  const [revokeBroker, setRevokeBroker] = useState<{ userId: string; name: string } | null>(null);
+
+  const reviewApplication = async (applicationId: string, action: 'approve_application' | 'reject_application', notes?: string) => {
+    setBrokerBusy(applicationId);
+    try {
+      const { data, error } = await supabase.functions.invoke('admin-broker', {
+        body: { action, application_id: applicationId, notes },
+      });
+      if (error || (data as any)?.error) throw new Error((data as any)?.error || error?.message);
+      toast.success(action === 'approve_application' ? 'Broker approved' : 'Application rejected');
+      queryClient.invalidateQueries({ queryKey: ['admin-brokers'] });
+    } catch (e: any) {
+      toast.error(e?.message || 'Failed');
+    } finally {
+      setBrokerBusy('');
+    }
+  };
+
+  const handleRevokeBroker = async () => {
+    if (!revokeBroker) return;
+    setBrokerBusy(revokeBroker.userId);
+    try {
+      const { data, error } = await supabase.functions.invoke('admin-broker', {
+        body: { action: 'revoke_broker', target_user_id: revokeBroker.userId },
+      });
+      if (error || (data as any)?.error) throw new Error((data as any)?.error || error?.message);
+      toast.success('Broker access revoked');
+      setRevokeBroker(null);
+      queryClient.invalidateQueries({ queryKey: ['admin-brokers'] });
+    } catch (e: any) {
+      toast.error(e?.message || 'Failed');
+    } finally {
+      setBrokerBusy('');
+    }
+  };
+
   const fleetManagerSet = useMemo(
     () => new Set(fleets.map(f => f.manager_user_id)),
     [fleets]
