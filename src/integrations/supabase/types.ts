@@ -1384,6 +1384,8 @@ export type Database = {
       }
       vehicles: {
         Row: {
+          broker_email: string
+          broker_name: string
           color: string
           created_at: string
           finance_arrangement: boolean
@@ -1410,6 +1412,8 @@ export type Database = {
           year: string
         }
         Insert: {
+          broker_email?: string
+          broker_name?: string
           color?: string
           created_at?: string
           finance_arrangement?: boolean
@@ -1436,6 +1440,8 @@ export type Database = {
           year?: string
         }
         Update: {
+          broker_email?: string
+          broker_name?: string
           color?: string
           created_at?: string
           finance_arrangement?: boolean
