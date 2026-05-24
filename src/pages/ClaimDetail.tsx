@@ -625,6 +625,15 @@ export default function ClaimDetail() {
                       <p className="flex-1 min-w-0 text-[13px] text-foreground truncate">Call insurer</p>
                     </a>
                   )}
+                  {brokerEmail && signature && (
+                    <button
+                      onClick={() => { setEmailTo(brokerEmail); setEmailDialogOpen(true); }}
+                      className="w-full flex items-center gap-3 px-3.5 py-2.5 hover:bg-muted/50 transition-colors text-left"
+                    >
+                      <Send className="w-3.5 h-3.5 text-primary" strokeWidth={2} />
+                      <p className="flex-1 min-w-0 text-[13px] text-foreground truncate">Email signed report to {brokerName}</p>
+                    </button>
+                  )}
                 </div>
               </div>
             </aside>
