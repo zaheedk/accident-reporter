@@ -60,6 +60,8 @@ export default function ClaimDetail() {
   const [signature, setSignature] = useState<{ dataUrl: string; name: string; signedAt: string } | null>(null);
   const [signatureOpen, setSignatureOpen] = useState(false);
   const [defaultSignerName, setDefaultSignerName] = useState('');
+  const [brokerEmail, setBrokerEmail] = useState('');
+  const [brokerName, setBrokerName] = useState('');
 
   const handleDelete = async () => {
     if (!claim) return;
