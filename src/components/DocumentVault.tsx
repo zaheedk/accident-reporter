@@ -40,9 +40,10 @@ interface DocumentVaultProps {
   vehicleId?: string | null;
   title?: string;
   showCategories?: string[];
+  clientUserId?: string | null; // when set, broker is acting on this client's behalf
 }
 
-export default function DocumentVault({ vehicleId = null, showCategories }: DocumentVaultProps) {
+export default function DocumentVault({ vehicleId = null, showCategories, clientUserId = null }: DocumentVaultProps) {
   const { user } = useAuth();
   const [documents, setDocuments] = useState<Document[]>([]);
   const [loading, setLoading] = useState(true);
@@ -52,6 +53,10 @@ export default function DocumentVault({ vehicleId = null, showCategories }: Docu
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // When acting as broker for a client, the owner is the client; the broker still uploads.
+  const ownerId = clientUserId || user?.id || null;
+  const isBrokerView = !!clientUserId && clientUserId !== user?.id;
+
   const categories = showCategories
     ? CATEGORIES.filter(c => showCategories.includes(c.value))
     : CATEGORIES;
@@ -59,21 +64,21 @@ export default function DocumentVault({ vehicleId = null, showCategories }: Docu
   const activeCategory = categories.find(c => c.value === selectedCategory);
 
   useEffect(() => {
-    if (user) loadDocuments();
-  }, [user, vehicleId]);
+    if (ownerId) loadDocuments();
+  }, [ownerId, vehicleId]);
 
   // Reset selected category when context changes
   useEffect(() => {
     setSelectedCategory('');
-  }, [vehicleId]);
+  }, [vehicleId, clientUserId]);
 
   const loadDocuments = async () => {
-    if (!user) return;
+    if (!ownerId) return;
     setLoading(true);
     let query = supabase
       .from('user_documents' as any)
       .select('*')
-      .eq('user_id', user.id)
+      .eq('user_id', ownerId)
       .order('created_at', { ascending: false });
 
     if (vehicleId) {
@@ -89,7 +94,7 @@ export default function DocumentVault({ vehicleId = null, showCategories }: Docu
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file || !user) return;
+    if (!file || !ownerId) return;
 
     if (!selectedCategory) {
       toast.error('Please choose a document type first');
@@ -106,7 +111,8 @@ export default function DocumentVault({ vehicleId = null, showCategories }: Docu
     try {
       const ext = file.name.split('.').pop();
       const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-      const filePath = `${user.id}/${vehicleId || 'profile'}/${fileName}`;
+      // Storage path is rooted at the owner (client) folder so RLS finds it via is_broker_for
+      const filePath = `${ownerId}/${vehicleId || 'profile'}/${fileName}`;
 
       const { error: uploadError } = await supabase.storage
         .from('user-documents')
@@ -115,7 +121,7 @@ export default function DocumentVault({ vehicleId = null, showCategories }: Docu
       if (uploadError) throw uploadError;
 
       const { error: dbError } = await supabase.from('user_documents' as any).insert({
-        user_id: user.id,
+        user_id: ownerId,
         vehicle_id: vehicleId || null,
         file_name: file.name,
         file_path: filePath,
@@ -125,7 +131,7 @@ export default function DocumentVault({ vehicleId = null, showCategories }: Docu
 
       if (dbError) throw dbError;
 
-      toast.success('Document uploaded');
+      toast.success(isBrokerView ? 'Document uploaded for client' : 'Document uploaded');
       setSelectedCategory('');
       await loadDocuments();
     } catch (err: any) {
@@ -138,6 +144,11 @@ export default function DocumentVault({ vehicleId = null, showCategories }: Docu
 
   const handleDelete = async () => {
     if (!deleteTarget) return;
+    if (isBrokerView) {
+      toast.error("Brokers can't delete a client's documents");
+      setDeleteTarget(null);
+      return;
+    }
     setDeleting(true);
     try {
       await supabase.storage.from('user-documents').remove([deleteTarget.file_path]);
@@ -295,13 +306,15 @@ export default function DocumentVault({ vehicleId = null, showCategories }: Docu
                   >
                     <Eye className="w-4 h-4" strokeWidth={1.75} />
                   </button>
-                  <button
-                    onClick={() => setDeleteTarget(doc)}
-                    className="w-9 h-9 inline-flex items-center justify-center rounded-lg text-muted-foreground/60 hover:text-destructive hover:bg-destructive/5 transition-colors"
-                    aria-label="Delete"
-                  >
-                    <Trash2 className="w-4 h-4" strokeWidth={1.75} />
-                  </button>
+                  {!isBrokerView && (
+                    <button
+                      onClick={() => setDeleteTarget(doc)}
+                      className="w-9 h-9 inline-flex items-center justify-center rounded-lg text-muted-foreground/60 hover:text-destructive hover:bg-destructive/5 transition-colors"
+                      aria-label="Delete"
+                    >
+                      <Trash2 className="w-4 h-4" strokeWidth={1.75} />
+                    </button>
+                  )}
                 </div>
               </div>
             );

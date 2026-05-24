@@ -60,6 +60,8 @@ export default function ClaimDetail() {
   const [signature, setSignature] = useState<{ dataUrl: string; name: string; signedAt: string } | null>(null);
   const [signatureOpen, setSignatureOpen] = useState(false);
   const [defaultSignerName, setDefaultSignerName] = useState('');
+  const [brokerEmail, setBrokerEmail] = useState('');
+  const [brokerName, setBrokerName] = useState('');
 
   const handleDelete = async () => {
     if (!claim) return;
@@ -149,6 +151,18 @@ export default function ClaimDetail() {
         const { data: profile } = await supabase.from('profiles').select('phone_number, display_name').eq('user_id', currentUser.id).single();
         if (profile?.display_name && !defaultSignerName) setDefaultSignerName(profile.display_name);
         if (profile?.phone_number) setUserPhone(profile.phone_number);
+
+        // Look up an active broker link for the current user
+        const { data: bc } = await supabase.from('broker_clients')
+          .select('brokerage_id').eq('client_user_id', currentUser.id).eq('status', 'active').maybeSingle();
+        if (bc?.brokerage_id) {
+          const { data: bk } = await supabase.from('brokerages')
+            .select('company_name, contact_email').eq('id', bc.brokerage_id).maybeSingle();
+          if (bk?.contact_email) {
+            setBrokerEmail(bk.contact_email);
+            setBrokerName(bk.company_name || 'your broker');
+          }
+        }
       }
       
       if (photosRes.data) {
@@ -610,6 +624,15 @@ export default function ClaimDetail() {
                       <Phone className="w-3.5 h-3.5 text-muted-foreground" strokeWidth={2} />
                       <p className="flex-1 min-w-0 text-[13px] text-foreground truncate">Call insurer</p>
                     </a>
+                  )}
+                  {brokerEmail && signature && (
+                    <button
+                      onClick={() => { setEmailTo(brokerEmail); setEmailDialogOpen(true); }}
+                      className="w-full flex items-center gap-3 px-3.5 py-2.5 hover:bg-muted/50 transition-colors text-left"
+                    >
+                      <Send className="w-3.5 h-3.5 text-primary" strokeWidth={2} />
+                      <p className="flex-1 min-w-0 text-[13px] text-foreground truncate">Email signed report to {brokerName}</p>
+                    </button>
                   )}
                 </div>
               </div>

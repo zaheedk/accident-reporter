@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
-import { useNavigate, useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Check, Camera, X, Loader2, AlertTriangle, Car, FileText, Phone, Shield, ScanLine } from 'lucide-react';
+import { useNavigate, useParams, Link, useSearchParams } from 'react-router-dom';
+import { ArrowLeft, Check, Camera, X, Loader2, AlertTriangle, Car, FileText, Phone, Shield, ScanLine, Briefcase } from 'lucide-react';
 import DocumentVault from '@/components/DocumentVault';
 import { getVehicles, saveVehicle } from '@/lib/storage';
 import { Vehicle } from '@/types';
@@ -24,6 +24,8 @@ export default function VehicleForm() {
   const { id: routeParam } = useParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const [searchParams] = useSearchParams();
+  const clientUserId = searchParams.get('client') || '';
   const isEdit = Boolean(routeParam);
   const [vehicleUuid, setVehicleUuid] = useState<string | null>(null);
   const [form, setForm] = useState(emptyVehicle);
@@ -34,8 +36,16 @@ export default function VehicleForm() {
   const [saving, setSaving] = useState(false);
   const [customInsurer, setCustomInsurer] = useState('');
   const [scanning, setScanning] = useState<null | 'wof' | 'rego'>(null);
+  const [clientName, setClientName] = useState('');
   const wofScanRef = useRef<HTMLInputElement>(null);
   const regoScanRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (!clientUserId) return;
+    supabase.from('broker_clients').select('client_name, client_email')
+      .eq('client_user_id', clientUserId).maybeSingle()
+      .then(({ data }) => setClientName((data as any)?.client_name || (data as any)?.client_email || 'Client'));
+  }, [clientUserId]);
 
   const handleLabelScan = async (e: React.ChangeEvent<HTMLInputElement>, kind: 'wof' | 'rego') => {
     const file = e.target.files?.[0];
@@ -154,9 +164,13 @@ export default function VehicleForm() {
       if (finalForm.insuranceCompany === '__other__') {
         finalForm.insuranceCompany = customInsurer.trim();
       }
-      await saveVehicle({ ...finalForm, id: vehicleUuid || undefined });
+      await saveVehicle({ ...finalForm, id: vehicleUuid || undefined }, clientUserId || undefined);
       queryClient.invalidateQueries({ queryKey: ['vehicles'] });
-      navigate('/vehicles');
+      if (clientUserId) {
+        navigate('/broker');
+      } else {
+        navigate('/vehicles');
+      }
     } catch (err: any) {
       const msg = err?.message || 'Failed to save vehicle';
       if (msg.includes('vehicles_user_rego_unique') || msg.includes('duplicate key')) {
@@ -218,6 +232,18 @@ export default function VehicleForm() {
               </button>
             )}
           </div>
+
+          {clientUserId && (
+            <div className="rounded-xl border border-primary/30 bg-primary/5 p-3 flex items-center gap-3">
+              <div className="w-9 h-9 rounded-lg bg-primary text-primary-foreground flex items-center justify-center shrink-0">
+                <Briefcase className="w-4 h-4" strokeWidth={2} />
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="text-[13px] font-semibold text-foreground leading-tight">Adding a vehicle for {clientName || 'your client'}</p>
+                <p className="text-xs text-muted-foreground mt-0.5">This vehicle is owned by the client. They can edit or delete it from their own garage.</p>
+              </div>
+            </div>
+          )}
 
           {/* Body */}
           <div className="md:grid md:grid-cols-[240px_1fr] md:gap-6 lg:grid-cols-[260px_1fr] lg:gap-8 space-y-6 md:space-y-0">

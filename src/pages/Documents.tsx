@@ -1,9 +1,10 @@
-import { ArrowLeft, ChevronDown, Car, Mail } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { ArrowLeft, ChevronDown, Car, Mail, Briefcase } from 'lucide-react';
+import { Link, useSearchParams } from 'react-router-dom';
 import AppLayout from '@/components/AppLayout';
 import DocumentVault from '@/components/DocumentVault';
 import { useAuth } from '@/contexts/AuthContext';
 import { useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 import { getVehicles } from '@/lib/storage';
 import { Vehicle } from '@/types';
 import {
@@ -15,24 +16,37 @@ import {
 
 export default function Documents() {
   const { user } = useAuth();
+  const [searchParams] = useSearchParams();
+  const clientId = searchParams.get('client') || '';
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [selected, setSelected] = useState('personal');
+  const [clientName, setClientName] = useState('');
 
   useEffect(() => {
-    if (user) getVehicles(user.id).then(setVehicles);
-  }, [user]);
+    if (!user) return;
+    if (clientId) {
+      // Broker viewing client docs: pull all accessible vehicles, filter to this client
+      getVehicles().then(all => setVehicles(all.filter(v => v.userId === clientId)));
+      supabase.from('broker_clients').select('client_name, client_email')
+        .eq('client_user_id', clientId).maybeSingle()
+        .then(({ data }) => setClientName((data as any)?.client_name || (data as any)?.client_email || 'Client'));
+    } else {
+      getVehicles(user.id).then(setVehicles);
+    }
+  }, [user, clientId]);
 
   const selectedVehicle = vehicles.find(v => v.id === selected);
 
   const selectorLabel = selected === 'personal'
-    ? { primary: 'Personal', secondary: 'Your documents' }
+    ? { primary: 'Personal', secondary: clientId ? `${clientName}'s documents` : 'Your documents' }
     : selectedVehicle
       ? { primary: selectedVehicle.regoNumber, secondary: `${selectedVehicle.year} ${selectedVehicle.make} ${selectedVehicle.model}` }
       : { primary: 'Select', secondary: '' };
 
   const docContextLabel = selected === 'personal'
-    ? 'Personal'
+    ? (clientId ? `${clientName} · Personal` : 'Personal')
     : selectedVehicle ? selectedVehicle.regoNumber : '';
+
 
   return (
     <AppLayout>
@@ -124,14 +138,27 @@ export default function Documents() {
         </DropdownMenu>
         </div>
 
+        {clientId && (
+          <div className="card-soft !p-3 flex items-center gap-3 border-primary/30 bg-primary/5">
+            <div className="w-9 h-9 rounded-lg bg-primary text-primary-foreground flex items-center justify-center shrink-0">
+              <Briefcase className="w-4 h-4" strokeWidth={2} />
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="text-[13px] font-semibold text-foreground leading-tight">Uploading on behalf of {clientName}</p>
+              <p className="text-xs text-muted-foreground mt-0.5">Files are saved to the client's vault. You can't delete their existing documents.</p>
+            </div>
+          </div>
+        )}
+
         {/* Vault content */}
         {selected === 'personal' ? (
-          <DocumentVault title="Personal documents" showCategories={['drivers_license', 'other']} />
+          <DocumentVault title="Personal documents" showCategories={['drivers_license', 'other']} clientUserId={clientId || null} />
         ) : selectedVehicle ? (
           <DocumentVault
             vehicleId={selectedVehicle.id}
             title={`${selectedVehicle.year} ${selectedVehicle.make} ${selectedVehicle.model}`}
             showCategories={['insurance_policy', 'registration', 'wof_certificate', 'purchase_receipt', 'service_record', 'other']}
+            clientUserId={clientId || null}
           />
         ) : null}
         </div>

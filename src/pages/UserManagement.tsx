@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Search, Shield, ShieldOff, UserCheck, UserX, Mail, Phone, Calendar, Link2, Briefcase } from 'lucide-react';
+import { Search, Shield, ShieldOff, UserCheck, UserX, Mail, Phone, Calendar, Link2, Briefcase, ShieldCheck, Check, X } from 'lucide-react';
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
@@ -94,6 +94,62 @@ export default function UserManagement() {
     },
     enabled: isAdmin,
   });
+
+  const { data: brokerData } = useQuery({
+    queryKey: ['admin-brokers'],
+    queryFn: async () => {
+      const { data, error } = await supabase.functions.invoke('admin-broker', {
+        body: { action: 'list' },
+      });
+      if (error) throw error;
+      return data as {
+        brokerages: Array<{ id: string; owner_user_id: string; company_name: string }>;
+        applications: Array<{ id: string; user_id: string; status: string; company_name: string; license_number: string; phone: string; contact_email: string; admin_notes: string; created_at: string }>;
+      };
+    },
+    enabled: isAdmin,
+  });
+
+  const brokerages = brokerData?.brokerages || [];
+  const applications = brokerData?.applications || [];
+  const pendingApplications = applications.filter(a => a.status === 'pending');
+  const brokerSet = useMemo(() => new Set(brokerages.map(b => b.owner_user_id)), [brokerages]);
+  const [brokerBusy, setBrokerBusy] = useState<string>('');
+  const [revokeBroker, setRevokeBroker] = useState<{ userId: string; name: string } | null>(null);
+
+  const reviewApplication = async (applicationId: string, action: 'approve_application' | 'reject_application', notes?: string) => {
+    setBrokerBusy(applicationId);
+    try {
+      const { data, error } = await supabase.functions.invoke('admin-broker', {
+        body: { action, application_id: applicationId, notes },
+      });
+      if (error || (data as any)?.error) throw new Error((data as any)?.error || error?.message);
+      toast.success(action === 'approve_application' ? 'Broker approved' : 'Application rejected');
+      queryClient.invalidateQueries({ queryKey: ['admin-brokers'] });
+    } catch (e: any) {
+      toast.error(e?.message || 'Failed');
+    } finally {
+      setBrokerBusy('');
+    }
+  };
+
+  const handleRevokeBroker = async () => {
+    if (!revokeBroker) return;
+    setBrokerBusy(revokeBroker.userId);
+    try {
+      const { data, error } = await supabase.functions.invoke('admin-broker', {
+        body: { action: 'revoke_broker', target_user_id: revokeBroker.userId },
+      });
+      if (error || (data as any)?.error) throw new Error((data as any)?.error || error?.message);
+      toast.success('Broker access revoked');
+      setRevokeBroker(null);
+      queryClient.invalidateQueries({ queryKey: ['admin-brokers'] });
+    } catch (e: any) {
+      toast.error(e?.message || 'Failed');
+    } finally {
+      setBrokerBusy('');
+    }
+  };
 
   const fleetManagerSet = useMemo(
     () => new Set(fleets.map(f => f.manager_user_id)),
@@ -204,6 +260,59 @@ export default function UserManagement() {
           </button>
         </div>
 
+        {pendingApplications.length > 0 && (
+          <Card className="p-4 border-primary/40 bg-primary/5">
+            <div className="flex items-center gap-2 mb-3">
+              <ShieldCheck className="w-4 h-4 text-primary" />
+              <h2 className="text-sm font-semibold text-foreground">Pending broker applications ({pendingApplications.length})</h2>
+            </div>
+            <div className="space-y-2">
+              {pendingApplications.map(app => {
+                const applicant = profiles.find(p => p.user_id === app.user_id);
+                return (
+                  <div key={app.id} className="rounded-lg border border-border bg-card p-3 space-y-2">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0">
+                        <p className="text-sm font-semibold text-foreground truncate">{app.company_name}</p>
+                        <p className="text-[11px] text-muted-foreground">
+                          {applicant?.display_name || applicant?.email || app.contact_email}
+                        </p>
+                        <div className="mt-1 grid grid-cols-1 sm:grid-cols-3 gap-x-3 gap-y-0.5 text-[11px] text-muted-foreground">
+                          {app.license_number && <span>Lic: {app.license_number}</span>}
+                          {app.phone && <span>{app.phone}</span>}
+                          {app.contact_email && <span className="truncate">{app.contact_email}</span>}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button
+                        size="sm"
+                        className="h-7 text-xs gap-1.5"
+                        disabled={brokerBusy === app.id}
+                        onClick={() => reviewApplication(app.id, 'approve_application')}
+                      >
+                        <Check className="w-3 h-3" /> Approve
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="h-7 text-xs gap-1.5"
+                        disabled={brokerBusy === app.id}
+                        onClick={() => {
+                          const notes = prompt('Reason for rejection (optional)?') || '';
+                          reviewApplication(app.id, 'reject_application', notes);
+                        }}
+                      >
+                        <X className="w-3 h-3" /> Reject
+                      </Button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </Card>
+        )}
+
         {/* Search + filters */}
         <div className="space-y-2">
           <div className="relative">
@@ -263,6 +372,7 @@ export default function UserManagement() {
               const role = getUserRole(profile.user_id);
               const isSelf = profile.user_id === user?.id;
               const isFleetManager = fleetManagerSet.has(profile.user_id);
+              const isBroker = brokerSet.has(profile.user_id);
               const joined = new Date(profile.created_at).toLocaleDateString();
 
               return (
@@ -302,6 +412,12 @@ export default function UserManagement() {
                             Fleet manager
                           </Badge>
                         )}
+                        {isBroker && (
+                          <Badge variant="default" className="text-[10px] gap-1 bg-primary/15 text-primary border-primary/30">
+                            <ShieldCheck className="w-2.5 h-2.5" />
+                            Broker
+                          </Badge>
+                        )}
                       </div>
                       <div className="mt-2 space-y-0.5">
                         {profile.email && (
@@ -318,7 +434,7 @@ export default function UserManagement() {
                           <Calendar className="w-3 h-3 shrink-0" />Joined {joined}
                         </p>
                       </div>
-                      <div className="mt-3">
+                      <div className="mt-3 flex flex-wrap gap-2">
                         <Button
                           variant={isFleetManager ? 'outline' : 'secondary'}
                           size="sm"
@@ -332,6 +448,17 @@ export default function UserManagement() {
                           <Briefcase className="w-3 h-3" />
                           {isFleetManager ? 'Revoke fleet manager' : 'Make fleet manager'}
                         </Button>
+                        {isBroker && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="h-7 text-xs gap-1.5"
+                            onClick={() => setRevokeBroker({ userId: profile.user_id, name: profile.display_name || 'this user' })}
+                          >
+                            <ShieldCheck className="w-3 h-3" />
+                            Revoke broker
+                          </Button>
+                        )}
                       </div>
                     </div>
 
@@ -413,6 +540,27 @@ export default function UserManagement() {
               }
             >
               {fleetBusy ? 'Working...' : fleetAction?.action === 'assign' ? 'Make manager' : 'Revoke'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={!!revokeBroker} onOpenChange={(open) => !open && setRevokeBroker(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Revoke broker access?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Remove {revokeBroker?.name} as an approved broker. Their brokerage, client links and pending invites will be deleted. Client accounts and their data are not affected.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={!!brokerBusy}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => { e.preventDefault(); handleRevokeBroker(); }}
+              disabled={!!brokerBusy}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {brokerBusy ? 'Working...' : 'Revoke'}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
