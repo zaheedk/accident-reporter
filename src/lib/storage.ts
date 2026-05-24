@@ -79,6 +79,8 @@ export async function saveVehicle(vehicle: Omit<Vehicle, 'id' | 'createdAt'> & {
     insurance_company: vehicle.insuranceCompany || '',
     insurance_policy_number: vehicle.insurancePolicyNumber || '',
     insurance_expiry: vehicle.insuranceExpiry || '',
+    broker_name: vehicle.brokerName || '',
+    broker_email: vehicle.brokerEmail || '',
     roadside_provider: vehicle.roadsideProvider || '',
     roadside_phone: vehicle.roadsidePhone || '',
     photo_url: vehicle.photoUrl || '',
