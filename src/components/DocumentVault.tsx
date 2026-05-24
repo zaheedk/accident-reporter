@@ -40,9 +40,10 @@ interface DocumentVaultProps {
   vehicleId?: string | null;
   title?: string;
   showCategories?: string[];
+  clientUserId?: string | null; // when set, broker is acting on this client's behalf
 }
 
-export default function DocumentVault({ vehicleId = null, showCategories }: DocumentVaultProps) {
+export default function DocumentVault({ vehicleId = null, showCategories, clientUserId = null }: DocumentVaultProps) {
   const { user } = useAuth();
   const [documents, setDocuments] = useState<Document[]>([]);
   const [loading, setLoading] = useState(true);
@@ -52,6 +53,10 @@ export default function DocumentVault({ vehicleId = null, showCategories }: Docu
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // When acting as broker for a client, the owner is the client; the broker still uploads.
+  const ownerId = clientUserId || user?.id || null;
+  const isBrokerView = !!clientUserId && clientUserId !== user?.id;
+
   const categories = showCategories
     ? CATEGORIES.filter(c => showCategories.includes(c.value))
     : CATEGORIES;
@@ -59,21 +64,21 @@ export default function DocumentVault({ vehicleId = null, showCategories }: Docu
   const activeCategory = categories.find(c => c.value === selectedCategory);
 
   useEffect(() => {
-    if (user) loadDocuments();
-  }, [user, vehicleId]);
+    if (ownerId) loadDocuments();
+  }, [ownerId, vehicleId]);
 
   // Reset selected category when context changes
   useEffect(() => {
     setSelectedCategory('');
-  }, [vehicleId]);
+  }, [vehicleId, clientUserId]);
 
   const loadDocuments = async () => {
-    if (!user) return;
+    if (!ownerId) return;
     setLoading(true);
     let query = supabase
       .from('user_documents' as any)
       .select('*')
-      .eq('user_id', user.id)
+      .eq('user_id', ownerId)
       .order('created_at', { ascending: false });
 
     if (vehicleId) {
