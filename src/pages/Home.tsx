@@ -24,7 +24,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-background">
       <SEO
-        title="SAVO — Car Accident Claims, Courtesy Cars & Insurance Help | NZ"
+        title="SAVO — Car Accident Claims & Insurance Help | NZ"
         description="Had a car accident in New Zealand? SAVO helps you document damage, lodge insurance claims, request a courtesy car, find panel beaters and tow trucks — all free."
         path="/"
         image="/hero-scene.jpg"
