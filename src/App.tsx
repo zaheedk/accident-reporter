@@ -52,6 +52,7 @@ const DeleteDataRequest = lazy(() => import("./pages/DeleteDataRequest"));
 const Documents = lazy(() => import("./pages/Documents"));
 const Family = lazy(() => import("./pages/Family"));
 const Fleet = lazy(() => import("./pages/Fleet"));
+const Broker = lazy(() => import("./pages/Broker"));
 const WidgetSetup = lazy(() => import("./pages/WidgetSetup"));
 const FaultGuide = lazy(() => import("./pages/FaultGuide"));
 
@@ -97,6 +98,9 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
       }
       if (code && path === '/fleet') {
         try { localStorage.setItem('pending_fleet_invite', code); } catch {}
+      }
+      if (code && path === '/broker') {
+        try { localStorage.setItem('pending_broker_invite', code); } catch {}
       }
     }
     return <Navigate to="/auth" replace />;
@@ -158,6 +162,7 @@ const App = () => (
               <Route path="/documents" element={<ProtectedRoute><Documents /></ProtectedRoute>} />
               <Route path="/family" element={<ProtectedRoute><Family /></ProtectedRoute>} />
               <Route path="/fleet" element={<ProtectedRoute><Fleet /></ProtectedRoute>} />
+              <Route path="/broker" element={<ProtectedRoute><Broker /></ProtectedRoute>} />
               <Route path="/widget-setup" element={<ProtectedRoute><WidgetSetup /></ProtectedRoute>} />
               <Route path="/fault-guide" element={<FaultGuide />} />
               <Route path="/about" element={<About />} />

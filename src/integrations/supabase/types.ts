@@ -14,6 +14,172 @@ export type Database = {
   }
   public: {
     Tables: {
+      broker_applications: {
+        Row: {
+          admin_notes: string
+          company_name: string
+          contact_email: string
+          created_at: string
+          id: string
+          license_number: string
+          phone: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          admin_notes?: string
+          company_name?: string
+          contact_email?: string
+          created_at?: string
+          id?: string
+          license_number?: string
+          phone?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          user_id: string
+        }
+        Update: {
+          admin_notes?: string
+          company_name?: string
+          contact_email?: string
+          created_at?: string
+          id?: string
+          license_number?: string
+          phone?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      broker_clients: {
+        Row: {
+          accepted_at: string | null
+          brokerage_id: string
+          client_email: string
+          client_name: string
+          client_phone: string
+          client_user_id: string | null
+          id: string
+          invited_at: string
+          status: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          brokerage_id: string
+          client_email?: string
+          client_name?: string
+          client_phone?: string
+          client_user_id?: string | null
+          id?: string
+          invited_at?: string
+          status?: string
+        }
+        Update: {
+          accepted_at?: string | null
+          brokerage_id?: string
+          client_email?: string
+          client_name?: string
+          client_phone?: string
+          client_user_id?: string | null
+          id?: string
+          invited_at?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "broker_clients_brokerage_id_fkey"
+            columns: ["brokerage_id"]
+            isOneToOne: false
+            referencedRelation: "brokerages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      broker_invites: {
+        Row: {
+          accepted_at: string | null
+          accepted_by: string | null
+          brokerage_id: string
+          code: string
+          created_at: string
+          email: string | null
+          expires_at: string
+          id: string
+          invited_by: string
+          status: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          accepted_by?: string | null
+          brokerage_id: string
+          code: string
+          created_at?: string
+          email?: string | null
+          expires_at?: string
+          id?: string
+          invited_by: string
+          status?: string
+        }
+        Update: {
+          accepted_at?: string | null
+          accepted_by?: string | null
+          brokerage_id?: string
+          code?: string
+          created_at?: string
+          email?: string | null
+          expires_at?: string
+          id?: string
+          invited_by?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "broker_invites_brokerage_id_fkey"
+            columns: ["brokerage_id"]
+            isOneToOne: false
+            referencedRelation: "brokerages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      brokerages: {
+        Row: {
+          company_name: string
+          contact_email: string
+          created_at: string
+          id: string
+          license_number: string
+          owner_user_id: string
+          phone: string
+          updated_at: string
+        }
+        Insert: {
+          company_name?: string
+          contact_email?: string
+          created_at?: string
+          id?: string
+          license_number?: string
+          owner_user_id: string
+          phone?: string
+          updated_at?: string
+        }
+        Update: {
+          company_name?: string
+          contact_email?: string
+          created_at?: string
+          id?: string
+          license_number?: string
+          owner_user_id?: string
+          phone?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       call_recordings: {
         Row: {
           claim_id: string
@@ -1361,6 +1527,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_broker_for: {
+        Args: { _broker_uid: string; _client_uid: string }
+        Returns: boolean
+      }
       is_family_head: {
         Args: { _family_id: string; _user_id: string }
         Returns: boolean
@@ -1386,6 +1556,7 @@ export type Database = {
           read_ct: number
         }[]
       }
+      user_brokerage_id: { Args: { _user_id: string }; Returns: string }
       user_family_id: { Args: { _user_id: string }; Returns: string }
       user_fleet_id: { Args: { _user_id: string }; Returns: string }
     }
