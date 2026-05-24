@@ -465,8 +465,19 @@ export default function VehicleForm() {
               <div>
                 <label className={labelCls}>Policy expiry</label>
                 <input type="date" className={`${inputCls} tabular-nums`} value={form.insuranceExpiry} onChange={e => update('insuranceExpiry', e.target.value)} />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className={labelCls}>Broker / agent name</label>
+                <input className={inputCls} placeholder="Optional" value={form.brokerName || ''} onChange={e => update('brokerName', e.target.value)} />
+              </div>
+              <div>
+                <label className={labelCls}>Broker / insurance email</label>
+                <input type="email" className={inputCls} placeholder="broker@example.com" value={form.brokerEmail || ''} onChange={e => update('brokerEmail', e.target.value)} />
               </div>
             </div>
+            <p className="text-[12px] text-muted-foreground">Used to email signed incident reports directly from a claim.</p>
+          </div>
           </div>
 
           {/* Roadside assistance */}
