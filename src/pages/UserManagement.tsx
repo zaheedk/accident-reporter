@@ -359,6 +359,12 @@ export default function UserManagement() {
                             Fleet manager
                           </Badge>
                         )}
+                        {isBroker && (
+                          <Badge variant="default" className="text-[10px] gap-1 bg-primary/15 text-primary border-primary/30">
+                            <ShieldCheck className="w-2.5 h-2.5" />
+                            Broker
+                          </Badge>
+                        )}
                       </div>
                       <div className="mt-2 space-y-0.5">
                         {profile.email && (
