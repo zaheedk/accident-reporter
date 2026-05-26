@@ -7,8 +7,24 @@ import SEO from '@/components/SEO';
 
 export default function BlogPost() {
   const { slug } = useParams<{ slug: string }>();
-  const article = slug ? getArticleBySlug(slug) : undefined;
 
+  // Redirects from old/renamed slugs (previously indexed by Google) to current slugs.
+  const SLUG_REDIRECTS: Record<string, string> = {
+    'third-party-claims-nz': 'comprehensive-vs-third-party-insurance-nz',
+    'understanding-car-insurance-nz': 'understanding-car-insurance-types-new-zealand',
+    'what-to-do-after-car-accident-nz': 'what-to-do-after-car-accident-new-zealand',
+    'right-of-way-rules-nz': 'right-of-way-rules-nz-intersections',
+    'roadside-assistance-nz': 'roadside-assistance-nz-what-to-know',
+    'talking-to-your-insurer-nz': 'how-to-talk-to-your-insurer-after-accident-nz',
+    'dashcam-insurance-claims-nz': 'dashcam-phone-evidence-insurance-claims-nz',
+    'insurance-renewal-tips-nz': 'renewing-car-insurance-nz-tips',
+    'choosing-panel-beater-nz': 'towing-rights-nz-choosing-tow-company',
+  };
+  if (slug && SLUG_REDIRECTS[slug]) {
+    return <Navigate to={`/blog/${SLUG_REDIRECTS[slug]}`} replace />;
+  }
+
+  const article = slug ? getArticleBySlug(slug) : undefined;
   if (!article) return <Navigate to="/blog" replace />;
 
   const articleJsonLd = {
