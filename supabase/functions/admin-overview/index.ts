@@ -38,15 +38,26 @@ Deno.serve(async (req) => {
     }
 
     // Fetch all data via service_role
-    const [profilesRes, vehiclesRes, claimsRes] = await Promise.all([
-      admin.from('profiles').select('user_id, display_name, email').order('created_at'),
+    const [profilesRes, vehiclesRes, claimsRes, authUsersRes] = await Promise.all([
+      admin.from('profiles').select('*').order('created_at', { ascending: false }),
       admin.from('vehicles').select('*').order('created_at', { ascending: false }),
       admin.from('claims').select('*').order('created_at', { ascending: false }),
+      admin.auth.admin.listUsers({ page: 1, perPage: 1000 }),
     ]);
+
+    const emailMap = new Map<string, string>();
+    (authUsersRes.data?.users || []).forEach((u: any) => {
+      if (u?.id && u?.email) emailMap.set(u.id, u.email);
+    });
+
+    const profiles = (profilesRes.data || []).map((p: any) => ({
+      ...p,
+      email: p.email || emailMap.get(p.user_id) || '',
+    }));
 
     return new Response(
       JSON.stringify({
-        profiles: profilesRes.data || [],
+        profiles,
         vehicles: vehiclesRes.data || [],
         claims: claimsRes.data || [],
       }),
