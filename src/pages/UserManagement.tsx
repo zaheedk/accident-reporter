@@ -55,12 +55,12 @@ export default function UserManagement() {
   const { data: profiles = [], isLoading } = useQuery({
     queryKey: ['admin-users'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('id, user_id, display_name, email, phone_number, is_active, created_at, source')
-        .order('created_at', { ascending: false });
+      const { data, error } = await supabase.functions.invoke('admin-overview');
       if (error) throw error;
-      return data as UserProfile[];
+      const rows = (data?.profiles || []) as UserProfile[];
+      return [...rows].sort((a, b) =>
+        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      );
     },
     enabled: isAdmin,
   });
