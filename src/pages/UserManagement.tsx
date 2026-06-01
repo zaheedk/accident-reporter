@@ -110,7 +110,12 @@ export default function UserManagement() {
     enabled: isAdmin,
   });
 
-
+  const brokerages = brokerData?.brokerages || [];
+  const applications = brokerData?.applications || [];
+  const pendingApplications = applications.filter(a => a.status === 'pending');
+  const brokerSet = useMemo(() => new Set(brokerages.map(b => b.owner_user_id)), [brokerages]);
+  const [brokerBusy, setBrokerBusy] = useState<string>('');
+  const [revokeBroker, setRevokeBroker] = useState<{ userId: string; name: string } | null>(null);
 
   const reviewApplication = async (applicationId: string, action: 'approve_application' | 'reject_application', notes?: string) => {
     setBrokerBusy(applicationId);
