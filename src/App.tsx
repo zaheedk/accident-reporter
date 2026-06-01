@@ -54,6 +54,7 @@ const Family = lazy(() => import("./pages/Family"));
 const Fleet = lazy(() => import("./pages/Fleet"));
 const Broker = lazy(() => import("./pages/Broker"));
 const RentalPartner = lazy(() => import("./pages/RentalPartner"));
+const RentalPartnersAdmin = lazy(() => import("./pages/admin/RentalPartners"));
 const WidgetSetup = lazy(() => import("./pages/WidgetSetup"));
 const FaultGuide = lazy(() => import("./pages/FaultGuide"));
 
