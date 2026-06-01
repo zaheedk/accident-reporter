@@ -739,26 +739,6 @@ export default function UserManagement() {
         </AlertDialogContent>
       </AlertDialog>
 
-      <AlertDialog open={!!revokeRental} onOpenChange={(open) => !open && setRevokeRental(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Revoke rental partner?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Remove {revokeRental?.name} as a rental partner. Their fleet roster and inbound email alias will be deleted. Vehicles and rental agreements already attached to customer accounts are preserved as historical records.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={!!rentalBusy}>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={(e) => { e.preventDefault(); handleRevokeRental(); }}
-              disabled={!!rentalBusy}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              {rentalBusy ? 'Working...' : 'Revoke'}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </AppLayout>
   );
 }
