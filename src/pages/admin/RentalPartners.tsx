@@ -94,6 +94,17 @@ export default function RentalPartnersAdmin() {
     } catch (e: any) { toast.error(e?.message || 'Failed'); } finally { setBusy(''); }
   };
 
+  const handleSaveEdit = async () => {
+    if (!editing) return;
+    setBusy('edit');
+    try {
+      await invoke({ action: 'update_partner', partner_id: editing.id, inbound_alias: editAlias });
+      toast.success('Inbound email updated');
+      setEditing(null);
+      queryClient.invalidateQueries({ queryKey: ['admin-rental-partners'] });
+    } catch (e: any) { toast.error(e?.message || 'Failed'); } finally { setBusy(''); }
+  };
+
   return (
     <AppLayout>
       <div className="max-w-3xl mx-auto p-4 space-y-4">
