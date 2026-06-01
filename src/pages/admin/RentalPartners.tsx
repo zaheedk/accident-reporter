@@ -46,7 +46,9 @@ export default function RentalPartnersAdmin() {
   const [busy, setBusy] = useState<string>('');
   const [revoke, setRevoke] = useState<{ userId: string; name: string } | null>(null);
   const [showCreate, setShowCreate] = useState(false);
-  const [form, setForm] = useState({ company_name: '', owner_email: '', contact_email: '', phone: '' });
+  const [form, setForm] = useState({ company_name: '', owner_email: '', contact_email: '', phone: '', inbound_alias: '' });
+  const [editing, setEditing] = useState<Partner | null>(null);
+  const [editAlias, setEditAlias] = useState('');
 
   const partners = data?.partners || [];
   const applications = data?.applications || [];
