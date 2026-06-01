@@ -205,10 +205,16 @@ export default function RentalPartnersAdmin() {
                           {p.phone && <p>{p.phone}</p>}
                         </div>
                       </div>
-                      <Button variant="outline" size="sm" className="h-7 text-xs"
-                        onClick={() => setRevoke({ userId: p.owner_user_id, name: p.company_name })}>
-                        Revoke
-                      </Button>
+                      <div className="flex flex-col gap-1.5">
+                        <Button variant="outline" size="sm" className="h-7 text-xs"
+                          onClick={() => { setEditing(p); setEditAlias(p.inbound_alias.split('@')[0] || ''); }}>
+                          Edit
+                        </Button>
+                        <Button variant="outline" size="sm" className="h-7 text-xs"
+                          onClick={() => setRevoke({ userId: p.owner_user_id, name: p.company_name })}>
+                          Revoke
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 );
