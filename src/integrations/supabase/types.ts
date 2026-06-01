@@ -1069,6 +1069,53 @@ export type Database = {
         }
         Relationships: []
       }
+      partner_fleet_vehicles: {
+        Row: {
+          color: string
+          created_at: string
+          id: string
+          make: string
+          model: string
+          partner_id: string
+          rego_number: string
+          updated_at: string
+          vin: string
+          year: string
+        }
+        Insert: {
+          color?: string
+          created_at?: string
+          id?: string
+          make?: string
+          model?: string
+          partner_id: string
+          rego_number: string
+          updated_at?: string
+          vin?: string
+          year?: string
+        }
+        Update: {
+          color?: string
+          created_at?: string
+          id?: string
+          make?: string
+          model?: string
+          partner_id?: string
+          rego_number?: string
+          updated_at?: string
+          vin?: string
+          year?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "partner_fleet_vehicles_partner_id_fkey"
+            columns: ["partner_id"]
+            isOneToOne: false
+            referencedRelation: "rental_partners"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       phone_otps: {
         Row: {
           created_at: string
@@ -1171,6 +1218,87 @@ export type Database = {
           id?: string
           p256dh?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      rental_partner_applications: {
+        Row: {
+          admin_notes: string
+          company_name: string
+          contact_email: string
+          created_at: string
+          id: string
+          phone: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          admin_notes?: string
+          company_name?: string
+          contact_email?: string
+          created_at?: string
+          id?: string
+          phone?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          user_id: string
+        }
+        Update: {
+          admin_notes?: string
+          company_name?: string
+          contact_email?: string
+          created_at?: string
+          id?: string
+          phone?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      rental_partners: {
+        Row: {
+          brand_color: string
+          company_name: string
+          contact_email: string
+          created_at: string
+          id: string
+          inbound_alias: string
+          logo_url: string
+          owner_user_id: string
+          phone: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          brand_color?: string
+          company_name?: string
+          contact_email?: string
+          created_at?: string
+          id?: string
+          inbound_alias: string
+          logo_url?: string
+          owner_user_id: string
+          phone?: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          brand_color?: string
+          company_name?: string
+          contact_email?: string
+          created_at?: string
+          id?: string
+          inbound_alias?: string
+          logo_url?: string
+          owner_user_id?: string
+          phone?: string
+          status?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -1390,12 +1518,15 @@ export type Database = {
           created_at: string
           finance_arrangement: boolean
           finance_details: string | null
+          hire_end_date: string
+          hire_start_date: string
           id: string
           insurance_company: string
           insurance_expiry: string
           insurance_policy_number: string
           is_active: boolean
           is_default: boolean
+          is_rental: boolean
           make: string
           model: string
           modification_details: string | null
@@ -1403,6 +1534,7 @@ export type Database = {
           photo_url: string
           rego_expiry: string
           rego_number: string
+          rental_partner_id: string | null
           roadside_phone: string
           roadside_provider: string
           slug: string | null
@@ -1418,12 +1550,15 @@ export type Database = {
           created_at?: string
           finance_arrangement?: boolean
           finance_details?: string | null
+          hire_end_date?: string
+          hire_start_date?: string
           id?: string
           insurance_company?: string
           insurance_expiry?: string
           insurance_policy_number?: string
           is_active?: boolean
           is_default?: boolean
+          is_rental?: boolean
           make?: string
           model?: string
           modification_details?: string | null
@@ -1431,6 +1566,7 @@ export type Database = {
           photo_url?: string
           rego_expiry?: string
           rego_number?: string
+          rental_partner_id?: string | null
           roadside_phone?: string
           roadside_provider?: string
           slug?: string | null
@@ -1446,12 +1582,15 @@ export type Database = {
           created_at?: string
           finance_arrangement?: boolean
           finance_details?: string | null
+          hire_end_date?: string
+          hire_start_date?: string
           id?: string
           insurance_company?: string
           insurance_expiry?: string
           insurance_policy_number?: string
           is_active?: boolean
           is_default?: boolean
+          is_rental?: boolean
           make?: string
           model?: string
           modification_details?: string | null
@@ -1459,6 +1598,7 @@ export type Database = {
           photo_url?: string
           rego_expiry?: string
           rego_number?: string
+          rental_partner_id?: string | null
           roadside_phone?: string
           roadside_provider?: string
           slug?: string | null
@@ -1467,7 +1607,15 @@ export type Database = {
           wof_expiry?: string
           year?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "vehicles_rental_partner_id_fkey"
+            columns: ["rental_partner_id"]
+            isOneToOne: false
+            referencedRelation: "rental_partners"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       widget_tokens: {
         Row: {
