@@ -336,8 +336,15 @@ export default function VehicleList() {
                                   <span className="text-[10px] font-medium text-muted-foreground border border-border rounded px-1.5 py-px flex-shrink-0">Inactive</span>
                                 )}
                                 {v.isRental && (
-                                  <span className="text-[10px] font-semibold uppercase tracking-wide text-white rounded px-1.5 py-px flex-shrink-0" style={{ backgroundColor: '#1e3a5f' }}>
-                                    Hire
+                                  <span
+                                    className="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wide text-white rounded px-1.5 py-px flex-shrink-0"
+                                    style={{ backgroundColor: v.rentalPartner?.brandColor || '#1e3a5f' }}
+                                    title={v.rentalPartner?.companyName ? `Hired from ${v.rentalPartner.companyName}` : 'Hire vehicle'}
+                                  >
+                                    {v.rentalPartner?.logoUrl && (
+                                      <img src={v.rentalPartner.logoUrl} alt="" className="w-3 h-3 rounded-sm object-contain bg-white/90 p-px" />
+                                    )}
+                                    Hire{v.rentalPartner?.companyName ? ` · ${v.rentalPartner.companyName}` : ''}
                                   </span>
                                 )}
                               </div>

@@ -43,9 +43,22 @@ export async function getVehicles(userId?: string): Promise<Vehicle[]> {
       .select('*')
       .order('created_at', { ascending: false });
     if (!error && data) {
-      void setCache(cacheKey, data);
+      // Hydrate rental partner branding for any rental-attached vehicles
+      const partnerIds = Array.from(new Set(
+        data.map((r: any) => r.rental_partner_id).filter(Boolean)
+      ));
+      const partnerMap: Record<string, any> = {};
+      if (partnerIds.length) {
+        const { data: partners } = await supabase
+          .from('rental_partners')
+          .select('id, company_name, logo_url, brand_color')
+          .in('id', partnerIds);
+        partners?.forEach((p: any) => { partnerMap[p.id] = p; });
+      }
+      const enriched = data.map((r: any) => ({ ...r, _partner: partnerMap[r.rental_partner_id] }));
+      void setCache(cacheKey, enriched);
       void writeWidgetVehiclesToDevice(data);
-      return data.map(dbVehicleToVehicle);
+      return enriched.map(dbVehicleToVehicle);
     }
     if (error) console.error('getVehicles', error);
     // fall through to cache on error
@@ -130,6 +143,12 @@ function dbVehicleToVehicle(row: any): Vehicle {
     isRental: row.is_rental ?? false,
     hireStartDate: row.hire_start_date || '',
     hireEndDate: row.hire_end_date || '',
+    rentalPartner: row._partner ? {
+      id: row._partner.id,
+      companyName: row._partner.company_name || '',
+      logoUrl: row._partner.logo_url || '',
+      brandColor: row._partner.brand_color || '#1e3a5f',
+    } : undefined,
   };
 }
 
