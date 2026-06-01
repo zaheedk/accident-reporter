@@ -472,6 +472,7 @@ export default function UserManagement() {
               const isSelf = profile.user_id === user?.id;
               const isFleetManager = fleetManagerSet.has(profile.user_id);
               const isBroker = brokerSet.has(profile.user_id);
+              const isRentalPartner = rentalPartnerSet.has(profile.user_id);
               const joined = new Date(profile.created_at).toLocaleDateString();
 
               return (
