@@ -159,6 +159,13 @@ export default function RentalPartnersAdmin() {
                 onChange={e => setForm({ ...form, contact_email: e.target.value })} />
               <Input placeholder="Phone (optional)" value={form.phone}
                 onChange={e => setForm({ ...form, phone: e.target.value })} />
+              <div className="space-y-1">
+                <Input placeholder="Inbound email alias (optional, e.g. acmehire)" value={form.inbound_alias}
+                  onChange={e => setForm({ ...form, inbound_alias: e.target.value })} />
+                <p className="text-[11px] text-muted-foreground">
+                  Partners email rental agreement PDFs to this address for parsing. Leave blank to auto-generate. Final address: <code>{(form.inbound_alias.trim().split('@')[0] || 'auto').toLowerCase().replace(/[^a-z0-9+._-]/g, '')}@hires.savo.co.nz</code>
+                </p>
+              </div>
               <Button size="sm" className="h-8" onClick={handleCreate} disabled={busy === 'create'}>
                 {busy === 'create' ? 'Creating...' : 'Create partner'}
               </Button>
