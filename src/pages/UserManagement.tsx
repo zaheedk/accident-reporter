@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Search, Shield, ShieldOff, UserCheck, UserX, Mail, Phone, Calendar, Link2, Briefcase, ShieldCheck, Check, X, Building2 } from 'lucide-react';
+import { Search, Shield, ShieldOff, UserCheck, UserX, Mail, Phone, Calendar, Link2, Briefcase, ShieldCheck, Check, X } from 'lucide-react';
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
@@ -110,95 +110,12 @@ export default function UserManagement() {
     enabled: isAdmin,
   });
 
-  const { data: rentalData } = useQuery({
-    queryKey: ['admin-rental-partners'],
-    queryFn: async () => {
-      const { data, error } = await supabase.functions.invoke('admin-rental-partner', {
-        body: { action: 'list' },
-      });
-      if (error) throw error;
-      return data as {
-        partners: Array<{ id: string; owner_user_id: string; company_name: string; inbound_alias: string }>;
-        applications: Array<{ id: string; user_id: string; status: string; company_name: string; contact_email: string; phone: string; admin_notes: string; created_at: string }>;
-      };
-    },
-    enabled: isAdmin,
-  });
-
   const brokerages = brokerData?.brokerages || [];
   const applications = brokerData?.applications || [];
   const pendingApplications = applications.filter(a => a.status === 'pending');
   const brokerSet = useMemo(() => new Set(brokerages.map(b => b.owner_user_id)), [brokerages]);
   const [brokerBusy, setBrokerBusy] = useState<string>('');
   const [revokeBroker, setRevokeBroker] = useState<{ userId: string; name: string } | null>(null);
-
-  const rentalPartners = rentalData?.partners || [];
-  const rentalApplications = rentalData?.applications || [];
-  const pendingRentalApplications = rentalApplications.filter(a => a.status === 'pending');
-  const rentalPartnerSet = useMemo(() => new Set(rentalPartners.map(p => p.owner_user_id)), [rentalPartners]);
-  const [rentalBusy, setRentalBusy] = useState<string>('');
-  const [revokeRental, setRevokeRental] = useState<{ userId: string; name: string } | null>(null);
-  const [showCreateRental, setShowCreateRental] = useState(false);
-  const [newRental, setNewRental] = useState({ company_name: '', owner_email: '', contact_email: '', phone: '' });
-
-  const createRentalPartner = async () => {
-    if (!newRental.company_name || !newRental.owner_email) {
-      toast.error('Company name and owner email are required');
-      return;
-    }
-    setRentalBusy('create');
-    try {
-      const { data, error } = await supabase.functions.invoke('admin-rental-partner', {
-        body: { action: 'create_partner', ...newRental },
-      });
-      if (error || (data as any)?.error) throw new Error((data as any)?.error || error?.message);
-      toast.success('Rental partner created');
-      setShowCreateRental(false);
-      setNewRental({ company_name: '', owner_email: '', contact_email: '', phone: '' });
-      queryClient.invalidateQueries({ queryKey: ['admin-rental-partners'] });
-      queryClient.invalidateQueries({ queryKey: ['admin-users'] });
-    } catch (e: any) {
-      toast.error(e?.message || 'Failed');
-    } finally {
-      setRentalBusy('');
-    }
-  };
-
-
-  const reviewRentalApplication = async (applicationId: string, action: 'approve_application' | 'reject_application', notes?: string) => {
-    setRentalBusy(applicationId);
-    try {
-      const { data, error } = await supabase.functions.invoke('admin-rental-partner', {
-        body: { action, application_id: applicationId, notes },
-      });
-      if (error || (data as any)?.error) throw new Error((data as any)?.error || error?.message);
-      toast.success(action === 'approve_application' ? 'Rental partner approved' : 'Application rejected');
-      queryClient.invalidateQueries({ queryKey: ['admin-rental-partners'] });
-    } catch (e: any) {
-      toast.error(e?.message || 'Failed');
-    } finally {
-      setRentalBusy('');
-    }
-  };
-
-  const handleRevokeRental = async () => {
-    if (!revokeRental) return;
-    setRentalBusy(revokeRental.userId);
-    try {
-      const { data, error } = await supabase.functions.invoke('admin-rental-partner', {
-        body: { action: 'revoke_partner', target_user_id: revokeRental.userId },
-      });
-      if (error || (data as any)?.error) throw new Error((data as any)?.error || error?.message);
-      toast.success('Rental partner revoked');
-      setRevokeRental(null);
-      queryClient.invalidateQueries({ queryKey: ['admin-rental-partners'] });
-    } catch (e: any) {
-      toast.error(e?.message || 'Failed');
-    } finally {
-      setRentalBusy('');
-    }
-  };
-
 
   const reviewApplication = async (applicationId: string, action: 'approve_application' | 'reject_application', notes?: string) => {
     setBrokerBusy(applicationId);
@@ -396,76 +313,6 @@ export default function UserManagement() {
           </Card>
         )}
 
-        <Card className="p-4">
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2">
-              <Building2 className="w-4 h-4 text-muted-foreground" />
-              <h2 className="text-sm font-semibold text-foreground">Rental partners ({rentalPartners.length})</h2>
-            </div>
-            <Button size="sm" className="h-7 text-xs" onClick={() => setShowCreateRental(v => !v)}>
-              {showCreateRental ? 'Cancel' : 'Add rental partner'}
-            </Button>
-          </div>
-          {showCreateRental && (
-            <div className="space-y-2 p-3 rounded-lg border border-border bg-muted/30">
-              <Input placeholder="Company name" value={newRental.company_name}
-                onChange={e => setNewRental({ ...newRental, company_name: e.target.value })} />
-              <Input placeholder="Owner email (login for partner dashboard)" type="email" value={newRental.owner_email}
-                onChange={e => setNewRental({ ...newRental, owner_email: e.target.value })} />
-              <Input placeholder="Contact email (optional)" type="email" value={newRental.contact_email}
-                onChange={e => setNewRental({ ...newRental, contact_email: e.target.value })} />
-              <Input placeholder="Phone (optional)" value={newRental.phone}
-                onChange={e => setNewRental({ ...newRental, phone: e.target.value })} />
-              <Button size="sm" className="h-8" onClick={createRentalPartner} disabled={rentalBusy === 'create'}>
-                {rentalBusy === 'create' ? 'Creating...' : 'Create partner'}
-              </Button>
-              <p className="text-[11px] text-muted-foreground">
-                If the owner email doesn't have a SAVO account yet, one will be created. They can sign in and access their rental partner dashboard at /rental-partner.
-              </p>
-            </div>
-          )}
-        </Card>
-
-        {pendingRentalApplications.length > 0 && (
-          <Card className="p-4 border-primary/40 bg-primary/5">
-            <div className="flex items-center gap-2 mb-3">
-              <Building2 className="w-4 h-4 text-primary" />
-              <h2 className="text-sm font-semibold text-foreground">Pending rental partner applications ({pendingRentalApplications.length})</h2>
-            </div>
-            <div className="space-y-2">
-              {pendingRentalApplications.map(app => {
-                const applicant = profiles.find(p => p.user_id === app.user_id);
-                return (
-                  <div key={app.id} className="rounded-lg border border-border bg-card p-3 space-y-2">
-                    <div className="min-w-0">
-                      <p className="text-sm font-semibold text-foreground truncate">{app.company_name}</p>
-                      <p className="text-[11px] text-muted-foreground">
-                        {applicant?.display_name || applicant?.email || app.contact_email}
-                      </p>
-                      <div className="mt-1 grid grid-cols-1 sm:grid-cols-3 gap-x-3 gap-y-0.5 text-[11px] text-muted-foreground">
-                        {app.phone && <span>{app.phone}</span>}
-                        {app.contact_email && <span className="truncate">{app.contact_email}</span>}
-                      </div>
-                    </div>
-                    <div className="flex gap-2">
-                      <Button size="sm" className="h-7 text-xs gap-1.5" disabled={rentalBusy === app.id}
-                        onClick={() => reviewRentalApplication(app.id, 'approve_application')}>
-                        <Check className="w-3 h-3" /> Approve
-                      </Button>
-                      <Button size="sm" variant="outline" className="h-7 text-xs gap-1.5" disabled={rentalBusy === app.id}
-                        onClick={() => {
-                          const notes = prompt('Reason for rejection (optional)?') || '';
-                          reviewRentalApplication(app.id, 'reject_application', notes);
-                        }}>
-                        <X className="w-3 h-3" /> Reject
-                      </Button>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </Card>
-        )}
 
 
         {/* Search + filters */}
@@ -528,7 +375,7 @@ export default function UserManagement() {
               const isSelf = profile.user_id === user?.id;
               const isFleetManager = fleetManagerSet.has(profile.user_id);
               const isBroker = brokerSet.has(profile.user_id);
-              const isRentalPartner = rentalPartnerSet.has(profile.user_id);
+              
               const joined = new Date(profile.created_at).toLocaleDateString();
 
               return (
@@ -574,12 +421,6 @@ export default function UserManagement() {
                             Broker
                           </Badge>
                         )}
-                        {isRentalPartner && (
-                          <Badge variant="default" className="text-[10px] gap-1 bg-primary/15 text-primary border-primary/30">
-                            <Building2 className="w-2.5 h-2.5" />
-                            Rental partner
-                          </Badge>
-                        )}
                       </div>
                       <div className="mt-2 space-y-0.5">
                         {profile.email && (
@@ -619,17 +460,6 @@ export default function UserManagement() {
                           >
                             <ShieldCheck className="w-3 h-3" />
                             Revoke broker
-                          </Button>
-                        )}
-                        {isRentalPartner && (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="h-7 text-xs gap-1.5"
-                            onClick={() => setRevokeRental({ userId: profile.user_id, name: profile.display_name || 'this user' })}
-                          >
-                            <Building2 className="w-3 h-3" />
-                            Revoke rental partner
                           </Button>
                         )}
                       </div>
@@ -739,26 +569,6 @@ export default function UserManagement() {
         </AlertDialogContent>
       </AlertDialog>
 
-      <AlertDialog open={!!revokeRental} onOpenChange={(open) => !open && setRevokeRental(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Revoke rental partner?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Remove {revokeRental?.name} as a rental partner. Their fleet roster and inbound email alias will be deleted. Vehicles and rental agreements already attached to customer accounts are preserved as historical records.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={!!rentalBusy}>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={(e) => { e.preventDefault(); handleRevokeRental(); }}
-              disabled={!!rentalBusy}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              {rentalBusy ? 'Working...' : 'Revoke'}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </AppLayout>
   );
 }

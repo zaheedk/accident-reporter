@@ -54,6 +54,7 @@ const Family = lazy(() => import("./pages/Family"));
 const Fleet = lazy(() => import("./pages/Fleet"));
 const Broker = lazy(() => import("./pages/Broker"));
 const RentalPartner = lazy(() => import("./pages/RentalPartner"));
+const RentalPartnersAdmin = lazy(() => import("./pages/admin/RentalPartners"));
 const WidgetSetup = lazy(() => import("./pages/WidgetSetup"));
 const FaultGuide = lazy(() => import("./pages/FaultGuide"));
 
@@ -159,6 +160,7 @@ const App = () => (
               <Route path="/users" element={<ProtectedRoute><UserManagement /></ProtectedRoute>} />
               <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
               <Route path="/admin/insurance-companies" element={<ProtectedRoute><InsuranceCompanies /></ProtectedRoute>} />
+              <Route path="/admin/rental-partners" element={<ProtectedRoute><RentalPartnersAdmin /></ProtectedRoute>} />
               <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
               <Route path="/documents" element={<ProtectedRoute><Documents /></ProtectedRoute>} />
               <Route path="/family" element={<ProtectedRoute><Family /></ProtectedRoute>} />
