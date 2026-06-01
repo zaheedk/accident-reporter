@@ -24,6 +24,12 @@ export interface Vehicle {
   isActive: boolean;
   isDefault?: boolean;
   createdAt: string;
+  // Rental-partner attached vehicles
+  rentalPartnerId?: string;
+  isRental?: boolean;
+  hireStartDate?: string;
+  hireEndDate?: string;
+  rentalPartner?: { id: string; companyName: string; logoUrl: string; brandColor: string };
 }
 
 export interface ThirdPartyVehicle {

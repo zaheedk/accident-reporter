@@ -126,6 +126,10 @@ function dbVehicleToVehicle(row: any): Vehicle {
     isActive: row.is_active ?? true,
     isDefault: row.is_default ?? false,
     createdAt: row.created_at,
+    rentalPartnerId: row.rental_partner_id || undefined,
+    isRental: row.is_rental ?? false,
+    hireStartDate: row.hire_start_date || '',
+    hireEndDate: row.hire_end_date || '',
   };
 }
 
