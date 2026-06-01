@@ -306,7 +306,7 @@ export default function DocumentVault({ vehicleId = null, showCategories, client
                   >
                     <Eye className="w-4 h-4" strokeWidth={1.75} />
                   </button>
-                  {!isBrokerView && (
+                  {!isBrokerView && doc.category !== 'rental_agreement' && (
                     <button
                       onClick={() => setDeleteTarget(doc)}
                       className="w-9 h-9 inline-flex items-center justify-center rounded-lg text-muted-foreground/60 hover:text-destructive hover:bg-destructive/5 transition-colors"
