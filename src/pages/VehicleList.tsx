@@ -335,8 +335,16 @@ export default function VehicleList() {
                                 {isInactive && (
                                   <span className="text-[10px] font-medium text-muted-foreground border border-border rounded px-1.5 py-px flex-shrink-0">Inactive</span>
                                 )}
+                                {v.isRental && (
+                                  <span className="text-[10px] font-semibold uppercase tracking-wide text-white rounded px-1.5 py-px flex-shrink-0" style={{ backgroundColor: '#1e3a5f' }}>
+                                    Hire
+                                  </span>
+                                )}
                               </div>
-                              <div className="text-[12px] text-muted-foreground truncate">{v.year} {v.make} {v.model}</div>
+                              <div className="text-[12px] text-muted-foreground truncate">
+                                {v.year} {v.make} {v.model}
+                                {v.isRental && v.hireEndDate && <span className="ml-2 text-amber-600 dark:text-amber-400">· Return by {v.hireEndDate}</span>}
+                              </div>
                             </div>
                             {!isInactive && vehicles.length > 1 && !v.isDefault && (
                               <button
