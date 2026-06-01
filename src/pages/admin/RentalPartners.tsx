@@ -255,6 +255,30 @@ export default function RentalPartnersAdmin() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <AlertDialog open={!!editing} onOpenChange={(open) => !open && setEditing(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Edit inbound email</AlertDialogTitle>
+            <AlertDialogDescription>
+              Set the address where {editing?.company_name} sends rental agreement PDFs for parsing.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <div className="space-y-2 py-2">
+            <div className="flex items-center gap-1.5">
+              <Input value={editAlias} onChange={e => setEditAlias(e.target.value)} placeholder="acmehire" />
+              <span className="text-sm text-muted-foreground whitespace-nowrap">@hires.savo.co.nz</span>
+            </div>
+            <p className="text-[11px] text-muted-foreground">Lowercase letters, digits, dot, dash, underscore or plus only.</p>
+          </div>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={busy === 'edit'}>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={(e) => { e.preventDefault(); handleSaveEdit(); }} disabled={busy === 'edit' || !editAlias.trim()}>
+              {busy === 'edit' ? 'Saving...' : 'Save'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </AppLayout>
   );
 }
