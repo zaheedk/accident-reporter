@@ -348,13 +348,15 @@ export default function VehicleList() {
                                 <Star className="w-3.5 h-3.5" />
                               </button>
                             )}
-                            <button
-                              onClick={(e) => { e.preventDefault(); e.stopPropagation(); setDeleteTarget(v); }}
-                              aria-label="Delete vehicle"
-                              className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground/60 hover:text-destructive hover:bg-destructive/10 transition-colors shrink-0"
-                            >
-                              <Trash2 className="w-3.5 h-3.5" />
-                            </button>
+                            {!v.isRental && (
+                              <button
+                                onClick={(e) => { e.preventDefault(); e.stopPropagation(); setDeleteTarget(v); }}
+                                aria-label="Delete vehicle"
+                                className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground/60 hover:text-destructive hover:bg-destructive/10 transition-colors shrink-0"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            )}
                           </div>
                           {!isInactive && (
                             <div className="flex flex-wrap gap-1.5 mt-3">
