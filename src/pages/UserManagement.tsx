@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Search, Shield, ShieldOff, UserCheck, UserX, Mail, Phone, Calendar, Link2, Briefcase, ShieldCheck, Check, X } from 'lucide-react';
+import { Search, Shield, ShieldOff, UserCheck, UserX, Mail, Phone, Calendar, Link2, Briefcase, ShieldCheck, Check, X, Building2 } from 'lucide-react';
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
