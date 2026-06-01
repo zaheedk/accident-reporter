@@ -138,6 +138,32 @@ export default function UserManagement() {
   const rentalPartnerSet = useMemo(() => new Set(rentalPartners.map(p => p.owner_user_id)), [rentalPartners]);
   const [rentalBusy, setRentalBusy] = useState<string>('');
   const [revokeRental, setRevokeRental] = useState<{ userId: string; name: string } | null>(null);
+  const [showCreateRental, setShowCreateRental] = useState(false);
+  const [newRental, setNewRental] = useState({ company_name: '', owner_email: '', contact_email: '', phone: '' });
+
+  const createRentalPartner = async () => {
+    if (!newRental.company_name || !newRental.owner_email) {
+      toast.error('Company name and owner email are required');
+      return;
+    }
+    setRentalBusy('create');
+    try {
+      const { data, error } = await supabase.functions.invoke('admin-rental-partner', {
+        body: { action: 'create_partner', ...newRental },
+      });
+      if (error || (data as any)?.error) throw new Error((data as any)?.error || error?.message);
+      toast.success('Rental partner created');
+      setShowCreateRental(false);
+      setNewRental({ company_name: '', owner_email: '', contact_email: '', phone: '' });
+      queryClient.invalidateQueries({ queryKey: ['admin-rental-partners'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-users'] });
+    } catch (e: any) {
+      toast.error(e?.message || 'Failed');
+    } finally {
+      setRentalBusy('');
+    }
+  };
+
 
   const reviewRentalApplication = async (applicationId: string, action: 'approve_application' | 'reject_application', notes?: string) => {
     setRentalBusy(applicationId);
