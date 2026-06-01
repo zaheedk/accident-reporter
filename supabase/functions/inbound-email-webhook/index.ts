@@ -128,6 +128,31 @@ serve(async (req) => {
       emailData.recipient;
 
     const toAddress = firstNonEmpty(Array.isArray(toRaw) ? toRaw[0] : toRaw);
+
+    // Route rental-partner emails to the dedicated webhook
+    if (toAddress.toLowerCase().includes('@hires.savo.co.nz')) {
+      try {
+        const rentalUrl = `${Deno.env.get('SUPABASE_URL')}/functions/v1/inbound-rental-agreement`;
+        const forwardRes = await fetch(rentalUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')}`,
+          },
+          body: JSON.stringify(payload),
+        });
+        const forwardBody = await forwardRes.text();
+        return new Response(JSON.stringify({ success: true, forwarded_to: 'inbound-rental-agreement', downstream_status: forwardRes.status, downstream_body: forwardBody }), {
+          status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      } catch (fwdErr) {
+        console.error('Forward to rental webhook failed:', fwdErr);
+        return new Response(JSON.stringify({ success: false, error: 'forward_failed' }), {
+          status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+    }
+
     const subject = firstNonEmpty(emailData.subject, '(No subject)');
 
     const text = firstNonEmpty(
