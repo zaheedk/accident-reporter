@@ -69,7 +69,7 @@ export default function RentalPartnersAdmin() {
       await invoke({ action: 'create_partner', ...form });
       toast.success('Rental partner created');
       setShowCreate(false);
-      setForm({ company_name: '', owner_email: '', contact_email: '', phone: '' });
+      setForm({ company_name: '', owner_email: '', contact_email: '', phone: '', inbound_alias: '' });
       queryClient.invalidateQueries({ queryKey: ['admin-rental-partners'] });
     } catch (e: any) { toast.error(e?.message || 'Failed'); } finally { setBusy(''); }
   };
