@@ -46,7 +46,9 @@ export default function RentalPartnersAdmin() {
   const [busy, setBusy] = useState<string>('');
   const [revoke, setRevoke] = useState<{ userId: string; name: string } | null>(null);
   const [showCreate, setShowCreate] = useState(false);
-  const [form, setForm] = useState({ company_name: '', owner_email: '', contact_email: '', phone: '' });
+  const [form, setForm] = useState({ company_name: '', owner_email: '', contact_email: '', phone: '', inbound_alias: '' });
+  const [editing, setEditing] = useState<Partner | null>(null);
+  const [editAlias, setEditAlias] = useState('');
 
   const partners = data?.partners || [];
   const applications = data?.applications || [];
@@ -67,7 +69,7 @@ export default function RentalPartnersAdmin() {
       await invoke({ action: 'create_partner', ...form });
       toast.success('Rental partner created');
       setShowCreate(false);
-      setForm({ company_name: '', owner_email: '', contact_email: '', phone: '' });
+      setForm({ company_name: '', owner_email: '', contact_email: '', phone: '', inbound_alias: '' });
       queryClient.invalidateQueries({ queryKey: ['admin-rental-partners'] });
     } catch (e: any) { toast.error(e?.message || 'Failed'); } finally { setBusy(''); }
   };
@@ -88,6 +90,17 @@ export default function RentalPartnersAdmin() {
       await invoke({ action: 'revoke_partner', target_user_id: revoke.userId });
       toast.success('Rental partner revoked');
       setRevoke(null);
+      queryClient.invalidateQueries({ queryKey: ['admin-rental-partners'] });
+    } catch (e: any) { toast.error(e?.message || 'Failed'); } finally { setBusy(''); }
+  };
+
+  const handleSaveEdit = async () => {
+    if (!editing) return;
+    setBusy('edit');
+    try {
+      await invoke({ action: 'update_partner', partner_id: editing.id, inbound_alias: editAlias });
+      toast.success('Inbound email updated');
+      setEditing(null);
       queryClient.invalidateQueries({ queryKey: ['admin-rental-partners'] });
     } catch (e: any) { toast.error(e?.message || 'Failed'); } finally { setBusy(''); }
   };
@@ -157,6 +170,13 @@ export default function RentalPartnersAdmin() {
                 onChange={e => setForm({ ...form, contact_email: e.target.value })} />
               <Input placeholder="Phone (optional)" value={form.phone}
                 onChange={e => setForm({ ...form, phone: e.target.value })} />
+              <div className="space-y-1">
+                <Input placeholder="Inbound email alias (optional, e.g. acmehire)" value={form.inbound_alias}
+                  onChange={e => setForm({ ...form, inbound_alias: e.target.value })} />
+                <p className="text-[11px] text-muted-foreground">
+                  Partners email rental agreement PDFs to this address for parsing. Leave blank to auto-generate. Final address: <code>{(form.inbound_alias.trim().split('@')[0] || 'auto').toLowerCase().replace(/[^a-z0-9+._-]/g, '')}@hires.savo.co.nz</code>
+                </p>
+              </div>
               <Button size="sm" className="h-8" onClick={handleCreate} disabled={busy === 'create'}>
                 {busy === 'create' ? 'Creating...' : 'Create partner'}
               </Button>
@@ -196,10 +216,16 @@ export default function RentalPartnersAdmin() {
                           {p.phone && <p>{p.phone}</p>}
                         </div>
                       </div>
-                      <Button variant="outline" size="sm" className="h-7 text-xs"
-                        onClick={() => setRevoke({ userId: p.owner_user_id, name: p.company_name })}>
-                        Revoke
-                      </Button>
+                      <div className="flex flex-col gap-1.5">
+                        <Button variant="outline" size="sm" className="h-7 text-xs"
+                          onClick={() => { setEditing(p); setEditAlias(p.inbound_alias.split('@')[0] || ''); }}>
+                          Edit
+                        </Button>
+                        <Button variant="outline" size="sm" className="h-7 text-xs"
+                          onClick={() => setRevoke({ userId: p.owner_user_id, name: p.company_name })}>
+                          Revoke
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 );
@@ -225,6 +251,30 @@ export default function RentalPartnersAdmin() {
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
               {busy ? 'Working...' : 'Revoke'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={!!editing} onOpenChange={(open) => !open && setEditing(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Edit inbound email</AlertDialogTitle>
+            <AlertDialogDescription>
+              Set the address where {editing?.company_name} sends rental agreement PDFs for parsing.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <div className="space-y-2 py-2">
+            <div className="flex items-center gap-1.5">
+              <Input value={editAlias} onChange={e => setEditAlias(e.target.value)} placeholder="acmehire" />
+              <span className="text-sm text-muted-foreground whitespace-nowrap">@hires.savo.co.nz</span>
+            </div>
+            <p className="text-[11px] text-muted-foreground">Lowercase letters, digits, dot, dash, underscore or plus only.</p>
+          </div>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={busy === 'edit'}>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={(e) => { e.preventDefault(); handleSaveEdit(); }} disabled={busy === 'edit' || !editAlias.trim()}>
+              {busy === 'edit' ? 'Saving...' : 'Save'}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

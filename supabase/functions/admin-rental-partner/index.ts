@@ -16,6 +16,15 @@ function aliasFromName(name: string): string {
   return `${slug}+${suffix}@hires.savo.co.nz`;
 }
 
+function normalizeAlias(input: string): string | null {
+  const raw = (input || '').trim().toLowerCase();
+  if (!raw) return null;
+  const local = raw.includes('@') ? raw.split('@')[0] : raw;
+  const cleaned = local.replace(/[^a-z0-9+._-]/g, '');
+  if (!cleaned) return null;
+  return `${cleaned}@hires.savo.co.nz`;
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
   const json = (d: unknown, s = 200) =>
@@ -97,8 +106,17 @@ Deno.serve(async (req) => {
     }
 
     if (action === 'create_partner') {
-      const { company_name, owner_email, contact_email, phone } = body;
+      const { company_name, owner_email, contact_email, phone, inbound_alias } = body;
       if (!company_name || !owner_email) return json({ error: 'company_name and owner_email required' }, 400);
+
+      let aliasFinal = aliasFromName(company_name);
+      if (inbound_alias) {
+        const norm = normalizeAlias(inbound_alias);
+        if (!norm) return json({ error: 'Invalid inbound alias' }, 400);
+        const { data: dup } = await admin.from('rental_partners').select('id').eq('inbound_alias', norm).maybeSingle();
+        if (dup) return json({ error: 'Inbound alias already in use' }, 400);
+        aliasFinal = norm;
+      }
 
       // Find or create the owner user by email
       let ownerId: string | null = null;
@@ -125,11 +143,32 @@ Deno.serve(async (req) => {
         company_name,
         contact_email: contact_email || owner_email,
         phone: phone || '',
-        inbound_alias: aliasFromName(company_name),
+        inbound_alias: aliasFinal,
       }).select('*').single();
       if (insErr) return json({ error: insErr.message }, 500);
 
       return json({ ok: true, partner: newPartner });
+    }
+
+    if (action === 'update_partner') {
+      const { partner_id, inbound_alias, contact_email, phone, company_name } = body;
+      if (!partner_id) return json({ error: 'partner_id required' }, 400);
+      const updates: Record<string, unknown> = {};
+      if (typeof company_name === 'string' && company_name.trim()) updates.company_name = company_name.trim();
+      if (typeof contact_email === 'string') updates.contact_email = contact_email.trim();
+      if (typeof phone === 'string') updates.phone = phone.trim();
+      if (typeof inbound_alias === 'string' && inbound_alias.trim()) {
+        const norm = normalizeAlias(inbound_alias);
+        if (!norm) return json({ error: 'Invalid inbound alias' }, 400);
+        const { data: dup } = await admin.from('rental_partners').select('id')
+          .eq('inbound_alias', norm).neq('id', partner_id).maybeSingle();
+        if (dup) return json({ error: 'Inbound alias already in use' }, 400);
+        updates.inbound_alias = norm;
+      }
+      if (Object.keys(updates).length === 0) return json({ ok: true });
+      const { error } = await admin.from('rental_partners').update(updates).eq('id', partner_id);
+      if (error) return json({ error: error.message }, 500);
+      return json({ ok: true });
     }
 
     return json({ error: 'Invalid action' }, 400);
