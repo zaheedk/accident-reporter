@@ -565,6 +565,17 @@ export default function UserManagement() {
                             Revoke broker
                           </Button>
                         )}
+                        {isRentalPartner && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="h-7 text-xs gap-1.5"
+                            onClick={() => setRevokeRental({ userId: profile.user_id, name: profile.display_name || 'this user' })}
+                          >
+                            <Building2 className="w-3 h-3" />
+                            Revoke rental partner
+                          </Button>
+                        )}
                       </div>
                     </div>
 
