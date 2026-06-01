@@ -145,6 +145,57 @@ export default function RentalPartner() {
         {partner && (
           <>
             <Card className="p-5 space-y-3">
+              <h2 className="font-semibold">Brand</h2>
+              <p className="text-sm text-muted-foreground">Customers see your logo and brand colour on every hire vehicle attached to their SAVO account.</p>
+              <div className="flex items-center gap-4">
+                <div
+                  className="w-16 h-16 rounded-xl flex items-center justify-center overflow-hidden border border-border shrink-0"
+                  style={{ backgroundColor: partner.brand_color || '#1e3a5f' }}
+                >
+                  {partner.logo_url
+                    ? <img src={partner.logo_url} alt="Logo" className="w-full h-full object-contain bg-white" />
+                    : <Building2 className="w-7 h-7 text-white" />}
+                </div>
+                <div className="flex-1 space-y-2">
+                  <label className="text-sm cursor-pointer inline-flex items-center gap-2 text-accent hover:underline">
+                    {partner.logo_url ? 'Replace logo' : 'Upload logo'}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (!file || !user) return;
+                        setBusy(true);
+                        const path = `${user.id}/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
+                        const { error: upErr } = await supabase.storage.from('partner-logos').upload(path, file, { upsert: true, contentType: file.type });
+                        if (upErr) { setBusy(false); toast({ title: 'Upload failed', description: upErr.message, variant: 'destructive' }); return; }
+                        const { data: pub } = supabase.storage.from('partner-logos').getPublicUrl(path);
+                        await supabase.from('rental_partners' as any).update({ logo_url: pub.publicUrl }).eq('id', partner.id);
+                        setBusy(false);
+                        await load();
+                      }}
+                    />
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <label className="text-xs text-muted-foreground">Brand colour</label>
+                    <input
+                      type="color"
+                      value={partner.brand_color || '#1e3a5f'}
+                      onChange={async (e) => {
+                        const color = e.target.value;
+                        setPartner({ ...partner, brand_color: color });
+                        await supabase.from('rental_partners' as any).update({ brand_color: color }).eq('id', partner.id);
+                      }}
+                      className="w-10 h-8 rounded border border-border cursor-pointer"
+                    />
+                    <span className="text-xs font-mono text-muted-foreground">{partner.brand_color || '#1e3a5f'}</span>
+                  </div>
+                </div>
+              </div>
+            </Card>
+
+            <Card className="p-5 space-y-3">
               <h2 className="font-semibold">Your inbound email</h2>
               <p className="text-sm text-muted-foreground">Email signed rental agreement PDFs to this address. SAVO will parse them and attach the vehicle to the customer's account.</p>
               <div className="flex items-center gap-2 p-3 rounded-lg bg-muted font-mono text-sm">
