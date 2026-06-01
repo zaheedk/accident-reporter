@@ -370,6 +370,48 @@ export default function UserManagement() {
           </Card>
         )}
 
+        {pendingRentalApplications.length > 0 && (
+          <Card className="p-4 border-primary/40 bg-primary/5">
+            <div className="flex items-center gap-2 mb-3">
+              <Building2 className="w-4 h-4 text-primary" />
+              <h2 className="text-sm font-semibold text-foreground">Pending rental partner applications ({pendingRentalApplications.length})</h2>
+            </div>
+            <div className="space-y-2">
+              {pendingRentalApplications.map(app => {
+                const applicant = profiles.find(p => p.user_id === app.user_id);
+                return (
+                  <div key={app.id} className="rounded-lg border border-border bg-card p-3 space-y-2">
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold text-foreground truncate">{app.company_name}</p>
+                      <p className="text-[11px] text-muted-foreground">
+                        {applicant?.display_name || applicant?.email || app.contact_email}
+                      </p>
+                      <div className="mt-1 grid grid-cols-1 sm:grid-cols-3 gap-x-3 gap-y-0.5 text-[11px] text-muted-foreground">
+                        {app.phone && <span>{app.phone}</span>}
+                        {app.contact_email && <span className="truncate">{app.contact_email}</span>}
+                      </div>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button size="sm" className="h-7 text-xs gap-1.5" disabled={rentalBusy === app.id}
+                        onClick={() => reviewRentalApplication(app.id, 'approve_application')}>
+                        <Check className="w-3 h-3" /> Approve
+                      </Button>
+                      <Button size="sm" variant="outline" className="h-7 text-xs gap-1.5" disabled={rentalBusy === app.id}
+                        onClick={() => {
+                          const notes = prompt('Reason for rejection (optional)?') || '';
+                          reviewRentalApplication(app.id, 'reject_application', notes);
+                        }}>
+                        <X className="w-3 h-3" /> Reject
+                      </Button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </Card>
+        )}
+
+
         {/* Search + filters */}
         <div className="space-y-2">
           <div className="relative">
