@@ -16,6 +16,15 @@ function aliasFromName(name: string): string {
   return `${slug}+${suffix}@hires.savo.co.nz`;
 }
 
+function normalizeAlias(input: string): string | null {
+  const raw = (input || '').trim().toLowerCase();
+  if (!raw) return null;
+  const local = raw.includes('@') ? raw.split('@')[0] : raw;
+  const cleaned = local.replace(/[^a-z0-9+._-]/g, '');
+  if (!cleaned) return null;
+  return `${cleaned}@hires.savo.co.nz`;
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
   const json = (d: unknown, s = 200) =>
