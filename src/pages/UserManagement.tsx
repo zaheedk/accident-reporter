@@ -138,6 +138,32 @@ export default function UserManagement() {
   const rentalPartnerSet = useMemo(() => new Set(rentalPartners.map(p => p.owner_user_id)), [rentalPartners]);
   const [rentalBusy, setRentalBusy] = useState<string>('');
   const [revokeRental, setRevokeRental] = useState<{ userId: string; name: string } | null>(null);
+  const [showCreateRental, setShowCreateRental] = useState(false);
+  const [newRental, setNewRental] = useState({ company_name: '', owner_email: '', contact_email: '', phone: '' });
+
+  const createRentalPartner = async () => {
+    if (!newRental.company_name || !newRental.owner_email) {
+      toast.error('Company name and owner email are required');
+      return;
+    }
+    setRentalBusy('create');
+    try {
+      const { data, error } = await supabase.functions.invoke('admin-rental-partner', {
+        body: { action: 'create_partner', ...newRental },
+      });
+      if (error || (data as any)?.error) throw new Error((data as any)?.error || error?.message);
+      toast.success('Rental partner created');
+      setShowCreateRental(false);
+      setNewRental({ company_name: '', owner_email: '', contact_email: '', phone: '' });
+      queryClient.invalidateQueries({ queryKey: ['admin-rental-partners'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-users'] });
+    } catch (e: any) {
+      toast.error(e?.message || 'Failed');
+    } finally {
+      setRentalBusy('');
+    }
+  };
+
 
   const reviewRentalApplication = async (applicationId: string, action: 'approve_application' | 'reject_application', notes?: string) => {
     setRentalBusy(applicationId);
@@ -369,6 +395,36 @@ export default function UserManagement() {
             </div>
           </Card>
         )}
+
+        <Card className="p-4">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <Building2 className="w-4 h-4 text-muted-foreground" />
+              <h2 className="text-sm font-semibold text-foreground">Rental partners ({rentalPartners.length})</h2>
+            </div>
+            <Button size="sm" className="h-7 text-xs" onClick={() => setShowCreateRental(v => !v)}>
+              {showCreateRental ? 'Cancel' : 'Add rental partner'}
+            </Button>
+          </div>
+          {showCreateRental && (
+            <div className="space-y-2 p-3 rounded-lg border border-border bg-muted/30">
+              <Input placeholder="Company name" value={newRental.company_name}
+                onChange={e => setNewRental({ ...newRental, company_name: e.target.value })} />
+              <Input placeholder="Owner email (login for partner dashboard)" type="email" value={newRental.owner_email}
+                onChange={e => setNewRental({ ...newRental, owner_email: e.target.value })} />
+              <Input placeholder="Contact email (optional)" type="email" value={newRental.contact_email}
+                onChange={e => setNewRental({ ...newRental, contact_email: e.target.value })} />
+              <Input placeholder="Phone (optional)" value={newRental.phone}
+                onChange={e => setNewRental({ ...newRental, phone: e.target.value })} />
+              <Button size="sm" className="h-8" onClick={createRentalPartner} disabled={rentalBusy === 'create'}>
+                {rentalBusy === 'create' ? 'Creating...' : 'Create partner'}
+              </Button>
+              <p className="text-[11px] text-muted-foreground">
+                If the owner email doesn't have a SAVO account yet, one will be created. They can sign in and access their rental partner dashboard at /rental-partner.
+              </p>
+            </div>
+          )}
+        </Card>
 
         {pendingRentalApplications.length > 0 && (
           <Card className="p-4 border-primary/40 bg-primary/5">

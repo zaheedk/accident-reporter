@@ -96,6 +96,42 @@ Deno.serve(async (req) => {
       return json({ ok: true });
     }
 
+    if (action === 'create_partner') {
+      const { company_name, owner_email, contact_email, phone } = body;
+      if (!company_name || !owner_email) return json({ error: 'company_name and owner_email required' }, 400);
+
+      // Find or create the owner user by email
+      let ownerId: string | null = null;
+      const { data: usersList } = await admin.auth.admin.listUsers({ page: 1, perPage: 1000 });
+      const existingUser = usersList?.users?.find((u: any) => (u.email || '').toLowerCase() === owner_email.toLowerCase());
+      if (existingUser) {
+        ownerId = existingUser.id;
+      } else {
+        const { data: created, error: createErr } = await admin.auth.admin.createUser({
+          email: owner_email,
+          email_confirm: true,
+          user_metadata: { source: 'rental_partner', full_name: company_name },
+        });
+        if (createErr || !created.user) return json({ error: createErr?.message || 'Failed to create owner user' }, 500);
+        ownerId = created.user.id;
+      }
+
+      const { data: existingPartner } = await admin.from('rental_partners').select('id')
+        .eq('owner_user_id', ownerId).maybeSingle();
+      if (existingPartner) return json({ error: 'This user is already a rental partner' }, 400);
+
+      const { data: newPartner, error: insErr } = await admin.from('rental_partners').insert({
+        owner_user_id: ownerId,
+        company_name,
+        contact_email: contact_email || owner_email,
+        phone: phone || '',
+        inbound_alias: aliasFromName(company_name),
+      }).select('*').single();
+      if (insErr) return json({ error: insErr.message }, 500);
+
+      return json({ ok: true, partner: newPartner });
+    }
+
     return json({ error: 'Invalid action' }, 400);
   } catch (e) {
     return json({ error: e instanceof Error ? e.message : 'Server error' }, 500);
