@@ -110,12 +110,62 @@ export default function UserManagement() {
     enabled: isAdmin,
   });
 
-  const brokerages = brokerData?.brokerages || [];
-  const applications = brokerData?.applications || [];
-  const pendingApplications = applications.filter(a => a.status === 'pending');
-  const brokerSet = useMemo(() => new Set(brokerages.map(b => b.owner_user_id)), [brokerages]);
-  const [brokerBusy, setBrokerBusy] = useState<string>('');
-  const [revokeBroker, setRevokeBroker] = useState<{ userId: string; name: string } | null>(null);
+  const { data: rentalData } = useQuery({
+    queryKey: ['admin-rental-partners'],
+    queryFn: async () => {
+      const { data, error } = await supabase.functions.invoke('admin-rental-partner', {
+        body: { action: 'list' },
+      });
+      if (error) throw error;
+      return data as {
+        partners: Array<{ id: string; owner_user_id: string; company_name: string; inbound_alias: string }>;
+        applications: Array<{ id: string; user_id: string; status: string; company_name: string; contact_email: string; phone: string; admin_notes: string; created_at: string }>;
+      };
+    },
+    enabled: isAdmin,
+  });
+
+  const rentalPartners = rentalData?.partners || [];
+  const rentalApplications = rentalData?.applications || [];
+  const pendingRentalApplications = rentalApplications.filter(a => a.status === 'pending');
+  const rentalPartnerSet = useMemo(() => new Set(rentalPartners.map(p => p.owner_user_id)), [rentalPartners]);
+  const [rentalBusy, setRentalBusy] = useState<string>('');
+  const [revokeRental, setRevokeRental] = useState<{ userId: string; name: string } | null>(null);
+
+  const reviewRentalApplication = async (applicationId: string, action: 'approve_application' | 'reject_application', notes?: string) => {
+    setRentalBusy(applicationId);
+    try {
+      const { data, error } = await supabase.functions.invoke('admin-rental-partner', {
+        body: { action, application_id: applicationId, notes },
+      });
+      if (error || (data as any)?.error) throw new Error((data as any)?.error || error?.message);
+      toast.success(action === 'approve_application' ? 'Rental partner approved' : 'Application rejected');
+      queryClient.invalidateQueries({ queryKey: ['admin-rental-partners'] });
+    } catch (e: any) {
+      toast.error(e?.message || 'Failed');
+    } finally {
+      setRentalBusy('');
+    }
+  };
+
+  const handleRevokeRental = async () => {
+    if (!revokeRental) return;
+    setRentalBusy(revokeRental.userId);
+    try {
+      const { data, error } = await supabase.functions.invoke('admin-rental-partner', {
+        body: { action: 'revoke_partner', target_user_id: revokeRental.userId },
+      });
+      if (error || (data as any)?.error) throw new Error((data as any)?.error || error?.message);
+      toast.success('Rental partner revoked');
+      setRevokeRental(null);
+      queryClient.invalidateQueries({ queryKey: ['admin-rental-partners'] });
+    } catch (e: any) {
+      toast.error(e?.message || 'Failed');
+    } finally {
+      setRentalBusy('');
+    }
+  };
+
 
   const reviewApplication = async (applicationId: string, action: 'approve_application' | 'reject_application', notes?: string) => {
     setBrokerBusy(applicationId);
