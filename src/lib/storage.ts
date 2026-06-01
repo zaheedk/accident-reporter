@@ -143,6 +143,12 @@ function dbVehicleToVehicle(row: any): Vehicle {
     isRental: row.is_rental ?? false,
     hireStartDate: row.hire_start_date || '',
     hireEndDate: row.hire_end_date || '',
+    rentalPartner: row._partner ? {
+      id: row._partner.id,
+      companyName: row._partner.company_name || '',
+      logoUrl: row._partner.logo_url || '',
+      brandColor: row._partner.brand_color || '#1e3a5f',
+    } : undefined,
   };
 }
 
