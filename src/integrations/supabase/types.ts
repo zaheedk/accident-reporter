@@ -1347,6 +1347,189 @@ export type Database = {
           },
         ]
       }
+      shop_job_events: {
+        Row: {
+          actor_user_id: string | null
+          created_at: string
+          event_type: string
+          id: string
+          payload: Json
+          shop_job_id: string
+        }
+        Insert: {
+          actor_user_id?: string | null
+          created_at?: string
+          event_type: string
+          id?: string
+          payload?: Json
+          shop_job_id: string
+        }
+        Update: {
+          actor_user_id?: string | null
+          created_at?: string
+          event_type?: string
+          id?: string
+          payload?: Json
+          shop_job_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shop_job_events_shop_job_id_fkey"
+            columns: ["shop_job_id"]
+            isOneToOne: false
+            referencedRelation: "shop_jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      shop_jobs: {
+        Row: {
+          assessor_email: string | null
+          assessor_name: string | null
+          assigned_tech_id: string | null
+          claim_id: string | null
+          completed_at: string | null
+          created_at: string
+          created_by: string | null
+          customer_email: string | null
+          customer_name: string | null
+          customer_phone: string | null
+          customer_user_id: string | null
+          dropoff_at: string | null
+          eta_at: string | null
+          id: string
+          insurer_id: string | null
+          notes: string | null
+          panel_shop_id: string
+          panelquote_ref: string | null
+          public_slug: string | null
+          status: Database["public"]["Enums"]["shop_job_status"]
+          updated_at: string
+          vehicle_id: string | null
+          vehicle_make: string | null
+          vehicle_model: string | null
+          vehicle_rego: string | null
+        }
+        Insert: {
+          assessor_email?: string | null
+          assessor_name?: string | null
+          assigned_tech_id?: string | null
+          claim_id?: string | null
+          completed_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          customer_email?: string | null
+          customer_name?: string | null
+          customer_phone?: string | null
+          customer_user_id?: string | null
+          dropoff_at?: string | null
+          eta_at?: string | null
+          id?: string
+          insurer_id?: string | null
+          notes?: string | null
+          panel_shop_id: string
+          panelquote_ref?: string | null
+          public_slug?: string | null
+          status?: Database["public"]["Enums"]["shop_job_status"]
+          updated_at?: string
+          vehicle_id?: string | null
+          vehicle_make?: string | null
+          vehicle_model?: string | null
+          vehicle_rego?: string | null
+        }
+        Update: {
+          assessor_email?: string | null
+          assessor_name?: string | null
+          assigned_tech_id?: string | null
+          claim_id?: string | null
+          completed_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          customer_email?: string | null
+          customer_name?: string | null
+          customer_phone?: string | null
+          customer_user_id?: string | null
+          dropoff_at?: string | null
+          eta_at?: string | null
+          id?: string
+          insurer_id?: string | null
+          notes?: string | null
+          panel_shop_id?: string
+          panelquote_ref?: string | null
+          public_slug?: string | null
+          status?: Database["public"]["Enums"]["shop_job_status"]
+          updated_at?: string
+          vehicle_id?: string | null
+          vehicle_make?: string | null
+          vehicle_model?: string | null
+          vehicle_rego?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shop_jobs_claim_id_fkey"
+            columns: ["claim_id"]
+            isOneToOne: false
+            referencedRelation: "claims"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shop_jobs_insurer_id_fkey"
+            columns: ["insurer_id"]
+            isOneToOne: false
+            referencedRelation: "insurance_companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shop_jobs_panel_shop_id_fkey"
+            columns: ["panel_shop_id"]
+            isOneToOne: false
+            referencedRelation: "panel_shops"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shop_jobs_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      shop_staff: {
+        Row: {
+          created_at: string
+          id: string
+          panel_shop_id: string
+          role: Database["public"]["Enums"]["shop_staff_role"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          panel_shop_id: string
+          role?: Database["public"]["Enums"]["shop_staff_role"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          panel_shop_id?: string
+          role?: Database["public"]["Enums"]["shop_staff_role"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shop_staff_panel_shop_id_fkey"
+            columns: ["panel_shop_id"]
+            isOneToOne: false
+            referencedRelation: "panel_shops"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       suppressed_emails: {
         Row: {
           created_at: string
@@ -1693,6 +1876,14 @@ export type Database = {
         Args: { _fleet_id: string; _user_id: string }
         Returns: boolean
       }
+      is_shop_owner: {
+        Args: { _shop_id: string; _user_id: string }
+        Returns: boolean
+      }
+      is_shop_staff: {
+        Args: { _shop_id: string; _user_id: string }
+        Returns: boolean
+      }
       move_to_dlq: {
         Args: {
           dlq_name: string
@@ -1713,9 +1904,20 @@ export type Database = {
       user_brokerage_id: { Args: { _user_id: string }; Returns: string }
       user_family_id: { Args: { _user_id: string }; Returns: string }
       user_fleet_id: { Args: { _user_id: string }; Returns: string }
+      user_panel_shop_id: { Args: { _user_id: string }; Returns: string }
     }
     Enums: {
       app_role: "admin" | "user"
+      shop_job_status:
+        | "new"
+        | "quoting"
+        | "approved"
+        | "in_repair"
+        | "qc"
+        | "ready"
+        | "collected"
+        | "cancelled"
+      shop_staff_role: "owner" | "estimator" | "tech" | "frontdesk"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1844,6 +2046,17 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "user"],
+      shop_job_status: [
+        "new",
+        "quoting",
+        "approved",
+        "in_repair",
+        "qc",
+        "ready",
+        "collected",
+        "cancelled",
+      ],
+      shop_staff_role: ["owner", "estimator", "tech", "frontdesk"],
     },
   },
 } as const
