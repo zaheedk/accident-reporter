@@ -32,10 +32,10 @@ export default function Home() {
           "@context": "https://schema.org",
           "@type": "WebSite",
           name: "SAVO",
-          url: "https://savo.co.nz",
+          url: "https://www.savo.co.nz",
           potentialAction: {
             "@type": "SearchAction",
-            target: "https://savo.co.nz/blog?q={search_term_string}",
+            target: "https://www.savo.co.nz/blog?q={search_term_string}",
             "query-input": "required name=search_term_string",
           },
         }}
@@ -286,7 +286,7 @@ export default function Home() {
             '@context': 'https://schema.org',
             '@type': 'WebApplication',
             name: 'SAVO',
-            url: 'https://savo.co.nz',
+            url: 'https://www.savo.co.nz',
             description: 'Car accident documentation, insurance claims, courtesy car requests, and panel beater finder for New Zealand drivers.',
             applicationCategory: 'UtilitiesApplication',
             operatingSystem: 'Web',

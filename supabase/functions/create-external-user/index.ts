@@ -106,7 +106,7 @@ Deno.serve(async (req) => {
       JSON.stringify({
         success: true,
         user_id: userId,
-        login_url: `https://savo.co.nz/external-login?token=${token}`,
+        login_url: `https://www.savo.co.nz/external-login?token=${token}`,
         expires_at: expiresAt.toISOString(),
       }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }

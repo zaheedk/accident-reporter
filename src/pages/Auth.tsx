@@ -8,7 +8,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import PhoneAuth from '@/components/PhoneAuth';
 import { isNativeApp, signInWithGoogleNative } from '@/lib/native-google-auth';
 
-const SITE_URL = import.meta.env.PROD ? 'https://savo.co.nz' : window.location.origin;
+const SITE_URL = import.meta.env.PROD ? 'https://www.savo.co.nz' : window.location.origin;
 
 export default function Auth() {
   const { session, loading } = useAuth();

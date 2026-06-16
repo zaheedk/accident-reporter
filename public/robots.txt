@@ -13,4 +13,4 @@ Allow: /
 User-agent: *
 Allow: /
 
-Sitemap: https://savo.co.nz/sitemap.xml
+Sitemap: https://www.savo.co.nz/sitemap.xml

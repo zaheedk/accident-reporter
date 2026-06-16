@@ -7,7 +7,7 @@ import { config as loadEnv } from 'dotenv';
 
 loadEnv();
 
-const BASE_URL = 'https://savo.co.nz';
+const BASE_URL = 'https://www.savo.co.nz';
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL;
 const SUPABASE_KEY = process.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 
