@@ -33,6 +33,7 @@ const staticEntries: Entry[] = [
   { path: '/panel-shops', changefreq: 'weekly', priority: '0.7' },
   { path: '/tow-companies', changefreq: 'weekly', priority: '0.7' },
   { path: '/panel-beaters', changefreq: 'weekly', priority: '0.8' },
+  { path: '/panel-beaters-for', changefreq: 'weekly', priority: '0.8' },
   { path: '/tow-trucks', changefreq: 'weekly', priority: '0.8' },
   { path: '/fault-guide', changefreq: 'monthly', priority: '0.6' },
   { path: '/auth', changefreq: 'monthly', priority: '0.4' },
