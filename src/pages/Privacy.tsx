@@ -14,8 +14,8 @@ export default function Privacy() {
           '@context': 'https://schema.org',
           '@type': 'WebPage',
           name: 'Privacy Policy',
-          url: 'https://www.savo.co.nz/privacy',
-          publisher: { '@type': 'Organization', name: 'SAVO', url: 'https://www.savo.co.nz' },
+          url: 'https://savo.co.nz/privacy',
+          publisher: { '@type': 'Organization', name: 'SAVO', url: 'https://savo.co.nz' },
         }}
       />
       <div className="space-y-6">

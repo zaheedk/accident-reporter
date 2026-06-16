@@ -13,4 +13,4 @@ Allow: /
 User-agent: *
 Allow: /
 
-Sitemap: https://savonz.lovable.app/sitemap.xml
+Sitemap: https://savo.co.nz/sitemap.xml

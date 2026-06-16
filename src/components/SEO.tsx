@@ -12,7 +12,7 @@ interface SEOProps {
   noIndex?: boolean;
 }
 
-const SITE_ORIGIN = "https://www.savo.co.nz";
+const SITE_ORIGIN = "https://savo.co.nz";
 
 export default function SEO({
   title,

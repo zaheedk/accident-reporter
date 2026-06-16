@@ -100,7 +100,7 @@ Deno.serve(async (req) => {
 
       // Optionally send email
       if (parsed.data.email && RESEND_API_KEY) {
-        const acceptUrl = `https://www.savo.co.nz/family?code=${code}`;
+        const acceptUrl = `https://savo.co.nz/family?code=${code}`;
         try {
           await fetch("https://api.resend.com/emails", {
             method: "POST",
