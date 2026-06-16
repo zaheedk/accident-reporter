@@ -59,6 +59,8 @@ const WidgetSetup = lazy(() => import("./pages/WidgetSetup"));
 const FaultGuide = lazy(() => import("./pages/FaultGuide"));
 const PanelBeatersIndex = lazy(() => import("./pages/PanelBeatersIndex"));
 const PanelBeatersLocation = lazy(() => import("./pages/PanelBeatersLocation"));
+const PanelBeatersByMakeIndex = lazy(() => import("./pages/PanelBeatersByMakeIndex"));
+const PanelBeatersByMake = lazy(() => import("./pages/PanelBeatersByMake"));
 const TowTrucksIndex = lazy(() => import("./pages/TowTrucksIndex"));
 const TowTrucksRegion = lazy(() => import("./pages/TowTrucksRegion"));
 
@@ -163,6 +165,8 @@ const App = () => (
               <Route path="/tow-companies" element={<TowCompanies />} />
               <Route path="/panel-beaters" element={<PanelBeatersIndex />} />
               <Route path="/panel-beaters/:slug" element={<PanelBeatersLocation />} />
+              <Route path="/panel-beaters-for" element={<PanelBeatersByMakeIndex />} />
+              <Route path="/panel-beaters-for/:make" element={<PanelBeatersByMake />} />
               <Route path="/tow-trucks" element={<TowTrucksIndex />} />
               <Route path="/tow-trucks/:slug" element={<TowTrucksRegion />} />
               <Route path="/users" element={<ProtectedRoute><UserManagement /></ProtectedRoute>} />
