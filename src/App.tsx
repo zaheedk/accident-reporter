@@ -57,6 +57,10 @@ const RentalPartner = lazy(() => import("./pages/RentalPartner"));
 const RentalPartnersAdmin = lazy(() => import("./pages/admin/RentalPartners"));
 const WidgetSetup = lazy(() => import("./pages/WidgetSetup"));
 const FaultGuide = lazy(() => import("./pages/FaultGuide"));
+const PanelBeatersIndex = lazy(() => import("./pages/PanelBeatersIndex"));
+const PanelBeatersLocation = lazy(() => import("./pages/PanelBeatersLocation"));
+const TowTrucksIndex = lazy(() => import("./pages/TowTrucksIndex"));
+const TowTrucksRegion = lazy(() => import("./pages/TowTrucksRegion"));
 
 const PageLoader = () => (
   <div className="min-h-screen bg-background flex items-center justify-center">
