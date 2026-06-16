@@ -63,6 +63,9 @@ const PanelBeatersByMakeIndex = lazy(() => import("./pages/PanelBeatersByMakeInd
 const PanelBeatersByMake = lazy(() => import("./pages/PanelBeatersByMake"));
 const TowTrucksIndex = lazy(() => import("./pages/TowTrucksIndex"));
 const TowTrucksRegion = lazy(() => import("./pages/TowTrucksRegion"));
+const Shop = lazy(() => import("./pages/Shop"));
+const ShopJobDetail = lazy(() => import("./pages/ShopJobDetail"));
+const PublicJobTracker = lazy(() => import("./pages/PublicJobTracker"));
 
 const PageLoader = () => (
   <div className="min-h-screen bg-background flex items-center justify-center">
@@ -192,6 +195,9 @@ const App = () => (
               <Route path="/blog/:slug" element={<BlogPost />} />
               <Route path="/delete-account" element={<ProtectedRoute><DeleteAccount /></ProtectedRoute>} />
               <Route path="/delete-data-request" element={<ProtectedRoute><DeleteDataRequest /></ProtectedRoute>} />
+              <Route path="/shop" element={<ProtectedRoute><Shop /></ProtectedRoute>} />
+              <Route path="/shop/jobs/:id" element={<ProtectedRoute><ShopJobDetail /></ProtectedRoute>} />
+              <Route path="/job/:slug" element={<PublicJobTracker />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
             
