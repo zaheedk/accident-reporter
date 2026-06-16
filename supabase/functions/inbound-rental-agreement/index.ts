@@ -328,7 +328,7 @@ Deno.serve(async (req) => {
             subject: `Your ${partner.company_name} hire vehicle is on SAVO`,
             html: `<p>Hi ${extracted.customer_name || 'there'},</p>
                    <p><strong>${partner.company_name}</strong> has added the hire vehicle <strong>${extracted.rego_number}</strong> to your SAVO account, along with your signed rental agreement.</p>
-                   <p>You can view your vehicle and documents at <a href="https://savo.co.nz">savonz.lovable.app</a>.</p>
+                   <p>You can view your vehicle and documents at <a href="https://savo.co.nz">savo.co.nz</a>.</p>
                    <p>If you don't yet have a SAVO account, sign in using <strong>${extracted.customer_email}</strong> via "Forgot password" to set one up.</p>
                    <p>— The SAVO team</p>`,
           }),
