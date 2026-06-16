@@ -115,9 +115,16 @@ async function main() {
   for (const t of tows) if (t.region) towRegions.add(slugify(t.region));
   for (const slug of towRegions) entries.push({ path: `/tow-trucks/${slug}`, changefreq: 'monthly', priority: '0.7' });
 
+  // Panel beaters by vehicle make
+  const makeSlugs = [
+    'toyota','ford','holden','mazda','nissan','hyundai','mitsubishi','honda','kia',
+    'subaru','suzuki','volkswagen','bmw','mercedes-benz','audi','tesla','isuzu',
+  ];
+  for (const slug of makeSlugs) entries.push({ path: `/panel-beaters-for/${slug}`, changefreq: 'monthly', priority: '0.7' });
+
   const out = xml(entries);
   writeFileSync(resolve('public/sitemap.xml'), out);
-  console.log(`[sitemap] wrote ${entries.length} entries (panel-beaters: ${panelSlugs.size}, tow-trucks: ${towRegions.size})`);
+  console.log(`[sitemap] wrote ${entries.length} entries (panel-beaters: ${panelSlugs.size}, makes: ${makeSlugs.length}, tow-trucks: ${towRegions.size})`);
 }
 
 main().catch((err) => {
