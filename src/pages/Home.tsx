@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Shield, Camera, FileText, Clock, Phone, Wrench, Truck, ChevronRight, ArrowRight, CheckCircle2, BookOpen, HelpCircle, Newspaper, Menu, X, Info } from 'lucide-react';
+import { Shield, Camera, FileText, Clock, Phone, Wrench, Truck, ChevronRight, ArrowRight, CheckCircle2, BookOpen, HelpCircle, Newspaper, Menu, X, Info, User, Users, Briefcase, Building2, Hammer } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 import SEO from '@/components/SEO';
@@ -52,12 +52,12 @@ export default function Home() {
             ))}
           </nav>
           <div className="flex items-center gap-2">
-            <Link to="/auth?mode=login">
+            <Link to="/login">
               <Button variant="ghost" size="sm" className="text-foreground hover:bg-muted text-sm font-medium">
                 Log in
               </Button>
             </Link>
-            <Link to="/auth?mode=signup">
+            <Link to="/signup">
               <Button size="sm" className="text-sm font-semibold">
                 Sign up free
               </Button>
@@ -77,7 +77,7 @@ export default function Home() {
               </Link>
             ))}
             <div className="border-t border-border/50 my-2" />
-            <Link to="/auth?mode=login" onClick={() => setMenuOpen(false)}
+            <Link to="/login" onClick={() => setMenuOpen(false)}
               className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors text-primary hover:bg-primary/10 w-full">
               Log in / Sign up
             </Link>
@@ -104,7 +104,7 @@ export default function Home() {
                 SAVO helps New Zealand drivers document accidents, lodge insurance claims, request courtesy cars, and find panel beaters — all in one free app.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
-                <Link to="/auth?mode=signup">
+                <Link to="/signup">
                   <Button size="lg" className="text-sm font-semibold gap-2 h-12 px-6 bg-primary hover:bg-primary/90 text-primary-foreground">
                     Get started — it's free <ArrowRight className="w-4 h-4" />
                   </Button>
@@ -216,12 +216,42 @@ export default function Home() {
               ))}
             </div>
             <motion.div variants={fadeUp} className="text-center mt-10">
-              <Link to="/auth?mode=signup">
+              <Link to="/signup">
                 <Button size="lg" className="text-sm font-bold gap-2 h-12 px-8">
                   Start for free <ArrowRight className="w-4 h-4" />
                 </Button>
               </Link>
             </motion.div>
+          </div>
+        </motion.section>
+
+        {/* Audience segments */}
+        <motion.section variants={stagger} initial="hidden" whileInView="visible" viewport={{ once: true }}
+          className="max-w-5xl mx-auto px-4 py-16 md:py-20">
+          <motion.div variants={fadeUp} className="text-center mb-12">
+            <h2 className="text-2xl md:text-3xl font-extrabold text-foreground">Built for everyone on the road</h2>
+            <p className="mt-3 text-muted-foreground max-w-lg mx-auto">Whether you're a single driver or managing a national fleet, SAVO has a tailored experience for you.</p>
+          </motion.div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {[
+              { icon: User, title: 'For Drivers', desc: 'Document accidents, lodge claims, and request a courtesy car — free, forever.', href: '/signup', cta: 'Sign up free' },
+              { icon: Users, title: 'For Families', desc: 'Manage every vehicle in your household from one account with shared access.', href: '/signup', cta: 'Get started' },
+              { icon: Building2, title: 'For Fleets', desc: 'Assign vehicles to drivers, track WOF/rego expiries, and centralise claims.', href: '/fleet', cta: 'Explore fleet' },
+              { icon: Briefcase, title: 'For Brokers', desc: 'Onboard clients, see their vehicles and claims, and accelerate settlements.', href: '/broker', cta: 'Broker portal' },
+              { icon: Truck, title: 'For Rental Partners', desc: 'Auto-attach hire vehicles to customer accounts via inbound email PDFs.', href: '/rental-partner', cta: 'Partner with us' },
+              { icon: Hammer, title: 'For Panel Shops', desc: 'Get listed in our directory and receive qualified repair leads near you.', href: '/panel-shops', cta: 'List your shop' },
+            ].map(({ icon: Icon, title, desc, href, cta }) => (
+              <motion.div key={title} variants={fadeUp} className="card-surface-elevated group hover:border-primary/30 transition-all flex flex-col">
+                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center mb-3">
+                  <Icon className="w-5 h-5 text-primary" />
+                </div>
+                <h3 className="text-sm font-bold text-foreground">{title}</h3>
+                <p className="mt-1.5 text-xs text-muted-foreground leading-relaxed flex-1">{desc}</p>
+                <Link to={href} className="mt-4 inline-flex items-center gap-1 text-xs font-semibold text-primary hover:gap-1.5 transition-all">
+                  {cta} <ChevronRight className="w-3.5 h-3.5" />
+                </Link>
+              </motion.div>
+            ))}
           </div>
         </motion.section>
 
@@ -233,12 +263,12 @@ export default function Home() {
             <h2 className="text-3xl md:text-4xl font-bold text-white tracking-tight">Ready to protect your next claim?</h2>
             <p className="mt-3 text-white/60 max-w-md mx-auto">Join Kiwi drivers who use SAVO to document accidents, lodge insurance claims, and arrange courtesy cars with confidence.</p>
             <div className="mt-8 flex flex-wrap justify-center gap-3">
-              <Link to="/auth?mode=signup">
+              <Link to="/signup">
                 <Button size="lg" className="text-sm font-semibold gap-2 h-12 px-8 bg-primary hover:bg-primary/90 text-primary-foreground">
                   Create free account <ArrowRight className="w-4 h-4" />
                 </Button>
               </Link>
-              <Link to="/auth?mode=login">
+              <Link to="/login">
                 <Button variant="outline" size="lg" className="text-sm font-semibold h-12 px-6 border-white/15 text-white bg-transparent hover:bg-white/[0.06]">
                   Log in
                 </Button>

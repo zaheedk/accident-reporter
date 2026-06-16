@@ -149,6 +149,8 @@ const App = () => (
           <Suspense fallback={<PageLoader />}>
             <Routes>
               <Route path="/auth" element={<Auth />} />
+              <Route path="/login" element={<Auth />} />
+              <Route path="/signup" element={<Auth />} />
               <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/external-login" element={<ExternalLogin />} />
               <Route path="/" element={<NativeHomeRedirect />} />
