@@ -96,7 +96,7 @@ Deno.serve(async (req) => {
       if (invErr) return json({ error: invErr.message }, 500);
 
       if (parsed.data.email && RESEND_API_KEY) {
-        const acceptUrl = `https://www.savo.co.nz/fleet?code=${code}`;
+        const acceptUrl = `https://savo.co.nz/fleet?code=${code}`;
         try {
           await fetch("https://api.resend.com/emails", {
             method: "POST",
