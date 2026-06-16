@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Shield, Camera, FileText, Clock, Phone, Wrench, Truck, ChevronRight, ArrowRight, CheckCircle2, BookOpen, HelpCircle, Newspaper, Menu, X, Info } from 'lucide-react';
+import { Shield, Camera, FileText, Clock, Phone, Wrench, Truck, ChevronRight, ArrowRight, CheckCircle2, BookOpen, HelpCircle, Newspaper, Menu, X, Info, User, Users, Briefcase, Building2, Hammer } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 import SEO from '@/components/SEO';
@@ -52,12 +52,12 @@ export default function Home() {
             ))}
           </nav>
           <div className="flex items-center gap-2">
-            <Link to="/auth?mode=login">
+            <Link to="/login">
               <Button variant="ghost" size="sm" className="text-foreground hover:bg-muted text-sm font-medium">
                 Log in
               </Button>
             </Link>
-            <Link to="/auth?mode=signup">
+            <Link to="/signup">
               <Button size="sm" className="text-sm font-semibold">
                 Sign up free
               </Button>
@@ -77,7 +77,7 @@ export default function Home() {
               </Link>
             ))}
             <div className="border-t border-border/50 my-2" />
-            <Link to="/auth?mode=login" onClick={() => setMenuOpen(false)}
+            <Link to="/login" onClick={() => setMenuOpen(false)}
               className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors text-primary hover:bg-primary/10 w-full">
               Log in / Sign up
             </Link>
