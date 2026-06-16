@@ -32,18 +32,18 @@ export default function BlogPost() {
     "@type": "Article",
     headline: article.title,
     description: article.metaDescription,
-    image: `https://savo.co.nz${article.heroImage}`,
+    image: `https://www.savo.co.nz${article.heroImage}`,
     datePublished: article.date,
     dateModified: article.date,
     author: { "@type": "Organization", name: "SAVO" },
     publisher: {
       "@type": "Organization",
       name: "SAVO",
-      logo: { "@type": "ImageObject", url: "https://savo.co.nz/app-icon-512.png" },
+      logo: { "@type": "ImageObject", url: "https://www.savo.co.nz/app-icon-512.png" },
     },
     mainEntityOfPage: {
       "@type": "WebPage",
-      "@id": `https://savo.co.nz/blog/${article.slug}`,
+      "@id": `https://www.savo.co.nz/blog/${article.slug}`,
     },
   };
 
