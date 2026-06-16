@@ -42,11 +42,9 @@ export default function ShopJobDetail() {
   useEffect(() => {
     if (!user) return;
     (async () => {
-      // @ts-expect-error types regenerate after migration
       const { data: staff } = await supabase.from("shop_staff").select("panel_shop_id").eq("user_id", user.id).maybeSingle();
       setShopId(staff?.panel_shop_id ?? null);
       if (!isNew && id) {
-        // @ts-expect-error types regenerate after migration
         const { data } = await supabase.from("shop_jobs").select("*").eq("id", id).maybeSingle();
         if (data) setJob(data);
         setLoading(false);
@@ -64,14 +62,12 @@ export default function ShopJobDetail() {
       created_by: user?.id ?? null,
     };
     if (isNew) {
-      // @ts-expect-error types regenerate after migration
       const { data, error } = await supabase.from("shop_jobs").insert(payload).select("id").single();
       setSaving(false);
       if (error) { toast.error(error.message); return; }
       toast.success("Job created");
       navigate(`/shop/jobs/${data.id}`, { replace: true });
     } else {
-      // @ts-expect-error types regenerate after migration
       const { error } = await supabase.from("shop_jobs").update(payload).eq("id", id);
       setSaving(false);
       if (error) { toast.error(error.message); return; }

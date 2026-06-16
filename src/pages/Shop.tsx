@@ -40,12 +40,10 @@ export default function Shop() {
   useEffect(() => {
     if (!user) return;
     (async () => {
-      // @ts-expect-error shop_staff types regenerate after migration
       const { data: staff } = await supabase.from("shop_staff").select("panel_shop_id").eq("user_id", user.id).maybeSingle();
       const sid = staff?.panel_shop_id ?? null;
       setShopId(sid);
       if (sid) {
-        // @ts-expect-error shop_jobs types regenerate after migration
         const { data } = await supabase.from("shop_jobs").select("*").eq("panel_shop_id", sid).order("created_at", { ascending: false });
         setJobs((data as ShopJob[]) ?? []);
       }

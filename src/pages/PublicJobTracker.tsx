@@ -24,7 +24,6 @@ export default function PublicJobTracker() {
     if (!slug) return;
     (async () => {
       // Public read uses RLS-safe limited columns. (For now, anon read disabled — uses authed customer view.)
-      // @ts-expect-error types regenerate after migration
       const { data } = await supabase.from("shop_jobs")
         .select("customer_name, vehicle_rego, vehicle_make, vehicle_model, status, eta_at, panelquote_ref")
         .eq("public_slug", slug).maybeSingle();
