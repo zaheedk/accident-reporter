@@ -122,7 +122,7 @@ export default function PanelBeatersLocation() {
   const faqs = FAQ(locationName);
 
   // Must match SEO canonical origin so Breadcrumb URLs resolve to the indexed pages.
-  const ORIGIN = 'https://www.savo.co.nz';
+  const ORIGIN = SAVO_ORIGIN;
   const pageUrl = `${ORIGIN}/panel-beaters/${slug}`;
 
   const jsonLd: Record<string, unknown> = {
