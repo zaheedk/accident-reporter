@@ -120,28 +120,42 @@ export default function PanelBeatersLocation() {
 
   const faqs = FAQ(locationName);
 
+  // Must match SEO canonical origin so Breadcrumb URLs resolve to the indexed pages.
+  const ORIGIN = 'https://www.savo.co.nz';
+  const pageUrl = `${ORIGIN}/panel-beaters/${slug}`;
+
   const jsonLd: Record<string, unknown> = {
     '@context': 'https://schema.org',
     '@graph': [
       {
         '@type': 'ItemList',
+        '@id': `${pageUrl}#shops`,
         name: title,
         numberOfItems: shops.length,
-        itemListElement: shops.slice(0, 20).map((s, i) => ({
-          '@type': 'ListItem',
-          position: i + 1,
-          item: {
+        itemListOrder: 'https://schema.org/ItemListOrderDescending',
+        itemListElement: shops.slice(0, 20).map((s, i) => {
+          const item: Record<string, unknown> = {
             '@type': 'AutoBodyShop',
             name: s.name,
-            address: { '@type': 'PostalAddress', streetAddress: s.address, addressLocality: s.city, addressRegion: s.region, addressCountry: 'NZ' },
-            telephone: s.phone || undefined,
-            url: s.website || undefined,
-            aggregateRating: s.google_rating ? { '@type': 'AggregateRating', ratingValue: s.google_rating, bestRating: 5 } : undefined,
-          },
-        })),
+            address: {
+              '@type': 'PostalAddress',
+              streetAddress: s.address,
+              addressLocality: s.city,
+              addressRegion: s.region,
+              addressCountry: 'NZ',
+            },
+          };
+          if (s.phone) item.telephone = s.phone;
+          if (s.website) item.url = s.website;
+          // Intentionally omit aggregateRating: Google requires reviewCount/ratingCount
+          // alongside ratingValue, which we don't store. Including a partial rating
+          // triggers Search Console warnings.
+          return { '@type': 'ListItem', position: i + 1, item };
+        }),
       },
       {
         '@type': 'FAQPage',
+        '@id': `${pageUrl}#faq`,
         mainEntity: faqs.map((f) => ({
           '@type': 'Question',
           name: f.q,
@@ -150,10 +164,11 @@ export default function PanelBeatersLocation() {
       },
       {
         '@type': 'BreadcrumbList',
+        '@id': `${pageUrl}#breadcrumb`,
         itemListElement: [
-          { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://savonz.lovable.app/' },
-          { '@type': 'ListItem', position: 2, name: 'Panel Beaters', item: 'https://savonz.lovable.app/panel-beaters' },
-          { '@type': 'ListItem', position: 3, name: locationName, item: `https://savonz.lovable.app/panel-beaters/${slug}` },
+          { '@type': 'ListItem', position: 1, name: 'Home', item: `${ORIGIN}/` },
+          { '@type': 'ListItem', position: 2, name: 'Panel Beaters', item: `${ORIGIN}/panel-beaters` },
+          { '@type': 'ListItem', position: 3, name: locationName, item: pageUrl },
         ],
       },
     ],
