@@ -120,44 +120,44 @@ export default function PanelBeatersLocation() {
 
   const faqs = FAQ(locationName);
 
-  const jsonLd = [
-    {
-      '@context': 'https://schema.org',
-      '@type': 'ItemList',
-      name: title,
-      numberOfItems: shops.length,
-      itemListElement: shops.slice(0, 20).map((s, i) => ({
-        '@type': 'ListItem',
-        position: i + 1,
-        item: {
-          '@type': 'AutoBodyShop',
-          name: s.name,
-          address: { '@type': 'PostalAddress', streetAddress: s.address, addressLocality: s.city, addressRegion: s.region, addressCountry: 'NZ' },
-          telephone: s.phone || undefined,
-          url: s.website || undefined,
-          aggregateRating: s.google_rating ? { '@type': 'AggregateRating', ratingValue: s.google_rating, bestRating: 5 } : undefined,
-        },
-      })),
-    },
-    {
-      '@context': 'https://schema.org',
-      '@type': 'FAQPage',
-      mainEntity: faqs.map((f) => ({
-        '@type': 'Question',
-        name: f.q,
-        acceptedAnswer: { '@type': 'Answer', text: f.a },
-      })),
-    },
-    {
-      '@context': 'https://schema.org',
-      '@type': 'BreadcrumbList',
-      itemListElement: [
-        { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://savonz.lovable.app/' },
-        { '@type': 'ListItem', position: 2, name: 'Panel Beaters', item: 'https://savonz.lovable.app/panel-beaters' },
-        { '@type': 'ListItem', position: 3, name: locationName, item: `https://savonz.lovable.app/panel-beaters/${slug}` },
-      ],
-    },
-  ];
+  const jsonLd: Record<string, unknown> = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'ItemList',
+        name: title,
+        numberOfItems: shops.length,
+        itemListElement: shops.slice(0, 20).map((s, i) => ({
+          '@type': 'ListItem',
+          position: i + 1,
+          item: {
+            '@type': 'AutoBodyShop',
+            name: s.name,
+            address: { '@type': 'PostalAddress', streetAddress: s.address, addressLocality: s.city, addressRegion: s.region, addressCountry: 'NZ' },
+            telephone: s.phone || undefined,
+            url: s.website || undefined,
+            aggregateRating: s.google_rating ? { '@type': 'AggregateRating', ratingValue: s.google_rating, bestRating: 5 } : undefined,
+          },
+        })),
+      },
+      {
+        '@type': 'FAQPage',
+        mainEntity: faqs.map((f) => ({
+          '@type': 'Question',
+          name: f.q,
+          acceptedAnswer: { '@type': 'Answer', text: f.a },
+        })),
+      },
+      {
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://savonz.lovable.app/' },
+          { '@type': 'ListItem', position: 2, name: 'Panel Beaters', item: 'https://savonz.lovable.app/panel-beaters' },
+          { '@type': 'ListItem', position: 3, name: locationName, item: `https://savonz.lovable.app/panel-beaters/${slug}` },
+        ],
+      },
+    ],
+  };
 
   const renderShopCard = (s: Shop, opts?: { featured?: boolean }) => (
     <Card key={s.id} className={`p-4 ${opts?.featured ? 'border-primary/40' : ''}`}>
