@@ -11,7 +11,9 @@ const BASE_URL = 'https://www.savo.co.nz';
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL;
 const SUPABASE_KEY = process.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 
-type Entry = { path: string; changefreq?: string; priority?: string };
+type Entry = { path: string; changefreq?: string; priority?: string; lastmod?: string };
+
+const TODAY = new Date().toISOString().slice(0, 10);
 
 function slugify(s: string): string {
   return (s || '')
@@ -80,6 +82,7 @@ function xml(entries: Entry[]) {
   const urls = entries
     .map((e) => {
       const parts = [`  <url>`, `    <loc>${BASE_URL}${e.path}</loc>`];
+      if (e.lastmod) parts.push(`    <lastmod>${e.lastmod}</lastmod>`);
       if (e.changefreq) parts.push(`    <changefreq>${e.changefreq}</changefreq>`);
       if (e.priority) parts.push(`    <priority>${e.priority}</priority>`);
       parts.push(`  </url>`);
@@ -107,13 +110,13 @@ async function main() {
   const panelSlugs = new Set<string>();
   for (const c of cities) panelSlugs.add(slugify(c));
   for (const r of regions) panelSlugs.add(slugify(r));
-  for (const slug of panelSlugs) entries.push({ path: `/panel-beaters/${slug}`, changefreq: 'monthly', priority: '0.7' });
+  for (const slug of panelSlugs) entries.push({ path: `/panel-beaters/${slug}`, changefreq: 'weekly', priority: '0.8', lastmod: TODAY });
 
   // Tow trucks: region pages
   const tows = await fetchRows<{ region: string }>('tow_companies', 'select=region');
   const towRegions = new Set<string>();
   for (const t of tows) if (t.region) towRegions.add(slugify(t.region));
-  for (const slug of towRegions) entries.push({ path: `/tow-trucks/${slug}`, changefreq: 'monthly', priority: '0.7' });
+  for (const slug of towRegions) entries.push({ path: `/tow-trucks/${slug}`, changefreq: 'weekly', priority: '0.8', lastmod: TODAY });
 
   // Panel beaters by vehicle make
   const makeSlugs = [
