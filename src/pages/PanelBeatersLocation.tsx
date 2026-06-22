@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { MapPin, Phone, Mail, Star, ExternalLink, ArrowLeft, FileText } from 'lucide-react';
 import { slugifyLocation, titleizeSlug } from '@/lib/location-slug';
+import { SAVO_ORIGIN, buildPanelBeatersBreadcrumb } from '@/lib/panel-beaters-jsonld';
 
 type Shop = {
   id: string; name: string; address: string; city: string; region: string;
@@ -121,7 +122,7 @@ export default function PanelBeatersLocation() {
   const faqs = FAQ(locationName);
 
   // Must match SEO canonical origin so Breadcrumb URLs resolve to the indexed pages.
-  const ORIGIN = 'https://www.savo.co.nz';
+  const ORIGIN = SAVO_ORIGIN;
   const pageUrl = `${ORIGIN}/panel-beaters/${slug}`;
 
   const jsonLd: Record<string, unknown> = {
@@ -162,15 +163,7 @@ export default function PanelBeatersLocation() {
           acceptedAnswer: { '@type': 'Answer', text: f.a },
         })),
       },
-      {
-        '@type': 'BreadcrumbList',
-        '@id': `${pageUrl}#breadcrumb`,
-        itemListElement: [
-          { '@type': 'ListItem', position: 1, name: 'Home', item: `${ORIGIN}/` },
-          { '@type': 'ListItem', position: 2, name: 'Panel Beaters', item: `${ORIGIN}/panel-beaters` },
-          { '@type': 'ListItem', position: 3, name: locationName, item: pageUrl },
-        ],
-      },
+      buildPanelBeatersBreadcrumb(slug, locationName),
     ],
   };
 
