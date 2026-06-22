@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { MapPin, Phone, Mail, Star, ExternalLink, ArrowLeft, FileText } from 'lucide-react';
 import { slugifyLocation, titleizeSlug } from '@/lib/location-slug';
+import { SAVO_ORIGIN, buildPanelBeatersBreadcrumb } from '@/lib/panel-beaters-jsonld';
 
 type Shop = {
   id: string; name: string; address: string; city: string; region: string;
