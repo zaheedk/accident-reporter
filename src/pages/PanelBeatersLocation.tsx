@@ -6,13 +6,84 @@ import AppLayout from '@/components/AppLayout';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { MapPin, Phone, Mail, Star, ExternalLink, ArrowLeft } from 'lucide-react';
+import { MapPin, Phone, Mail, Star, ExternalLink, ArrowLeft, FileText } from 'lucide-react';
 import { slugifyLocation, titleizeSlug } from '@/lib/location-slug';
 
 type Shop = {
   id: string; name: string; address: string; city: string; region: string;
   phone: string; email: string; google_rating: number; website: string;
 };
+
+// City-specific colour for the intro paragraph. Falls back to a generic intro for unknown cities.
+const CITY_INTROS: Record<string, { blurb: string; insurers: string; suburbs: string }> = {
+  auckland: {
+    blurb: 'Auckland has the highest crash volume in New Zealand, and panel beaters here range from boutique European specialists in Parnell to high-volume insurer-approved shops in Penrose, Mt Wellington and East Tāmaki. Most jobs are insurance-funded, so turnaround depends as much on parts supply as on the workshop itself — popular Toyota, Mazda and Tesla panels frequently sit on backorder for 2–4 weeks.',
+    insurers: 'AA Insurance, State, Tower, AMI, Vero and IAG all maintain approved repairer networks across Auckland',
+    suburbs: 'Penrose, Mt Wellington, East Tāmaki, Albany, Henderson, Manukau, Onehunga and the North Shore',
+  },
+  wellington: {
+    blurb: 'Wellington panel beaters cover the city centre, Hutt Valley and Porirua basin. The market is dominated by long-established family workshops, several of which have been on the same site for 40+ years. Wind-driven debris damage, low-speed parking knocks and weather-related claims are the most common jobs — full collision repairs are typically referred to Hutt Valley shops with the floor space for chassis straightening.',
+    insurers: 'Tower, AA Insurance, State and AMI are the most common insurers handling Wellington claims',
+    suburbs: 'Te Aro, Newtown, Kilbirnie, Petone, Lower Hutt, Upper Hutt, Porirua and Tawa',
+  },
+  christchurch: {
+    blurb: 'Christchurch has more panel beaters per capita than any other NZ city — a legacy of the post-quake rebuild and the flat, sprawling geography that gives workshops cheap industrial land. Quotes here are typically 10–15% cheaper than Auckland for equivalent work, and most shops can offer same-week assessments.',
+    insurers: 'AA Insurance, State, Tower, AMI and Vero all have multiple approved repairers in Christchurch',
+    suburbs: 'Sockburn, Hornby, Addington, Sydenham, Bromley, Papanui and Riccarton',
+  },
+  hamilton: {
+    blurb: 'Hamilton panel beaters serve the wider Waikato — Cambridge, Te Awamutu and Morrinsville drivers regularly travel in for insurance-approved work. The market is split between a handful of large insurer-network shops near Te Rapa and Frankton, and independent specialists handling classic restorations and modified vehicles.',
+    insurers: 'AA Insurance, State, AMI and Tower dominate the Waikato approved-repairer lists',
+    suburbs: 'Te Rapa, Frankton, Hamilton East, Chartwell and Pukete',
+  },
+  tauranga: {
+    blurb: 'Tauranga is one of the fastest-growing collision repair markets in NZ, driven by population growth in Pāpāmoa and Mount Maunganui. Most workshops are clustered around Mount Maunganui industrial and Greerton, with capacity that hasn\'t quite kept pace with demand — booking a quote 1–2 weeks ahead is normal.',
+    insurers: 'State, AA Insurance, Tower and AMI maintain approved networks in the Bay of Plenty',
+    suburbs: 'Mount Maunganui, Pāpāmoa, Greerton, Tauriko and Bethlehem',
+  },
+  dunedin: {
+    blurb: 'Dunedin panel beaters handle a mix of student-vehicle damage, hail and weather claims, and rural Otago work brought in from Mosgiel, Balclutha and beyond. The market is small and tightly held — most insurer-approved work goes to a handful of long-standing South Dunedin and Green Island shops.',
+    insurers: 'AA Insurance, State, Tower and AMI are the main insurers approving repairs in Otago',
+    suburbs: 'South Dunedin, Green Island, Mosgiel, North East Valley and Andersons Bay',
+  },
+};
+
+function cityIntro(name: string, slug: string, count: number): string {
+  const c = CITY_INTROS[slug];
+  if (c) {
+    return `${c.blurb} We currently list ${count} verified panel beaters in ${name} with Google ratings of 4.5 stars or higher. ${c.insurers}, so before authorising work it pays to confirm your shop is on your insurer's panel. The biggest concentration of workshops sits across ${c.suburbs}.`;
+  }
+  return `Panel beaters in ${name} handle the full range of collision repair, paintwork, dent removal and structural straightening. We currently list ${count} verified workshops in ${name} with Google ratings of 4.5 stars or higher. Most insurance-funded repairs require quotes from approved repairers, so confirm with your insurer before authorising work. Independent shops also handle private-pay jobs, classic restorations and modifications.`;
+}
+
+// Major NZ cities to cross-link from any city page.
+const MAJOR_CITIES = [
+  'Auckland', 'Wellington', 'Christchurch', 'Hamilton', 'Tauranga',
+  'Dunedin', 'Palmerston North', 'Napier', 'Nelson', 'Rotorua',
+];
+
+const FAQ = (city: string) => [
+  {
+    q: `How much do panel beaters cost in ${city}?`,
+    a: `Most ${city} panel beaters charge between $90 and $140 per labour hour. A minor dent or scuff repair typically runs $400–$900, while a moderate collision repair (panel replacement, paint, blending) commonly lands between $2,500 and $7,000 depending on parts and paint area.`,
+  },
+  {
+    q: `Do I need three quotes for an insurance claim?`,
+    a: `Not always. Most NZ insurers accept a single quote from an approved repairer on their network. You only need multiple quotes when you choose a shop outside the insurer's panel, or for higher-value claims where the insurer requests them.`,
+  },
+  {
+    q: `Will my insurance cover the repair?`,
+    a: `If you have comprehensive cover and you weren't at fault, the repair is usually covered minus your excess. Third-party-only policies cover damage to other people's cars, not yours. SAVO can help you lodge the claim with the right evidence — photos, third-party details and a branded report.`,
+  },
+  {
+    q: `How long do collision repairs take in ${city}?`,
+    a: `Simple cosmetic repairs take 2–4 working days. Mid-sized collision work usually runs 1–3 weeks. Anything involving structural straightening, suspension work or backordered parts (especially European and EV panels) can stretch to 4–8 weeks.`,
+  },
+  {
+    q: `What if my car is undriveable after a crash?`,
+    a: `Most ${city} panel beaters arrange towing direct to the workshop. You can also browse SAVO's tow-truck directory and dispatch one yourself, then have the shop handle storage and assessment.`,
+  },
+];
 
 export default function PanelBeatersLocation() {
   const { slug = '' } = useParams<{ slug: string }>();
@@ -38,30 +109,94 @@ export default function PanelBeatersLocation() {
   const locationName = isCity
     ? cityMatches[0].city
     : regionMatches[0]?.region ?? titleizeSlug(slug);
-  const locationType = isCity ? 'city' : 'region';
   const region = isCity ? cityMatches[0].region : locationName;
 
-  const title = `Panel Beaters in ${locationName} — ${shops.length || 'Top-rated'} Collision Repair Shops`;
-  const description = `Find ${shops.length || 'top-rated'} trusted panel beaters in ${locationName}${isCity ? `, ${region}` : ''}. Compare ratings, contact details and directions for collision repair, dent removal and crash repair specialists.`;
+  const topPicks = shops.slice(0, 5);
+  const rest = shops.slice(5);
+  const tow_slug = slug; // mirror city slug for tow directory cross-link
 
-  const jsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'ItemList',
-    name: title,
-    numberOfItems: shops.length,
-    itemListElement: shops.slice(0, 20).map((s, i) => ({
-      '@type': 'ListItem',
-      position: i + 1,
-      item: {
-        '@type': 'AutoBodyShop',
-        name: s.name,
-        address: { '@type': 'PostalAddress', streetAddress: s.address, addressLocality: s.city, addressRegion: s.region, addressCountry: 'NZ' },
-        telephone: s.phone || undefined,
-        url: s.website || undefined,
-        aggregateRating: s.google_rating ? { '@type': 'AggregateRating', ratingValue: s.google_rating, bestRating: 5 } : undefined,
-      },
-    })),
-  };
+  const title = `Best Panel Beaters in ${locationName} — ${shops.length || 'Top-rated'} Collision Repair Shops NZ (2026)`;
+  const description = `Compare ${shops.length || 'top-rated'} trusted panel beaters in ${locationName}${isCity ? `, ${region}` : ''}. Reviews, pricing, insurer approvals and instant quote requests for collision repair and dent removal.`;
+
+  const faqs = FAQ(locationName);
+
+  const jsonLd = [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'ItemList',
+      name: title,
+      numberOfItems: shops.length,
+      itemListElement: shops.slice(0, 20).map((s, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        item: {
+          '@type': 'AutoBodyShop',
+          name: s.name,
+          address: { '@type': 'PostalAddress', streetAddress: s.address, addressLocality: s.city, addressRegion: s.region, addressCountry: 'NZ' },
+          telephone: s.phone || undefined,
+          url: s.website || undefined,
+          aggregateRating: s.google_rating ? { '@type': 'AggregateRating', ratingValue: s.google_rating, bestRating: 5 } : undefined,
+        },
+      })),
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: faqs.map((f) => ({
+        '@type': 'Question',
+        name: f.q,
+        acceptedAnswer: { '@type': 'Answer', text: f.a },
+      })),
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://savonz.lovable.app/' },
+        { '@type': 'ListItem', position: 2, name: 'Panel Beaters', item: 'https://savonz.lovable.app/panel-beaters' },
+        { '@type': 'ListItem', position: 3, name: locationName, item: `https://savonz.lovable.app/panel-beaters/${slug}` },
+      ],
+    },
+  ];
+
+  const renderShopCard = (s: Shop, opts?: { featured?: boolean }) => (
+    <Card key={s.id} className={`p-4 ${opts?.featured ? 'border-primary/40' : ''}`}>
+      <div className="flex items-start justify-between gap-3 mb-2">
+        <h3 className="text-lg font-semibold text-foreground">{s.name}</h3>
+        {s.google_rating ? (
+          <Badge variant="secondary" className="flex items-center gap-1 shrink-0">
+            <Star className="w-3 h-3 fill-current" /> {s.google_rating}
+          </Badge>
+        ) : null}
+      </div>
+      <div className="text-sm text-muted-foreground space-y-1">
+        <p className="flex items-start gap-2"><MapPin className="w-3.5 h-3.5 mt-0.5 shrink-0" />{s.address}, {s.city}</p>
+        {s.phone && <p className="flex items-center gap-2"><Phone className="w-3.5 h-3.5" /><a className="hover:underline" href={`tel:${s.phone}`}>{s.phone}</a></p>}
+        {s.email && <p className="flex items-center gap-2"><Mail className="w-3.5 h-3.5" /><a className="hover:underline" href={`mailto:${s.email}`}>{s.email}</a></p>}
+      </div>
+      <div className="flex flex-wrap gap-2 mt-3">
+        {opts?.featured && (
+          <Button asChild size="sm">
+            <Link to="/auth">
+              <FileText className="w-3 h-3 mr-1" /> Request a quote
+            </Link>
+          </Button>
+        )}
+        {s.website && (
+          <Button asChild variant="outline" size="sm">
+            <a href={s.website} target="_blank" rel="noopener noreferrer">
+              Visit site <ExternalLink className="w-3 h-3 ml-1" />
+            </a>
+          </Button>
+        )}
+        <Button asChild variant="outline" size="sm">
+          <a href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(`${s.address}, ${s.city}`)}`} target="_blank" rel="noopener noreferrer">
+            Directions
+          </a>
+        </Button>
+      </div>
+    </Card>
+  );
 
   return (
     <AppLayout>
@@ -73,69 +208,89 @@ export default function PanelBeatersLocation() {
 
         <header className="mb-6">
           <h1 className="text-3xl md:text-4xl font-serif text-foreground mb-3">
-            Panel Beaters in {locationName}
+            Best Panel Beaters in {locationName}
           </h1>
           <p className="text-muted-foreground">
             {shops.length > 0
-              ? `${shops.length} trusted collision repair specialists serving ${locationName}${isCity ? `, ${region}` : ''}. All shops listed have verified ratings of 4.5 stars or higher.`
+              ? `${shops.length} verified collision repair specialists serving ${locationName}${isCity ? `, ${region}` : ''}. All shops listed have Google ratings of 4.5 stars or higher.`
               : `We don't currently have verified panel beaters listed for ${locationName}. Browse nearby regions on our main directory.`}
           </p>
         </header>
 
+        {shops.length > 0 && (
+          <section className="mb-8 prose prose-sm dark:prose-invert max-w-none">
+            <p>{cityIntro(locationName, slug, shops.length)}</p>
+          </section>
+        )}
+
         {isLoading ? (
           <p className="text-sm text-muted-foreground">Loading…</p>
         ) : (
-          <div className="space-y-3">
-            {shops.map((s) => (
-              <Card key={s.id} className="p-4">
-                <div className="flex items-start justify-between gap-3 mb-2">
-                  <h2 className="text-lg font-semibold text-foreground">{s.name}</h2>
-                  {s.google_rating ? (
-                    <Badge variant="secondary" className="flex items-center gap-1">
-                      <Star className="w-3 h-3 fill-current" /> {s.google_rating}
-                    </Badge>
-                  ) : null}
+          <>
+            {topPicks.length > 0 && (
+              <section className="mb-10">
+                <h2 className="text-xl font-serif text-foreground mb-3">Top picks in {locationName}</h2>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Our highest-rated workshops in {locationName}. Request a quote and SAVO will package your accident photos, third-party details and report for the shop in one go.
+                </p>
+                <div className="space-y-3">
+                  {topPicks.map((s) => renderShopCard(s, { featured: true }))}
                 </div>
-                <div className="text-sm text-muted-foreground space-y-1">
-                  <p className="flex items-start gap-2"><MapPin className="w-3.5 h-3.5 mt-0.5 shrink-0" />{s.address}, {s.city}</p>
-                  {s.phone && <p className="flex items-center gap-2"><Phone className="w-3.5 h-3.5" /><a className="hover:underline" href={`tel:${s.phone}`}>{s.phone}</a></p>}
-                  {s.email && <p className="flex items-center gap-2"><Mail className="w-3.5 h-3.5" /><a className="hover:underline" href={`mailto:${s.email}`}>{s.email}</a></p>}
+              </section>
+            )}
+
+            {rest.length > 0 && (
+              <section className="mb-10">
+                <h2 className="text-xl font-serif text-foreground mb-3">Full directory ({rest.length} more)</h2>
+                <div className="space-y-3">
+                  {rest.map((s) => renderShopCard(s))}
                 </div>
-                <div className="flex gap-2 mt-3">
-                  {s.website && (
-                    <Button asChild variant="outline" size="sm">
-                      <a href={s.website} target="_blank" rel="noopener noreferrer">
-                        Visit site <ExternalLink className="w-3 h-3 ml-1" />
-                      </a>
-                    </Button>
-                  )}
-                  <Button asChild variant="outline" size="sm">
-                    <a href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(`${s.address}, ${s.city}`)}`} target="_blank" rel="noopener noreferrer">
-                      Directions
-                    </a>
-                  </Button>
-                </div>
-              </Card>
-            ))}
-          </div>
+              </section>
+            )}
+          </>
         )}
 
-        <section className="mt-10 prose prose-sm dark:prose-invert max-w-none">
-          <h2>About panel beaters in {locationName}</h2>
-          <p>
-            Panel beaters in {locationName} handle collision repair, paintwork, dent removal and structural straightening for vehicles damaged in accidents. Choosing a reputable, well-rated workshop is critical for safe repairs and to protect your insurance claim — most insurers require quotes from approved repairers before authorising work.
+        {shops.length > 0 && (
+          <section className="mt-10 mb-10">
+            <h2 className="text-xl font-serif text-foreground mb-4">Frequently asked questions</h2>
+            <div className="space-y-4">
+              {faqs.map((f) => (
+                <Card key={f.q} className="p-4">
+                  <h3 className="font-semibold text-foreground mb-1">{f.q}</h3>
+                  <p className="text-sm text-muted-foreground">{f.a}</p>
+                </Card>
+              ))}
+            </div>
+          </section>
+        )}
+
+        <section className="mt-10 mb-10">
+          <h2 className="text-xl font-serif text-foreground mb-3">Other cities</h2>
+          <div className="flex flex-wrap gap-2">
+            {MAJOR_CITIES.filter((c) => slugifyLocation(c) !== slug).map((c) => (
+              <Button key={c} asChild variant="outline" size="sm">
+                <Link to={`/panel-beaters/${slugifyLocation(c)}`}>Panel beaters in {c}</Link>
+              </Button>
+            ))}
+          </div>
+          <div className="mt-4 flex flex-wrap gap-2">
+            <Button asChild variant="outline" size="sm">
+              <Link to={`/tow-trucks/${tow_slug}`}>Tow trucks in {locationName}</Link>
+            </Button>
+            <Button asChild variant="outline" size="sm">
+              <Link to="/blog">Claim guides &amp; resources</Link>
+            </Button>
+          </div>
+        </section>
+
+        <section className="mt-10 rounded-lg border border-primary/30 bg-primary/5 p-6">
+          <h2 className="text-xl font-serif text-foreground mb-2">Lodge your claim faster with SAVO</h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            Capture accident details on the spot — photos, third-party info, location, and a branded report you can send straight to your insurer and your chosen panel beater in {locationName}.
           </p>
-          <h3>How to choose the right repairer</h3>
-          <ul>
-            <li>Check Google reviews and confirm the rating is genuine.</li>
-            <li>Ask whether the shop is an approved repairer for your insurer.</li>
-            <li>Request a written quote that itemises parts and labour.</li>
-            <li>Confirm the warranty offered on repairs and paintwork.</li>
-          </ul>
-          <h3>Lodge your claim faster with SAVO</h3>
-          <p>
-            SAVO helps New Zealand drivers capture accident details on the spot — photos, third-party info, location, and a branded report you can send straight to your insurer. <Link to="/">Get started for free</Link>.
-          </p>
+          <Button asChild>
+            <Link to="/auth">Get started free</Link>
+          </Button>
         </section>
       </div>
     </AppLayout>
