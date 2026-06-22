@@ -163,15 +163,7 @@ export default function PanelBeatersLocation() {
           acceptedAnswer: { '@type': 'Answer', text: f.a },
         })),
       },
-      {
-        '@type': 'BreadcrumbList',
-        '@id': `${pageUrl}#breadcrumb`,
-        itemListElement: [
-          { '@type': 'ListItem', position: 1, name: 'Home', item: `${ORIGIN}/` },
-          { '@type': 'ListItem', position: 2, name: 'Panel Beaters', item: `${ORIGIN}/panel-beaters` },
-          { '@type': 'ListItem', position: 3, name: locationName, item: pageUrl },
-        ],
-      },
+      buildPanelBeatersBreadcrumb(slug, locationName),
     ],
   };
 
