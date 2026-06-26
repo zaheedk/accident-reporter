@@ -58,13 +58,13 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const logoLink = user ? '/dashboard' : '/';
 
   return (
-    <div className="min-h-screen bg-background overflow-x-hidden">
-      <header className="bg-card pl-2 pr-4 py-3 pt-[max(0.75rem,env(safe-area-inset-top))] flex items-center justify-between border-b border-border/50 sticky top-0 z-30">
-        <Link to={logoLink} className="flex items-center gap-2">
+    <div className="min-h-screen w-full max-w-full bg-background overflow-x-hidden">
+      <header className="w-full max-w-full min-w-0 bg-card pl-2 pr-4 py-3 pt-[max(0.75rem,env(safe-area-inset-top))] flex items-center justify-between gap-3 border-b border-border/50 sticky top-0 z-30 overflow-x-hidden">
+        <Link to={logoLink} className="flex items-center gap-2 min-w-0">
           <img src="/savo-icon.svg" alt="SAVO" className="h-9 w-9" width="36" height="36" />
-          <span className="font-extrabold tracking-tight text-foreground text-[17px]">SAVO</span>
+          <span className="font-extrabold tracking-tight text-foreground text-[17px] truncate">SAVO</span>
         </Link>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 shrink-0">
           {user && <NotificationBell />}
           {!user && (
             <>
@@ -144,7 +144,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </div>
       )}
 
-      <main className="max-w-2xl lg:max-w-5xl mx-auto px-4 lg:px-8 py-5 pb-32">
+      <main className="w-full max-w-2xl lg:max-w-5xl mx-auto px-4 lg:px-8 py-5 pb-32 overflow-x-hidden">
         {children}
       </main>
 
