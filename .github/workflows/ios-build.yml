@@ -190,8 +190,15 @@ jobs:
           /usr/libexec/PlistBuddy -c "Add :NSPhotoLibraryUsageDescription string 'SAVO accesses your photo library so you can attach existing photos to claims.'" "$PLIST" 2>/dev/null || true
           /usr/libexec/PlistBuddy -c "Add :NSPhotoLibraryAddUsageDescription string 'SAVO saves captured incident photos to your photo library.'" "$PLIST" 2>/dev/null || true
           /usr/libexec/PlistBuddy -c "Add :NSMicrophoneUsageDescription string 'SAVO uses the microphone to record voice notes and call audio for claim documentation.'" "$PLIST" 2>/dev/null || true
+          # Google Sign-In URL scheme (reversed iOS OAuth client ID) so Google can redirect back into the app
+          GOOGLE_URL_SCHEME="com.googleusercontent.apps.801226493928-qfmd617k557j8ktmrgp3mvbk36rgl7ao"
+          /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes array" "$PLIST" 2>/dev/null || true
+          /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes:0 dict" "$PLIST" 2>/dev/null || true
+          /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes:0:CFBundleURLSchemes array" "$PLIST" 2>/dev/null || true
+          /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes:0:CFBundleURLSchemes:0 string ${GOOGLE_URL_SCHEME}" "$PLIST" 2>/dev/null || \
+            /usr/libexec/PlistBuddy -c "Set :CFBundleURLTypes:0:CFBundleURLSchemes:0 ${GOOGLE_URL_SCHEME}" "$PLIST"
           echo "--- Final Info.plist ---"
-          /usr/libexec/PlistBuddy -c "Print" "$PLIST" | grep -A0 "Usage" || true
+          /usr/libexec/PlistBuddy -c "Print" "$PLIST" | grep -A0 "Usage\|URLScheme" || true
 
       # ──────────────────────────────────────────────────────────────────
       # Decide whether we have what we need for a signed build
