@@ -98,7 +98,7 @@ export default function Auth() {
           <ArrowLeft className="w-4 h-4" />
           Home
         </Link>
-        <img src="/savo-logo.svg" alt="SAVO" className="h-7" />
+        <img src="/savo-logo.svg" alt="SAVO" className="h-10 w-auto" />
         <span className="w-12" />
       </header>
 
