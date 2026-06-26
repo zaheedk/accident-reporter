@@ -85,7 +85,7 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-background flex flex-col">
       <SEO
         title="Sign In or Create Account | SAVO"
         description="Sign in to SAVO or create a free account to start documenting accidents, lodging insurance claims and managing your vehicles."
@@ -93,17 +93,17 @@ export default function Auth() {
         noIndex
       />
       {/* Top bar */}
-      <header className="px-5 py-4 flex items-center justify-between border-b border-border">
-        <Link to="/" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors">
+      <header className="w-full max-w-full px-4 sm:px-5 pb-4 pt-[max(1rem,env(safe-area-inset-top))] flex items-center justify-between border-b border-border">
+        <Link to="/" className="min-w-0 inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors">
           <ArrowLeft className="w-4 h-4" />
           Home
         </Link>
         <img src="/savo-logo.svg" alt="SAVO" className="h-10 w-auto" />
-        <span className="w-12" />
+        <span className="w-12 shrink-0" />
       </header>
 
-      <div className="flex-1 flex items-center justify-center px-5 py-10">
-        <div className="w-full max-w-sm">
+      <div className="flex-1 w-full max-w-full flex items-center justify-center px-4 sm:px-5 py-10 overflow-x-hidden">
+        <div className="w-full max-w-sm min-w-0">
           <h1 className="text-2xl font-bold text-foreground tracking-tight">
             {mode === 'forgot' ? 'Reset password' : mode === 'login' ? 'Welcome back' : 'Create account'}
           </h1>
@@ -158,7 +158,7 @@ export default function Auth() {
           {authMethod === 'phone' ? (
             <>
               <PhoneAuth onError={setError} />
-              {error && <p className="text-xs text-destructive font-medium bg-destructive/5 px-3 py-2 rounded-lg mt-4">{error}</p>}
+              {error && <p className="text-xs text-destructive font-medium bg-destructive/5 px-3 py-2 rounded-lg mt-4 break-words">{error}</p>}
             </>
           ) : (
             <>
@@ -200,8 +200,8 @@ export default function Auth() {
                   </div>
                 )}
 
-                {success && <p className="text-xs text-foreground font-medium bg-muted px-3 py-2 rounded-lg border border-border">{success}</p>}
-                {error && <p className="text-xs text-destructive font-medium bg-destructive/5 px-3 py-2 rounded-lg">{error}</p>}
+                {success && <p className="text-xs text-foreground font-medium bg-muted px-3 py-2 rounded-lg border border-border break-words">{success}</p>}
+                {error && <p className="text-xs text-destructive font-medium bg-destructive/5 px-3 py-2 rounded-lg break-words">{error}</p>}
 
                 <button type="submit" disabled={submitting} className="btn-primary w-full h-11">
                   {submitting ? (

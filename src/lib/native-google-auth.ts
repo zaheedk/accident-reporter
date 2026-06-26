@@ -9,11 +9,23 @@ let initialized = false;
 
 export const isNativeApp = () => Capacitor.isNativePlatform();
 
-function createNonce(length = 32) {
+function createNonce(length = 64) {
   const charset = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-._';
   const randomValues = new Uint8Array(length);
   crypto.getRandomValues(randomValues);
   return Array.from(randomValues, value => charset[value % charset.length]).join('');
+}
+
+async function sha256Hex(message: string) {
+  const data = new TextEncoder().encode(message);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  return Array.from(new Uint8Array(hashBuffer), byte => byte.toString(16).padStart(2, '0')).join('');
+}
+
+async function createNoncePair() {
+  const rawNonce = createNonce();
+  const nonceDigest = await sha256Hex(rawNonce);
+  return { rawNonce, nonceDigest };
 }
 
 function getJwtPayload(token: string): Record<string, unknown> | null {
@@ -54,14 +66,14 @@ export async function signInWithGoogleNative() {
   }
 
   let result: any;
-  const isIOS = Capacitor.getPlatform() === 'ios';
-  const rawNonce = isIOS ? createNonce() : undefined;
+  const { rawNonce, nonceDigest } = await createNoncePair();
   try {
     result = await SocialLogin.login({
       provider: 'google',
       options: {
         scopes: ['email', 'profile', 'openid'],
-        ...(rawNonce ? { nonce: rawNonce, forcePrompt: true } : {}),
+        nonce: nonceDigest,
+        forcePrompt: true,
       },
     });
     console.log('[GoogleAuth] login completed:', {
@@ -100,12 +112,16 @@ export async function signInWithGoogleNative() {
 
   const tokenPayload = getJwtPayload(idToken);
   const tokenHasNonce = typeof tokenPayload?.nonce === 'string' && tokenPayload.nonce.length > 0;
+  if (tokenHasNonce && tokenPayload?.nonce !== nonceDigest) {
+    console.error('[GoogleAuth] nonce mismatch:', { tokenHasNonce, expectedDigest: nonceDigest });
+    throw new Error('Google sign-in failed: nonce mismatch. Please try again.');
+  }
 
   const { data, error } = await supabase.auth.signInWithIdToken({
     provider: 'google',
     token: idToken,
     ...(accessToken ? { access_token: accessToken } : {}),
-    ...(tokenHasNonce && rawNonce ? { nonce: rawNonce } : {}),
+    ...(tokenHasNonce ? { nonce: rawNonce } : {}),
   });
   if (error) {
     console.error('[GoogleAuth] supabase exchange failed:', error);
