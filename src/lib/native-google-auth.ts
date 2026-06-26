@@ -3,6 +3,7 @@ import { SocialLogin } from '@capgo/capacitor-social-login';
 import { supabase } from '@/integrations/supabase/client';
 
 const WEB_CLIENT_ID = '801226493928-0uq06s4htaufogc6ra2h1t9j1tog2rfl.apps.googleusercontent.com';
+const IOS_CLIENT_ID = '801226493928-qfmd617k557j8ktmrgp3mvbk36rgl7ao.apps.googleusercontent.com';
 
 let initialized = false;
 
@@ -13,6 +14,8 @@ async function ensureInit() {
   await SocialLogin.initialize({
     google: {
       webClientId: WEB_CLIENT_ID,
+      iOSClientId: IOS_CLIENT_ID,
+      iOSServerClientId: WEB_CLIENT_ID,
       mode: 'online',
     },
   });
