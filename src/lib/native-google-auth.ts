@@ -40,6 +40,22 @@ function getJwtPayload(token: string): Record<string, unknown> | null {
   }
 }
 
+function getTokenString(value: unknown): string | undefined {
+  if (typeof value === 'string' && value.length > 0) return value;
+  if (value && typeof value === 'object' && 'token' in value) {
+    const token = (value as { token?: unknown }).token;
+    if (typeof token === 'string' && token.length > 0) return token;
+  }
+  return undefined;
+}
+
+function isNonceExistenceError(error: unknown) {
+  const message = error && typeof error === 'object' && 'message' in error
+    ? String((error as { message?: unknown }).message ?? '')
+    : String(error ?? '');
+  return message.includes('Passed nonce and nonce in id_token should either both exist or not');
+}
+
 async function ensureInit() {
   if (initialized) return;
   await SocialLogin.initialize({
@@ -103,8 +119,12 @@ export async function signInWithGoogleNative() {
     throw new Error(`Google sign-in failed: ${human}`);
   }
 
-  const idToken = result?.result?.idToken || result?.idToken;
-  const accessToken = result?.result?.authentication?.accessToken || result?.accessToken;
+  const idToken = getTokenString(result?.result?.idToken || result?.idToken);
+  const accessToken = getTokenString(
+    result?.result?.accessToken ||
+    result?.result?.authentication?.accessToken ||
+    result?.accessToken
+  );
   if (!idToken) {
     console.error('[GoogleAuth] no idToken in result:', result);
     throw new Error('Google sign-in failed: no ID token returned (check webClientId is the WEB client ID, not Android).');
@@ -117,12 +137,23 @@ export async function signInWithGoogleNative() {
     throw new Error('Google sign-in failed: nonce mismatch. Please try again.');
   }
 
-  const { data, error } = await supabase.auth.signInWithIdToken({
+  const exchangeToken = (includeNonce: boolean) => supabase.auth.signInWithIdToken({
     provider: 'google',
     token: idToken,
     ...(accessToken ? { access_token: accessToken } : {}),
-    ...(tokenHasNonce ? { nonce: rawNonce } : {}),
+    ...(includeNonce ? { nonce: rawNonce } : {}),
   });
+
+  let { data, error } = await exchangeToken(tokenHasNonce);
+
+  // Some iOS Google SDK/plugin combinations return a token whose nonce claim
+  // cannot be decoded reliably in the WebView before exchange. If the backend
+  // says the nonce presence is opposite to what we detected locally, retry once
+  // with the other shape; nonce value mismatches are still rejected.
+  if (error && isNonceExistenceError(error)) {
+    ({ data, error } = await exchangeToken(!tokenHasNonce));
+  }
+
   if (error) {
     console.error('[GoogleAuth] supabase exchange failed:', error);
     throw new Error(`Google sign-in failed (Supabase): ${error.message}`);
