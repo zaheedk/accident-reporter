@@ -202,8 +202,8 @@ export default function VehicleForm() {
 
   return (
     <AppLayout>
-      <div className="theme-garage relative min-w-0 max-w-full overflow-x-hidden">
-        <div className="space-y-8 min-w-0 max-w-full overflow-x-hidden">
+      <div className="theme-garage relative min-w-0 overflow-x-hidden">
+        <div className="space-y-8 min-w-0 overflow-x-hidden">
           {/* Header — Apple/Linear: matches Garage page */}
           <div className="flex items-end justify-between gap-3 pt-2 min-w-0 max-w-full">
             <div className="flex items-start gap-2 min-w-0">
