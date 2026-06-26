@@ -202,10 +202,10 @@ export default function VehicleForm() {
 
   return (
     <AppLayout>
-      <div className="theme-garage relative">
-        <div className="space-y-8">
+      <div className="theme-garage relative min-w-0 max-w-full overflow-x-hidden">
+        <div className="space-y-8 min-w-0 max-w-full overflow-x-hidden">
           {/* Header — Apple/Linear: matches Garage page */}
-          <div className="flex items-end justify-between gap-3 pt-2">
+          <div className="flex items-end justify-between gap-3 pt-2 min-w-0 max-w-full">
             <div className="flex items-start gap-2 min-w-0">
               <button
                 onClick={() => navigate(-1)}
@@ -247,7 +247,7 @@ export default function VehicleForm() {
           )}
 
           {/* Body */}
-          <div className="md:grid md:grid-cols-[240px_1fr] md:gap-6 lg:grid-cols-[260px_1fr] lg:gap-8 space-y-6 md:space-y-0">
+          <div className="min-w-0 max-w-full md:grid md:grid-cols-[240px_1fr] md:gap-6 lg:grid-cols-[260px_1fr] lg:gap-8 space-y-6 md:space-y-0">
             {/* Left rail — Garage-style cards */}
             <aside className="hidden md:block space-y-4">
               {/* All vehicles tile */}
@@ -309,7 +309,7 @@ export default function VehicleForm() {
             </aside>
 
             {/* Right column — form */}
-            <div className="space-y-6 pb-24">
+            <div className="space-y-6 pb-24 min-w-0 max-w-full overflow-x-hidden">
               {/* Mobile-only: Report incident */}
               {isEdit && vehicleUuid && (
                 <button
@@ -346,7 +346,7 @@ export default function VehicleForm() {
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
                 disabled={uploading}
-                className="w-full px-6 py-7 rounded-xl border border-dashed border-border bg-muted/30 hover:bg-muted/50 transition-colors flex flex-col items-center justify-center text-center"
+                className="w-full max-w-full px-4 sm:px-6 py-7 rounded-xl border border-dashed border-border bg-muted/30 hover:bg-muted/50 transition-colors flex flex-col items-center justify-center text-center overflow-hidden"
               >
                 {uploading ? (
                   <span className="inline-flex items-center gap-2 text-sm text-muted-foreground">
@@ -357,7 +357,7 @@ export default function VehicleForm() {
                     <div className="w-11 h-11 rounded-xl bg-foreground text-background flex items-center justify-center mb-2.5">
                       <Camera className="w-5 h-5" strokeWidth={1.8} />
                     </div>
-                    <span className="text-sm font-semibold text-foreground">Add a photo of your vehicle</span>
+                    <span className="text-sm font-semibold text-foreground max-w-full break-words">Add a photo of your vehicle</span>
                     <span className="text-[12px] text-muted-foreground mt-0.5">JPG or PNG, up to 10 MB</span>
                   </>
                 )}
@@ -368,22 +368,22 @@ export default function VehicleForm() {
 
           {/* Identity */}
           <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-3">
-              <div>
+            <div className="grid grid-cols-2 gap-3 min-w-0">
+              <div className="min-w-0">
                 <label className={labelCls}>Year</label>
                 <input className={`${inputCls} tabular-nums`} placeholder="2024" value={form.year} onChange={e => update('year', e.target.value)} />
               </div>
-              <div>
+              <div className="min-w-0">
                 <label className={labelCls}>Rego number</label>
                 <input className={`${inputCls} tabular-nums tracking-wide`} placeholder="ABC123" value={form.regoNumber} onChange={e => update('regoNumber', e.target.value.toUpperCase())} />
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div>
+            <div className="grid grid-cols-2 gap-3 min-w-0">
+              <div className="min-w-0">
                 <label className={labelCls}>Make</label>
                 <input className={inputCls} placeholder="Toyota" value={form.make} onChange={e => update('make', e.target.value)} />
               </div>
-              <div>
+              <div className="min-w-0">
                 <label className={labelCls}>Model</label>
                 <input className={inputCls} placeholder="Corolla" value={form.model} onChange={e => update('model', e.target.value)} />
               </div>
@@ -392,8 +392,8 @@ export default function VehicleForm() {
               <label className={labelCls}>Colour</label>
               <input className={inputCls} placeholder="Silver" value={form.color} onChange={e => update('color', e.target.value)} />
             </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div>
+            <div className="grid grid-cols-2 gap-3 min-w-0">
+              <div className="min-w-0">
                 <label className={labelCls}>WOF expiry</label>
                 <input type="date" className={`${inputCls} tabular-nums`} value={form.wofExpiry} onChange={e => update('wofExpiry', e.target.value)} />
                 <button
@@ -407,7 +407,7 @@ export default function VehicleForm() {
                 </button>
                 <input ref={wofScanRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={e => handleLabelScan(e, 'wof')} />
               </div>
-              <div>
+              <div className="min-w-0">
                 <label className={labelCls}>Rego expiry</label>
                 <input type="date" className={`${inputCls} tabular-nums`} value={form.regoExpiry} onChange={e => update('regoExpiry', e.target.value)} />
                 <button
@@ -457,21 +457,21 @@ export default function VehicleForm() {
                 />
               )}
             </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div>
+            <div className="grid grid-cols-2 gap-3 min-w-0">
+              <div className="min-w-0">
                 <label className={labelCls}>Policy number</label>
                 <input className={`${inputCls} tabular-nums`} placeholder="POL-123456" value={form.insurancePolicyNumber} onChange={e => update('insurancePolicyNumber', e.target.value)} />
               </div>
-              <div>
+              <div className="min-w-0">
                 <label className={labelCls}>Policy expiry</label>
                 <input type="date" className={`${inputCls} tabular-nums`} value={form.insuranceExpiry} onChange={e => update('insuranceExpiry', e.target.value)} />
             </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div>
+            <div className="grid grid-cols-2 gap-3 min-w-0">
+              <div className="min-w-0">
                 <label className={labelCls}>Broker / agent name</label>
                 <input className={inputCls} placeholder="Optional" value={form.brokerName || ''} onChange={e => update('brokerName', e.target.value)} />
               </div>
-              <div>
+              <div className="min-w-0">
                 <label className={labelCls}>Broker / insurance email</label>
                 <input type="email" className={inputCls} placeholder="broker@example.com" value={form.brokerEmail || ''} onChange={e => update('brokerEmail', e.target.value)} />
               </div>
