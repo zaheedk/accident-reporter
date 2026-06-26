@@ -59,7 +59,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen w-full max-w-full bg-background overflow-x-hidden">
-      <header className="w-full max-w-full min-w-0 bg-card pl-2 pr-4 py-3 pt-[max(0.75rem,env(safe-area-inset-top))] flex items-center justify-between gap-3 border-b border-border/50 sticky top-0 z-30 overflow-x-hidden">
+      <header
+        className="w-full max-w-full min-w-0 bg-card pl-2 pr-4 pb-3 flex items-center justify-between gap-3 border-b border-border/50 sticky top-0 z-30 overflow-x-hidden"
+        style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 0.75rem)' }}
+      >
         <Link to={logoLink} className="flex items-center gap-2 min-w-0">
           <img src="/savo-icon.svg" alt="SAVO" className="h-9 w-9" width="36" height="36" />
           <span className="font-extrabold tracking-tight text-foreground text-[17px] truncate">SAVO</span>
