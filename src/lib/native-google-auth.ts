@@ -9,6 +9,25 @@ let initialized = false;
 
 export const isNativeApp = () => Capacitor.isNativePlatform();
 
+function createNonce(length = 32) {
+  const charset = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-._';
+  const randomValues = new Uint8Array(length);
+  crypto.getRandomValues(randomValues);
+  return Array.from(randomValues, value => charset[value % charset.length]).join('');
+}
+
+function getJwtPayload(token: string): Record<string, unknown> | null {
+  try {
+    const [, payload] = token.split('.');
+    if (!payload) return null;
+    const normalized = payload.replace(/-/g, '+').replace(/_/g, '/');
+    const padded = normalized.padEnd(normalized.length + ((4 - normalized.length % 4) % 4), '=');
+    return JSON.parse(atob(padded));
+  } catch {
+    return null;
+  }
+}
+
 async function ensureInit() {
   if (initialized) return;
   await SocialLogin.initialize({
@@ -35,12 +54,21 @@ export async function signInWithGoogleNative() {
   }
 
   let result: any;
+  const isIOS = Capacitor.getPlatform() === 'ios';
+  const rawNonce = isIOS ? createNonce() : undefined;
   try {
     result = await SocialLogin.login({
       provider: 'google',
-      options: {},
+      options: {
+        scopes: ['email', 'profile', 'openid'],
+        ...(rawNonce ? { nonce: rawNonce, forcePrompt: true } : {}),
+      },
     });
-    console.log('[GoogleAuth] login raw result:', JSON.stringify(result, null, 2));
+    console.log('[GoogleAuth] login completed:', {
+      provider: result?.provider,
+      hasIdToken: !!(result?.result?.idToken || result?.idToken),
+      hasAccessToken: !!(result?.result?.authentication?.accessToken || result?.accessToken),
+    });
   } catch (err: any) {
     console.error('[GoogleAuth] login threw:', err);
     const detail = {
@@ -64,14 +92,20 @@ export async function signInWithGoogleNative() {
   }
 
   const idToken = result?.result?.idToken || result?.idToken;
+  const accessToken = result?.result?.authentication?.accessToken || result?.accessToken;
   if (!idToken) {
     console.error('[GoogleAuth] no idToken in result:', result);
     throw new Error('Google sign-in failed: no ID token returned (check webClientId is the WEB client ID, not Android).');
   }
 
+  const tokenPayload = getJwtPayload(idToken);
+  const tokenHasNonce = typeof tokenPayload?.nonce === 'string' && tokenPayload.nonce.length > 0;
+
   const { data, error } = await supabase.auth.signInWithIdToken({
     provider: 'google',
     token: idToken,
+    ...(accessToken ? { access_token: accessToken } : {}),
+    ...(tokenHasNonce && rawNonce ? { nonce: rawNonce } : {}),
   });
   if (error) {
     console.error('[GoogleAuth] supabase exchange failed:', error);
