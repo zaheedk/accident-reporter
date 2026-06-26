@@ -98,15 +98,16 @@ export default function Auth() {
           <ArrowLeft className="w-4 h-4" />
           Home
         </Link>
-        <img src="/savo-logo.svg" alt="SAVO" className="h-10 w-auto" />
         <span className="w-12 shrink-0" />
       </header>
 
       <div className="flex-1 w-full max-w-full flex items-center justify-center px-4 sm:px-5 py-10 overflow-x-hidden">
         <div className="w-full max-w-sm min-w-0">
+          <img src="/savo-logo.svg" alt="SAVO" className="h-20 w-auto mb-6" />
           <h1 className="text-2xl font-bold text-foreground tracking-tight">
             {mode === 'forgot' ? 'Reset password' : mode === 'login' ? 'Welcome back' : 'Create account'}
           </h1>
+
           <p className="text-sm text-muted-foreground mt-1.5 mb-7">
             {mode === 'forgot'
               ? "Enter your email and we'll send you a reset link."
