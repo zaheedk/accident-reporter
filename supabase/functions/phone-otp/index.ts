@@ -153,13 +153,14 @@ serve(async (req) => {
         );
       }
       const e164Phone = normalizePhone(phone);
+      const otpHash = await hashOtp(otp, e164Phone);
 
-      // First check if the code matches at all (regardless of expiry)
+      // Compare the submitted code against the hashed value stored at rest.
       const { data: anyMatch } = await supabaseAdmin
         .from("phone_otps")
         .select("*")
         .eq("phone_number", e164Phone)
-        .eq("otp_code", otp)
+        .eq("otp_code", otpHash)
         .eq("verified", false)
         .order("created_at", { ascending: false })
         .limit(1)
