@@ -86,7 +86,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       </header>
 
       {menuOpen && (
-        <div className="bg-card border-b border-border/50 px-4 py-3 space-y-1 animate-in slide-in-from-top-2 duration-200 sticky top-[53px] z-20" style={{ boxShadow: '0 4px 16px rgba(0,0,0,0.06)' }}>
+        <div className="bg-card border-b border-border/50 px-4 py-3 space-y-1 animate-in slide-in-from-top-2 duration-200 fixed left-0 right-0 z-20" style={{ top: 'calc(env(safe-area-inset-top, 0px) + 60px)', boxShadow: '0 4px 16px rgba(0,0,0,0.06)' }}>
           {contentLinks.map(({ to, icon: Icon, label }) => {
             const active = location.pathname === to;
             return (
