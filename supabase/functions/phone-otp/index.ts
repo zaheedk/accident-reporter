@@ -10,6 +10,15 @@ const corsHeaders = {
 const generateOtp = () =>
   String(Math.floor(100000 + Math.random() * 900000));
 
+async function hashOtp(code: string, phone: string): Promise<string> {
+  // Salt with the phone number so identical OTPs across phones differ.
+  const data = new TextEncoder().encode(`${phone}:${code}`);
+  const buf = await crypto.subtle.digest("SHA-256", data);
+  return Array.from(new Uint8Array(buf))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+}
+
 /** Normalize a phone number to E.164 format. Defaults to NZ (+64) if no country code. */
 function normalizePhone(phone: string): string {
   let cleaned = phone.replace(/[\s\-()]/g, "");
