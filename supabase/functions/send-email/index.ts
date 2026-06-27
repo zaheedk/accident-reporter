@@ -428,10 +428,60 @@ serve(async (req) => {
       throw new Error('RESEND_API_KEY is not configured');
     }
 
+    // AuthN: require a logged-in user OR the service role bearer token.
+    // Service-role lets our internal cron / edge functions invoke this.
+    const authHeader = req.headers.get('Authorization') || '';
+    const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+    const isServiceRole = !!serviceKey && authHeader === `Bearer ${serviceKey}`;
+    let callerUserId: string | null = null;
+    if (!isServiceRole) {
+      const authCheck = await requireUser(req);
+      if ('error' in authCheck) {
+        return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+          status: 401,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+      callerUserId = authCheck.user.id;
+    }
+
     const { type, to, data } = (await req.json()) as EmailRequest;
 
     if (!type || !to) {
       throw new Error('Missing required fields: type, to');
+    }
+
+    // For the damage_photos type the caller chooses an arbitrary recipient
+    // and a claimId — restrict it to the claim owner (or a broker/family
+    // member with access) to prevent claim-photo exfiltration.
+    if (type === 'damage_photos' && !isServiceRole && callerUserId && data?.claimId) {
+      const sb = createClient(
+        Deno.env.get('SUPABASE_URL')!,
+        Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
+      );
+      const { data: claim } = await sb
+        .from('claims')
+        .select('user_id')
+        .eq('id', data.claimId)
+        .maybeSingle();
+      if (!claim) {
+        return new Response(JSON.stringify({ error: 'Claim not found' }), {
+          status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+      let hasAccess = claim.user_id === callerUserId;
+      if (!hasAccess) {
+        const { data: allowed } = await sb.rpc('can_access_user_data', {
+          _viewer: callerUserId,
+          _owner: claim.user_id,
+        });
+        hasAccess = !!allowed;
+      }
+      if (!hasAccess) {
+        return new Response(JSON.stringify({ error: 'Forbidden' }), {
+          status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
     }
 
     // Block emails to unverified phone-user addresses (skip for insurer-bound emails)
