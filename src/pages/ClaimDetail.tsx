@@ -370,19 +370,21 @@ export default function ClaimDetail() {
     // Declaration & signature
     const decl = document.createElement('div');
     decl.style.cssText = 'margin-top:24px;padding:14px;border:1px solid #e5e7eb;border-radius:8px;page-break-inside:avoid;';
-    const declLines = DECLARATION_TEXT.map(l => `<p style="margin:0 0 6px 0;font-size:11px;color:#374151;line-height:1.45;">${l}</p>`).join('');
+    const declLines = DECLARATION_TEXT.map(l => `<p style="margin:0 0 6px 0;font-size:11px;color:#374151;line-height:1.45;">${esc(l)}</p>`).join('');
     let sigBlock = '';
     if (signature) {
       const signedDate = new Date(signature.signedAt).toLocaleString('en-NZ');
+      // signature.dataUrl must be a data: URI from SignaturePad; reject anything else to prevent XSS via href/src injection.
+      const safeSig = typeof signature.dataUrl === 'string' && signature.dataUrl.startsWith('data:image/') ? signature.dataUrl : '';
       sigBlock = `
         <div style="margin-top:14px;display:flex;justify-content:space-between;align-items:flex-end;gap:24px;">
           <div style="flex:1;">
-            <img src="${signature.dataUrl}" alt="Signature" style="max-height:70px;max-width:280px;display:block;" />
+            <img src="${esc(safeSig)}" alt="Signature" style="max-height:70px;max-width:280px;display:block;" />
             <div style="border-top:1px solid #1f2937;margin-top:4px;padding-top:4px;font-size:11px;color:#374151;">
-              <strong>${signature.name}</strong> &middot; Signed by the driver
+              <strong>${esc(signature.name)}</strong> &middot; Signed by the driver
             </div>
           </div>
-          <div style="font-size:11px;color:#6b7280;text-align:right;">Date<br/><strong style="color:#1f2937;">${signedDate}</strong></div>
+          <div style="font-size:11px;color:#6b7280;text-align:right;">Date<br/><strong style="color:#1f2937;">${esc(signedDate)}</strong></div>
         </div>`;
     } else {
       sigBlock = `
