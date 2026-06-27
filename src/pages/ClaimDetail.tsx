@@ -293,7 +293,7 @@ export default function ClaimDetail() {
     header.style.cssText = 'margin:-20px -20px 24px -20px;padding:24px 20px;background-color:#1e3a5f;background-image:none;color:#ffffff;border-radius:0;';
     header.innerHTML = `
       <h1 style="font-size:22px;font-weight:700;margin:0 0 6px 0;color:#ffffff;letter-spacing:-0.01em;">Incident Report</h1>
-      <p style="font-size:12px;color:#cbd5e1;margin:0;">Date: ${claim.incidentDate} · Time: ${claim.incidentTime} · Status: ${claim.status === 'draft' ? 'Draft' : 'Saved'}${claimNumber ? ` · CLM-${claimNumber.padStart(4, '0')}` : ''}</p>
+      <p style="font-size:12px;color:#cbd5e1;margin:0;">Date: ${esc(claim.incidentDate)} · Time: ${esc(claim.incidentTime)} · Status: ${claim.status === 'draft' ? 'Draft' : 'Saved'}${claimNumber ? ` · CLM-${esc(claimNumber).padStart(4, '0')}` : ''}</p>
     `;
     printDiv.appendChild(header);
 
@@ -301,12 +301,12 @@ export default function ClaimDetail() {
     const addSection = (title: string, rows: [string, string][]) => {
       const section = document.createElement('div');
       section.style.marginBottom = '20px';
-      section.innerHTML = `<h2 style="font-size:13px;font-weight:700;color:#1e3a5f;margin:0 0 8px 0;text-transform:uppercase;letter-spacing:0.05em;">${title}</h2>`;
+      section.innerHTML = `<h2 style="font-size:13px;font-weight:700;color:#1e3a5f;margin:0 0 8px 0;text-transform:uppercase;letter-spacing:0.05em;">${esc(title)}</h2>`;
       rows.forEach(([label, value]) => {
         if (!value || value === '—') return;
         const row = document.createElement('div');
         row.style.cssText = 'display:flex;justify-content:space-between;gap:16px;padding:6px 0;border-bottom:1px solid #f3f4f6;font-size:13px;';
-        row.innerHTML = `<span style="color:#6b7280;flex-shrink:0;">${label}</span><span style="font-weight:500;text-align:right;">${value}</span>`;
+        row.innerHTML = `<span style="color:#6b7280;flex-shrink:0;">${esc(label)}</span><span style="font-weight:500;text-align:right;white-space:pre-wrap;">${esc(value)}</span>`;
         section.appendChild(row);
       });
       printDiv.appendChild(section);
