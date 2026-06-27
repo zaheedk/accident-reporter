@@ -186,6 +186,17 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  // Internal-only endpoint: invoked by other edge functions (e.g.
+  // check-expiry-reminders) using the service-role key.
+  const forbidden = requireServiceRole(req);
+  if (forbidden) {
+    return new Response(forbidden.body, {
+      status: forbidden.status,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
+  }
+
+
   try {
     const { user_id, title, body: msgBody, url, tag } = await req.json();
 
