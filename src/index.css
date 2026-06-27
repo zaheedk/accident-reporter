@@ -64,7 +64,12 @@
     width: 100%;
     max-width: 100%;
     min-width: 0;
-    overflow-x: hidden;
+  }
+
+  /* Clip horizontal overflow on body only — keeping html scrollable
+     preserves position: sticky for the app header on iOS Safari. */
+  body {
+    overflow-x: clip;
   }
 
   *,
