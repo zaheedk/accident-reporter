@@ -12,11 +12,12 @@
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { verifySvixSignature } from "../_shared/auth.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
+    "authorization, x-client-info, apikey, content-type, svix-id, svix-timestamp, svix-signature",
 };
 
 const ACCEPTED_MIME_PREFIXES = ["image/", "application/pdf"];
@@ -189,13 +190,29 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  // Svix-signed webhook from Resend, or service-role internal forwarding.
+  const rawBody = await req.text();
+  const authHeader = req.headers.get("Authorization") || "";
+  const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  const isInternal = !!serviceKey && authHeader === `Bearer ${serviceKey}`;
+  if (!isInternal) {
+    const sigOk = await verifySvixSignature(req, rawBody);
+    if (!sigOk) {
+      console.warn("Rejecting inbound-document-webhook: invalid Svix signature");
+      return new Response(JSON.stringify({ error: "Forbidden" }), {
+        status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+  }
+
   try {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const supabase = createClient(supabaseUrl, serviceKey);
+    const serviceKey2 = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const supabase = createClient(supabaseUrl, serviceKey2);
 
-    const payload = await req.json();
+    const payload = JSON.parse(rawBody || "{}");
     const data = (payload?.data || payload || {}) as Record<string, unknown>;
+
 
     const fromRaw = firstNonEmpty(
       data.from,

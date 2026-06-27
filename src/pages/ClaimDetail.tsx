@@ -261,6 +261,15 @@ export default function ClaimDetail() {
     const html2pdf = (await import('html2pdf.js')).default;
     const element = printRef.current;
     if (!element) return;
+
+    // Escape user-controlled strings before interpolating into innerHTML.
+    const esc = (v: unknown): string =>
+      String(v ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
     
     // Create a clone for PDF generation with all sections visible
     const clone = element.cloneNode(true) as HTMLElement;
@@ -284,7 +293,7 @@ export default function ClaimDetail() {
     header.style.cssText = 'margin:-20px -20px 24px -20px;padding:24px 20px;background-color:#1e3a5f;background-image:none;color:#ffffff;border-radius:0;';
     header.innerHTML = `
       <h1 style="font-size:22px;font-weight:700;margin:0 0 6px 0;color:#ffffff;letter-spacing:-0.01em;">Incident Report</h1>
-      <p style="font-size:12px;color:#cbd5e1;margin:0;">Date: ${claim.incidentDate} · Time: ${claim.incidentTime} · Status: ${claim.status === 'draft' ? 'Draft' : 'Saved'}${claimNumber ? ` · CLM-${claimNumber.padStart(4, '0')}` : ''}</p>
+      <p style="font-size:12px;color:#cbd5e1;margin:0;">Date: ${esc(claim.incidentDate)} · Time: ${esc(claim.incidentTime)} · Status: ${claim.status === 'draft' ? 'Draft' : 'Saved'}${claimNumber ? ` · CLM-${esc(claimNumber).padStart(4, '0')}` : ''}</p>
     `;
     printDiv.appendChild(header);
 
@@ -292,12 +301,12 @@ export default function ClaimDetail() {
     const addSection = (title: string, rows: [string, string][]) => {
       const section = document.createElement('div');
       section.style.marginBottom = '20px';
-      section.innerHTML = `<h2 style="font-size:13px;font-weight:700;color:#1e3a5f;margin:0 0 8px 0;text-transform:uppercase;letter-spacing:0.05em;">${title}</h2>`;
+      section.innerHTML = `<h2 style="font-size:13px;font-weight:700;color:#1e3a5f;margin:0 0 8px 0;text-transform:uppercase;letter-spacing:0.05em;">${esc(title)}</h2>`;
       rows.forEach(([label, value]) => {
         if (!value || value === '—') return;
         const row = document.createElement('div');
         row.style.cssText = 'display:flex;justify-content:space-between;gap:16px;padding:6px 0;border-bottom:1px solid #f3f4f6;font-size:13px;';
-        row.innerHTML = `<span style="color:#6b7280;flex-shrink:0;">${label}</span><span style="font-weight:500;text-align:right;">${value}</span>`;
+        row.innerHTML = `<span style="color:#6b7280;flex-shrink:0;">${esc(label)}</span><span style="font-weight:500;text-align:right;white-space:pre-wrap;">${esc(value)}</span>`;
         section.appendChild(row);
       });
       printDiv.appendChild(section);
@@ -361,19 +370,21 @@ export default function ClaimDetail() {
     // Declaration & signature
     const decl = document.createElement('div');
     decl.style.cssText = 'margin-top:24px;padding:14px;border:1px solid #e5e7eb;border-radius:8px;page-break-inside:avoid;';
-    const declLines = DECLARATION_TEXT.map(l => `<p style="margin:0 0 6px 0;font-size:11px;color:#374151;line-height:1.45;">${l}</p>`).join('');
+    const declLines = DECLARATION_TEXT.map(l => `<p style="margin:0 0 6px 0;font-size:11px;color:#374151;line-height:1.45;">${esc(l)}</p>`).join('');
     let sigBlock = '';
     if (signature) {
       const signedDate = new Date(signature.signedAt).toLocaleString('en-NZ');
+      // signature.dataUrl must be a data: URI from SignaturePad; reject anything else to prevent XSS via href/src injection.
+      const safeSig = typeof signature.dataUrl === 'string' && signature.dataUrl.startsWith('data:image/') ? signature.dataUrl : '';
       sigBlock = `
         <div style="margin-top:14px;display:flex;justify-content:space-between;align-items:flex-end;gap:24px;">
           <div style="flex:1;">
-            <img src="${signature.dataUrl}" alt="Signature" style="max-height:70px;max-width:280px;display:block;" />
+            <img src="${esc(safeSig)}" alt="Signature" style="max-height:70px;max-width:280px;display:block;" />
             <div style="border-top:1px solid #1f2937;margin-top:4px;padding-top:4px;font-size:11px;color:#374151;">
-              <strong>${signature.name}</strong> &middot; Signed by the driver
+              <strong>${esc(signature.name)}</strong> &middot; Signed by the driver
             </div>
           </div>
-          <div style="font-size:11px;color:#6b7280;text-align:right;">Date<br/><strong style="color:#1f2937;">${signedDate}</strong></div>
+          <div style="font-size:11px;color:#6b7280;text-align:right;">Date<br/><strong style="color:#1f2937;">${esc(signedDate)}</strong></div>
         </div>`;
     } else {
       sigBlock = `

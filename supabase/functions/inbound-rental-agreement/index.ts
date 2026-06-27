@@ -14,10 +14,11 @@
 //   6. Notifies the customer by email
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0';
+import { verifySvixSignature } from '../_shared/auth.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, svix-id, svix-timestamp, svix-signature',
 };
 
 function firstNonEmpty(...vals: unknown[]): string {
@@ -147,13 +148,27 @@ Deno.serve(async (req) => {
   const json = (d: unknown, s = 200) =>
     new Response(JSON.stringify(d), { status: s, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
+  // Svix-signed webhook from Resend, or service-role internal forwarding.
+  const rawBody = await req.text();
+  const authHeader = req.headers.get('Authorization') || '';
+  const serviceKey0 = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+  const isInternal = !!serviceKey0 && authHeader === `Bearer ${serviceKey0}`;
+  if (!isInternal) {
+    const sigOk = await verifySvixSignature(req, rawBody);
+    if (!sigOk) {
+      console.warn('Rejecting inbound-rental-agreement: invalid Svix signature');
+      return json({ error: 'Forbidden' }, 403);
+    }
+  }
+
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, serviceKey);
 
-    const payload = await req.json().catch(() => ({}));
+    const payload = (() => { try { return JSON.parse(rawBody || '{}'); } catch { return {}; } })();
     const emailData: any = payload?.data || payload?.email || payload;
+
 
     const toRaw = emailData.to || emailData.envelope?.to || emailData.rcpt_to || emailData.recipient;
     const toAddress = firstNonEmpty(Array.isArray(toRaw) ? toRaw[0] : toRaw).toLowerCase();

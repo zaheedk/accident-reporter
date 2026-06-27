@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { requireServiceRole } from "../_shared/auth.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -184,6 +185,17 @@ serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
+
+  // Internal-only endpoint: invoked by other edge functions (e.g.
+  // check-expiry-reminders) using the service-role key.
+  const forbidden = requireServiceRole(req);
+  if (forbidden) {
+    return new Response(forbidden.body, {
+      status: forbidden.status,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
+  }
+
 
   try {
     const { user_id, title, body: msgBody, url, tag } = await req.json();

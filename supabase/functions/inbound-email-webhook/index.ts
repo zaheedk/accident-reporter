@@ -1,9 +1,10 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { verifySvixSignature } from "../_shared/auth.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, svix-id, svix-timestamp, svix-signature',
 };
 
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
@@ -92,13 +93,30 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  // Verify the Resend webhook signature (Svix). Trusted internal callers
+  // (other edge functions) may forward via the service-role bearer token.
+  const rawBody = await req.text();
+  const authHeader = req.headers.get('Authorization') || '';
+  const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+  const isInternal = !!serviceKey && authHeader === `Bearer ${serviceKey}`;
+  if (!isInternal) {
+    const sigOk = await verifySvixSignature(req, rawBody);
+    if (!sigOk) {
+      console.warn('Rejecting inbound-email-webhook: invalid Svix signature');
+      return new Response(JSON.stringify({ error: 'Forbidden' }), {
+        status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+  }
+
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    const payload = await req.json();
+    const payload = JSON.parse(rawBody || '{}');
     const emailData = (payload?.data || payload || {}) as Record<string, unknown>;
+
 
     const fromCheck = firstNonEmpty(
       emailData.from,

@@ -10,6 +10,15 @@ const corsHeaders = {
 const generateOtp = () =>
   String(Math.floor(100000 + Math.random() * 900000));
 
+async function hashOtp(code: string, phone: string): Promise<string> {
+  // Salt with the phone number so identical OTPs across phones differ.
+  const data = new TextEncoder().encode(`${phone}:${code}`);
+  const buf = await crypto.subtle.digest("SHA-256", data);
+  return Array.from(new Uint8Array(buf))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+}
+
 /** Normalize a phone number to E.164 format. Defaults to NZ (+64) if no country code. */
 function normalizePhone(phone: string): string {
   let cleaned = phone.replace(/[\s\-()]/g, "");
@@ -59,6 +68,7 @@ serve(async (req) => {
       }
 
       const e164Phone = normalizePhone(phone);
+      // Strict NZ + international format guard.
       if (!/^\+\d{8,15}$/.test(e164Phone)) {
         return new Response(
           JSON.stringify({ error: "Invalid phone number format" }),
@@ -66,12 +76,33 @@ serve(async (req) => {
         );
       }
 
+      // Rate-limit: at most 1 SMS / 30s and 5 / 24h per phone number.
+      const since30s = new Date(Date.now() - 30 * 1000).toISOString();
+      const since24h = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+      const { count: recentBurst } = await supabaseAdmin
+        .from("phone_otps")
+        .select("id", { count: "exact", head: true })
+        .eq("phone_number", e164Phone)
+        .gte("created_at", since30s);
+      const { count: recentDay } = await supabaseAdmin
+        .from("phone_otps")
+        .select("id", { count: "exact", head: true })
+        .eq("phone_number", e164Phone)
+        .gte("created_at", since24h);
+      if ((recentBurst ?? 0) >= 1 || (recentDay ?? 0) >= 5) {
+        return new Response(
+          JSON.stringify({ error: "Too many OTP requests, please wait before trying again." }),
+          { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
       const otpCode = generateOtp();
+      const otpHash = await hashOtp(otpCode, e164Phone);
       const expiresAt = new Date(Date.now() + 15 * 60 * 1000).toISOString();
 
       const { error: dbError } = await supabaseAdmin
         .from("phone_otps")
-        .insert({ phone_number: e164Phone, otp_code: otpCode, expires_at: expiresAt });
+        .insert({ phone_number: e164Phone, otp_code: otpHash, expires_at: expiresAt });
 
       if (dbError) {
         console.error("DB error:", dbError);
@@ -122,13 +153,14 @@ serve(async (req) => {
         );
       }
       const e164Phone = normalizePhone(phone);
+      const otpHash = await hashOtp(otp, e164Phone);
 
-      // First check if the code matches at all (regardless of expiry)
+      // Compare the submitted code against the hashed value stored at rest.
       const { data: anyMatch } = await supabaseAdmin
         .from("phone_otps")
         .select("*")
         .eq("phone_number", e164Phone)
-        .eq("otp_code", otp)
+        .eq("otp_code", otpHash)
         .eq("verified", false)
         .order("created_at", { ascending: false })
         .limit(1)

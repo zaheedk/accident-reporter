@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
+import { verifyTwilioSignature } from "../_shared/auth.ts";
 
 const GATEWAY_URL = "https://connector-gateway.lovable.dev/twilio";
 
@@ -7,6 +8,19 @@ serve(async (req) => {
   // Twilio sends POST with form-encoded data
   if (req.method !== "POST") {
     return new Response("OK", { status: 200 });
+  }
+
+  // Read body once so we can both verify the Twilio signature and re-parse
+  // form fields below.
+  const rawBody = await req.text();
+
+  // Reconstruct the public URL Twilio signed against. When the function is
+  // deployed behind a Supabase function URL this matches req.url verbatim.
+  const fullUrl = req.url;
+  const sigOk = await verifyTwilioSignature(req, rawBody, fullUrl);
+  if (!sigOk) {
+    console.warn("Rejecting Twilio webhook: invalid signature");
+    return new Response("Forbidden", { status: 403 });
   }
 
   try {
@@ -21,7 +35,7 @@ serve(async (req) => {
     const claimId = url.searchParams.get("claim_id");
     const userId = url.searchParams.get("user_id");
 
-    const formData = await req.formData();
+    const formData = new URLSearchParams(rawBody);
     const params: Record<string, string> = {};
     formData.forEach((v, k) => { params[k] = v.toString(); });
 
