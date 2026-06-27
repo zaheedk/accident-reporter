@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { requireUser } from "../_shared/auth.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -9,8 +10,30 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
+    // AuthN: require a signed-in user to prevent AI credit abuse / SSRF.
+    const authCheck = await requireUser(req);
+    if ("error" in authCheck) {
+      return new Response(authCheck.error.body, {
+        status: authCheck.error.status,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const { imageUrl, type } = await req.json();
     // type: "damage" | "rego" | "license"
+
+    // SSRF guard: only allow our own Supabase storage URLs (public or signed)
+    // or data: URIs that the client may inline directly.
+    const supabaseHost = new URL(Deno.env.get("SUPABASE_URL") ?? "https://example.invalid").host;
+    const isAllowedUrl = typeof imageUrl === "string" && (
+      imageUrl.startsWith("data:image/") ||
+      (imageUrl.startsWith("https://") && new URL(imageUrl).host === supabaseHost)
+    );
+    if (!isAllowedUrl) {
+      return new Response(JSON.stringify({ error: "imageUrl must be a Supabase storage URL or data URI" }), {
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
