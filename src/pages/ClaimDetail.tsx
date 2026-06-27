@@ -261,6 +261,15 @@ export default function ClaimDetail() {
     const html2pdf = (await import('html2pdf.js')).default;
     const element = printRef.current;
     if (!element) return;
+
+    // Escape user-controlled strings before interpolating into innerHTML.
+    const esc = (v: unknown): string =>
+      String(v ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
     
     // Create a clone for PDF generation with all sections visible
     const clone = element.cloneNode(true) as HTMLElement;
