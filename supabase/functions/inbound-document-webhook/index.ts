@@ -190,13 +190,29 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  // Svix-signed webhook from Resend, or service-role internal forwarding.
+  const rawBody = await req.text();
+  const authHeader = req.headers.get("Authorization") || "";
+  const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  const isInternal = !!serviceKey && authHeader === `Bearer ${serviceKey}`;
+  if (!isInternal) {
+    const sigOk = await verifySvixSignature(req, rawBody);
+    if (!sigOk) {
+      console.warn("Rejecting inbound-document-webhook: invalid Svix signature");
+      return new Response(JSON.stringify({ error: "Forbidden" }), {
+        status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+  }
+
   try {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const supabase = createClient(supabaseUrl, serviceKey);
+    const serviceKey2 = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const supabase = createClient(supabaseUrl, serviceKey2);
 
-    const payload = await req.json();
+    const payload = JSON.parse(rawBody || "{}");
     const data = (payload?.data || payload || {}) as Record<string, unknown>;
+
 
     const fromRaw = firstNonEmpty(
       data.from,
