@@ -58,9 +58,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const logoLink = user ? '/dashboard' : '/';
 
   return (
-    <div className="min-h-screen w-full max-w-full bg-background">
+    <div className="min-h-screen w-full max-w-full bg-background" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 60px)' }}>
       <header
-        className="w-full max-w-full min-w-0 bg-card pl-2 pr-4 pb-3 flex items-center justify-between gap-3 border-b border-border/50 sticky top-0 z-30"
+        className="w-full max-w-full min-w-0 bg-card pl-2 pr-4 pb-3 flex items-center justify-between gap-3 border-b border-border/50 fixed top-0 left-0 right-0 z-30"
         style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 0.75rem)' }}
       >
         <Link to={logoLink} className="flex items-center gap-2 min-w-0">
@@ -86,7 +86,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       </header>
 
       {menuOpen && (
-        <div className="bg-card border-b border-border/50 px-4 py-3 space-y-1 animate-in slide-in-from-top-2 duration-200 sticky top-[53px] z-20" style={{ boxShadow: '0 4px 16px rgba(0,0,0,0.06)' }}>
+        <div className="bg-card border-b border-border/50 px-4 py-3 space-y-1 animate-in slide-in-from-top-2 duration-200 fixed left-0 right-0 z-20" style={{ top: 'calc(env(safe-area-inset-top, 0px) + 60px)', boxShadow: '0 4px 16px rgba(0,0,0,0.06)' }}>
           {contentLinks.map(({ to, icon: Icon, label }) => {
             const active = location.pathname === to;
             return (
