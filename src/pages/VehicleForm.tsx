@@ -465,6 +465,7 @@ export default function VehicleForm() {
               <div className="min-w-0">
                 <label className={labelCls}>Policy expiry</label>
                 <input type="date" className={`${inputCls} tabular-nums`} value={form.insuranceExpiry} onChange={e => update('insuranceExpiry', e.target.value)} />
+              </div>
             </div>
             <div className="grid grid-cols-2 gap-3 min-w-0">
               <div className="min-w-0">
@@ -477,7 +478,6 @@ export default function VehicleForm() {
               </div>
             </div>
             <p className="text-[12px] text-muted-foreground">Used to email signed incident reports directly from a claim.</p>
-          </div>
           </div>
 
           {/* Roadside assistance */}

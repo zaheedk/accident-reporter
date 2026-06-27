@@ -58,9 +58,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const logoLink = user ? '/dashboard' : '/';
 
   return (
-    <div className="min-h-screen w-full max-w-full bg-background overflow-x-hidden">
+    <div className="min-h-screen w-full max-w-full bg-background">
       <header
-        className="w-full max-w-full min-w-0 bg-card pl-2 pr-4 pb-3 flex items-center justify-between gap-3 border-b border-border/50 sticky top-0 z-30 overflow-x-hidden"
+        className="w-full max-w-full min-w-0 bg-card pl-2 pr-4 pb-3 flex items-center justify-between gap-3 border-b border-border/50 sticky top-0 z-30"
         style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 0.75rem)' }}
       >
         <Link to={logoLink} className="flex items-center gap-2 min-w-0">
@@ -147,7 +147,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </div>
       )}
 
-      <main className="w-full max-w-2xl lg:max-w-5xl mx-auto px-4 lg:px-8 py-5 pb-32 overflow-x-hidden">
+      <main className="w-full max-w-2xl lg:max-w-5xl mx-auto px-4 lg:px-8 py-5 pb-32">
         {children}
       </main>
 
