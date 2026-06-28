@@ -257,7 +257,7 @@ export default function ClaimList() {
           {/* Body */}
           <div className="md:grid md:grid-cols-[240px_1fr] md:gap-6 lg:grid-cols-[260px_1fr] lg:gap-8 space-y-6 md:space-y-0">
             {/* Left rail */}
-            <motion.aside variants={fadeUp} className="space-y-4">
+            <motion.aside variants={fadeUp} className="hidden md:block space-y-4">
               {/* Filter tiles */}
               <div className="hidden md:grid grid-cols-2 md:grid-cols-1 gap-2">
                 <button
