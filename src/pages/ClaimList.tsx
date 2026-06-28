@@ -259,7 +259,7 @@ export default function ClaimList() {
             {/* Left rail */}
             <motion.aside variants={fadeUp} className="space-y-4">
               {/* Filter tiles */}
-              <div className="grid grid-cols-2 md:grid-cols-1 gap-2">
+              <div className="hidden md:grid grid-cols-2 md:grid-cols-1 gap-2">
                 <button
                   onClick={() => setFilter(filter === 'draft' ? 'all' : 'draft')}
                   className={`text-left rounded-xl p-3.5 border transition-all ${
