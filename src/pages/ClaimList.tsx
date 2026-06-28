@@ -372,7 +372,7 @@ export default function ClaimList() {
             <div className="space-y-3">
               {/* Search */}
               {claims.length > 0 && (
-                <motion.div variants={fadeUp} className="relative">
+                <motion.div variants={fadeUp} className="relative hidden md:block">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/70" />
                   <input
                     type="text"
