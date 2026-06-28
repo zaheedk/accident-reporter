@@ -134,12 +134,86 @@ export default function ClaimList() {
   const fadeUp = { hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0, transition: { duration: 0.35, ease: 'easeOut' as const } } };
   const stagger = { hidden: {}, visible: { transition: { staggerChildren: 0.06 } } };
 
+  const MobileFilterTiles = (
+    <div className="grid grid-cols-2 gap-2">
+      <button
+        onClick={() => setFilter(filter === 'draft' ? 'all' : 'draft')}
+        className={`text-left rounded-xl p-3 border transition-all ${
+          filter === 'draft' ? 'bg-foreground text-background border-foreground' : 'bg-card border-border'
+        }`}
+      >
+        <div className="flex items-center justify-between">
+          <span className={`text-[12px] font-medium ${filter === 'draft' ? 'text-background/70' : 'text-muted-foreground'}`}>Drafts</span>
+          <FileEdit className={`w-3.5 h-3.5 ${filter === 'draft' ? 'text-background/60' : 'text-muted-foreground/60'}`} strokeWidth={2} />
+        </div>
+        <div className="text-[20px] font-semibold tabular-nums leading-none mt-1.5 tracking-tight">{draftCount}</div>
+      </button>
+      <button
+        onClick={() => setFilter(filter === 'saved' ? 'all' : 'saved')}
+        className={`text-left rounded-xl p-3 border transition-all ${
+          filter === 'saved' ? 'bg-foreground text-background border-foreground' : 'bg-card border-border'
+        }`}
+      >
+        <div className="flex items-center justify-between">
+          <span className={`text-[12px] font-medium ${filter === 'saved' ? 'text-background/70' : 'text-muted-foreground'}`}>Submitted</span>
+          <CheckCircle2 className={`w-3.5 h-3.5 ${filter === 'saved' ? 'text-background/60' : 'text-muted-foreground/60'}`} strokeWidth={2} />
+        </div>
+        <div className="text-[20px] font-semibold tabular-nums leading-none mt-1.5 tracking-tight">{savedCount}</div>
+      </button>
+    </div>
+  );
+
+  const MobileSearch = claims.length > 0 ? (
+    <div className="relative">
+      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/70" />
+      <input
+        type="text"
+        placeholder="Search rego, claim #, policy, date..."
+        value={search}
+        onChange={e => setSearch(e.target.value)}
+        className="w-full pl-9 pr-9 h-10 rounded-lg bg-card border border-border text-[13px] placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-ring/30 focus:border-ring/40 transition-all"
+      />
+      {search && (
+        <button onClick={() => setSearch('')} className="absolute right-2.5 top-1/2 -translate-y-1/2 w-6 h-6 rounded-md hover:bg-muted flex items-center justify-center" aria-label="Clear search">
+          <X className="w-3.5 h-3.5 text-muted-foreground" />
+        </button>
+      )}
+    </div>
+  ) : null;
+
   return (
     <AppLayout>
       <div className="theme-dashboard relative">
-        <motion.div className="relative space-y-8" variants={stagger} initial="hidden" animate="visible">
-          {/* Header — Apple/Linear */}
-          <motion.div variants={fadeUp} className="flex items-end justify-between gap-3 pt-2">
+        {/* Mobile sticky: title, filter tiles, search — only list scrolls */}
+        <div
+          className="md:hidden sticky z-20 bg-background -mx-4 px-4 pt-2 pb-3 space-y-3 border-b border-border/50"
+          style={{ top: 'calc(env(safe-area-inset-top, 0px) + 60px)' }}
+        >
+          <div className="flex items-end justify-between gap-3">
+            <div className="flex items-start gap-2 min-w-0">
+              <button onClick={() => navigate('/dashboard')} aria-label="Back" className="w-9 h-9 -ml-1 mt-1 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex-shrink-0">
+                <ArrowLeft className="w-[18px] h-[18px]" strokeWidth={2} />
+              </button>
+              <div className="min-w-0">
+                <h1 className="text-[24px] leading-tight font-semibold text-foreground tracking-[-0.02em] truncate">Incidents</h1>
+                {claims.length > 0 && (
+                  <p className="text-[12px] text-muted-foreground tabular-nums mt-0.5">
+                    {claims.length} {claims.length === 1 ? 'report' : 'reports'}
+                  </p>
+                )}
+              </div>
+            </div>
+            <Link to="/claims/new" className="inline-flex items-center gap-1.5 h-9 px-3.5 text-[13px] font-medium rounded-lg bg-primary text-primary-foreground active:scale-[0.98] transition-all flex-shrink-0">
+              <Plus className="w-4 h-4" strokeWidth={2.2} /> New
+            </Link>
+          </div>
+          {claims.length > 0 && MobileFilterTiles}
+          {MobileSearch}
+        </div>
+
+        <motion.div className="relative space-y-8 mt-4 md:mt-0" variants={stagger} initial="hidden" animate="visible">
+          {/* Header — desktop only */}
+          <motion.div variants={fadeUp} className="hidden md:flex items-end justify-between gap-3 pt-2">
             <div className="flex items-start gap-2 min-w-0">
               <button
                 onClick={() => navigate('/dashboard')}
