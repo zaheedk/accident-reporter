@@ -140,7 +140,7 @@ export default function Documents() {
         </div>
 
         {/* Vehicle / personal selector — hero pill */}
-        <div className="space-y-2">
+        <div className="hidden md:block space-y-2">
           <p className="field-label">Showing documents for</p>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
