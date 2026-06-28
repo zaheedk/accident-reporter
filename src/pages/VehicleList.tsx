@@ -141,79 +141,120 @@ export default function VehicleList() {
   const firstName = displayName ? displayName.split(' ')[0] : '';
   const garageEyebrow = firstName ? `${firstName}’s Garage` : 'Garage';
 
+  const TitleRow = (
+    <div className="flex items-end justify-between gap-3">
+      <div className="flex items-start gap-2 min-w-0">
+        <button
+          onClick={() => navigate('/dashboard')}
+          aria-label="Back"
+          className="w-9 h-9 -ml-1 mt-1 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex-shrink-0"
+        >
+          <ArrowLeft className="w-[18px] h-[18px]" strokeWidth={2} />
+        </button>
+        <div className="min-w-0">
+          <h1 className="text-[28px] leading-tight font-semibold text-foreground tracking-[-0.02em] truncate">
+            {firstName ? `${firstName}’s Garage` : 'Garage'}
+          </h1>
+          {vehicles.length > 0 && (
+            <p className="text-[13px] text-muted-foreground tabular-nums mt-1">
+              {vehicles.length} {vehicles.length === 1 ? 'vehicle' : 'vehicles'}
+            </p>
+          )}
+        </div>
+      </div>
+      <Link
+        to="/vehicles/new"
+        className="inline-flex items-center gap-1.5 h-9 px-3.5 text-[13px] font-medium rounded-lg bg-primary text-primary-foreground hover:opacity-90 active:scale-[0.98] transition-all flex-shrink-0"
+      >
+        <Plus className="w-4 h-4" strokeWidth={2.2} /> New
+      </Link>
+    </div>
+  );
+
+  const FilterTiles = (
+    <div className="grid grid-cols-2 md:grid-cols-1 gap-2">
+      <button
+        onClick={() => setFilter(filter === 'active' ? 'all' : 'active')}
+        className={`text-left rounded-xl p-3.5 border transition-all ${
+          filter === 'active'
+            ? 'bg-foreground text-background border-foreground'
+            : 'bg-card border-border hover:border-foreground/20'
+        }`}
+      >
+        <div className="flex items-center justify-between">
+          <span className={`text-[12px] font-medium ${filter === 'active' ? 'text-background/70' : 'text-muted-foreground'}`}>Active</span>
+          <CheckCircle2 className={`w-3.5 h-3.5 ${filter === 'active' ? 'text-background/60' : 'text-muted-foreground/60'}`} strokeWidth={2} />
+        </div>
+        <div className="text-[22px] font-semibold tabular-nums leading-none mt-2 tracking-tight">{activeCount}</div>
+      </button>
+      <button
+        onClick={() => setFilter(filter === 'inactive' ? 'all' : 'inactive')}
+        className={`text-left rounded-xl p-3.5 border transition-all ${
+          filter === 'inactive'
+            ? 'bg-foreground text-background border-foreground'
+            : 'bg-card border-border hover:border-foreground/20'
+        }`}
+      >
+        <div className="flex items-center justify-between">
+          <span className={`text-[12px] font-medium ${filter === 'inactive' ? 'text-background/70' : 'text-muted-foreground'}`}>Inactive</span>
+          <PowerOff className={`w-3.5 h-3.5 ${filter === 'inactive' ? 'text-background/60' : 'text-muted-foreground/60'}`} strokeWidth={2} />
+        </div>
+        <div className="text-[22px] font-semibold tabular-nums leading-none mt-2 tracking-tight">{inactiveCount}</div>
+      </button>
+    </div>
+  );
+
+  const SearchInput = vehicles.length > 0 ? (
+    <div className="relative">
+      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/70" />
+      <input
+        type="text"
+        placeholder="Search rego, make, model"
+        value={search}
+        onChange={e => setSearch(e.target.value)}
+        className="w-full pl-9 pr-9 h-10 rounded-lg bg-card border border-border text-[13px] placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-ring/30 focus:border-ring/40 transition-all"
+      />
+      {search && (
+        <button
+          onClick={() => setSearch('')}
+          className="absolute right-2.5 top-1/2 -translate-y-1/2 w-6 h-6 rounded-md hover:bg-muted flex items-center justify-center"
+          aria-label="Clear search"
+        >
+          <X className="w-3.5 h-3.5 text-muted-foreground" />
+        </button>
+      )}
+    </div>
+  ) : null;
+
   return (
     <AppLayout>
       <div className="theme-garage relative">
-        <motion.div className="relative space-y-8" variants={stagger} initial="hidden" animate="visible">
-          {/* Header — Apple/Linear: large display title, fine eyebrow, no uppercase shouting */}
-          <motion.div variants={fadeUp} className="flex items-end justify-between gap-3 pt-2">
-            <div className="flex items-start gap-2 min-w-0">
-              <button
-                onClick={() => navigate('/dashboard')}
-                aria-label="Back"
-                className="w-9 h-9 -ml-1 mt-1 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex-shrink-0"
-              >
-                <ArrowLeft className="w-[18px] h-[18px]" strokeWidth={2} />
-              </button>
-              <div className="min-w-0">
-                <h1 className="text-[28px] leading-tight font-semibold text-foreground tracking-[-0.02em] truncate">
-                  {firstName ? `${firstName}’s Garage` : 'Garage'}
-                </h1>
-                {vehicles.length > 0 && (
-                  <p className="text-[13px] text-muted-foreground tabular-nums mt-1">
-                    {vehicles.length} {vehicles.length === 1 ? 'vehicle' : 'vehicles'}
-                  </p>
-                )}
-              </div>
-            </div>
-            <Link
-              to="/vehicles/new"
-              className="inline-flex items-center gap-1.5 h-9 px-3.5 text-[13px] font-medium rounded-lg bg-primary text-primary-foreground hover:opacity-90 active:scale-[0.98] transition-all flex-shrink-0"
-            >
-              <Plus className="w-4 h-4" strokeWidth={2.2} /> New
-            </Link>
+        {/* Mobile sticky header: title, stats, search remain fixed; only list scrolls */}
+        <div
+          className="md:hidden sticky z-20 bg-background -mx-4 px-4 pt-2 pb-3 space-y-4 border-b border-border/50"
+          style={{ top: 'calc(env(safe-area-inset-top, 0px) + 60px)' }}
+        >
+          {TitleRow}
+          {vehicles.length > 0 && FilterTiles}
+          {SearchInput}
+        </div>
+
+        <motion.div className="relative space-y-8 mt-4 md:mt-0" variants={stagger} initial="hidden" animate="visible">
+          {/* Desktop title */}
+          <motion.div variants={fadeUp} className="hidden md:block pt-2">
+            {TitleRow}
           </motion.div>
 
           {/* Body */}
           <div className="md:grid md:grid-cols-[240px_1fr] md:gap-6 lg:grid-cols-[260px_1fr] lg:gap-8 space-y-6 md:space-y-0">
-            {/* Left rail — clean cards, hairline borders */}
-            <motion.aside variants={fadeUp} className="space-y-4">
+            {/* Left rail — desktop only */}
+            <motion.aside variants={fadeUp} className="hidden md:block space-y-4">
               {vehicles.length > 0 && (
                 <>
-                  {/* Filter tiles */}
-                  <div className="grid grid-cols-2 md:grid-cols-1 gap-2">
-                    <button
-                      onClick={() => setFilter(filter === 'active' ? 'all' : 'active')}
-                      className={`text-left rounded-xl p-3.5 border transition-all ${
-                        filter === 'active'
-                          ? 'bg-foreground text-background border-foreground'
-                          : 'bg-card border-border hover:border-foreground/20'
-                      }`}
-                    >
-                      <div className="flex items-center justify-between">
-                        <span className={`text-[12px] font-medium ${filter === 'active' ? 'text-background/70' : 'text-muted-foreground'}`}>Active</span>
-                        <CheckCircle2 className={`w-3.5 h-3.5 ${filter === 'active' ? 'text-background/60' : 'text-muted-foreground/60'}`} strokeWidth={2} />
-                      </div>
-                      <div className="text-[22px] font-semibold tabular-nums leading-none mt-2 tracking-tight">{activeCount}</div>
-                    </button>
-                    <button
-                      onClick={() => setFilter(filter === 'inactive' ? 'all' : 'inactive')}
-                      className={`text-left rounded-xl p-3.5 border transition-all ${
-                        filter === 'inactive'
-                          ? 'bg-foreground text-background border-foreground'
-                          : 'bg-card border-border hover:border-foreground/20'
-                      }`}
-                    >
-                      <div className="flex items-center justify-between">
-                        <span className={`text-[12px] font-medium ${filter === 'inactive' ? 'text-background/70' : 'text-muted-foreground'}`}>Inactive</span>
-                        <PowerOff className={`w-3.5 h-3.5 ${filter === 'inactive' ? 'text-background/60' : 'text-muted-foreground/60'}`} strokeWidth={2} />
-                      </div>
-                      <div className="text-[22px] font-semibold tabular-nums leading-none mt-2 tracking-tight">{inactiveCount}</div>
-                    </button>
-                  </div>
+                  {FilterTiles}
 
                   {/* Alerts panel — desktop */}
-                  <div className="hidden md:block rounded-xl bg-card border border-border overflow-hidden">
+                  <div className="rounded-xl bg-card border border-border overflow-hidden">
                     <div className="px-3.5 pt-3 pb-2 text-[11px] font-medium text-muted-foreground">Alerts</div>
                     <div className="divide-y divide-border">
                       {[
@@ -235,28 +276,13 @@ export default function VehicleList() {
 
             {/* Right column */}
             <div className="space-y-3">
-              {/* Search */}
+              {/* Search — desktop only */}
               {vehicles.length > 0 && (
-                <motion.div variants={fadeUp} className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/70" />
-                  <input
-                    type="text"
-                    placeholder="Search rego, make, model"
-                    value={search}
-                    onChange={e => setSearch(e.target.value)}
-                    className="w-full pl-9 pr-9 h-10 rounded-lg bg-card border border-border text-[13px] placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-ring/30 focus:border-ring/40 transition-all"
-                  />
-                  {search && (
-                    <button
-                      onClick={() => setSearch('')}
-                      className="absolute right-2.5 top-1/2 -translate-y-1/2 w-6 h-6 rounded-md hover:bg-muted flex items-center justify-center"
-                      aria-label="Clear search"
-                    >
-                      <X className="w-3.5 h-3.5 text-muted-foreground" />
-                    </button>
-                  )}
+                <motion.div variants={fadeUp} className="hidden md:block">
+                  {SearchInput}
                 </motion.div>
               )}
+
 
               {/* List */}
               {vehicles.length === 0 ? (
