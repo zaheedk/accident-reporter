@@ -51,9 +51,51 @@ export default function Documents() {
   return (
     <AppLayout>
       <div className="theme-garage relative">
-        <div className="relative space-y-8">
-        {/* Header — Apple/Linear: large display title, fine eyebrow, no uppercase shouting */}
-        <div className="flex items-end justify-between gap-3 pt-2">
+        {/* Mobile sticky: title + selector — only list scrolls */}
+        <div
+          className="md:hidden sticky z-20 bg-background -mx-4 px-4 pt-2 pb-3 space-y-3 border-b border-border/50"
+          style={{ top: 'calc(env(safe-area-inset-top, 0px) + 60px)' }}
+        >
+          <div className="flex items-end justify-between gap-3">
+            <div className="flex items-start gap-2 min-w-0">
+              <Link to="/dashboard" aria-label="Back" className="w-9 h-9 -ml-1 mt-1 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex-shrink-0">
+                <ArrowLeft className="w-[18px] h-[18px]" strokeWidth={2} />
+              </Link>
+              <div className="min-w-0">
+                <h1 className="text-[24px] leading-tight font-semibold text-foreground tracking-[-0.02em] truncate">Documents</h1>
+                {docContextLabel && <p className="text-[12px] text-muted-foreground mt-0.5 truncate">{docContextLabel}</p>}
+              </div>
+            </div>
+          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="w-full flex items-center gap-2.5 rounded-xl border border-border bg-card hover:border-foreground/30 transition-colors text-left p-2.5">
+                <div className="w-9 h-9 rounded-lg bg-foreground text-background flex items-center justify-center shrink-0">
+                  <Car className="w-4 h-4" strokeWidth={2} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-[13px] font-semibold text-foreground truncate leading-tight">{selectorLabel.primary}</p>
+                  {selectorLabel.secondary && <p className="text-[11px] text-muted-foreground truncate mt-0.5">{selectorLabel.secondary}</p>}
+                </div>
+                <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0" strokeWidth={2} />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-[var(--radix-dropdown-menu-trigger-width)] rounded-xl">
+              <DropdownMenuItem onClick={() => setSelected('personal')} className="py-2.5">
+                <div className="flex flex-col"><span className="font-medium">Personal</span><span className="text-xs text-muted-foreground">Your documents</span></div>
+              </DropdownMenuItem>
+              {vehicles.map(v => (
+                <DropdownMenuItem key={v.id} onClick={() => setSelected(v.id)} className="py-2.5">
+                  <div className="flex flex-col"><span className="font-medium">{v.regoNumber}</span><span className="text-xs text-muted-foreground">{v.year} {v.make} {v.model}</span></div>
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+
+        <div className="relative space-y-8 mt-4 md:mt-0">
+        {/* Header — desktop only */}
+        <div className="hidden md:flex items-end justify-between gap-3 pt-2">
           <div className="flex items-start gap-2 min-w-0">
             <Link
               to="/dashboard"
@@ -98,7 +140,7 @@ export default function Documents() {
         </div>
 
         {/* Vehicle / personal selector — hero pill */}
-        <div className="space-y-2">
+        <div className="hidden md:block space-y-2">
           <p className="field-label">Showing documents for</p>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
