@@ -90,9 +90,56 @@ export default function PanelShops() {
         path="/panel-shops"
       />
       <div className="theme-garage relative">
-        <div className="relative space-y-7">
-        {/* Header — Apple/Linear: back arrow + large display title */}
-        <div className="flex items-end justify-between gap-3 pt-2">
+        {/* Mobile sticky: title, search, region chips — only list scrolls */}
+        <div
+          className="md:hidden sticky z-20 bg-background -mx-4 px-4 pt-2 pb-3 space-y-3 border-b border-border/50"
+          style={{ top: 'calc(env(safe-area-inset-top, 0px) + 60px)' }}
+        >
+          <div className="flex items-end justify-between gap-3">
+            <div className="flex items-start gap-2 min-w-0">
+              <Link to={session ? '/dashboard' : '/'} aria-label="Back" className="w-9 h-9 -ml-1 mt-1 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex-shrink-0">
+                <ArrowLeft className="w-[18px] h-[18px]" strokeWidth={2} />
+              </Link>
+              <div className="min-w-0">
+                <h1 className="text-[24px] leading-tight font-semibold text-foreground tracking-[-0.02em] truncate">Panel Shops</h1>
+                <p className="text-[12px] text-muted-foreground mt-0.5">Top-rated NZ panel beaters · 4.5+ rating</p>
+              </div>
+            </div>
+            {isAdmin && (
+              <button onClick={() => { setEditShop(null); setFormOpen(true); }} className="inline-flex items-center gap-1.5 h-9 px-3.5 text-[13px] font-medium rounded-lg bg-primary text-primary-foreground active:scale-[0.98] transition-all flex-shrink-0">
+                <Plus className="w-4 h-4" strokeWidth={2.2} /> Add
+              </button>
+            )}
+          </div>
+          <div className="flex gap-2">
+            <div className="relative flex-1">
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" strokeWidth={2} />
+              <input placeholder="Search by name, city…" value={search} onChange={e => setSearch(e.target.value)}
+                className="w-full h-10 pl-10 pr-3 rounded-xl border border-border bg-card text-[13px] font-medium text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/30 focus:border-foreground/30 transition-colors" />
+            </div>
+            <button onClick={toggleNearby} disabled={locating}
+              className={`shrink-0 inline-flex items-center gap-1.5 h-10 px-3 rounded-xl text-[12px] font-medium transition-all ${
+                nearbyActive ? 'bg-foreground text-background border border-foreground' : 'bg-card border border-border text-foreground'
+              } disabled:opacity-50`}>
+              {locating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Navigation className="w-4 h-4" strokeWidth={2} />}
+              Near
+            </button>
+          </div>
+          <div className="flex gap-2 overflow-x-auto -mx-1 px-1 scrollbar-none">
+            {regions.map(region => (
+              <button key={region} onClick={() => setSelectedRegion(region)}
+                className={`px-3 py-1.5 rounded-full text-[12px] font-medium whitespace-nowrap border transition-colors ${
+                  selectedRegion === region ? 'bg-foreground text-background border-foreground' : 'bg-card text-muted-foreground border-border'
+                }`}>
+                {region}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="relative space-y-7 mt-4 md:mt-0">
+        {/* Header — desktop only */}
+        <div className="hidden md:flex items-end justify-between gap-3 pt-2">
           <div className="flex items-start gap-2 min-w-0">
             <Link
               to={session ? '/dashboard' : '/'}
@@ -120,8 +167,8 @@ export default function PanelShops() {
           )}
         </div>
 
-        {/* Search + Near me */}
-        <div className="flex gap-2">
+        {/* Search + Near me — desktop only */}
+        <div className="hidden md:flex gap-2">
           <div className="relative flex-1">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" strokeWidth={2} />
             <input
@@ -145,8 +192,8 @@ export default function PanelShops() {
           </button>
         </div>
 
-        {/* Region filter chips */}
-        <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-none">
+        {/* Region filter chips — desktop only */}
+        <div className="hidden md:flex gap-2 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-none">
           {regions.map(region => (
             <button
               key={region}
