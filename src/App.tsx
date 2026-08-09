@@ -57,6 +57,7 @@ const RentalPartner = lazy(() => import("./pages/RentalPartner"));
 const RentalPartnersAdmin = lazy(() => import("./pages/admin/RentalPartners"));
 const WidgetSetup = lazy(() => import("./pages/WidgetSetup"));
 const FaultGuide = lazy(() => import("./pages/FaultGuide"));
+const NotAtFaultCarHire = lazy(() => import("./pages/NotAtFaultCarHire"));
 const PanelBeatersIndex = lazy(() => import("./pages/PanelBeatersIndex"));
 const PanelBeatersLocation = lazy(() => import("./pages/PanelBeatersLocation"));
 const PanelBeatersByMakeIndex = lazy(() => import("./pages/PanelBeatersByMakeIndex"));
