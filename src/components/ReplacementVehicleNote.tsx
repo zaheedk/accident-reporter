@@ -84,7 +84,6 @@ export default function ReplacementVehicleNote({ seed, className = '' }: { seed:
         </Link>{' '}
         covers who pays.
       </p>
-      </p>
     </section>
   );
 }
