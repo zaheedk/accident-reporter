@@ -109,6 +109,12 @@ export default function BlogPost() {
               <Clock className="w-3 h-3" />
               {article.readTime}
             </span>
+            {article.updated && (
+              <span>
+                Updated{' '}
+                {new Date(article.updated).toLocaleDateString('en-NZ', { day: 'numeric', month: 'short', year: 'numeric' })}
+              </span>
+            )}
           </div>
 
           <div className="mt-6 prose prose-sm prose-neutral dark:prose-invert max-w-none
@@ -118,10 +124,26 @@ export default function BlogPost() {
             prose-h3:text-base prose-h3:mt-6 prose-h3:mb-2
             prose-ul:my-3 prose-ol:my-3 prose-li:my-0.5
             prose-p:my-3 prose-p:leading-relaxed
+            prose-table:text-xs prose-th:text-foreground prose-td:text-muted-foreground prose-td:align-top
             prose-em:text-muted-foreground/80">
-            <ReactMarkdown>{article.content}</ReactMarkdown>
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>{article.content}</ReactMarkdown>
           </div>
+
+          {article.faq?.length ? (
+            <section className="mt-10">
+              <h2 className="text-lg font-bold text-foreground mb-4">Frequently asked questions</h2>
+              <div className="space-y-3">
+                {article.faq.map((f) => (
+                  <details key={f.q} className="rounded-lg border border-border bg-card p-4">
+                    <summary className="text-sm font-semibold text-foreground cursor-pointer">{f.q}</summary>
+                    <p className="text-sm text-muted-foreground mt-2 leading-relaxed">{f.a}</p>
+                  </details>
+                ))}
+              </div>
+            </section>
+          ) : null}
         </article>
+
 
         <div className="mt-10 pt-6 border-t border-border">
           <Link to="/blog" className="text-sm text-primary font-medium hover:underline">
