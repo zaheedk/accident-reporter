@@ -19,6 +19,8 @@ import comprehensiveVsThirdPartyHero from '@/assets/blog/comprehensive-vs-third-
 import hitAndRunHero from '@/assets/blog/hit-and-run-hero.jpg';
 import towTruckNzHero from '@/assets/blog/tow-truck-nz-hero.jpg';
 import multiVehiclePileupHero from '@/assets/blog/multi-vehicle-pileup-hero.jpg';
+import hireCarNotAtFaultHero from '@/assets/blog/hire-car-not-at-fault-hero.jpg';
+import replacementCarNzHero from '@/assets/blog/replacement-car-nz-hero.jpg';
 
 export interface BlogArticle {
   slug: string;
@@ -2268,6 +2270,185 @@ When fault is being argued months later, the driver with the cleanest evidence a
 ---
 
 *Involved in a multi-vehicle crash? Open SAVO, capture the full scene before anything moves, and email the report to your insurer the same day to get ahead of the queue.*
+    `
+  }
+  ,
+  {
+    slug: "who-pays-hire-car-not-at-fault-accident-nz",
+    title: "Who Pays for a Hire Car After a Not-At-Fault Accident in NZ? (2026)",
+    metaDescription: "If someone else caused the crash, who pays for your hire car in New Zealand? How not-at-fault replacement vehicles are funded, who qualifies, and what it costs you.",
+    heroImage: hireCarNotAtFaultHero,
+    excerpt: "Someone else wrote off your week and your car. Here's exactly who foots the bill for a hire car in New Zealand when the crash wasn't your fault.",
+    date: "2026-08-09",
+    updated: "2026-08-09",
+    readTime: "7 min read",
+    faq: [
+      { q: "Who pays for a hire car after a not-at-fault accident in NZ?", a: "The at-fault driver's insurer. Being deprived of your vehicle by someone else's negligence is a recoverable loss, so a replacement-vehicle provider supplies the car and recovers the hire cost from that insurer. You are not charged a daily rate, a bond or an excess." },
+      { q: "Will my own insurer pay for a hire car?", a: "Usually only if you bought a rental-car or courtesy-car extension, and even then it is typically capped at a small daily amount for a limited number of days. Most NZ policies do not include hire cover as standard." },
+      { q: "Do I have to pay anything up front?", a: "No. With a not-at-fault replacement arranged through a specialist provider there is nothing to pay up front and nothing to claim back later. If you hire a car yourself on your own credit card, you carry the cost and have to recover it afterwards." },
+      { q: "What if the other driver is uninsured?", a: "Recovery becomes much harder because there is no insurer to bill. You would be pursuing the driver personally, usually through the Disputes Tribunal. Get the driver's full name, address and licence details at the scene — without them there is no realistic path to recovery." },
+      { q: "How long will the hire car be paid for?", a: "For the period you are reasonably without your own car: assessment, repair, and — if the car is written off — until the at-fault insurer pays the settlement so you can buy a replacement." },
+      { q: "Does accepting a hire car affect my no-claims bonus?", a: "No. A not-at-fault replacement sits outside your own policy, so there is no claim on your cover and no impact on your no-claims discount or excess." }
+    ],
+    content: `
+## The short answer
+
+If another driver caused the crash, **their insurer pays for your hire car** — not you, and not your own policy.
+
+That surprises a lot of Kiwi drivers, because the usual assumption is that a hire car is a luxury you either fund yourself or go without. In reality, being left without a vehicle because of someone else's negligence is a **recoverable loss** in New Zealand. The reasonable cost of getting around while your car is off the road can be claimed from the at-fault party.
+
+## Why the at-fault insurer is liable
+
+When another driver damages your car, they are liable for the losses that flow from it. That includes the repair bill — and it also includes the loss of use of your vehicle.
+
+In practice this is handled one of two ways:
+
+1. **You hire a car yourself** and try to recover the cost from the at-fault insurer afterwards, or
+2. **A replacement-vehicle provider** supplies the car and recovers the cost directly from the at-fault insurer.
+
+The second route is why services like [Free 2 Drive](https://www.free2drive.co.nz/not-at-fault-car-hire?utm_source=savo&utm_medium=referral&utm_campaign=who-pays-hire-car) exist in New Zealand. You get the car; they carry the invoice and the recovery.
+
+## What each option actually costs you
+
+| | Hire it yourself | Panelbeater courtesy car | Not-at-fault replacement |
+|---|---|---|---|
+| Up-front cost | Full daily rate + bond | Nil | Nil |
+| Recovery risk | Yours | N/A | Provider's |
+| Vehicle type | Whatever you book | Small hatchback if spare | Matched to your car |
+| Available from | Immediately | When repairs start | Day of the accident |
+| If written off | You keep paying | Usually unavailable | Continues until settlement |
+
+## Does your own insurance cover it?
+
+Most standard NZ comprehensive policies **do not** include a hire car. Some insurers sell a rental-vehicle extension — commonly around \$50–\$80 a day, capped at 10–21 days, and only payable once a claim is accepted. That cap runs out fast when parts are on backorder.
+
+Third-party-only policies include nothing at all. That is not a barrier here: a not-at-fault replacement depends on **the other driver's liability**, not on the cover you bought.
+
+## Where drivers lose money
+
+The most common mistakes we see:
+
+- **Paying for a rental on a credit card** and assuming it will be reimbursed. Insurers frequently reduce these claims to what they consider a "reasonable" rate and a "reasonable" period.
+- **Waiting for the panelbeater's courtesy car** and going without a vehicle for three weeks while the assessment happens.
+- **Not recording the other driver's insurer** at the scene, which stalls everything.
+- **Accepting the first "we don't cover that" from your own insurer** — your own policy isn't the source of the entitlement.
+
+## What you need to get it sorted
+
+Have this ready and the arrangement usually takes a day:
+
+- Date, time and location of the crash
+- The other driver's name, contact number and registration
+- Their insurer, if you got it
+- Photos of both vehicles and the scene
+- Your driver licence
+
+This is exactly the evidence set SAVO's accident report collects in one pass — and the same set your insurer will ask for later.
+
+## Written-off cars
+
+If your car is a write-off, you are not "sorted" the day the assessor makes the call. You still have no vehicle until the settlement is paid and you have found a replacement — often several weeks. Not-at-fault hire generally continues through that period, which is precisely when drivers are most likely to be stranded.
+
+## Uninsured at-fault drivers
+
+If the other driver has no insurance, there is no insurer to bill. Your options narrow to pursuing them personally, usually through the Disputes Tribunal. This is why getting a **full name, address and licence number** at the scene matters more than almost anything else you do.
+
+---
+
+*Not at fault and without a car? Read our full guide to [not-at-fault car hire in New Zealand](/not-at-fault-car-hire), or capture the crash in SAVO first so nothing holds the arrangement up.*
+    `
+  },
+  {
+    slug: "how-to-get-replacement-car-nz-after-accident",
+    title: "How to Get a Replacement Car in NZ After an Accident: Step-by-Step",
+    metaDescription: "A practical New Zealand guide to getting a replacement car after a crash — courtesy cars, not-at-fault hire, what to say to your insurer, and how long each option takes.",
+    heroImage: replacementCarNzHero,
+    excerpt: "Your car is off the road and you still have to get to work. Here are the four ways to get a replacement car in New Zealand, ranked by how fast and how cheap each one actually is.",
+    date: "2026-08-09",
+    updated: "2026-08-09",
+    readTime: "8 min read",
+    faq: [
+      { q: "How quickly can I get a replacement car after a crash in NZ?", a: "A not-at-fault replacement vehicle can usually be delivered within one business day once liability is clear and you've supplied the crash details. A panelbeater courtesy car typically isn't available until your car is booked in for repair, which can be weeks after the accident." },
+      { q: "Can I get a replacement car if I only have third-party insurance?", a: "Yes, if the other driver was at fault. Not-at-fault replacement hire depends on the other party's liability rather than your own policy, so third-party and even uninsured drivers can be eligible." },
+      { q: "What's the fastest way to get a car if the crash was my fault?", a: "Check whether your policy includes a rental-car extension, then ask your repairer about a courtesy car. If neither applies, a standard rental at your own cost is the remaining option — there's no one else to recover from." },
+      { q: "Do I need to tell my insurer I have a replacement vehicle?", a: "It's good practice to mention it when you lodge your claim, but a not-at-fault replacement isn't a claim against your policy — it's recovered from the at-fault insurer, so it doesn't affect your excess or no-claims bonus." },
+      { q: "What documents do I need?", a: "Your driver licence, the crash date and location, the other driver's name, registration and insurer, and photos of the damage. Having all of it in one place is what turns a multi-day back-and-forth into a same-day arrangement." }
+    ],
+    content: `
+## Four ways to get a car, and how they compare
+
+After a crash in New Zealand there are really only four routes to a set of wheels:
+
+1. **A not-at-fault replacement vehicle** — someone else caused it, so their insurer pays
+2. **A panelbeater or insurer courtesy car** — goodwill, subject to availability
+3. **A rental-car extension on your own policy** — if you bought one
+4. **Paying for a rental yourself** — always available, always expensive
+
+Which one applies comes down to a single question: **was the crash your fault?**
+
+## If the crash wasn't your fault
+
+This is the strongest position, and the one most drivers under-use.
+
+Because another driver deprived you of your vehicle, the cost of a reasonable replacement is recoverable from them. A specialist provider such as [Free 2 Drive](https://www.free2drive.co.nz/not-at-fault-car-hire?utm_source=savo&utm_medium=referral&utm_campaign=how-to-get-replacement-car) supplies a vehicle matched to yours and recovers the hire cost from the at-fault insurer.
+
+**What that means in practice:**
+
+- Nothing to pay — no bond, no daily rate, no excess
+- A like-for-like vehicle, not whatever hatchback is spare
+- Available from the day of the accident, not the day repairs start
+- Continues if your car is written off, until settlement is paid
+- No effect on your policy or your no-claims bonus
+
+### Step by step
+
+1. **Capture the scene properly.** Photos of both vehicles, the road layout, rego plates, and the other driver's name, phone and insurer.
+2. **Confirm liability.** Rear-ended, hit while parked, failed give-way — these are usually clear-cut. If you're unsure, run SAVO's free [fault guide](/fault-guide).
+3. **Request the vehicle.** Supply the crash details and your licence. Delivery is typically next business day.
+4. **Lodge your own claim in parallel.** The two processes don't conflict — the repair goes through the normal channel while you drive.
+
+## If your repairer offers a courtesy car
+
+Courtesy cars are a goodwill service, not an entitlement. Most NZ shops run a handful of them, they're booked well ahead, and they're usually released only once your car is physically in the workshop.
+
+Worth asking for — just don't build your month around it. The gap between the crash and the repair start date is where people get stranded, and that's exactly the window a courtesy car doesn't cover. Our full comparison is here: [courtesy car vs replacement vehicle](/blog/courtesy-cars-not-at-fault-accidents-nz).
+
+## If you have a rental-car extension
+
+Check your policy schedule for wording like "rental vehicle benefit" or "alternative transport". Typical NZ terms:
+
+- A daily cap, often around \$50–\$80
+- A day limit, often 10–21 days
+- Only payable once the claim is accepted
+- Excess still applies to the claim itself
+
+Useful, but it rarely covers a long repair — and it does nothing during the assessment wait.
+
+## If the crash was your fault
+
+Your options narrow to your own policy extension, a repairer courtesy car, or a rental you pay for. There's no third party to recover from. If you're regularly reliant on your car, a rental extension is cheap insurance at renewal time — see our guide to [renewing car insurance in NZ](/blog/renewing-car-insurance-nz-tips).
+
+## What slows everything down
+
+In our experience, replacement vehicles get delayed for the same three reasons every time:
+
+- **Missing other-party details.** No rego or insurer means no recovery path, so no vehicle.
+- **Disputed liability.** If the other driver tells a different story, everything stalls until evidence resolves it. Dashcam footage and scene photos end these arguments quickly.
+- **Nothing written down.** Recollections given three days later are weaker than photos taken three minutes later.
+
+## The checklist to keep in your glovebox
+
+- Photos: both vehicles, damage close-ups, wide scene, rego plates, road signs
+- Other driver: full name, phone, address, licence number, insurer
+- Witnesses: name and phone
+- Police event number, if they attended
+- Date, time, location, weather and road conditions
+
+SAVO's accident report walks you through all of this at the scene and produces a single PDF you can send to your insurer — and to a replacement-vehicle provider — the same day.
+
+---
+
+*Off the road after a crash that wasn't your fault? See [how not-at-fault car hire works in New Zealand](/not-at-fault-car-hire), or open SAVO and capture the scene before anything moves.*
     `
   }
 ];

@@ -39,6 +39,7 @@ const staticEntries: Entry[] = [
   { path: '/panel-beaters-for', changefreq: 'weekly', priority: '0.8' },
   { path: '/tow-trucks', changefreq: 'weekly', priority: '0.8' },
   { path: '/fault-guide', changefreq: 'monthly', priority: '0.6' },
+  { path: '/not-at-fault-car-hire', changefreq: 'monthly', priority: '0.9' },
   { path: '/auth', changefreq: 'monthly', priority: '0.4' },
   { path: '/blog', changefreq: 'weekly', priority: '0.8' },
 ];
@@ -65,6 +66,8 @@ const blogSlugs = [
   'hit-and-run-accident-nz-what-to-do',
   'towing-rights-nz-choosing-tow-company',
   'multi-vehicle-pile-up-nz-fault-claims',
+  'who-pays-hire-car-not-at-fault-accident-nz',
+  'how-to-get-replacement-car-nz-after-accident',
 ];
 
 async function fetchRows<T>(table: string, query: string): Promise<T[]> {
