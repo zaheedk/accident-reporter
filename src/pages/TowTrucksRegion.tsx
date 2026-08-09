@@ -189,24 +189,48 @@ export default function TowTrucksRegion() {
     <AppLayout>
       <SEO title={title} description={description} path={`/tow-trucks/${slug}`} jsonLd={jsonLd} noIndex={!isLoading && matches.length === 0} />
       <div className="container mx-auto max-w-4xl px-4 py-8">
-        <Link to="/tow-trucks" className="text-sm text-muted-foreground hover:text-foreground inline-flex items-center gap-1 mb-4">
-          <ArrowLeft className="w-3 h-3" /> All regions
+        <Link to={city ? `/tow-trucks/${slugifyLocation(city.region)}` : '/tow-trucks'} className="text-sm text-muted-foreground hover:text-foreground inline-flex items-center gap-1 mb-4">
+          <ArrowLeft className="w-3 h-3" /> {city ? `Tow trucks in ${city.region}` : 'All regions'}
         </Link>
 
         <header className="mb-6">
-          <h1 className="text-3xl md:text-4xl font-serif text-foreground mb-3">Tow Trucks in {regionName}</h1>
+          <h1 className="text-3xl md:text-4xl font-serif text-foreground mb-3">
+            {city ? `Tow Trucks in ${city.name} — 24/7 Towing` : `Tow Trucks in ${regionName}`}
+          </h1>
           <p className="text-muted-foreground">
             {matches.length > 0
-              ? `${matches.length} towing operators serving ${regionName}. Remember: after an accident, you choose your tow operator — not the first truck on scene.`
+              ? `${matches.length} towing ${matches.length === 1 ? 'operator' : 'operators'} serving ${regionName}. Remember: after an accident, you choose your tow operator — not the first truck on scene.`
               : `We don't currently have tow operators listed for ${regionName}. Browse all regions on our main directory.`}
           </p>
+          {topPicks[0]?.phone && (
+            <a
+              href={`tel:${topPicks[0].phone}`}
+              className="mt-4 inline-flex md:hidden items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground"
+            >
+              <Phone className="w-4 h-4" /> Call {topPicks[0].name}
+            </a>
+          )}
         </header>
 
         {matches.length > 0 && (
           <section className="mb-8 prose prose-sm dark:prose-invert max-w-none">
-            <p>{regionIntro(regionName, slug, matches.length)}</p>
+            <p>{city ? cityIntro(city, matches.length) : regionIntro(regionName, slug, matches.length)}</p>
           </section>
         )}
+
+        {childCities.length > 0 && (
+          <section className="mb-8">
+            <h2 className="text-xl font-serif text-foreground mb-3">Towing by city in {regionName}</h2>
+            <div className="flex flex-wrap gap-2">
+              {childCities.map((c) => (
+                <Button key={c.slug} asChild variant="outline" size="sm">
+                  <Link to={`/tow-trucks/${c.slug}`}>Tow trucks in {c.name}</Link>
+                </Button>
+              ))}
+            </div>
+          </section>
+        )}
+
 
         {isLoading ? (
           <p className="text-sm text-muted-foreground">Loading…</p>
