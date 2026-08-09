@@ -78,7 +78,12 @@ export default function ReplacementVehicleNote({ seed, className = '' }: { seed:
         <Link className="text-primary hover:underline" to="/blog/courtesy-cars-not-at-fault-accidents-nz">
           your courtesy car rights in New Zealand
         </Link>
-        .
+        , and our{' '}
+        <Link className="text-primary hover:underline" to="/not-at-fault-car-hire">
+          not-at-fault car hire explainer
+        </Link>{' '}
+        covers who pays.
+      </p>
       </p>
     </section>
   );
