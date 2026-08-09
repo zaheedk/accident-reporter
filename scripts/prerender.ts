@@ -89,7 +89,7 @@ ${links}
 
 function writePage(template: string, p: Page) {
   const canonical = `${SAVO_ORIGIN}${p.path}`;
-  let head = `    <title>${esc(p.title)}</title>
+  const head = `    <title>${esc(p.title)}</title>
     <meta name="description" content="${esc(p.description)}" />
     <link rel="canonical" href="${canonical}" />
     <meta property="og:title" content="${esc(p.title)}" />
@@ -103,6 +103,10 @@ function writePage(template: string, p: Page) {
   // Strip the template's own title so we don't ship two.
   html = html.replace(/<title>[\s\S]*?<\/title>/i, '');
   html = html.replace(/<link rel="canonical"[^>]*>/gi, '');
+  // Drop the template's sitewide description/OG tags so each page ships exactly one set.
+  html = html.replace(/<meta name="description"[^>]*>/gi, '');
+  html = html.replace(/<meta property="og:(title|description|url|type)"[^>]*>/gi, '');
+  html = html.replace(/<meta name="twitter:(card|title|description)"[^>]*>/gi, '');
   html = html.replace('</head>', `${head}\n  </head>`);
   html = html.replace('<div id="root"></div>', `<div id="root">\n${renderBody(p)}\n    </div>`);
 
