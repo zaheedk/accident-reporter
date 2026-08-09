@@ -1,6 +1,13 @@
 {
+  "cleanUrls": true,
   "rewrites": [
-    { "source": "/~oauth/:path*", "destination": "https://b6056a86-2380-41b0-9895-c86aeced31fc.lovableproject.com/~oauth/:path*" },
-    { "source": "/(.*)", "destination": "/index.html" }
+    {
+      "source": "/~oauth/:path*",
+      "destination": "https://b6056a86-2380-41b0-9895-c86aeced31fc.lovableproject.com/~oauth/:path*"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
   ]
 }
