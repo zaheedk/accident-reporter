@@ -3,6 +3,7 @@ import { getArticleBySlug } from '@/lib/blog-data';
 import { ArrowLeft, Calendar, Clock } from 'lucide-react';
 import AppLayout from '@/components/AppLayout';
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import SEO from '@/components/SEO';
 
 export default function BlogPost() {
