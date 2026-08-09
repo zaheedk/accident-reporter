@@ -1065,6 +1065,7 @@ SAVO turns the scene into a structured, timestamped incident report \u2014 photo
 *Document the accident properly on the day, and the replacement vehicle question answers itself.*
     `
   },
+  {
     slug: "roadside-assistance-nz-what-to-know",
     title: "Roadside Assistance in New Zealand: What Every Driver Should Know",
     metaDescription: "Everything NZ drivers need to know about roadside assistance — what's covered, how to call for help, and how it connects to your insurance claim.",
