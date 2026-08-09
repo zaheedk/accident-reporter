@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import SEO from '@/components/SEO';
 import AppLayout from '@/components/AppLayout';
+import ReplacementVehicleNote from '@/components/ReplacementVehicleNote';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -290,6 +291,8 @@ export default function PanelBeatersLocation() {
             </Button>
           </div>
         </section>
+
+        <ReplacementVehicleNote seed={slug} />
 
         <section className="mt-10 rounded-lg border border-primary/30 bg-primary/5 p-6">
           <h2 className="text-xl font-serif text-foreground mb-2">Lodge your claim faster with SAVO</h2>
