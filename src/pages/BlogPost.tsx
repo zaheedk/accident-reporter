@@ -27,24 +27,50 @@ export default function BlogPost() {
   const article = slug ? getArticleBySlug(slug) : undefined;
   if (!article) return <Navigate to="/blog" replace />;
 
+  const pageUrl = `https://www.savo.co.nz/blog/${article.slug}`;
+
   const articleJsonLd = {
     "@context": "https://schema.org",
-    "@type": "Article",
-    headline: article.title,
-    description: article.metaDescription,
-    image: `https://www.savo.co.nz${article.heroImage}`,
-    datePublished: article.date,
-    dateModified: article.date,
-    author: { "@type": "Organization", name: "SAVO" },
-    publisher: {
-      "@type": "Organization",
-      name: "SAVO",
-      logo: { "@type": "ImageObject", url: "https://www.savo.co.nz/app-icon-512.png" },
-    },
-    mainEntityOfPage: {
-      "@type": "WebPage",
-      "@id": `https://www.savo.co.nz/blog/${article.slug}`,
-    },
+    "@graph": [
+      {
+        "@type": "Article",
+        "@id": `${pageUrl}#article`,
+        headline: article.title,
+        description: article.metaDescription,
+        image: `https://www.savo.co.nz${article.heroImage}`,
+        datePublished: article.date,
+        dateModified: article.updated ?? article.date,
+        author: { "@type": "Organization", name: "SAVO" },
+        publisher: {
+          "@type": "Organization",
+          name: "SAVO",
+          logo: { "@type": "ImageObject", url: "https://www.savo.co.nz/app-icon-512.png" },
+        },
+        mainEntityOfPage: { "@type": "WebPage", "@id": pageUrl },
+      },
+      {
+        "@type": "BreadcrumbList",
+        "@id": `${pageUrl}#breadcrumb`,
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Home", item: "https://www.savo.co.nz/" },
+          { "@type": "ListItem", position: 2, name: "Blog", item: "https://www.savo.co.nz/blog" },
+          { "@type": "ListItem", position: 3, name: article.title, item: pageUrl },
+        ],
+      },
+      ...(article.faq?.length
+        ? [
+            {
+              "@type": "FAQPage",
+              "@id": `${pageUrl}#faq`,
+              mainEntity: article.faq.map((f) => ({
+                "@type": "Question",
+                name: f.q,
+                acceptedAnswer: { "@type": "Answer", text: f.a },
+              })),
+            },
+          ]
+        : []),
+    ],
   };
 
   return (
@@ -57,6 +83,7 @@ export default function BlogPost() {
         publishedTime={article.date}
         jsonLd={articleJsonLd}
       />
+
 
       <div className="max-w-2xl mx-auto px-4 py-6 pb-24">
         <Link to="/blog" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-4">
