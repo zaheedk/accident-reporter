@@ -101,7 +101,6 @@ export default function TowTrucksRegion() {
     : all.filter((t) => slugifyLocation(t.region) === slug);
 
   const regionName = city ? city.name : (matches[0]?.region ?? titleizeSlug(slug));
-  const parentRegion = city?.region;
   const childCities = city ? [] : citiesInRegion(matches[0]?.region ?? titleizeSlug(slug));
 
   const topPicks = matches.slice(0, 5);
