@@ -4,6 +4,7 @@
 import { writeFileSync } from 'fs';
 import { resolve } from 'path';
 import { config as loadEnv } from 'dotenv';
+import { matchCity } from '../src/lib/tow-cities';
 
 loadEnv();
 
@@ -112,11 +113,18 @@ async function main() {
   for (const r of regions) panelSlugs.add(slugify(r));
   for (const slug of panelSlugs) entries.push({ path: `/panel-beaters/${slug}`, changefreq: 'weekly', priority: '0.8', lastmod: TODAY });
 
-  // Tow trucks: region pages
-  const tows = await fetchRows<{ region: string }>('tow_companies', 'select=region');
+  // Tow trucks: region pages + city pages
+  const tows = await fetchRows<{ region: string; address: string }>('tow_companies', 'select=region,address');
   const towRegions = new Set<string>();
   for (const t of tows) if (t.region) towRegions.add(slugify(t.region));
   for (const slug of towRegions) entries.push({ path: `/tow-trucks/${slug}`, changefreq: 'weekly', priority: '0.8', lastmod: TODAY });
+
+  const towCitySlugs = new Set<string>();
+  for (const t of tows) {
+    const c = matchCity(t.address, t.region);
+    if (c) towCitySlugs.add(c.slug);
+  }
+  for (const slug of towCitySlugs) entries.push({ path: `/tow-trucks/${slug}`, changefreq: 'weekly', priority: '0.9', lastmod: TODAY });
 
   // Panel beaters by vehicle make
   const makeSlugs = [
@@ -127,7 +135,7 @@ async function main() {
 
   const out = xml(entries);
   writeFileSync(resolve('public/sitemap.xml'), out);
-  console.log(`[sitemap] wrote ${entries.length} entries (panel-beaters: ${panelSlugs.size}, makes: ${makeSlugs.length}, tow-trucks: ${towRegions.size})`);
+  console.log(`[sitemap] wrote ${entries.length} entries (panel-beaters: ${panelSlugs.size}, makes: ${makeSlugs.length}, tow-trucks: ${towRegions.size} regions + ${towCitySlugs.size} cities)`);
 }
 
 main().catch((err) => {

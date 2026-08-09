@@ -8,44 +8,11 @@ import { Button } from '@/components/ui/button';
 import { MapPin, Phone, ArrowLeft, FileText } from 'lucide-react';
 import { slugifyLocation, titleizeSlug } from '@/lib/location-slug';
 import { SAVO_ORIGIN, buildTowTrucksBreadcrumb } from '@/lib/tow-trucks-jsonld';
+import { getTowCity, matchCity, citiesInRegion, cityIntro } from '@/lib/tow-cities';
+import ReplacementVehicleNote from '@/components/ReplacementVehicleNote';
+import { regionIntro } from '@/lib/tow-intros';
 
 type Tow = { id: string; name: string; address: string; phone: string; region: string };
-
-// Region-specific intro paragraph. Falls back to a generic intro for unknown regions.
-const REGION_INTROS: Record<string, { blurb: string; hubs: string }> = {
-  auckland: {
-    blurb: 'Auckland has the busiest towing market in New Zealand, with operators running 24/7 across the motorway network. Tow trucks tend to converge quickly on crash sites — particularly along SH1, SH16 and SH20 — so it pays to know which operator you want before you call.',
-    hubs: 'Penrose, East Tāmaki, Albany, Henderson, Manukau and the North Shore',
-  },
-  wellington: {
-    blurb: 'Wellington towing covers the city, Hutt Valley, Porirua and Kāpiti. Wind events, weather-related breakdowns and SH1 crashes through Ngauranga Gorge are the most common call-outs, and after-hours availability is strong across the region.',
-    hubs: 'Petone, Lower Hutt, Porirua, Tawa and Kilbirnie',
-  },
-  canterbury: {
-    blurb: 'Canterbury tow operators handle Christchurch city plus a wide rural footprint — Ashburton, Rangiora and the inland highways. Heavy recovery for trucks and farm vehicles is a regional speciality.',
-    hubs: 'Sockburn, Hornby, Rangiora, Rolleston and central Christchurch',
-  },
-  waikato: {
-    blurb: 'Waikato towing serves the SH1 and SH3 corridors plus a busy rural network around Hamilton, Cambridge, Te Awamutu and Morrinsville. Expect strong heavy-vehicle recovery capacity given the freight volumes through the region.',
-    hubs: 'Te Rapa, Frankton, Cambridge and Hamilton East',
-  },
-  'bay-of-plenty': {
-    blurb: 'Bay of Plenty operators cover Tauranga, Mount Maunganui, Pāpāmoa, Whakatāne and Rotorua-bound traffic. SH2 and SH29 crash response is a daily reality, so most operators run multiple trucks across the region.',
-    hubs: 'Mount Maunganui industrial, Greerton, Pāpāmoa and Whakatāne',
-  },
-  otago: {
-    blurb: 'Otago towing covers Dunedin, Mosgiel, Balclutha and the inland routes through Central Otago — Cromwell, Wānaka and Alexandra. Winter conditions drive a surge of breakdown call-outs from June through August.',
-    hubs: 'South Dunedin, Green Island, Mosgiel and Cromwell',
-  },
-};
-
-function regionIntro(name: string, slug: string, count: number): string {
-  const r = REGION_INTROS[slug];
-  if (r) {
-    return `${r.blurb} We currently list ${count} towing operators serving ${name}. Remember: after a crash you choose your tow operator — not the first truck on scene. The biggest concentration of operators sits across ${r.hubs}.`;
-  }
-  return `Tow operators in ${name} handle accident recovery, breakdowns, repossessions and transport between workshops or yards. We currently list ${count} operators serving ${name}. After a crash you have the right to choose your tow operator and the destination — don't sign anything at the roadside without confirming storage fees and where your vehicle is going.`;
-}
 
 // Major NZ regions to cross-link from any region page.
 const MAJOR_REGIONS = [
@@ -91,14 +58,25 @@ export default function TowTrucksRegion() {
     },
   });
 
-  const matches = all.filter((t) => slugifyLocation(t.region) === slug);
-  const regionName = matches[0]?.region ?? titleizeSlug(slug);
+  // The slug is either a region ("canterbury") or one of the listed cities ("christchurch").
+  const city = getTowCity(slug);
+
+  const matches = city
+    ? all.filter((t) => t.region === city.region && matchCity(t.address, t.region)?.slug === city.slug)
+    : all.filter((t) => slugifyLocation(t.region) === slug);
+
+  const regionName = city ? city.name : (matches[0]?.region ?? titleizeSlug(slug));
+  const childCities = city ? [] : citiesInRegion(matches[0]?.region ?? titleizeSlug(slug));
 
   const topPicks = matches.slice(0, 5);
   const rest = matches.slice(5);
 
-  const title = `Tow Trucks in ${regionName} — ${matches.length || 'Trusted'} 24/7 Towing Operators NZ (2026)`;
-  const description = `Compare ${matches.length || 'trusted'} tow truck operators serving ${regionName}, New Zealand. Contact details, pricing guidance and your right to choose after an accident or breakdown.`;
+  const title = city
+    ? `Tow Trucks in ${city.name} — 24/7 Towing (${matches.length || 'Local'} Operators)`
+    : `Tow Trucks in ${regionName} — ${matches.length || 'Trusted'} 24/7 Towing Operators NZ (2026)`;
+  const description = city
+    ? `24/7 tow trucks in ${city.name}. Compare ${matches.length || 'local'} towing operators, call directly, and know your right to choose the tow after an accident or breakdown.`
+    : `Compare ${matches.length || 'trusted'} tow truck operators serving ${regionName}, New Zealand. Contact details, pricing guidance and your right to choose after an accident or breakdown.`;
 
   const faqs = FAQ(regionName);
 
@@ -176,24 +154,48 @@ export default function TowTrucksRegion() {
     <AppLayout>
       <SEO title={title} description={description} path={`/tow-trucks/${slug}`} jsonLd={jsonLd} noIndex={!isLoading && matches.length === 0} />
       <div className="container mx-auto max-w-4xl px-4 py-8">
-        <Link to="/tow-trucks" className="text-sm text-muted-foreground hover:text-foreground inline-flex items-center gap-1 mb-4">
-          <ArrowLeft className="w-3 h-3" /> All regions
+        <Link to={city ? `/tow-trucks/${slugifyLocation(city.region)}` : '/tow-trucks'} className="text-sm text-muted-foreground hover:text-foreground inline-flex items-center gap-1 mb-4">
+          <ArrowLeft className="w-3 h-3" /> {city ? `Tow trucks in ${city.region}` : 'All regions'}
         </Link>
 
         <header className="mb-6">
-          <h1 className="text-3xl md:text-4xl font-serif text-foreground mb-3">Tow Trucks in {regionName}</h1>
+          <h1 className="text-3xl md:text-4xl font-serif text-foreground mb-3">
+            {city ? `Tow Trucks in ${city.name} — 24/7 Towing` : `Tow Trucks in ${regionName}`}
+          </h1>
           <p className="text-muted-foreground">
             {matches.length > 0
-              ? `${matches.length} towing operators serving ${regionName}. Remember: after an accident, you choose your tow operator — not the first truck on scene.`
+              ? `${matches.length} towing ${matches.length === 1 ? 'operator' : 'operators'} serving ${regionName}. Remember: after an accident, you choose your tow operator — not the first truck on scene.`
               : `We don't currently have tow operators listed for ${regionName}. Browse all regions on our main directory.`}
           </p>
+          {topPicks[0]?.phone && (
+            <a
+              href={`tel:${topPicks[0].phone}`}
+              className="mt-4 inline-flex md:hidden items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground"
+            >
+              <Phone className="w-4 h-4" /> Call {topPicks[0].name}
+            </a>
+          )}
         </header>
 
         {matches.length > 0 && (
           <section className="mb-8 prose prose-sm dark:prose-invert max-w-none">
-            <p>{regionIntro(regionName, slug, matches.length)}</p>
+            <p>{city ? cityIntro(city, matches.length) : regionIntro(regionName, slug, matches.length)}</p>
           </section>
         )}
+
+        {childCities.length > 0 && (
+          <section className="mb-8">
+            <h2 className="text-xl font-serif text-foreground mb-3">Towing by city in {regionName}</h2>
+            <div className="flex flex-wrap gap-2">
+              {childCities.map((c) => (
+                <Button key={c.slug} asChild variant="outline" size="sm">
+                  <Link to={`/tow-trucks/${c.slug}`}>Tow trucks in {c.name}</Link>
+                </Button>
+              ))}
+            </div>
+          </section>
+        )}
+
 
         {isLoading ? (
           <p className="text-sm text-muted-foreground">Loading…</p>
@@ -236,7 +238,10 @@ export default function TowTrucksRegion() {
           </section>
         )}
 
+        <ReplacementVehicleNote seed={slug} className="mb-10" />
+
         <section className="mt-10 mb-10">
+
           <h2 className="text-xl font-serif text-foreground mb-3">Other regions</h2>
           <div className="flex flex-wrap gap-2">
             {MAJOR_REGIONS.filter((r) => slugifyLocation(r) !== slug).map((r) => (

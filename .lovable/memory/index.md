@@ -59,3 +59,5 @@ Storage: All buckets private, require signed URLs. `service_role` required for s
 - [Home-screen Widget](mem://features/home-screen-widget) — Android Glance + iOS scaffold, /widget-setup, widget-data edge fn, savo:// deep links
 - [Fleet Manager](mem://features/fleet-manager) — Manager invites drivers, assigns vehicles via fleet_vehicle_assignments; drivers see only assigned vehicles
 - [Insurance Broker](mem://features/insurance-broker) — Self-signup + admin approval; brokers view+add only on linked customer data
+- [Replacement Vehicle Links](mem://features/replacement-vehicle-links) — F2D wording rules + seeded, varied anchor text component for directory/blog pages
+- [Directory Prerender](mem://tech/directory-prerender) — postbuild static HTML for tow/panel-beater routes, MAX_PRERENDER_PAGES cap

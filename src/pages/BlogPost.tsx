@@ -3,6 +3,7 @@ import { getArticleBySlug } from '@/lib/blog-data';
 import { ArrowLeft, Calendar, Clock } from 'lucide-react';
 import AppLayout from '@/components/AppLayout';
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import SEO from '@/components/SEO';
 
 export default function BlogPost() {
@@ -27,24 +28,50 @@ export default function BlogPost() {
   const article = slug ? getArticleBySlug(slug) : undefined;
   if (!article) return <Navigate to="/blog" replace />;
 
+  const pageUrl = `https://www.savo.co.nz/blog/${article.slug}`;
+
   const articleJsonLd = {
     "@context": "https://schema.org",
-    "@type": "Article",
-    headline: article.title,
-    description: article.metaDescription,
-    image: `https://www.savo.co.nz${article.heroImage}`,
-    datePublished: article.date,
-    dateModified: article.date,
-    author: { "@type": "Organization", name: "SAVO" },
-    publisher: {
-      "@type": "Organization",
-      name: "SAVO",
-      logo: { "@type": "ImageObject", url: "https://www.savo.co.nz/app-icon-512.png" },
-    },
-    mainEntityOfPage: {
-      "@type": "WebPage",
-      "@id": `https://www.savo.co.nz/blog/${article.slug}`,
-    },
+    "@graph": [
+      {
+        "@type": "Article",
+        "@id": `${pageUrl}#article`,
+        headline: article.title,
+        description: article.metaDescription,
+        image: `https://www.savo.co.nz${article.heroImage}`,
+        datePublished: article.date,
+        dateModified: article.updated ?? article.date,
+        author: { "@type": "Organization", name: "SAVO" },
+        publisher: {
+          "@type": "Organization",
+          name: "SAVO",
+          logo: { "@type": "ImageObject", url: "https://www.savo.co.nz/app-icon-512.png" },
+        },
+        mainEntityOfPage: { "@type": "WebPage", "@id": pageUrl },
+      },
+      {
+        "@type": "BreadcrumbList",
+        "@id": `${pageUrl}#breadcrumb`,
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Home", item: "https://www.savo.co.nz/" },
+          { "@type": "ListItem", position: 2, name: "Blog", item: "https://www.savo.co.nz/blog" },
+          { "@type": "ListItem", position: 3, name: article.title, item: pageUrl },
+        ],
+      },
+      ...(article.faq?.length
+        ? [
+            {
+              "@type": "FAQPage",
+              "@id": `${pageUrl}#faq`,
+              mainEntity: article.faq.map((f) => ({
+                "@type": "Question",
+                name: f.q,
+                acceptedAnswer: { "@type": "Answer", text: f.a },
+              })),
+            },
+          ]
+        : []),
+    ],
   };
 
   return (
@@ -57,6 +84,7 @@ export default function BlogPost() {
         publishedTime={article.date}
         jsonLd={articleJsonLd}
       />
+
 
       <div className="max-w-2xl mx-auto px-4 py-6 pb-24">
         <Link to="/blog" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-4">
@@ -82,6 +110,12 @@ export default function BlogPost() {
               <Clock className="w-3 h-3" />
               {article.readTime}
             </span>
+            {article.updated && (
+              <span>
+                Updated{' '}
+                {new Date(article.updated).toLocaleDateString('en-NZ', { day: 'numeric', month: 'short', year: 'numeric' })}
+              </span>
+            )}
           </div>
 
           <div className="mt-6 prose prose-sm prose-neutral dark:prose-invert max-w-none
@@ -91,10 +125,26 @@ export default function BlogPost() {
             prose-h3:text-base prose-h3:mt-6 prose-h3:mb-2
             prose-ul:my-3 prose-ol:my-3 prose-li:my-0.5
             prose-p:my-3 prose-p:leading-relaxed
+            prose-table:text-xs prose-th:text-foreground prose-td:text-muted-foreground prose-td:align-top
             prose-em:text-muted-foreground/80">
-            <ReactMarkdown>{article.content}</ReactMarkdown>
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>{article.content}</ReactMarkdown>
           </div>
+
+          {article.faq?.length ? (
+            <section className="mt-10">
+              <h2 className="text-lg font-bold text-foreground mb-4">Frequently asked questions</h2>
+              <div className="space-y-3">
+                {article.faq.map((f) => (
+                  <details key={f.q} className="rounded-lg border border-border bg-card p-4">
+                    <summary className="text-sm font-semibold text-foreground cursor-pointer">{f.q}</summary>
+                    <p className="text-sm text-muted-foreground mt-2 leading-relaxed">{f.a}</p>
+                  </details>
+                ))}
+              </div>
+            </section>
+          ) : null}
         </article>
+
 
         <div className="mt-10 pt-6 border-t border-border">
           <Link to="/blog" className="text-sm text-primary font-medium hover:underline">

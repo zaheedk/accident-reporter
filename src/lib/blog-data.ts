@@ -29,6 +29,10 @@ export interface BlogArticle {
   readTime: string;
   heroImage: string;
   content: string;
+  /** ISO date of the last substantive edit — feeds Article dateModified. */
+  updated?: string;
+  /** Rendered as an FAQ section and emitted as FAQPage JSON-LD. */
+  faq?: { q: string; a: string }[];
 }
 
 export const blogArticles: BlogArticle[] = [
@@ -946,127 +950,119 @@ Thorough documentation can indirectly save you money on excess:
   },
   {
     slug: "courtesy-cars-not-at-fault-accidents-nz",
-    title: "Courtesy Cars in NZ: Your Rights When You're Not at Fault",
-    metaDescription: "Not at fault in a car accident in New Zealand? Learn about your right to a courtesy car, how to arrange one, and what costs are covered.",
+    title: "Courtesy Car vs Replacement Vehicle NZ: Your Rights When You're Not at Fault (2026)",
+    metaDescription: "Not at fault in a NZ crash? Compare courtesy cars from your panelbeater with a not-at-fault replacement vehicle — who pays, how long you keep it, and how to arrange one.",
     heroImage: courtesyCarHero,
-    excerpt: "If you're not at fault in an accident, you may be entitled to a courtesy car while yours is being repaired. Here's how it works in New Zealand.",
+    excerpt: "A panelbeater courtesy car and a not-at-fault replacement vehicle are two different things. Here's how each works in New Zealand, who pays, and which one you can actually get.",
     date: "2026-03-18",
-    readTime: "5 min read",
+    updated: "2026-06-02",
+    readTime: "7 min read",
+    faq: [
+      {
+        q: "Is a courtesy car the same as a replacement vehicle?",
+        a: "No. A courtesy car is a spare vehicle a panelbeater or insurer lends you while your car is in their workshop \u2014 usually a small hatchback, subject to availability, and only for the days your car is physically being repaired. A not-at-fault replacement vehicle is arranged separately from the repair by a specialist provider such as Free 2 Drive, is matched to the vehicle you actually drive, and is available from the day of the accident \u2014 including while liability, assessment and parts delays hold up the repair.",
+      },
+      {
+        q: "Who pays for a not-at-fault replacement vehicle in New Zealand?",
+        a: "The at-fault driver's insurer. Because you have been deprived of your vehicle by someone else's negligence, the cost of a reasonable replacement is a recoverable loss. Providers such as Free 2 Drive supply the vehicle up front and recover the hire cost directly from the at-fault insurer, so you pay nothing and no excess applies.",
+      },
+      {
+        q: "Will my panelbeater give me a courtesy car?",
+        a: "Sometimes, but you cannot rely on it. Courtesy cars are a goodwill service, not an entitlement \u2014 most NZ shops run only a handful of them, they are booked out well in advance, and they are typically released only once your car is booked in for repair, not while you are waiting for an assessor.",
+      },
+      {
+        q: "How long can I keep a replacement vehicle?",
+        a: "For the reasonable period you are without your car. With a not-at-fault replacement vehicle that generally covers the whole period from the accident to the day your repaired car is returned, or to the settlement date if the vehicle is written off. Insurer courtesy cars are usually capped \u2014 often at 14 to 21 days, or at the repair duration only.",
+      },
+      {
+        q: "Do I need to claim on my own insurance to get one?",
+        a: "No. A not-at-fault replacement vehicle is recovered from the at-fault insurer, so it does not go through your policy, does not trigger your excess, and does not count as a fault claim against your record. You still need to prove the other driver was at fault.",
+      },
+      {
+        q: "What if the other driver was uninsured?",
+        a: "Recovery becomes much harder, because there is no insurer to bill. Options narrow to your own policy's courtesy car benefit (if you have one), the Disputes Tribunal for amounts up to $30,000, or paying for a hire car yourself. Strong evidence \u2014 photos, dashcam, witnesses \u2014 matters even more here.",
+      },
+    ],
     content: `
-## When You're Not at Fault, You Shouldn't Be Without a Car
+## Courtesy car and replacement vehicle are not the same thing
 
-Being involved in a car accident is stressful enough. Being without your vehicle while it's repaired — when the accident wasn't even your fault — adds frustration and inconvenience to an already difficult situation.
+Most New Zealand drivers use the two terms interchangeably, and it costs them. They are different products, they come from different places, and only one of them is reliably available when the crash was not your fault.
 
-In New Zealand, if you're the not-at-fault party, you have options for getting a courtesy or replacement vehicle while yours is being repaired.
+A **courtesy car** is a spare vehicle a panelbeater or insurer lends you as a goodwill service while your car sits in their workshop. A **not-at-fault replacement vehicle** is arranged separately from the repair, matched to the vehicle you actually drive, and the cost is recovered from the at-fault party's insurer rather than paid by you.
 
-## Your Options for a Replacement Vehicle
+| | Panelbeater / insurer courtesy car | Not-at-fault replacement vehicle |
+| --- | --- | --- |
+| Who provides it | Your repairer or your own insurer | A specialist provider such as [Free 2 Drive](https://www.free2drive.co.nz/not-at-fault-car-hire) |
+| Who pays | Your insurer, or bundled into your premium | The at-fault driver's insurer |
+| Excess | Your policy excess may apply | None |
+| What you get | Whatever is spare \u2014 usually a small hatch | Like-for-like with your own vehicle |
+| Available from | The day repairs actually start | The day of the accident |
+| Covers assessment and parts delays | Rarely | Yes |
+| Affects your claims record | Usually yes | No \u2014 it is not your claim |
+| Availability | Limited fleet, often booked out | Arranged on request |
 
-### 1. Through Your Own Insurance Policy
+## Why the timing gap matters most
 
-Some comprehensive insurance policies in NZ include courtesy car provisions:
-- **Included cover** — Some policies provide a courtesy car as standard
-- **Optional add-on** — Available for an additional premium
-- **Through approved repairers** — Some insurers provide cars through their repair network
+The part drivers underestimate is the wait *before* the repair. After a crash your car typically sits while liability is confirmed, an assessor inspects it, the repairer quotes, the insurer approves, and parts are ordered. Four to six weeks before a spanner is picked up is routine in 2026, and longer for European models and late-model hybrids.
 
-**Check your policy:** Not all comprehensive policies include courtesy car cover. Review your policy wording or call your insurer to confirm.
+A courtesy car does not usually cover that window \u2014 it is released when your car goes into the workshop. A not-at-fault replacement vehicle is arranged separately from the repair, so it starts from the accident, not from the repair booking. That distinction is the single biggest practical difference between the two.
 
-### 2. Through the At-Fault Party's Insurer
+## Your three routes to a vehicle
 
-When you're not at fault:
-- The at-fault party's insurer is typically liable for your reasonable expenses
-- This can include a rental or courtesy car
-- You may need to arrange this yourself and claim the cost back
+### 1. Your own comprehensive policy
 
-### 3. Through a Not-at-Fault Accident Service
+Some NZ comprehensive policies include a courtesy car; many offer it as a paid add-on. Read the wording rather than assuming \u2014 look for the daily limit, the maximum number of days, and whether it applies only when you use an approved repairer. Claiming on your own policy usually means paying your excess, even when you were not at fault.
 
-Specialist services like [Free 2 Drive](https://www.free2drive.co.nz) exist in New Zealand that provide:
-- A courtesy car at no cost to you
-- Direct billing to the at-fault party's insurer
-- No excess to pay
-- Vehicles delivered to your door
-- Coverage for the full duration of your repairs
+### 2. The at-fault driver's insurer directly
 
-These services handle all the paperwork and liaison with the at-fault insurer, taking the burden off you. [Free 2 Drive](https://www.free2drive.co.nz) is one of New Zealand's leading not-at-fault courtesy car providers, making the process hassle-free.
+Because the other driver deprived you of your vehicle, the cost of a reasonable replacement is a recoverable loss. You can arrange a hire car yourself and claim it back, but you carry the cost in the meantime, you must justify that the vehicle and rate were reasonable, and reimbursement can take months.
 
-## How to Arrange a Courtesy Car
+### 3. A not-at-fault replacement vehicle service
 
-### Step 1: Establish You're Not at Fault
+Providers such as [Free 2 Drive](https://www.free2drive.co.nz/not-at-fault-car-hire) supply the vehicle up front and recover the cost from the at-fault insurer, so nothing comes out of your pocket and no excess applies. Because it is arranged separately from the repair, it does not depend on your panelbeater having a spare car free. Their explainers on [what happens when your car is towed after an accident](https://www.free2drive.co.nz/car-towed-after-accident) and [panelbeater courtesy cars](https://www.free2drive.co.nz/panelbeater-courtesy-car) are worth reading before you accept whatever is offered at the scene.
 
-Before requesting a courtesy car, ensure:
-- The other driver has accepted responsibility, OR
-- The evidence clearly shows you're not at fault
-- You have documentation supporting your position (photos, witness statements, police report)
+## How to arrange one
 
-### Step 2: Contact the Right Provider
+### Step 1: Establish you are not at fault
 
-Your options in order of ease:
-1. **Your own insurer** — If your policy includes courtesy car cover
-2. **A not-at-fault accident service** — They handle everything for you
-3. **The at-fault party's insurer** — You can contact them directly
+You need either written acceptance of responsibility from the other driver, or evidence that clearly shows fault \u2014 scene photos, dashcam footage, witness details, and a police event number where one was issued.
 
-### Step 3: Provide Documentation
+### Step 2: Get the other driver's insurer details
 
-You'll typically need:
-- Your incident report with all details
-- Photos of the damage
-- The other party's details and insurance information
-- Proof that you're not at fault (witness statements, dashcam footage)
-- Your vehicle's repair timeline from the panel shop
+Name, contact number, registration, and insurer. Without the at-fault insurer there is nobody to recover the cost from, which is why the details you collect in the first ten minutes matter so much.
 
-## What's Covered and What's Not
+### Step 3: Request the vehicle before the repair is booked
 
-### Typically Covered
-- ✅ A comparable replacement vehicle (similar size and type)
-- ✅ Full duration of repairs
-- ✅ Standard insurance for the courtesy car
-- ✅ Delivery and collection of the courtesy car
+Do not wait for the panelbeater. A replacement vehicle arranged separately from the repair can be with you while the assessment is still pending.
 
-### Typically NOT Covered
-- ❌ A vehicle upgrade (sports car when you drive a sedan)
-- ❌ Fuel costs for the courtesy car
-- ❌ Extended use beyond the repair period
-- ❌ Damage you cause to the courtesy car (your responsibility)
+### Step 4: Keep the repair timeline
 
-## How Proving Fault Matters
+Ask your repairer for a written estimated completion date and update it if parts slip. It is the evidence that supports the length of the hire.
 
-The key to accessing a free courtesy car is **proving you're not at fault**. This is where thorough documentation becomes critical:
+## What is covered and what is not
 
-### Strong Evidence Includes
-- **Photos from the scene** — Showing vehicle positions and damage
-- **Witness statements** — Independent confirmation of what happened
-- **Dashcam footage** — Objective video evidence
-- **Police report** — Official record of the incident
-- **Detailed incident report** — Comprehensive account with all details
+### Typically covered
+- A comparable vehicle \u2014 similar size, type and capability to your own
+- The period you are genuinely without your car, including pre-repair delays
+- Insurance on the replacement vehicle
+- Delivery and collection
 
-### Weak Claims Include
-- "They said it was their fault" — Without written confirmation
-- No photos or evidence
-- Vague or inconsistent accounts
-- Missing third-party details
+### Typically not covered
+- An upgrade on what you normally drive
+- Fuel
+- Use beyond the reasonable deprivation period
+- Damage you cause to the replacement vehicle
+- Infringements and tolls
 
-## Common Questions
+## Evidence decides whether you get one
 
-### "Do I have to use my own insurance?"
-No. If you're not at fault, you can claim directly against the at-fault party's insurer or use a not-at-fault service. Using your own insurance means you may need to pay an excess.
+Everything above depends on fault being clear. Strong files contain scene photos showing vehicle positions before anything is moved, dashcam footage, independent witness contact details, a police event number, and a written incident report made the same day. Weak files rely on "they admitted it was their fault" with nothing in writing, no photos, and a third party whose details were never taken.
 
-### "How long can I have the courtesy car?"
-For the reasonable duration of repairs. This is typically determined by the panel shop's repair timeline.
+## Where SAVO fits
 
-### "What if fault is disputed?"
-If liability is unclear, getting a free courtesy car is more difficult. You may need to use your own policy's courtesy car provision while fault is being determined.
+SAVO turns the scene into a structured, timestamped incident report \u2014 photos, third-party details, witnesses, location and narrative in one file you can send to an insurer or a replacement vehicle provider without retyping anything. You can request a replacement vehicle straight from a SAVO report; we pass it to [Free 2 Drive](https://www.free2drive.co.nz/not-at-fault-car-hire), who arrange the vehicle separately from your repair and recover the cost from the at-fault insurer.
 
-### "Can I choose any rental company?"
-If claiming costs back, you need to demonstrate the costs were "reasonable." Premium or luxury rentals may not be fully reimbursed.
-
-## How SAVO Helps You Get a Courtesy Car
-
-SAVO's structured incident reports make it easy to:
-- Prove you're not at fault with comprehensive documentation
-- Provide all the information a courtesy car provider needs
-- Share your report directly with service providers like [Free 2 Drive](https://www.free2drive.co.nz)
-- Request a courtesy car through SAVO when you're not at fault — we work with [Free 2 Drive](https://www.free2drive.co.nz) to get you back on the road fast
-
-*If you've been in an accident that wasn't your fault, don't go without a car. Document everything with SAVO and explore your courtesy car options with [Free 2 Drive](https://www.free2drive.co.nz) immediately.*
+*Document the accident properly on the day, and the replacement vehicle question answers itself.*
     `
   },
   {

@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -5,9 +6,11 @@ import SEO from '@/components/SEO';
 import AppLayout from '@/components/AppLayout';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { MapPin, ArrowRight } from 'lucide-react';
+import { MapPin, ArrowRight, LocateFixed, Loader2 } from 'lucide-react';
 import { slugifyLocation } from '@/lib/location-slug';
 import { SAVO_ORIGIN } from '@/lib/tow-trucks-jsonld';
+import { TOW_CITIES, matchCity, distanceKm } from '@/lib/tow-cities';
+import ReplacementVehicleNote from '@/components/ReplacementVehicleNote';
 
 const FEATURED_REGIONS = [
   'Auckland', 'Wellington', 'Canterbury', 'Waikato', 'Bay of Plenty',
@@ -33,21 +36,59 @@ const FAQ = [
   },
 ];
 
+type Row = { region: string; address: string };
+
 export default function TowTrucksIndex() {
+  const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
+  const [locating, setLocating] = useState(false);
+  const [locError, setLocError] = useState('');
+
   const { data = [], isLoading } = useQuery({
     queryKey: ['tow-trucks-index'],
     queryFn: async () => {
-      const { data, error } = await supabase.from('tow_companies').select('region');
+      const { data, error } = await supabase.from('tow_companies').select('region,address');
       if (error) throw error;
-      return data as { region: string }[];
+      return data as Row[];
     },
   });
 
   const counts = new Map<string, number>();
-  for (const r of data) if (r.region) counts.set(r.region, (counts.get(r.region) ?? 0) + 1);
+  const cityCounts = new Map<string, number>();
+  for (const r of data) {
+    if (r.region) counts.set(r.region, (counts.get(r.region) ?? 0) + 1);
+    const c = matchCity(r.address, r.region);
+    if (c) cityCounts.set(c.slug, (cityCounts.get(c.slug) ?? 0) + 1);
+  }
   const regions = Array.from(counts.entries()).sort();
   const totalOps = data.length;
   const pageUrl = `${SAVO_ORIGIN}/tow-trucks`;
+
+  const cities = TOW_CITIES.map((c) => ({ ...c, count: cityCounts.get(c.slug) ?? 0 })).filter((c) => c.count > 0);
+  const sortedCities = coords
+    ? [...cities].sort(
+        (a, b) => distanceKm(coords.lat, coords.lng, a.lat, a.lng) - distanceKm(coords.lat, coords.lng, b.lat, b.lng)
+      )
+    : cities;
+
+  const findNearMe = () => {
+    setLocError('');
+    if (!('geolocation' in navigator)) {
+      setLocError('Your browser does not support location lookup.');
+      return;
+    }
+    setLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setCoords({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+        setLocating(false);
+      },
+      () => {
+        setLocError('We could not get your location. Pick your city below instead.');
+        setLocating(false);
+      },
+      { enableHighAccuracy: false, timeout: 8000, maximumAge: 300000 }
+    );
+  };
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -56,8 +97,16 @@ export default function TowTrucksIndex() {
         '@type': 'CollectionPage',
         '@id': `${pageUrl}#collection`,
         name: 'Tow Trucks in New Zealand',
-        description: `Directory of ${totalOps || 'trusted'} 24/7 tow truck operators across New Zealand, organised by region.`,
+        description: `Directory of ${totalOps || 'trusted'} 24/7 tow truck operators across New Zealand, organised by city and region.`,
         url: pageUrl,
+        potentialAction: {
+          '@type': 'SearchAction',
+          target: {
+            '@type': 'EntryPoint',
+            urlTemplate: `${SAVO_ORIGIN}/tow-trucks/{search_term_string}`,
+          },
+          'query-input': 'required name=search_term_string',
+        },
       },
       {
         '@type': 'BreadcrumbList',
@@ -82,8 +131,8 @@ export default function TowTrucksIndex() {
   return (
     <AppLayout>
       <SEO
-        title="Tow Trucks NZ — 24/7 Towing Companies by Region"
-        description={`Find trusted tow truck operators across New Zealand. Browse ${totalOps || '24/7'} towing companies by region — Auckland, Wellington, Canterbury and more.`}
+        title="Tow Trucks NZ — 24/7 Towing Companies Near You"
+        description={`Find trusted tow truck operators across New Zealand. Browse ${totalOps || '24/7'} towing companies by city and region — Auckland, Wellington, Christchurch and more.`}
         path="/tow-trucks"
         jsonLd={jsonLd}
       />
@@ -91,9 +140,41 @@ export default function TowTrucksIndex() {
         <header className="mb-8">
           <h1 className="text-3xl md:text-4xl font-serif text-foreground mb-3">Tow Trucks in New Zealand</h1>
           <p className="text-muted-foreground max-w-2xl">
-            After an accident or breakdown, you have the right to choose your own tow operator and where your vehicle is taken. We list {totalOps || 'trusted'} towing companies across {regions.length || 'every'} NZ {regions.length === 1 ? 'region' : 'regions'} — pick yours below for 24/7 contact details.
+            After an accident or breakdown, you have the right to choose your own tow operator and where your vehicle is taken. We list {totalOps || 'trusted'} towing companies across {regions.length || 'every'} NZ {regions.length === 1 ? 'region' : 'regions'} — pick your city below for 24/7 contact details.
           </p>
+          <div className="mt-4 flex flex-wrap items-center gap-3">
+            <Button onClick={findNearMe} disabled={locating}>
+              {locating ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <LocateFixed className="w-4 h-4 mr-2" />}
+              Find tow trucks near me
+            </Button>
+            {coords && <span className="text-sm text-muted-foreground">Sorted by distance from you.</span>}
+            {locError && <span className="text-sm text-destructive">{locError}</span>}
+          </div>
         </header>
+
+        {sortedCities.length > 0 && (
+          <section className="mb-8">
+            <h2 className="text-lg font-semibold text-foreground mb-3">
+              {coords ? 'Closest cities to you' : 'Towing by city'}
+            </h2>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+              {sortedCities.map((c) => (
+                <Link key={c.slug} to={`/tow-trucks/${c.slug}`}>
+                  <Card className="p-3 hover:bg-accent transition-colors flex items-center justify-between text-sm">
+                    <span className="text-foreground flex items-center gap-2">
+                      <MapPin className="w-3.5 h-3.5 text-primary" />
+                      {c.name}
+                    </span>
+                    <span className="text-muted-foreground flex items-center gap-1">
+                      {coords ? `${Math.round(distanceKm(coords.lat, coords.lng, c.lat, c.lng))} km` : c.count}
+                      <ArrowRight className="w-3 h-3" />
+                    </span>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
 
         <section className="mb-8">
           <h2 className="text-lg font-semibold text-foreground mb-3">Featured regions</h2>
@@ -135,6 +216,8 @@ export default function TowTrucksIndex() {
             ))}
           </div>
         </section>
+
+        <ReplacementVehicleNote seed="tow-trucks-hub" />
 
         <section className="mt-10 flex flex-wrap gap-2">
           <Button asChild variant="outline" size="sm">

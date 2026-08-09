@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import SEO from '@/components/SEO';
 import AppLayout from '@/components/AppLayout';
+import ReplacementVehicleNote from '@/components/ReplacementVehicleNote';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { MapPin, ArrowRight } from 'lucide-react';
@@ -159,6 +160,8 @@ export default function PanelBeatersIndex() {
             ))}
           </div>
         </section>
+
+        <ReplacementVehicleNote seed={'panel-beaters-hub'} />
 
         <section className="mt-10 flex flex-wrap gap-2">
           <Button asChild variant="outline" size="sm">
