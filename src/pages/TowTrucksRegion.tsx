@@ -9,6 +9,7 @@ import { MapPin, Phone, ArrowLeft, FileText } from 'lucide-react';
 import { slugifyLocation, titleizeSlug } from '@/lib/location-slug';
 import { SAVO_ORIGIN, buildTowTrucksBreadcrumb } from '@/lib/tow-trucks-jsonld';
 import { getTowCity, matchCity, citiesInRegion, cityIntro } from '@/lib/tow-cities';
+import ReplacementVehicleNote from '@/components/ReplacementVehicleNote';
 
 type Tow = { id: string; name: string; address: string; phone: string; region: string };
 
