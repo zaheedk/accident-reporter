@@ -273,7 +273,10 @@ export default function TowTrucksRegion() {
           </section>
         )}
 
+        <ReplacementVehicleNote seed={slug} className="mb-10" />
+
         <section className="mt-10 mb-10">
+
           <h2 className="text-xl font-serif text-foreground mb-3">Other regions</h2>
           <div className="flex flex-wrap gap-2">
             {MAJOR_REGIONS.filter((r) => slugifyLocation(r) !== slug).map((r) => (
