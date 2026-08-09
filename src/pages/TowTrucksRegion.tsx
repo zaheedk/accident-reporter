@@ -91,14 +91,26 @@ export default function TowTrucksRegion() {
     },
   });
 
-  const matches = all.filter((t) => slugifyLocation(t.region) === slug);
-  const regionName = matches[0]?.region ?? titleizeSlug(slug);
+  // The slug is either a region ("canterbury") or one of the listed cities ("christchurch").
+  const city = getTowCity(slug);
+
+  const matches = city
+    ? all.filter((t) => t.region === city.region && matchCity(t.address, t.region)?.slug === city.slug)
+    : all.filter((t) => slugifyLocation(t.region) === slug);
+
+  const regionName = city ? city.name : (matches[0]?.region ?? titleizeSlug(slug));
+  const parentRegion = city?.region;
+  const childCities = city ? [] : citiesInRegion(matches[0]?.region ?? titleizeSlug(slug));
 
   const topPicks = matches.slice(0, 5);
   const rest = matches.slice(5);
 
-  const title = `Tow Trucks in ${regionName} — ${matches.length || 'Trusted'} 24/7 Towing Operators NZ (2026)`;
-  const description = `Compare ${matches.length || 'trusted'} tow truck operators serving ${regionName}, New Zealand. Contact details, pricing guidance and your right to choose after an accident or breakdown.`;
+  const title = city
+    ? `Tow Trucks in ${city.name} — 24/7 Towing (${matches.length || 'Local'} Operators)`
+    : `Tow Trucks in ${regionName} — ${matches.length || 'Trusted'} 24/7 Towing Operators NZ (2026)`;
+  const description = city
+    ? `24/7 tow trucks in ${city.name}. Compare ${matches.length || 'local'} towing operators, call directly, and know your right to choose the tow after an accident or breakdown.`
+    : `Compare ${matches.length || 'trusted'} tow truck operators serving ${regionName}, New Zealand. Contact details, pricing guidance and your right to choose after an accident or breakdown.`;
 
   const faqs = FAQ(regionName);
 
