@@ -33,6 +33,7 @@ const staticEntries: Entry[] = [
   { path: '/faq', changefreq: 'monthly', priority: '0.6' },
   { path: '/legal', changefreq: 'yearly', priority: '0.3' },
   { path: '/privacy', changefreq: 'yearly', priority: '0.3' },
+  { path: '/account-deletion', changefreq: 'yearly', priority: '0.3' },
   { path: '/panel-shops', changefreq: 'weekly', priority: '0.7' },
   { path: '/tow-companies', changefreq: 'weekly', priority: '0.7' },
   { path: '/panel-beaters', changefreq: 'weekly', priority: '0.8' },
