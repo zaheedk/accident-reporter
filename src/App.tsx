@@ -49,6 +49,7 @@ const ExternalLogin = lazy(() => import("./pages/ExternalLogin"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const DeleteAccount = lazy(() => import("./pages/DeleteAccount"));
 const DeleteDataRequest = lazy(() => import("./pages/DeleteDataRequest"));
+const AccountDeletion = lazy(() => import("./pages/AccountDeletion"));
 const Documents = lazy(() => import("./pages/Documents"));
 const Family = lazy(() => import("./pages/Family"));
 const Fleet = lazy(() => import("./pages/Fleet"));
@@ -193,6 +194,8 @@ const App = () => (
               <Route path="/faq" element={<FAQ />} />
               <Route path="/legal" element={<Legal />} />
               <Route path="/privacy" element={<Privacy />} />
+              <Route path="/account-deletion" element={<AccountDeletion />} />
+              <Route path="/delete-my-account" element={<AccountDeletion />} />
               <Route path="/blog" element={<Blog />} />
               <Route path="/blog/:slug" element={<BlogPost />} />
               <Route path="/delete-account" element={<ProtectedRoute><DeleteAccount /></ProtectedRoute>} />
