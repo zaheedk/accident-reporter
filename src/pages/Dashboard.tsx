@@ -578,6 +578,7 @@ export default function Dashboard() {
                         key={v.id}
                         vehicle={v}
                         index={i}
+                        insurerPhones={insurerPhones}
                         onTap={(veh, kind) => setVehicleAction({ vehicle: veh, ring: kind })}
                       />
                     ))}
