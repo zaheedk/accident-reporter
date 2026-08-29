@@ -358,23 +358,23 @@
 
   /* === Dashboard page — shares Apple/Linear palette with Garage === */
   .theme-dashboard {
-    --background: 240 10% 98%;
-    --foreground: 240 10% 8%;
+    --background: 224 78% 96%;
+    --foreground: 240 30% 12%;
     --card: 0 0% 100%;
-    --card-foreground: 240 10% 8%;
+    --card-foreground: 240 30% 12%;
     --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 8%;
-    --primary: 240 8% 12%;
+    --popover-foreground: 240 30% 12%;
+    --primary: 252 82% 62%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 240 6% 95%;
-    --secondary-foreground: 240 10% 12%;
-    --muted: 240 6% 95%;
-    --muted-foreground: 240 4% 46%;
-    --accent: 217 91% 53%;
+    --secondary: 226 60% 93%;
+    --secondary-foreground: 250 40% 26%;
+    --muted: 226 55% 94%;
+    --muted-foreground: 240 12% 46%;
+    --accent: 20 90% 57%;
     --accent-foreground: 0 0% 100%;
-    --border: 240 6% 90%;
-    --input: 240 6% 90%;
-    --ring: 217 91% 53%;
+    --border: 226 40% 88%;
+    --input: 226 40% 88%;
+    --ring: 252 82% 62%;
 
     background: hsl(var(--background));
     color: hsl(var(--foreground));
