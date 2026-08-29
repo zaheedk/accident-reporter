@@ -232,18 +232,6 @@ export default function Dashboard() {
     return items.sort((a, b) => a.days - b.days);
   }, [vehicles]);
 
-  /** Insurer to call in one tap — default vehicle first, else first insured vehicle. */
-  const insurerQuickCall = useMemo(() => {
-    const candidate =
-      vehicles.find(v => v.isDefault && v.insuranceCompany && insurerPhones[v.insuranceCompany]) ||
-      vehicles.find(v => v.insuranceCompany && insurerPhones[v.insuranceCompany]);
-    if (!candidate?.insuranceCompany) return null;
-    return {
-      vehicle: candidate,
-      name: candidate.insuranceCompany,
-      phone: insurerPhones[candidate.insuranceCompany],
-    };
-  }, [vehicles, insurerPhones]);
 
 
   const avatarUrl = profile?.avatar_url || '';
