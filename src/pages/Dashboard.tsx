@@ -130,6 +130,7 @@ export default function Dashboard() {
   const { user, isAdmin } = useAuth();
 
   const [towSheetOpen, setTowSheetOpen] = useState(false);
+  const [vehicleAction, setVehicleAction] = useState<{ vehicle: Vehicle; ring: RingKind } | null>(null);
   const [accidentSheetOpen, setAccidentSheetOpen] = useState(false);
   const [towCompanies, setTowCompanies] = useState<any[]>([]);
   const [towSearch, setTowSearch] = useState('');
