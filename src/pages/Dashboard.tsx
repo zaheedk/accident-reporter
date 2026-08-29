@@ -465,66 +465,73 @@ export default function Dashboard() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-3">
                     {vehicles.map(v => {
                       const insurerPhone = v.insuranceCompany ? insurerPhones[v.insuranceCompany] : '';
-                      const wofD = daysUntil(v.wofExpiry);
-                      const regoD = daysUntil(v.regoExpiry);
-                      const insD = daysUntil(v.insuranceExpiry);
+                      const rings = [
+                        { label: 'WOF', d: daysUntil(v.wofExpiry) },
+                        { label: 'Rego', d: daysUntil(v.regoExpiry) },
+                        { label: 'Ins', d: daysUntil(v.insuranceExpiry) },
+                      ];
+                      const worst = rings.reduce<number | null>((acc, r) => {
+                        if (r.d === null) return acc;
+                        return acc === null || r.d < acc ? r.d : acc;
+                      }, null);
+                      const alert = worst !== null && worst <= 30;
                       return (
-                        <div key={v.id} className="rounded-xl bg-card border border-border overflow-hidden hover:border-foreground/20 transition-colors group">
-                          <Link to={`/vehicles/${v.slug || v.id}/edit`} className="block p-3">
-                            <div className="flex items-center gap-3">
-                              <div className="w-14 h-14 rounded-xl bg-muted overflow-hidden flex items-center justify-center shrink-0">
-                                {v.photoUrl ? (
-                                  <img src={v.photoUrl} alt={`${v.make} ${v.model}`} className="w-full h-full object-cover" loading="lazy" />
-                                ) : (
-                                  <Car className="w-6 h-6 text-muted-foreground" strokeWidth={1.5} />
-                                )}
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <div className="text-[13px] font-semibold text-foreground truncate tabular-nums">{v.regoNumber}</div>
-                                <div className="text-[12px] text-muted-foreground truncate">{v.year} {v.make} {v.model}</div>
-                              </div>
+                        <div
+                          key={v.id}
+                          className={`relative rounded-3xl bg-card border p-4 overflow-hidden transition-all ${alert ? 'border-destructive/30' : 'border-border/70'}`}
+                        >
+                          <div
+                            aria-hidden="true"
+                            className={`pointer-events-none absolute -top-10 -right-10 w-28 h-28 rounded-full blur-2xl ${alert ? 'bg-destructive/10' : 'bg-primary/10'}`}
+                          />
+                          <Link to={`/vehicles/${v.slug || v.id}/edit`} className="relative flex items-center gap-3">
+                            <div className="w-12 h-12 rounded-2xl bg-primary/10 overflow-hidden flex items-center justify-center shrink-0">
+                              {v.photoUrl ? (
+                                <img src={v.photoUrl} alt={`${v.make} ${v.model}`} className="w-full h-full object-cover" loading="lazy" />
+                              ) : (
+                                <Car className="w-5 h-5 text-primary" strokeWidth={1.8} />
+                              )}
                             </div>
-                            <div className="flex flex-wrap gap-1.5 mt-3">
-                              {[
-                                { label: 'WOF', d: wofD },
-                                { label: 'Rego', d: regoD },
-                                { label: 'Ins.', d: insD },
-                              ].map(({ label, d }) => {
-                                const tone = d === null ? 'text-muted-foreground bg-muted/60'
-                                  : d < 0 ? 'text-destructive bg-destructive/10'
-                                  : d <= 30 ? 'text-amber-700 dark:text-amber-400 bg-amber-500/10'
-                                  : 'text-foreground/70 bg-muted/60';
-                                const display = d === null ? '—' : d < 0 ? `${Math.abs(d)}d over` : d === 0 ? 'today' : `${d}d`;
-                                return (
-                                  <span key={label} className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-medium ${tone}`}>
-                                    <StatusDot days={d} />
-                                    <span className="opacity-70">{label}</span>
-                                    <span className="tabular-nums">{display}</span>
-                                  </span>
-                                );
-                              })}
+                            <div className="flex-1 min-w-0">
+                              <div className="text-[16px] font-extrabold text-foreground truncate tracking-[-0.02em] tabular-nums">{v.regoNumber}</div>
+                              <div className="text-[12px] text-muted-foreground truncate">{v.year} {v.make} {v.model}</div>
                             </div>
+                            <ArrowUpRight className="w-4 h-4 text-muted-foreground shrink-0" />
                           </Link>
-                          <div className="flex border-t border-border divide-x divide-border">
+
+                          <div className="relative grid grid-cols-3 gap-2 mt-4">
+                            {rings.map(({ label, d }) => (
+                              <Link
+                                key={label}
+                                to={`/vehicles/${v.slug || v.id}/edit`}
+                                className="flex flex-col items-center gap-1.5 rounded-2xl py-2.5 hover:bg-muted/50 active:scale-[0.97] transition-all"
+                              >
+                                <ExpiryRing days={d} />
+                                <span className="text-[10px] font-bold uppercase tracking-[0.12em] text-muted-foreground">{label}</span>
+                              </Link>
+                            ))}
+                          </div>
+
+                          <div className="relative flex gap-2 mt-3">
                             <Link
                               to={`/claims/new?vehicleId=${v.id}`}
-                              className="flex-1 flex items-center justify-center gap-1.5 py-2 text-[12px] font-medium text-foreground hover:bg-muted/50 transition-colors"
+                              className="flex-1 inline-flex items-center justify-center gap-1.5 h-10 rounded-full bg-foreground text-background text-[12px] font-semibold active:scale-[0.98] transition-transform"
                             >
-                              <AlertTriangle className="w-3.5 h-3.5" strokeWidth={2} /> Report
+                              <AlertTriangle className="w-3.5 h-3.5" strokeWidth={2.2} /> Report
                             </Link>
                             {insurerPhone ? (
                               <a
                                 href={`tel:${insurerPhone.replace(/\s/g, '')}`}
-                                className="flex-1 flex items-center justify-center gap-1.5 py-2 text-[12px] font-medium text-foreground hover:bg-muted/50 transition-colors"
+                                className="flex-1 inline-flex items-center justify-center gap-1.5 h-10 rounded-full bg-primary/10 text-primary text-[12px] font-semibold active:scale-[0.98] transition-transform"
                               >
-                                <Phone className="w-3.5 h-3.5" strokeWidth={2} /> Insurer
+                                <Phone className="w-3.5 h-3.5" strokeWidth={2.2} /> Insurer
                               </a>
                             ) : (
                               <Link
                                 to={`/vehicles/${v.slug || v.id}/edit`}
-                                className="flex-1 flex items-center justify-center gap-1.5 py-2 text-[12px] font-medium text-muted-foreground hover:bg-muted/50 transition-colors"
+                                className="flex-1 inline-flex items-center justify-center gap-1.5 h-10 rounded-full bg-muted text-muted-foreground text-[12px] font-semibold active:scale-[0.98] transition-transform"
                               >
-                                <Plus className="w-3.5 h-3.5" strokeWidth={2} /> Insurer
+                                <Plus className="w-3.5 h-3.5" strokeWidth={2.2} /> Insurer
                               </Link>
                             )}
                           </div>
@@ -533,10 +540,12 @@ export default function Dashboard() {
                     })}
                     <Link
                       to="/vehicles/new"
-                      className="rounded-xl border border-dashed border-border flex flex-col items-center justify-center gap-2 py-8 text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-colors min-h-[140px]"
+                      className="rounded-3xl border border-dashed border-primary/30 bg-primary/[0.04] flex flex-col items-center justify-center gap-2 py-8 text-primary hover:bg-primary/10 transition-colors min-h-[140px]"
                     >
-                      <Plus className="w-5 h-5" strokeWidth={1.8} />
-                      <span className="text-[12px] font-medium">Add vehicle</span>
+                      <span className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                        <Plus className="w-5 h-5" strokeWidth={2} />
+                      </span>
+                      <span className="text-[12px] font-semibold">Add vehicle</span>
                     </Link>
                   </div>
                 </motion.div>
