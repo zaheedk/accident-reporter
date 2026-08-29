@@ -371,41 +371,6 @@ export default function Dashboard() {
     </div>
   );
 
-  const UpcomingPanel = () => (
-    <div className="rounded-xl bg-card border border-border overflow-hidden">
-      <div className="px-3.5 pt-3 pb-2 flex items-center justify-between">
-        <span className="text-[11px] font-medium text-muted-foreground">Upcoming expiries</span>
-        <Link to="/vehicles" className="text-[11px] font-medium text-accent hover:opacity-80">All</Link>
-      </div>
-      {upcomingExpiries.length === 0 ? (
-        <div className="px-3.5 pb-3.5 text-[12px] text-muted-foreground">Nothing due in the next 60 days.</div>
-      ) : (
-        <div className="divide-y divide-border">
-          {upcomingExpiries.map((it, i) => (
-            <Link
-              key={i}
-              to={`/vehicles/${it.slug || it.vehicleId}/edit`}
-              className="flex items-center gap-3 px-3.5 py-2.5 hover:bg-muted/50 transition-colors"
-            >
-              <StatusDot days={it.days} />
-              <div className="flex-1 min-w-0">
-                <div className="text-[13px] font-medium text-foreground truncate">
-                  <span className="opacity-60">{it.label}</span> · {it.rego}
-                </div>
-                <div className="text-[11px] text-muted-foreground tabular-nums">{it.date}</div>
-              </div>
-              <span className={`text-[12px] font-medium tabular-nums ${
-                it.days < 0 ? 'text-destructive' : it.days <= 30 ? 'text-amber-700 dark:text-amber-400' : 'text-muted-foreground'
-              }`}>
-                {it.days < 0 ? `${Math.abs(it.days)}d over` : it.days === 0 ? 'today' : `${it.days}d`}
-              </span>
-            </Link>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-
   const ActivityPanel = () => (
     <div className="rounded-xl bg-card border border-border overflow-hidden">
       <div className="px-3.5 pt-3 pb-2 flex items-center justify-between">
