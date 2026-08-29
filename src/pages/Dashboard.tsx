@@ -548,7 +548,7 @@ export default function Dashboard() {
                     </Link>
                   </div>
 
-                  <div className="flex gap-3 overflow-x-auto snap-x snap-mandatory pb-2 -mx-4 px-4 md:mx-0 md:px-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                  <div className="flex gap-3 overflow-x-auto snap-x snap-proximity pb-2 -mx-4 px-4 md:mx-0 md:px-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                     {vehicles.map((v, i) => (
                       <VehicleCard
                         key={v.id}
