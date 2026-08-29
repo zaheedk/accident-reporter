@@ -51,10 +51,12 @@ function VehicleCard({
   vehicle,
   index,
   onTap,
+  insurerPhones,
 }: {
   vehicle: Vehicle;
   index: number;
   onTap: (v: Vehicle, kind: RingKind) => void;
+  insurerPhones: Record<string, string>;
 }) {
   const expiries: { kind: RingKind; label: string; days: number | null }[] = [
     { kind: 'WOF', label: 'WOF', days: daysUntil(vehicle.wofExpiry) },
@@ -77,6 +79,7 @@ function VehicleCard({
 
   // Alternate subtle accent glow per card
   const glow = index % 2 === 0 ? 'bg-primary/30' : 'bg-accent/30';
+  const insurerPhone = vehicle.insuranceCompany ? insurerPhones[vehicle.insuranceCompany] : null;
 
   return (
     <button
@@ -98,7 +101,18 @@ function VehicleCard({
               <div className="text-[14px] font-bold truncate tracking-[-0.01em]">{vehicle.make} {vehicle.model}</div>
               <div className="text-[11px] text-background/50 tabular-nums mt-0.5">{vehicle.regoNumber}</div>
             </div>
-            <span className="text-background/40 text-base leading-none tracking-widest -mt-0.5">···</span>
+            {insurerPhone ? (
+              <a
+                href={`tel:${insurerPhone}`}
+                onClick={(e) => e.stopPropagation()}
+                className="shrink-0 -mt-1 -mr-1 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center active:scale-90 transition-transform"
+                aria-label={`Call ${vehicle.insuranceCompany}`}
+              >
+                <Phone className="w-3.5 h-3.5" strokeWidth={2.2} />
+              </a>
+            ) : (
+              <span className="text-background/40 text-base leading-none tracking-widest -mt-0.5">···</span>
+            )}
           </div>
         </div>
       </div>
@@ -218,18 +232,6 @@ export default function Dashboard() {
     return items.sort((a, b) => a.days - b.days);
   }, [vehicles]);
 
-  /** Insurer to call in one tap — default vehicle first, else first insured vehicle. */
-  const insurerQuickCall = useMemo(() => {
-    const candidate =
-      vehicles.find(v => v.isDefault && v.insuranceCompany && insurerPhones[v.insuranceCompany]) ||
-      vehicles.find(v => v.insuranceCompany && insurerPhones[v.insuranceCompany]);
-    if (!candidate?.insuranceCompany) return null;
-    return {
-      vehicle: candidate,
-      name: candidate.insuranceCompany,
-      phone: insurerPhones[candidate.insuranceCompany],
-    };
-  }, [vehicles, insurerPhones]);
 
 
   const avatarUrl = profile?.avatar_url || '';
@@ -529,26 +531,6 @@ export default function Dashboard() {
                 );
               })()}
 
-              {/* One-tap insurer call */}
-              {insurerQuickCall && (
-                <motion.div variants={fadeUp} className="rounded-2xl border border-border bg-card p-4 flex items-center gap-3">
-                  <span className="shrink-0 w-9 h-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
-                    <Shield className="w-4.5 h-4.5" strokeWidth={2} />
-                  </span>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-[13px] font-semibold text-foreground truncate">{insurerQuickCall.name}</p>
-                    <p className="text-[11px] text-muted-foreground truncate">
-                      Insurer for {insurerQuickCall.vehicle.regoNumber}
-                    </p>
-                  </div>
-                  <a
-                    href={`tel:${insurerQuickCall.phone}`}
-                    className="shrink-0 inline-flex items-center gap-1.5 rounded-full bg-primary text-primary-foreground px-3.5 py-2 text-[12px] font-semibold active:scale-[0.97] transition-transform"
-                  >
-                    <Phone className="w-3.5 h-3.5" strokeWidth={2.2} /> Call
-                  </a>
-                </motion.div>
-              )}
 
 
               {/* Mobile emergency actions — big standalone circles with text inside */}
@@ -596,6 +578,7 @@ export default function Dashboard() {
                         key={v.id}
                         vehicle={v}
                         index={i}
+                        insurerPhones={insurerPhones}
                         onTap={(veh, kind) => setVehicleAction({ vehicle: veh, ring: kind })}
                       />
                     ))}
