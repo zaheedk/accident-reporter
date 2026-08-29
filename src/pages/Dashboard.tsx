@@ -51,10 +51,12 @@ function VehicleCard({
   vehicle,
   index,
   onTap,
+  insurerPhones,
 }: {
   vehicle: Vehicle;
   index: number;
   onTap: (v: Vehicle, kind: RingKind) => void;
+  insurerPhones: Record<string, string>;
 }) {
   const expiries: { kind: RingKind; label: string; days: number | null }[] = [
     { kind: 'WOF', label: 'WOF', days: daysUntil(vehicle.wofExpiry) },
@@ -77,6 +79,7 @@ function VehicleCard({
 
   // Alternate subtle accent glow per card
   const glow = index % 2 === 0 ? 'bg-primary/30' : 'bg-accent/30';
+  const insurerPhone = vehicle.insuranceCompany ? insurerPhones[vehicle.insuranceCompany] : null;
 
   return (
     <button
@@ -98,7 +101,18 @@ function VehicleCard({
               <div className="text-[14px] font-bold truncate tracking-[-0.01em]">{vehicle.make} {vehicle.model}</div>
               <div className="text-[11px] text-background/50 tabular-nums mt-0.5">{vehicle.regoNumber}</div>
             </div>
-            <span className="text-background/40 text-base leading-none tracking-widest -mt-0.5">···</span>
+            {insurerPhone ? (
+              <a
+                href={`tel:${insurerPhone}`}
+                onClick={(e) => e.stopPropagation()}
+                className="shrink-0 -mt-1 -mr-1 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center active:scale-90 transition-transform"
+                aria-label={`Call ${vehicle.insuranceCompany}`}
+              >
+                <Phone className="w-3.5 h-3.5" strokeWidth={2.2} />
+              </a>
+            ) : (
+              <span className="text-background/40 text-base leading-none tracking-widest -mt-0.5">···</span>
+            )}
           </div>
         </div>
       </div>
