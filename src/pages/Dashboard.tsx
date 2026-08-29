@@ -23,15 +23,6 @@ function daysUntil(dateStr?: string | null): number | null {
   return Math.round((d.getTime() - today.getTime()) / 86400000);
 }
 
-function StatusDot({ days }: { days: number | null }) {
-  const tone =
-    days === null ? 'bg-muted-foreground/40' :
-    days < 0 ? 'bg-destructive' :
-    days <= 30 ? 'bg-amber-500' :
-    'bg-emerald-500';
-  return <span className={`w-1.5 h-1.5 rounded-full ${tone}`} />;
-}
-
 type RingKind = 'WOF' | 'Rego' | 'Ins';
 
 const RING_META: Record<RingKind, { color: string; windowDays: number }> = {
