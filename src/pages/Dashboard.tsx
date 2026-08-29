@@ -545,7 +545,9 @@ export default function Dashboard() {
                                 className="flex flex-col items-center gap-1.5 rounded-2xl py-2.5 hover:bg-muted/50 active:scale-[0.97] transition-all"
                               >
                                 <ExpiryRing days={d} />
-                                <span className="text-[10px] font-bold uppercase tracking-[0.12em] text-muted-foreground">{label}</span>
+                                <span className={`text-[10px] font-bold uppercase tracking-[0.12em] ${d !== null && d < 0 ? 'text-destructive' : 'text-muted-foreground'}`}>
+                                  {d !== null && d < 0 ? `${label} over` : label}
+                                </span>
                               </Link>
                             ))}
                           </div>
