@@ -319,27 +319,27 @@
 
   /* Dark variant of the Garage scope — Linear-inspired near-black */
   .dark .theme-garage {
-    --background: 240 6% 7%;          /* #111113 */
-    --foreground: 0 0% 96%;
-    --card: 240 5% 10%;               /* #18181B */
-    --card-foreground: 0 0% 96%;
-    --popover: 240 5% 10%;
-    --popover-foreground: 0 0% 96%;
-    --primary: 0 0% 96%;              /* light primary in dark */
-    --primary-foreground: 240 6% 7%;
-    --secondary: 240 4% 14%;
-    --secondary-foreground: 0 0% 96%;
-    --muted: 240 4% 14%;
-    --muted-foreground: 240 5% 60%;
-    --accent: 217 91% 60%;
+    --background: 250 30% 8%;
+    --foreground: 250 20% 96%;
+    --card: 250 26% 12%;
+    --card-foreground: 250 20% 96%;
+    --popover: 250 26% 12%;
+    --popover-foreground: 250 20% 96%;
+    --primary: 252 88% 70%;
+    --primary-foreground: 250 40% 10%;
+    --secondary: 250 22% 17%;
+    --secondary-foreground: 250 20% 96%;
+    --muted: 250 22% 17%;
+    --muted-foreground: 250 12% 66%;
+    --accent: 20 90% 60%;
     --accent-foreground: 0 0% 100%;
-    --border: 240 4% 18%;
-    --input: 240 4% 18%;
-    --ring: 217 91% 60%;
-    --garage-glass: 240 5% 10%;
+    --border: 250 20% 22%;
+    --input: 250 20% 22%;
+    --ring: 252 88% 70%;
+    --garage-glass: 250 26% 12%;
     --garage-glass-alpha: 1;
     --garage-hairline: 0 0% 100%;
-    --garage-hairline-alpha: 0.08;
+    --garage-hairline-alpha: 0.1;
   }
 
   /* Solid surface used inside .theme-garage (Apple/Linear: no glass) */
