@@ -32,39 +32,95 @@ function StatusDot({ days }: { days: number | null }) {
   return <span className={`w-1.5 h-1.5 rounded-full ${tone}`} />;
 }
 
-/** Circular progress "hot button" showing how much of a 12-month window is left. */
-function ExpiryRing({ days }: { days: number | null }) {
-  const R = 20;
-  const C = 2 * Math.PI * R;
-  const pct = days === null ? 0 : Math.max(0, Math.min(1, days / 365));
-  const stroke =
-    days === null ? 'hsl(var(--muted-foreground) / 0.35)' :
-    days < 0 ? 'hsl(var(--destructive))' :
-    days <= 30 ? 'hsl(38 92% 50%)' :
-    'hsl(152 60% 42%)';
-  const text =
-    days === null ? 'text-muted-foreground' :
-    days < 0 ? 'text-destructive' :
-    days <= 30 ? 'text-amber-600 dark:text-amber-400' :
-    'text-foreground';
-  const label =
-    days === null ? '—' :
-    days < 0 ? `${Math.abs(days)}d` :
-    days === 0 ? 'now' :
-    days > 365 ? `${Math.round(days / 365)}y` :
-    `${days}d`;
+type RingKind = 'WOF' | 'Rego' | 'Ins';
+
+const RING_META: Record<RingKind, { color: string; windowDays: number }> = {
+  WOF: { color: 'hsl(var(--primary))', windowDays: 365 },
+  Rego: { color: 'hsl(38 92% 50%)', windowDays: 365 },
+  Ins: { color: 'hsl(152 60% 42%)', windowDays: 365 },
+};
+
+function ringColor(days: number | null, base: string): string {
+  if (days === null) return 'hsl(var(--muted-foreground) / 0.3)';
+  if (days < 0) return 'hsl(var(--destructive))';
+  if (days <= 30) return 'hsl(38 92% 50%)';
+  return base;
+}
+
+function ringSummary(days: number | null): string {
+  if (days === null) return 'Not set';
+  if (days < 0) return `${Math.abs(days)} days overdue`;
+  if (days === 0) return 'Due today';
+  return `${days} days left`;
+}
+
+/** Circular vehicle dial: three concentric tappable rings (WOF outer → Ins inner). */
+function VehicleDial({
+  vehicle,
+  rings,
+  onRingTap,
+}: {
+  vehicle: Vehicle;
+  rings: { kind: RingKind; days: number | null }[];
+  onRingTap: (v: Vehicle, kind: RingKind) => void;
+}) {
+  const SIZE = 168;
+  const C = SIZE / 2;
+  const RADII = [70, 56, 42];
+  const worst = rings.reduce<number | null>((acc, r) => {
+    if (r.days === null) return acc;
+    return acc === null || r.days < acc ? r.days : acc;
+  }, null);
+  const overdue = worst !== null && worst < 0;
   return (
-    <span className="relative inline-flex items-center justify-center w-[52px] h-[52px]">
-      <svg viewBox="0 0 48 48" className="w-full h-full -rotate-90">
-        <circle cx="24" cy="24" r={R} fill="none" stroke="hsl(var(--muted))" strokeWidth="4" />
-        <circle
-          cx="24" cy="24" r={R} fill="none" stroke={stroke} strokeWidth="4" strokeLinecap="round"
-          strokeDasharray={C} strokeDashoffset={C * (1 - (days !== null && days < 0 ? 1 : pct))}
-          className="transition-[stroke-dashoffset] duration-700"
-        />
+    <div className="relative mx-auto" style={{ width: SIZE, height: SIZE }}>
+      <svg viewBox={`0 0 ${SIZE} ${SIZE}`} className="w-full h-full -rotate-90">
+        {rings.map(({ kind, days }, i) => {
+          const r = RADII[i];
+          const circ = 2 * Math.PI * r;
+          const meta = RING_META[kind];
+          const pct = days === null ? 0 : Math.max(0, Math.min(1, days / meta.windowDays));
+          const fill = days !== null && days < 0 ? 1 : pct;
+          return (
+            <g key={kind}>
+              {/* track */}
+              <circle cx={C} cy={C} r={r} fill="none" stroke="hsl(var(--muted))" strokeWidth="7" />
+              {/* progress */}
+              <circle
+                cx={C} cy={C} r={r} fill="none"
+                stroke={ringColor(days, meta.color)}
+                strokeWidth="7" strokeLinecap="round"
+                strokeDasharray={circ} strokeDashoffset={circ * (1 - fill)}
+                className="transition-[stroke-dashoffset] duration-700"
+              />
+              {/* wide invisible hit target */}
+              <circle
+                cx={C} cy={C} r={r} fill="none" stroke="transparent" strokeWidth="18"
+                className="cursor-pointer"
+                onClick={() => onRingTap(vehicle, kind)}
+              >
+                <title>{kind} — {ringSummary(days)}</title>
+              </circle>
+            </g>
+          );
+        })}
       </svg>
-      <span className={`absolute text-[11px] font-bold tabular-nums leading-none ${text}`}>{label}</span>
-    </span>
+      <button
+        onClick={() => onRingTap(vehicle, rings.find(r => r.days !== null)?.kind ?? 'WOF')}
+        className="absolute rounded-full bg-card flex flex-col items-center justify-center text-center overflow-hidden border border-border/60 active:scale-[0.97] transition-transform"
+        style={{ left: C - 33, top: C - 33, width: 66, height: 66 }}
+      >
+        {vehicle.photoUrl ? (
+          <img src={vehicle.photoUrl} alt={`${vehicle.make} ${vehicle.model}`} className="absolute inset-0 w-full h-full object-cover opacity-25" loading="lazy" />
+        ) : null}
+        <span className="relative text-[13px] font-extrabold tracking-[-0.02em] tabular-nums text-foreground leading-none">
+          {vehicle.regoNumber}
+        </span>
+        <span className={`relative mt-1 text-[8px] font-bold uppercase tracking-[0.14em] ${overdue ? 'text-destructive' : 'text-muted-foreground'}`}>
+          {overdue ? 'Action due' : 'All good'}
+        </span>
+      </button>
+    </div>
   );
 }
 
