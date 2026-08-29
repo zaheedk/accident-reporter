@@ -90,7 +90,7 @@ function VehicleCard({
   return (
     <button
       onClick={() => onTap(vehicle, soonest?.kind ?? 'WOF')}
-      className="relative shrink-0 w-[188px] snap-start rounded-3xl bg-foreground text-background p-4 text-left overflow-hidden active:scale-[0.97] transition-transform"
+      className="relative shrink-0 w-[188px] rounded-3xl bg-foreground text-background p-4 text-left overflow-hidden active:scale-[0.97] transition-transform"
     >
       <div aria-hidden="true" className={`pointer-events-none absolute -top-12 -right-12 w-36 h-36 rounded-full blur-3xl ${glow}`} />
       <div className="relative flex items-start justify-between">
@@ -548,7 +548,7 @@ export default function Dashboard() {
                     </Link>
                   </div>
 
-                  <div className="flex gap-3 overflow-x-auto snap-x snap-proximity pb-2 -mx-4 px-4 md:mx-0 md:px-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                  <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4 md:mx-0 md:px-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                     {vehicles.map((v, i) => (
                       <VehicleCard
                         key={v.id}
@@ -559,7 +559,7 @@ export default function Dashboard() {
                     ))}
                     <Link
                       to="/vehicles/new"
-                      className="shrink-0 w-[120px] snap-start rounded-3xl border-2 border-dashed border-primary/30 bg-primary/[0.04] flex flex-col items-center justify-center gap-2 text-primary hover:bg-primary/10 transition-colors"
+                      className="shrink-0 w-[120px] rounded-3xl border-2 border-dashed border-primary/30 bg-primary/[0.04] flex flex-col items-center justify-center gap-2 text-primary hover:bg-primary/10 transition-colors"
                     >
                       <Plus className="w-6 h-6" strokeWidth={2} />
                       <span className="text-[12px] font-semibold">Add</span>
