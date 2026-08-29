@@ -515,7 +515,7 @@ export default function Dashboard() {
             <div className="space-y-6">
               {/* Mobile emergency actions — big standalone circles with text inside */}
               <motion.div variants={fadeUp} className="md:hidden">
-                <div className="flex items-center justify-center gap-6">
+                <div className="flex items-center justify-center gap-12">
                   <button
                     onClick={() => setAccidentSheetOpen(true)}
                     className="relative flex flex-col items-center justify-center w-[120px] h-[120px] rounded-full bg-foreground text-background active:scale-[0.96] transition-transform shadow-lg shadow-foreground/15"
