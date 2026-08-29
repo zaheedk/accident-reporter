@@ -543,26 +543,6 @@ export default function Dashboard() {
                 );
               })()}
 
-              {/* One-tap insurer call */}
-              {insurerQuickCall && (
-                <motion.div variants={fadeUp} className="rounded-2xl border border-border bg-card p-4 flex items-center gap-3">
-                  <span className="shrink-0 w-9 h-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
-                    <Shield className="w-4.5 h-4.5" strokeWidth={2} />
-                  </span>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-[13px] font-semibold text-foreground truncate">{insurerQuickCall.name}</p>
-                    <p className="text-[11px] text-muted-foreground truncate">
-                      Insurer for {insurerQuickCall.vehicle.regoNumber}
-                    </p>
-                  </div>
-                  <a
-                    href={`tel:${insurerQuickCall.phone}`}
-                    className="shrink-0 inline-flex items-center gap-1.5 rounded-full bg-primary text-primary-foreground px-3.5 py-2 text-[12px] font-semibold active:scale-[0.97] transition-transform"
-                  >
-                    <Phone className="w-3.5 h-3.5" strokeWidth={2.2} /> Call
-                  </a>
-                </motion.div>
-              )}
 
 
               {/* Mobile emergency actions — big standalone circles with text inside */}
