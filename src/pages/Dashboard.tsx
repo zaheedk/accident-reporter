@@ -32,39 +32,95 @@ function StatusDot({ days }: { days: number | null }) {
   return <span className={`w-1.5 h-1.5 rounded-full ${tone}`} />;
 }
 
-/** Circular progress "hot button" showing how much of a 12-month window is left. */
-function ExpiryRing({ days }: { days: number | null }) {
-  const R = 20;
-  const C = 2 * Math.PI * R;
-  const pct = days === null ? 0 : Math.max(0, Math.min(1, days / 365));
-  const stroke =
-    days === null ? 'hsl(var(--muted-foreground) / 0.35)' :
-    days < 0 ? 'hsl(var(--destructive))' :
-    days <= 30 ? 'hsl(38 92% 50%)' :
-    'hsl(152 60% 42%)';
-  const text =
-    days === null ? 'text-muted-foreground' :
-    days < 0 ? 'text-destructive' :
-    days <= 30 ? 'text-amber-600 dark:text-amber-400' :
-    'text-foreground';
-  const label =
-    days === null ? '—' :
-    days < 0 ? `${Math.abs(days)}d` :
-    days === 0 ? 'now' :
-    days > 365 ? `${Math.round(days / 365)}y` :
-    `${days}d`;
+type RingKind = 'WOF' | 'Rego' | 'Ins';
+
+const RING_META: Record<RingKind, { color: string; windowDays: number }> = {
+  WOF: { color: 'hsl(var(--primary))', windowDays: 365 },
+  Rego: { color: 'hsl(38 92% 50%)', windowDays: 365 },
+  Ins: { color: 'hsl(152 60% 42%)', windowDays: 365 },
+};
+
+function ringColor(days: number | null, base: string): string {
+  if (days === null) return 'hsl(var(--muted-foreground) / 0.3)';
+  if (days < 0) return 'hsl(var(--destructive))';
+  if (days <= 30) return 'hsl(38 92% 50%)';
+  return base;
+}
+
+function ringSummary(days: number | null): string {
+  if (days === null) return 'Not set';
+  if (days < 0) return `${Math.abs(days)} days overdue`;
+  if (days === 0) return 'Due today';
+  return `${days} days left`;
+}
+
+/** Circular vehicle dial: three concentric tappable rings (WOF outer → Ins inner). */
+function VehicleDial({
+  vehicle,
+  rings,
+  onRingTap,
+}: {
+  vehicle: Vehicle;
+  rings: { kind: RingKind; days: number | null }[];
+  onRingTap: (v: Vehicle, kind: RingKind) => void;
+}) {
+  const SIZE = 168;
+  const C = SIZE / 2;
+  const RADII = [70, 56, 42];
+  const worst = rings.reduce<number | null>((acc, r) => {
+    if (r.days === null) return acc;
+    return acc === null || r.days < acc ? r.days : acc;
+  }, null);
+  const overdue = worst !== null && worst < 0;
   return (
-    <span className="relative inline-flex items-center justify-center w-[52px] h-[52px]">
-      <svg viewBox="0 0 48 48" className="w-full h-full -rotate-90">
-        <circle cx="24" cy="24" r={R} fill="none" stroke="hsl(var(--muted))" strokeWidth="4" />
-        <circle
-          cx="24" cy="24" r={R} fill="none" stroke={stroke} strokeWidth="4" strokeLinecap="round"
-          strokeDasharray={C} strokeDashoffset={C * (1 - (days !== null && days < 0 ? 1 : pct))}
-          className="transition-[stroke-dashoffset] duration-700"
-        />
+    <div className="relative mx-auto" style={{ width: SIZE, height: SIZE }}>
+      <svg viewBox={`0 0 ${SIZE} ${SIZE}`} className="w-full h-full -rotate-90">
+        {rings.map(({ kind, days }, i) => {
+          const r = RADII[i];
+          const circ = 2 * Math.PI * r;
+          const meta = RING_META[kind];
+          const pct = days === null ? 0 : Math.max(0, Math.min(1, days / meta.windowDays));
+          const fill = days !== null && days < 0 ? 1 : pct;
+          return (
+            <g key={kind}>
+              {/* track */}
+              <circle cx={C} cy={C} r={r} fill="none" stroke="hsl(var(--muted))" strokeWidth="7" />
+              {/* progress */}
+              <circle
+                cx={C} cy={C} r={r} fill="none"
+                stroke={ringColor(days, meta.color)}
+                strokeWidth="7" strokeLinecap="round"
+                strokeDasharray={circ} strokeDashoffset={circ * (1 - fill)}
+                className="transition-[stroke-dashoffset] duration-700"
+              />
+              {/* wide invisible hit target */}
+              <circle
+                cx={C} cy={C} r={r} fill="none" stroke="transparent" strokeWidth="18"
+                className="cursor-pointer"
+                onClick={() => onRingTap(vehicle, kind)}
+              >
+                <title>{kind} — {ringSummary(days)}</title>
+              </circle>
+            </g>
+          );
+        })}
       </svg>
-      <span className={`absolute text-[11px] font-bold tabular-nums leading-none ${text}`}>{label}</span>
-    </span>
+      <button
+        onClick={() => onRingTap(vehicle, rings.find(r => r.days !== null)?.kind ?? 'WOF')}
+        className="absolute rounded-full bg-card flex flex-col items-center justify-center text-center overflow-hidden border border-border/60 active:scale-[0.97] transition-transform"
+        style={{ left: C - 33, top: C - 33, width: 66, height: 66 }}
+      >
+        {vehicle.photoUrl ? (
+          <img src={vehicle.photoUrl} alt={`${vehicle.make} ${vehicle.model}`} className="absolute inset-0 w-full h-full object-cover opacity-25" loading="lazy" />
+        ) : null}
+        <span className="relative text-[13px] font-extrabold tracking-[-0.02em] tabular-nums text-foreground leading-none">
+          {vehicle.regoNumber}
+        </span>
+        <span className={`relative mt-1 text-[8px] font-bold uppercase tracking-[0.14em] ${overdue ? 'text-destructive' : 'text-muted-foreground'}`}>
+          {overdue ? 'Action due' : 'All good'}
+        </span>
+      </button>
+    </div>
   );
 }
 
@@ -74,6 +130,7 @@ export default function Dashboard() {
   const { user, isAdmin } = useAuth();
 
   const [towSheetOpen, setTowSheetOpen] = useState(false);
+  const [vehicleAction, setVehicleAction] = useState<{ vehicle: Vehicle; ring: RingKind } | null>(null);
   const [accidentSheetOpen, setAccidentSheetOpen] = useState(false);
   const [towCompanies, setTowCompanies] = useState<any[]>([]);
   const [towSearch, setTowSearch] = useState('');
@@ -500,92 +557,36 @@ export default function Dashboard() {
                     </Link>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-3">
-                    {vehicles.map(v => {
-                      const insurerPhone = v.insuranceCompany ? insurerPhones[v.insuranceCompany] : '';
-                      const rings = [
-                        { label: 'WOF', d: daysUntil(v.wofExpiry) },
-                        { label: 'Rego', d: daysUntil(v.regoExpiry) },
-                        { label: 'Ins', d: daysUntil(v.insuranceExpiry) },
-                      ];
-                      const worst = rings.reduce<number | null>((acc, r) => {
-                        if (r.d === null) return acc;
-                        return acc === null || r.d < acc ? r.d : acc;
-                      }, null);
-                      const alert = worst !== null && worst <= 30;
-                      return (
-                        <div
-                          key={v.id}
-                          className={`relative rounded-3xl bg-card border p-4 overflow-hidden transition-all ${alert ? 'border-destructive/30' : 'border-border/70'}`}
-                        >
-                          <div
-                            aria-hidden="true"
-                            className={`pointer-events-none absolute -top-10 -right-10 w-28 h-28 rounded-full blur-2xl ${alert ? 'bg-destructive/10' : 'bg-primary/10'}`}
-                          />
-                          <Link to={`/vehicles/${v.slug || v.id}/edit`} className="relative flex items-center gap-3">
-                            <div className="w-12 h-12 rounded-2xl bg-primary/10 overflow-hidden flex items-center justify-center shrink-0">
-                              {v.photoUrl ? (
-                                <img src={v.photoUrl} alt={`${v.make} ${v.model}`} className="w-full h-full object-cover" loading="lazy" />
-                              ) : (
-                                <Car className="w-5 h-5 text-primary" strokeWidth={1.8} />
-                              )}
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <div className="text-[16px] font-extrabold text-foreground truncate tracking-[-0.02em] tabular-nums">{v.regoNumber}</div>
-                              <div className="text-[12px] text-muted-foreground truncate">{v.year} {v.make} {v.model}</div>
-                            </div>
-                            <ArrowUpRight className="w-4 h-4 text-muted-foreground shrink-0" />
-                          </Link>
-
-                          <div className="relative grid grid-cols-3 gap-2 mt-4">
-                            {rings.map(({ label, d }) => (
-                              <Link
-                                key={label}
-                                to={`/vehicles/${v.slug || v.id}/edit`}
-                                className="flex flex-col items-center gap-1.5 rounded-2xl py-2.5 hover:bg-muted/50 active:scale-[0.97] transition-all"
-                              >
-                                <ExpiryRing days={d} />
-                                <span className={`text-[10px] font-bold uppercase tracking-[0.12em] ${d !== null && d < 0 ? 'text-destructive' : 'text-muted-foreground'}`}>
-                                  {d !== null && d < 0 ? `${label} over` : label}
-                                </span>
-                              </Link>
-                            ))}
-                          </div>
-
-                          <div className="relative flex gap-2 mt-3">
-                            <Link
-                              to={`/claims/new?vehicleId=${v.id}`}
-                              className="flex-1 inline-flex items-center justify-center gap-1.5 h-10 rounded-full bg-foreground text-background text-[12px] font-semibold active:scale-[0.98] transition-transform"
-                            >
-                              <AlertTriangle className="w-3.5 h-3.5" strokeWidth={2.2} /> Report
-                            </Link>
-                            {insurerPhone ? (
-                              <a
-                                href={`tel:${insurerPhone.replace(/\s/g, '')}`}
-                                className="flex-1 inline-flex items-center justify-center gap-1.5 h-10 rounded-full bg-primary/10 text-primary text-[12px] font-semibold active:scale-[0.98] transition-transform"
-                              >
-                                <Phone className="w-3.5 h-3.5" strokeWidth={2.2} /> Insurer
-                              </a>
-                            ) : (
-                              <Link
-                                to={`/vehicles/${v.slug || v.id}/edit`}
-                                className="flex-1 inline-flex items-center justify-center gap-1.5 h-10 rounded-full bg-muted text-muted-foreground text-[12px] font-semibold active:scale-[0.98] transition-transform"
-                              >
-                                <Plus className="w-3.5 h-3.5" strokeWidth={2.2} /> Insurer
-                              </Link>
-                            )}
+                  <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-x-2 gap-y-6">
+                    {vehicles.map(v => (
+                      <div key={v.id} className="flex flex-col items-center gap-2">
+                        <VehicleDial
+                          vehicle={v}
+                          rings={[
+                            { kind: 'WOF', days: daysUntil(v.wofExpiry) },
+                            { kind: 'Rego', days: daysUntil(v.regoExpiry) },
+                            { kind: 'Ins', days: daysUntil(v.insuranceExpiry) },
+                          ]}
+                          onRingTap={(veh, kind) => setVehicleAction({ vehicle: veh, ring: kind })}
+                        />
+                        <div className="text-center">
+                          <div className="text-[13px] font-semibold text-foreground truncate max-w-[140px]">{v.make} {v.model}</div>
+                          <div className="flex items-center justify-center gap-2 mt-1 text-[9px] font-bold uppercase tracking-[0.1em] text-muted-foreground">
+                            <span className="inline-flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full" style={{ background: RING_META.WOF.color }} />WOF</span>
+                            <span className="inline-flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full" style={{ background: RING_META.Rego.color }} />Rego</span>
+                            <span className="inline-flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full" style={{ background: RING_META.Ins.color }} />Ins</span>
                           </div>
                         </div>
-                      );
-                    })}
+                      </div>
+                    ))}
                     <Link
                       to="/vehicles/new"
-                      className="rounded-3xl border border-dashed border-primary/30 bg-primary/[0.04] flex flex-col items-center justify-center gap-2 py-8 text-primary hover:bg-primary/10 transition-colors min-h-[140px]"
+                      className="flex flex-col items-center gap-2 group"
                     >
-                      <span className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                        <Plus className="w-5 h-5" strokeWidth={2} />
+                      <span className="w-[168px] h-[168px] rounded-full border-2 border-dashed border-primary/30 bg-primary/[0.04] flex flex-col items-center justify-center gap-2 text-primary group-hover:bg-primary/10 transition-colors">
+                        <Plus className="w-6 h-6" strokeWidth={2} />
+                        <span className="text-[12px] font-semibold">Add vehicle</span>
                       </span>
-                      <span className="text-[12px] font-semibold">Add vehicle</span>
                     </Link>
                   </div>
                 </motion.div>
@@ -815,6 +816,82 @@ export default function Dashboard() {
           </div>
         </motion.div>
       </div>
+
+      {/* Vehicle ring action popup */}
+      <Sheet open={!!vehicleAction} onOpenChange={(open) => { if (!open) setVehicleAction(null); }}>
+        <SheetContent side="bottom" className="rounded-t-3xl p-0" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
+          {vehicleAction && (() => {
+            const v = vehicleAction.vehicle;
+            const phone = v.insuranceCompany ? insurerPhones[v.insuranceCompany] : '';
+            const ringDefs: { kind: RingKind; label: string; date?: string; days: number | null }[] = [
+              { kind: 'WOF', label: 'WOF', date: v.wofExpiry, days: daysUntil(v.wofExpiry) },
+              { kind: 'Rego', label: 'Rego', date: v.regoExpiry, days: daysUntil(v.regoExpiry) },
+              { kind: 'Ins', label: 'Insurance', date: v.insuranceExpiry, days: daysUntil(v.insuranceExpiry) },
+            ];
+            return (
+              <div className="px-5 pt-5 pb-6">
+                <SheetHeader className="text-left">
+                  <SheetTitle className="flex items-center gap-3">
+                    <span className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                      <Car className="w-5 h-5" strokeWidth={1.8} />
+                    </span>
+                    <span className="min-w-0">
+                      <span className="block text-[17px] font-extrabold tracking-[-0.02em] tabular-nums truncate">{v.regoNumber}</span>
+                      <span className="block text-[12px] font-normal text-muted-foreground truncate">{v.year} {v.make} {v.model}</span>
+                    </span>
+                  </SheetTitle>
+                </SheetHeader>
+
+                <div className="mt-4 rounded-2xl bg-muted/50 divide-y divide-border overflow-hidden">
+                  {ringDefs.map(({ kind, label, date, days }) => (
+                    <div key={kind} className={`flex items-center gap-3 px-4 py-3 ${vehicleAction.ring === kind ? 'bg-primary/[0.06]' : ''}`}>
+                      <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: ringColor(days, RING_META[kind].color) }} />
+                      <span className="flex-1 text-[13px] font-semibold text-foreground">{label}</span>
+                      <span className="text-[12px] text-muted-foreground tabular-nums">{date || 'Not set'}</span>
+                      <span className={`text-[12px] font-semibold tabular-nums ${days !== null && days < 0 ? 'text-destructive' : days !== null && days <= 30 ? 'text-amber-600 dark:text-amber-400' : 'text-muted-foreground'}`}>
+                        {ringSummary(days)}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mt-4 space-y-2">
+                  <Link
+                    to={`/vehicles/${v.slug || v.id}/edit`}
+                    onClick={() => setVehicleAction(null)}
+                    className="w-full h-11 rounded-full bg-foreground text-background text-[13px] font-semibold inline-flex items-center justify-center gap-2 active:scale-[0.98] transition-transform"
+                  >
+                    <Wrench className="w-4 h-4" strokeWidth={2.2} /> Edit vehicle
+                  </Link>
+                  <Link
+                    to={`/claims/new?vehicleId=${v.id}`}
+                    onClick={() => setVehicleAction(null)}
+                    className="w-full h-11 rounded-full bg-destructive/10 text-destructive text-[13px] font-semibold inline-flex items-center justify-center gap-2 active:scale-[0.98] transition-transform"
+                  >
+                    <AlertTriangle className="w-4 h-4" strokeWidth={2.2} /> Report incident
+                  </Link>
+                  {phone ? (
+                    <a
+                      href={`tel:${phone.replace(/\s/g, '')}`}
+                      className="w-full h-11 rounded-full bg-primary/10 text-primary text-[13px] font-semibold inline-flex items-center justify-center gap-2 active:scale-[0.98] transition-transform"
+                    >
+                      <Phone className="w-4 h-4" strokeWidth={2.2} /> Call {v.insuranceCompany}
+                    </a>
+                  ) : (
+                    <Link
+                      to={`/vehicles/${v.slug || v.id}/edit`}
+                      onClick={() => setVehicleAction(null)}
+                      className="w-full h-11 rounded-full bg-primary/10 text-primary text-[13px] font-semibold inline-flex items-center justify-center gap-2 active:scale-[0.98] transition-transform"
+                    >
+                      <Plus className="w-4 h-4" strokeWidth={2.2} /> Add insurer
+                    </Link>
+                  )}
+                </div>
+              </div>
+            );
+          })()}
+        </SheetContent>
+      </Sheet>
 
       <Sheet open={accidentSheetOpen} onOpenChange={setAccidentSheetOpen}>
         <SheetContent side="bottom" className="rounded-t-2xl p-0" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
