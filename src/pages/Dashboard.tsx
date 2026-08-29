@@ -510,7 +510,6 @@ export default function Dashboard() {
                 </h1>
               </div>
               <QuickActions />
-              <UpcomingPanel />
               <ActivityPanel />
               <ProfilePanel />
             </motion.aside>
