@@ -556,92 +556,36 @@ export default function Dashboard() {
                     </Link>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-3">
-                    {vehicles.map(v => {
-                      const insurerPhone = v.insuranceCompany ? insurerPhones[v.insuranceCompany] : '';
-                      const rings = [
-                        { label: 'WOF', d: daysUntil(v.wofExpiry) },
-                        { label: 'Rego', d: daysUntil(v.regoExpiry) },
-                        { label: 'Ins', d: daysUntil(v.insuranceExpiry) },
-                      ];
-                      const worst = rings.reduce<number | null>((acc, r) => {
-                        if (r.d === null) return acc;
-                        return acc === null || r.d < acc ? r.d : acc;
-                      }, null);
-                      const alert = worst !== null && worst <= 30;
-                      return (
-                        <div
-                          key={v.id}
-                          className={`relative rounded-3xl bg-card border p-4 overflow-hidden transition-all ${alert ? 'border-destructive/30' : 'border-border/70'}`}
-                        >
-                          <div
-                            aria-hidden="true"
-                            className={`pointer-events-none absolute -top-10 -right-10 w-28 h-28 rounded-full blur-2xl ${alert ? 'bg-destructive/10' : 'bg-primary/10'}`}
-                          />
-                          <Link to={`/vehicles/${v.slug || v.id}/edit`} className="relative flex items-center gap-3">
-                            <div className="w-12 h-12 rounded-2xl bg-primary/10 overflow-hidden flex items-center justify-center shrink-0">
-                              {v.photoUrl ? (
-                                <img src={v.photoUrl} alt={`${v.make} ${v.model}`} className="w-full h-full object-cover" loading="lazy" />
-                              ) : (
-                                <Car className="w-5 h-5 text-primary" strokeWidth={1.8} />
-                              )}
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <div className="text-[16px] font-extrabold text-foreground truncate tracking-[-0.02em] tabular-nums">{v.regoNumber}</div>
-                              <div className="text-[12px] text-muted-foreground truncate">{v.year} {v.make} {v.model}</div>
-                            </div>
-                            <ArrowUpRight className="w-4 h-4 text-muted-foreground shrink-0" />
-                          </Link>
-
-                          <div className="relative grid grid-cols-3 gap-2 mt-4">
-                            {rings.map(({ label, d }) => (
-                              <Link
-                                key={label}
-                                to={`/vehicles/${v.slug || v.id}/edit`}
-                                className="flex flex-col items-center gap-1.5 rounded-2xl py-2.5 hover:bg-muted/50 active:scale-[0.97] transition-all"
-                              >
-                                <ExpiryRing days={d} />
-                                <span className={`text-[10px] font-bold uppercase tracking-[0.12em] ${d !== null && d < 0 ? 'text-destructive' : 'text-muted-foreground'}`}>
-                                  {d !== null && d < 0 ? `${label} over` : label}
-                                </span>
-                              </Link>
-                            ))}
-                          </div>
-
-                          <div className="relative flex gap-2 mt-3">
-                            <Link
-                              to={`/claims/new?vehicleId=${v.id}`}
-                              className="flex-1 inline-flex items-center justify-center gap-1.5 h-10 rounded-full bg-foreground text-background text-[12px] font-semibold active:scale-[0.98] transition-transform"
-                            >
-                              <AlertTriangle className="w-3.5 h-3.5" strokeWidth={2.2} /> Report
-                            </Link>
-                            {insurerPhone ? (
-                              <a
-                                href={`tel:${insurerPhone.replace(/\s/g, '')}`}
-                                className="flex-1 inline-flex items-center justify-center gap-1.5 h-10 rounded-full bg-primary/10 text-primary text-[12px] font-semibold active:scale-[0.98] transition-transform"
-                              >
-                                <Phone className="w-3.5 h-3.5" strokeWidth={2.2} /> Insurer
-                              </a>
-                            ) : (
-                              <Link
-                                to={`/vehicles/${v.slug || v.id}/edit`}
-                                className="flex-1 inline-flex items-center justify-center gap-1.5 h-10 rounded-full bg-muted text-muted-foreground text-[12px] font-semibold active:scale-[0.98] transition-transform"
-                              >
-                                <Plus className="w-3.5 h-3.5" strokeWidth={2.2} /> Insurer
-                              </Link>
-                            )}
+                  <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-x-2 gap-y-6">
+                    {vehicles.map(v => (
+                      <div key={v.id} className="flex flex-col items-center gap-2">
+                        <VehicleDial
+                          vehicle={v}
+                          rings={[
+                            { kind: 'WOF', days: daysUntil(v.wofExpiry) },
+                            { kind: 'Rego', days: daysUntil(v.regoExpiry) },
+                            { kind: 'Ins', days: daysUntil(v.insuranceExpiry) },
+                          ]}
+                          onRingTap={(veh, kind) => setVehicleAction({ vehicle: veh, ring: kind })}
+                        />
+                        <div className="text-center">
+                          <div className="text-[13px] font-semibold text-foreground truncate max-w-[140px]">{v.make} {v.model}</div>
+                          <div className="flex items-center justify-center gap-2 mt-1 text-[9px] font-bold uppercase tracking-[0.1em] text-muted-foreground">
+                            <span className="inline-flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full" style={{ background: RING_META.WOF.color }} />WOF</span>
+                            <span className="inline-flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full" style={{ background: RING_META.Rego.color }} />Rego</span>
+                            <span className="inline-flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full" style={{ background: RING_META.Ins.color }} />Ins</span>
                           </div>
                         </div>
-                      );
-                    })}
+                      </div>
+                    ))}
                     <Link
                       to="/vehicles/new"
-                      className="rounded-3xl border border-dashed border-primary/30 bg-primary/[0.04] flex flex-col items-center justify-center gap-2 py-8 text-primary hover:bg-primary/10 transition-colors min-h-[140px]"
+                      className="flex flex-col items-center gap-2 group"
                     >
-                      <span className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                        <Plus className="w-5 h-5" strokeWidth={2} />
+                      <span className="w-[168px] h-[168px] rounded-full border-2 border-dashed border-primary/30 bg-primary/[0.04] flex flex-col items-center justify-center gap-2 text-primary group-hover:bg-primary/10 transition-colors">
+                        <Plus className="w-6 h-6" strokeWidth={2} />
+                        <span className="text-[12px] font-semibold">Add vehicle</span>
                       </span>
-                      <span className="text-[12px] font-semibold">Add vehicle</span>
                     </Link>
                   </div>
                 </motion.div>
