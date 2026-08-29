@@ -483,6 +483,74 @@ export default function Dashboard() {
 
             {/* Main column */}
             <div className="space-y-6">
+              {/* Smart expiry alert banner */}
+              {expiryAlerts.length > 0 && (() => {
+                const top = expiryAlerts[0];
+                const overdue = top.days < 0;
+                return (
+                  <motion.div
+                    variants={fadeUp}
+                    className={`rounded-2xl border p-4 ${overdue ? 'border-destructive/30 bg-destructive/[0.06]' : 'border-amber-500/30 bg-amber-500/[0.08]'}`}
+                  >
+                    <div className="flex items-start gap-3">
+                      <span className={`shrink-0 w-9 h-9 rounded-xl flex items-center justify-center ${overdue ? 'bg-destructive/15 text-destructive' : 'bg-amber-500/15 text-amber-600'}`}>
+                        <CalendarClock className="w-4.5 h-4.5" strokeWidth={2} />
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-[14px] font-bold text-foreground tracking-[-0.01em]">
+                          {top.vehicle.regoNumber} · {top.label}{' '}
+                          {overdue
+                            ? `overdue by ${Math.abs(top.days)} day${Math.abs(top.days) === 1 ? '' : 's'}`
+                            : top.days === 0
+                              ? 'due today'
+                              : `due in ${top.days} day${top.days === 1 ? '' : 's'}`}
+                        </p>
+                        <p className="text-[12px] text-muted-foreground mt-0.5">
+                          {expiryAlerts.length > 1
+                            ? `${expiryAlerts.length - 1} other item${expiryAlerts.length - 1 === 1 ? '' : 's'} need attention soon.`
+                            : 'Keep your vehicle road legal and covered.'}
+                        </p>
+                        <div className="flex flex-wrap items-center gap-2 mt-3">
+                          <Link
+                            to={`/vehicles/${top.vehicle.slug || top.vehicle.id}/edit`}
+                            className="inline-flex items-center gap-1 rounded-full bg-foreground text-background px-3 py-1.5 text-[12px] font-semibold active:scale-[0.97] transition-transform"
+                          >
+                            Update {top.label} <ChevronRight className="w-3.5 h-3.5" />
+                          </Link>
+                          {expiryAlerts.length > 1 && (
+                            <Link to="/vehicles" className="text-[12px] font-semibold text-accent">
+                              View all
+                            </Link>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                );
+              })()}
+
+              {/* One-tap insurer call */}
+              {insurerQuickCall && (
+                <motion.div variants={fadeUp} className="rounded-2xl border border-border bg-card p-4 flex items-center gap-3">
+                  <span className="shrink-0 w-9 h-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+                    <Shield className="w-4.5 h-4.5" strokeWidth={2} />
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[13px] font-semibold text-foreground truncate">{insurerQuickCall.name}</p>
+                    <p className="text-[11px] text-muted-foreground truncate">
+                      Insurer for {insurerQuickCall.vehicle.regoNumber}
+                    </p>
+                  </div>
+                  <a
+                    href={`tel:${insurerQuickCall.phone}`}
+                    className="shrink-0 inline-flex items-center gap-1.5 rounded-full bg-primary text-primary-foreground px-3.5 py-2 text-[12px] font-semibold active:scale-[0.97] transition-transform"
+                  >
+                    <Phone className="w-3.5 h-3.5" strokeWidth={2.2} /> Call
+                  </a>
+                </motion.div>
+              )}
+
+
               {/* Mobile emergency actions — big standalone circles with text inside */}
               <motion.div variants={fadeUp} className="md:hidden">
                 <div className="flex items-center justify-center gap-12">
