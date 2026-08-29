@@ -96,30 +96,30 @@ function VehicleCard({
           )}
         </span>
         <div className="min-w-0 flex-1">
-          <div className="flex items-start justify-between gap-1">
-            <div className="min-w-0">
-              <div className="text-[14px] font-bold truncate tracking-[-0.01em]">{vehicle.make} {vehicle.model}</div>
-              <div className="text-[11px] text-background/50 tabular-nums mt-0.5">{vehicle.regoNumber}</div>
-            </div>
-            {insurerPhone ? (
-              <a
-                href={`tel:${insurerPhone}`}
-                onClick={(e) => e.stopPropagation()}
-                className="shrink-0 -mt-1 -mr-1 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center active:scale-90 transition-transform"
-                aria-label={`Call ${vehicle.insuranceCompany}`}
-              >
-                <Phone className="w-3.5 h-3.5" strokeWidth={2.2} />
-              </a>
-            ) : (
-              <span className="text-background/40 text-base leading-none tracking-widest -mt-0.5">···</span>
-            )}
+          <div className="min-w-0">
+            <div className="text-[14px] font-bold truncate tracking-[-0.01em]">{vehicle.make} {vehicle.model}</div>
+            <div className="text-[11px] text-background/50 tabular-nums mt-0.5">{vehicle.regoNumber}</div>
           </div>
         </div>
       </div>
-      <span className={`mt-3 inline-flex items-center gap-1.5 rounded-full bg-background/10 px-2.5 py-1 text-[10px] font-semibold ${pill.cls}`}>
-        <span className={`w-1.5 h-1.5 rounded-full ${pill.dot}`} />
-        {pill.text}
-      </span>
+      <div className="mt-3 flex items-center justify-between gap-2">
+        <span className={`inline-flex items-center gap-1.5 rounded-full bg-background/10 px-2.5 py-1 text-[10px] font-semibold ${pill.cls}`}>
+          <span className={`w-1.5 h-1.5 rounded-full ${pill.dot}`} />
+          {pill.text}
+        </span>
+        {insurerPhone ? (
+          <a
+            href={`tel:${insurerPhone}`}
+            onClick={(e) => e.stopPropagation()}
+            className="shrink-0 w-7 h-7 rounded-full bg-primary/20 text-primary flex items-center justify-center active:scale-90 transition-transform"
+            aria-label={`Call ${vehicle.insuranceCompany}`}
+          >
+            <Phone className="w-3 h-3" strokeWidth={2.2} />
+          </a>
+        ) : (
+          <span className="text-background/40 text-base leading-none tracking-widest">···</span>
+        )}
+      </div>
     </button>
   );
 }
