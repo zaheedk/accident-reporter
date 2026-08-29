@@ -513,43 +513,32 @@ export default function Dashboard() {
 
             {/* Main column */}
             <div className="space-y-6">
-              {/* Mobile emergency strip — circular "cockpit dial" buttons on a dark band */}
+              {/* Mobile emergency actions — big standalone circles with text inside */}
               <motion.div variants={fadeUp} className="md:hidden">
-                <div className="relative rounded-3xl bg-foreground text-background overflow-hidden">
-                  <div aria-hidden="true" className="pointer-events-none absolute -top-16 -left-16 w-44 h-44 rounded-full bg-primary/25 blur-3xl" />
-                  <div aria-hidden="true" className="pointer-events-none absolute -bottom-16 -right-10 w-40 h-40 rounded-full bg-accent/25 blur-3xl" />
-                  <div className="relative flex items-center">
-                    <button
-                      onClick={() => setAccidentSheetOpen(true)}
-                      className="flex-1 flex items-center gap-3.5 p-4 text-left active:bg-background/5 transition-colors rounded-l-3xl"
-                    >
-                      <span className="relative shrink-0 w-14 h-14">
-                        <span aria-hidden="true" className="absolute inset-0 rounded-full border-2 border-primary/50" />
-                        <span aria-hidden="true" className="absolute inset-[5px] rounded-full bg-primary/15" />
-                        <span className="absolute inset-[9px] rounded-full bg-primary text-primary-foreground flex items-center justify-center">
-                          <AlertTriangle className="w-5 h-5" strokeWidth={2} />
-                        </span>
-                      </span>
-                      <span>
-                        <span className="block text-[14px] font-bold leading-tight tracking-[-0.01em]">Had an accident?</span>
-                        <span className="block text-[11px] text-background/55 mt-0.5">Tow or report now</span>
-                      </span>
-                    </button>
-                    <div aria-hidden="true" className="w-px self-stretch my-4 bg-background/10" />
-                    <a href="tel:111" className="flex items-center gap-3 p-4 active:bg-background/5 transition-colors rounded-r-3xl">
-                      <span className="relative shrink-0 w-14 h-14">
-                        <span aria-hidden="true" className="absolute inset-0 rounded-full border-2 border-accent/60" />
-                        <span aria-hidden="true" className="absolute inset-[5px] rounded-full bg-accent/20" />
-                        <span className="absolute inset-[9px] rounded-full bg-accent text-accent-foreground flex items-center justify-center">
-                          <Shield className="w-5 h-5" strokeWidth={2} />
-                        </span>
-                      </span>
-                      <span>
-                        <span className="block text-[14px] font-bold leading-tight tracking-[-0.01em]">111</span>
-                        <span className="block text-[11px] text-background/55 mt-0.5">Call police</span>
-                      </span>
-                    </a>
-                  </div>
+                <div className="flex items-center justify-center gap-6">
+                  <button
+                    onClick={() => setAccidentSheetOpen(true)}
+                    className="relative flex flex-col items-center justify-center w-[120px] h-[120px] rounded-full bg-foreground text-background active:scale-[0.96] transition-transform shadow-lg shadow-foreground/15"
+                  >
+                    <span aria-hidden="true" className="absolute inset-2 rounded-full border border-primary/40" />
+                    <span aria-hidden="true" className="absolute inset-4 rounded-full bg-primary/10" />
+                    <span className="relative flex flex-col items-center justify-center text-center px-3">
+                      <AlertTriangle className="w-6 h-6 text-primary mb-1" strokeWidth={2} />
+                      <span className="text-[11px] font-bold leading-tight">Had an<br />accident?</span>
+                    </span>
+                  </button>
+                  <a
+                    href="tel:111"
+                    className="relative flex flex-col items-center justify-center w-[120px] h-[120px] rounded-full bg-foreground text-background active:scale-[0.96] transition-transform shadow-lg shadow-foreground/15"
+                  >
+                    <span aria-hidden="true" className="absolute inset-2 rounded-full border border-accent/40" />
+                    <span aria-hidden="true" className="absolute inset-4 rounded-full bg-accent/10" />
+                    <span className="relative flex flex-col items-center justify-center text-center px-3">
+                      <Shield className="w-6 h-6 text-accent mb-1" strokeWidth={2} />
+                      <span className="text-[13px] font-bold leading-tight">111</span>
+                      <span className="text-[10px] text-background/60 leading-tight mt-0.5">Call police</span>
+                    </span>
+                  </a>
                 </div>
               </motion.div>
 
