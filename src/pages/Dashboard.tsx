@@ -669,22 +669,7 @@ export default function Dashboard() {
               </motion.div>
 
 
-              <motion.div variants={fadeUp} className="md:hidden space-y-3">
-                {isAdmin && (
-                  <Link to="/admin" className="rounded-xl bg-card border border-border p-4 flex items-center gap-3 hover:border-foreground/20 transition-colors">
-                    <div className="w-9 h-9 rounded-xl bg-foreground flex items-center justify-center shrink-0">
-                      <Shield className="w-4 h-4 text-background" strokeWidth={1.8} />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="text-[13px] font-semibold text-foreground">Admin overview</div>
-                      <div className="text-[11px] text-muted-foreground mt-0.5">Manage users, vehicles & reports</div>
-                    </div>
-                    <ChevronRight className="w-4 h-4 text-muted-foreground/40 shrink-0" strokeWidth={1.8} />
-                  </Link>
-                )}
-              </motion.div>
-
-              {/* Family quick card — bottom of main column */}
+              {/* Family quick card */}
               <motion.div variants={fadeUp}>
                 <Link
                   to="/family"
@@ -705,6 +690,21 @@ export default function Dashboard() {
                   </div>
                   <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors" />
                 </Link>
+              </motion.div>
+
+              <motion.div variants={fadeUp} className="md:hidden space-y-3">
+                {isAdmin && (
+                  <Link to="/admin" className="rounded-xl bg-card border border-border p-4 flex items-center gap-3 hover:border-foreground/20 transition-colors">
+                    <div className="w-9 h-9 rounded-xl bg-foreground flex items-center justify-center shrink-0">
+                      <Shield className="w-4 h-4 text-background" strokeWidth={1.8} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-[13px] font-semibold text-foreground">Admin overview</div>
+                      <div className="text-[11px] text-muted-foreground mt-0.5">Manage users, vehicles & reports</div>
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-muted-foreground/40 shrink-0" strokeWidth={1.8} />
+                  </Link>
+                )}
               </motion.div>
             </div>
           </div>
