@@ -23,15 +23,6 @@ function daysUntil(dateStr?: string | null): number | null {
   return Math.round((d.getTime() - today.getTime()) / 86400000);
 }
 
-function StatusDot({ days }: { days: number | null }) {
-  const tone =
-    days === null ? 'bg-muted-foreground/40' :
-    days < 0 ? 'bg-destructive' :
-    days <= 30 ? 'bg-amber-500' :
-    'bg-emerald-500';
-  return <span className={`w-1.5 h-1.5 rounded-full ${tone}`} />;
-}
-
 type RingKind = 'WOF' | 'Rego' | 'Ins';
 
 const RING_META: Record<RingKind, { color: string; windowDays: number }> = {
@@ -215,25 +206,6 @@ export default function Dashboard() {
   const displayName = profile?.display_name || '';
   const firstName = displayName ? displayName.split(' ')[0] : 'there';
 
-  // Upcoming expiries from vehicle WOF/Rego/Insurance
-  const upcomingExpiries = useMemo(() => {
-    const items: { vehicleId: string; slug?: string; rego: string; label: string; date: string; days: number }[] = [];
-    vehicles.forEach(v => {
-      const fields: [string, string | undefined][] = [
-        ['WOF', v.wofExpiry],
-        ['Rego', v.regoExpiry],
-        ['Insurance', v.insuranceExpiry],
-      ];
-      fields.forEach(([label, date]) => {
-        const d = daysUntil(date);
-        if (d !== null && d <= 60) {
-          items.push({ vehicleId: v.id, slug: v.slug, rego: v.regoNumber, label, date: date!, days: d });
-        }
-      });
-    });
-    return items.sort((a, b) => a.days - b.days).slice(0, 5);
-  }, [vehicles]);
-
   // Recent activity from claims
   const recentActivity = useMemo(() => {
     return [...claims]
@@ -371,41 +343,6 @@ export default function Dashboard() {
     </div>
   );
 
-  const UpcomingPanel = () => (
-    <div className="rounded-xl bg-card border border-border overflow-hidden">
-      <div className="px-3.5 pt-3 pb-2 flex items-center justify-between">
-        <span className="text-[11px] font-medium text-muted-foreground">Upcoming expiries</span>
-        <Link to="/vehicles" className="text-[11px] font-medium text-accent hover:opacity-80">All</Link>
-      </div>
-      {upcomingExpiries.length === 0 ? (
-        <div className="px-3.5 pb-3.5 text-[12px] text-muted-foreground">Nothing due in the next 60 days.</div>
-      ) : (
-        <div className="divide-y divide-border">
-          {upcomingExpiries.map((it, i) => (
-            <Link
-              key={i}
-              to={`/vehicles/${it.slug || it.vehicleId}/edit`}
-              className="flex items-center gap-3 px-3.5 py-2.5 hover:bg-muted/50 transition-colors"
-            >
-              <StatusDot days={it.days} />
-              <div className="flex-1 min-w-0">
-                <div className="text-[13px] font-medium text-foreground truncate">
-                  <span className="opacity-60">{it.label}</span> · {it.rego}
-                </div>
-                <div className="text-[11px] text-muted-foreground tabular-nums">{it.date}</div>
-              </div>
-              <span className={`text-[12px] font-medium tabular-nums ${
-                it.days < 0 ? 'text-destructive' : it.days <= 30 ? 'text-amber-700 dark:text-amber-400' : 'text-muted-foreground'
-              }`}>
-                {it.days < 0 ? `${Math.abs(it.days)}d over` : it.days === 0 ? 'today' : `${it.days}d`}
-              </span>
-            </Link>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-
   const ActivityPanel = () => (
     <div className="rounded-xl bg-card border border-border overflow-hidden">
       <div className="px-3.5 pt-3 pb-2 flex items-center justify-between">
@@ -510,7 +447,6 @@ export default function Dashboard() {
                 </h1>
               </div>
               <QuickActions />
-              <UpcomingPanel />
               <ActivityPanel />
               <ProfilePanel />
             </motion.aside>
@@ -733,48 +669,7 @@ export default function Dashboard() {
               </motion.div>
 
 
-              <motion.div variants={fadeUp} className="md:hidden space-y-3">
-                {upcomingExpiries.length > 0 && (
-                  <div className="rounded-xl bg-card border border-border overflow-hidden">
-                    <div className="px-3.5 pt-3 pb-2 flex items-center justify-between">
-                      <span className="text-[11px] font-medium text-muted-foreground">Upcoming expiries</span>
-                      <Link to="/vehicles" className="text-[11px] font-medium text-accent">All</Link>
-                    </div>
-                    <div className="divide-y divide-border">
-                      {upcomingExpiries.slice(0, 3).map((it, i) => (
-                        <Link key={i} to={`/vehicles/${it.slug || it.vehicleId}/edit`} className="flex items-center gap-3 px-3.5 py-2.5">
-                          <StatusDot days={it.days} />
-                          <div className="flex-1 min-w-0">
-                            <div className="text-[13px] font-medium text-foreground truncate">
-                              <span className="opacity-60">{it.label}</span> · {it.rego}
-                            </div>
-                          </div>
-                          <span className={`text-[12px] font-medium tabular-nums ${
-                            it.days < 0 ? 'text-destructive' : it.days <= 30 ? 'text-amber-700 dark:text-amber-400' : 'text-muted-foreground'
-                          }`}>
-                            {it.days < 0 ? `${Math.abs(it.days)}d over` : it.days === 0 ? 'today' : `${it.days}d`}
-                          </span>
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {isAdmin && (
-                  <Link to="/admin" className="rounded-xl bg-card border border-border p-4 flex items-center gap-3 hover:border-foreground/20 transition-colors">
-                    <div className="w-9 h-9 rounded-xl bg-foreground flex items-center justify-center shrink-0">
-                      <Shield className="w-4 h-4 text-background" strokeWidth={1.8} />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="text-[13px] font-semibold text-foreground">Admin overview</div>
-                      <div className="text-[11px] text-muted-foreground mt-0.5">Manage users, vehicles & reports</div>
-                    </div>
-                    <ChevronRight className="w-4 h-4 text-muted-foreground/40 shrink-0" strokeWidth={1.8} />
-                  </Link>
-                )}
-              </motion.div>
-
-              {/* Family quick card — bottom of main column */}
+              {/* Family quick card */}
               <motion.div variants={fadeUp}>
                 <Link
                   to="/family"
@@ -795,6 +690,21 @@ export default function Dashboard() {
                   </div>
                   <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors" />
                 </Link>
+              </motion.div>
+
+              <motion.div variants={fadeUp} className="md:hidden space-y-3">
+                {isAdmin && (
+                  <Link to="/admin" className="rounded-xl bg-card border border-border p-4 flex items-center gap-3 hover:border-foreground/20 transition-colors">
+                    <div className="w-9 h-9 rounded-xl bg-foreground flex items-center justify-center shrink-0">
+                      <Shield className="w-4 h-4 text-background" strokeWidth={1.8} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-[13px] font-semibold text-foreground">Admin overview</div>
+                      <div className="text-[11px] text-muted-foreground mt-0.5">Manage users, vehicles & reports</div>
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-muted-foreground/40 shrink-0" strokeWidth={1.8} />
+                  </Link>
+                )}
               </motion.div>
             </div>
           </div>
