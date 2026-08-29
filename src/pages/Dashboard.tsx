@@ -90,27 +90,31 @@ function VehicleCard({
   return (
     <button
       onClick={() => onTap(vehicle, soonest?.kind ?? 'WOF')}
-      className="relative shrink-0 w-[188px] rounded-3xl bg-foreground text-background p-4 text-left overflow-hidden active:scale-[0.97] transition-transform"
+      className="relative shrink-0 w-[188px] rounded-3xl bg-foreground text-background p-3 text-left overflow-hidden active:scale-[0.97] transition-transform"
     >
-      <div aria-hidden="true" className={`pointer-events-none absolute -top-12 -right-12 w-36 h-36 rounded-full blur-3xl ${glow}`} />
-      <div className="relative flex items-start justify-between">
-        <span className="w-11 h-11 rounded-2xl bg-background/10 flex items-center justify-center overflow-hidden">
+      <div aria-hidden="true" className={`pointer-events-none absolute -top-10 -right-10 w-28 h-28 rounded-full blur-3xl ${glow}`} />
+      <div className="relative flex items-start gap-3">
+        <span className="shrink-0 w-11 h-11 rounded-2xl bg-background/10 flex items-center justify-center overflow-hidden">
           {vehicle.photoUrl ? (
             <img src={vehicle.photoUrl} alt={`${vehicle.make} ${vehicle.model}`} className="w-full h-full object-cover" loading="lazy" />
           ) : (
             <Car className="w-5 h-5 text-primary" strokeWidth={1.8} />
           )}
         </span>
-        <span className="text-background/40 text-lg leading-none tracking-widest px-1">···</span>
+        <div className="min-w-0 flex-1">
+          <div className="flex items-start justify-between gap-1">
+            <div className="min-w-0">
+              <div className="text-[14px] font-bold truncate tracking-[-0.01em]">{vehicle.make} {vehicle.model}</div>
+              <div className="text-[11px] text-background/50 tabular-nums mt-0.5">{vehicle.regoNumber}</div>
+            </div>
+            <span className="text-background/40 text-base leading-none tracking-widest -mt-0.5">···</span>
+          </div>
+        </div>
       </div>
-      <div className="relative mt-7">
-        <div className="text-[15px] font-bold truncate tracking-[-0.01em]">{vehicle.make} {vehicle.model}</div>
-        <div className="text-[11px] text-background/50 tabular-nums mt-0.5">{vehicle.regoNumber}</div>
-        <span className={`mt-3 inline-flex items-center gap-1.5 rounded-full bg-background/10 px-2.5 py-1 text-[10px] font-semibold ${pill.cls}`}>
-          <span className={`w-1.5 h-1.5 rounded-full ${pill.dot}`} />
-          {pill.text}
-        </span>
-      </div>
+      <span className={`mt-3 inline-flex items-center gap-1.5 rounded-full bg-background/10 px-2.5 py-1 text-[10px] font-semibold ${pill.cls}`}>
+        <span className={`w-1.5 h-1.5 rounded-full ${pill.dot}`} />
+        {pill.text}
+      </span>
     </button>
   );
 }
