@@ -391,11 +391,12 @@ export default function Dashboard() {
       <div className="theme-dashboard relative">
         <motion.div className="relative space-y-6 md:space-y-8 md:-mt-5" variants={stagger} initial="hidden" animate="visible">
           {/* Mobile-only header */}
-          <motion.div variants={fadeUp} className="flex items-end justify-between gap-3 pt-2 md:hidden">
-            <div className="min-w-0">
-              <p className="text-[12px] text-muted-foreground">{greeting}</p>
-              <h1 className="text-[28px] leading-tight font-semibold text-foreground tracking-[-0.02em] truncate mt-1">
-                {firstName}.
+          <motion.div variants={fadeUp} className="relative flex items-start justify-between gap-3 pt-2 md:hidden">
+            <div className="signal-arc pointer-events-none absolute -top-8 -right-16 w-44 h-44 opacity-95" aria-hidden="true" />
+            <div className="min-w-0 relative">
+              <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-primary">{greeting}, {firstName}</p>
+              <h1 className="text-[32px] leading-[1.05] font-extrabold text-foreground tracking-[-0.03em] mt-2">
+                What needs<br />your attention?
               </h1>
             </div>
             <Link to="/profile" className="shrink-0">

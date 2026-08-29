@@ -4,7 +4,7 @@ Updated: today
 # Project Memory
 
 ## Core
-Branding: Uppercase 'SAVO', dark navy (#1e3a5f), white header. Hardcoded English (no i18n).
+Branding: Uppercase 'SAVO'. 'Signal' theme — periwinkle canvas, violet primary, orange accent, white rounded-3xl cards. Hardcoded English (no i18n).
 UI: Plus Jakarta Sans (body), Playfair Display (headers). Forms: h-10, text-sm, native clear buttons suppressed.
 Auth: Strict RLS per user, admin isolation. Mobile native routes to `/auth`, web to `/`. 
 Data: Use `resolveUserId` utility instead of `supabase.auth.getUser()`. WOF/Rego expiries use empty strings (not null).
@@ -12,7 +12,7 @@ Storage: All buckets private, require signed URLs. `service_role` required for s
 
 ## Memories
 - [Project Overview](mem://project/overview) — SAVO branding, NZI-style claim forms, white-labeled approach
-- [Visual Identity](mem://style/visual-identity) — Navy/grey palette, linear gradients, simplified mobile auth screen
+- [Visual Identity](mem://style/visual-identity) — Signal theme: periwinkle/violet/orange tokens, rounded-3xl cards, bold display type
 - [Typography](mem://style/typography) — Plus Jakarta Sans, Playfair Display headers, sentence-case buttons
 - [Authentication](mem://auth/authentication) — SMS OTP, Google SSO, duplicate email handling, HIBP protection
 - [Data Access](mem://auth/data-access) — Strict RLS per user, admin view isolation

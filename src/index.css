@@ -6,54 +6,55 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 220 13% 9%;
+    /* === Signal: periwinkle canvas, violet primary, orange accent === */
+    --background: 224 78% 96%;
+    --foreground: 240 30% 12%;
 
     --card: 0 0% 100%;
-    --card-foreground: 220 13% 9%;
+    --card-foreground: 240 30% 12%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 220 13% 9%;
+    --popover-foreground: 240 30% 12%;
 
-    --primary: 217 91% 53%;
+    --primary: 252 82% 62%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 220 14% 96%;
-    --secondary-foreground: 220 9% 25%;
+    --secondary: 226 60% 93%;
+    --secondary-foreground: 250 40% 26%;
 
-    --muted: 220 14% 96%;
-    --muted-foreground: 220 9% 46%;
+    --muted: 226 55% 94%;
+    --muted-foreground: 240 12% 46%;
 
-    --accent: 217 91% 53%;
+    --accent: 20 90% 57%;
     --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 72% 51%;
+    --destructive: 356 72% 52%;
     --destructive-foreground: 0 0% 100%;
 
-    --success: 152 60% 42%;
+    --success: 158 62% 38%;
     --success-foreground: 0 0% 100%;
 
-    --warning: 38 92% 50%;
+    --warning: 34 92% 52%;
     --warning-foreground: 0 0% 100%;
 
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 217 91% 53%;
+    --border: 226 40% 88%;
+    --input: 226 40% 88%;
+    --ring: 252 82% 62%;
 
-    --radius: 0.875rem;
+    --radius: 1.125rem;
 
-    --dark-surface: 220 13% 9%;
+    --dark-surface: 250 45% 16%;
     --dark-surface-foreground: 0 0% 100%;
-    --dark-surface-muted: 220 9% 70%;
+    --dark-surface-muted: 250 20% 74%;
 
-    --sidebar-background: 220 13% 9%;
-    --sidebar-foreground: 0 0% 90%;
-    --sidebar-primary: 217 91% 53%;
+    --sidebar-background: 250 45% 16%;
+    --sidebar-foreground: 0 0% 92%;
+    --sidebar-primary: 252 82% 62%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 13% 15%;
+    --sidebar-accent: 250 40% 22%;
     --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 220 13% 18%;
-    --sidebar-ring: 217 91% 53%;
+    --sidebar-border: 250 35% 26%;
+    --sidebar-ring: 252 82% 62%;
   }
 }
 
@@ -112,11 +113,11 @@
   }
 
   .card-surface {
-    @apply bg-card rounded-2xl p-5 border border-border shadow-none;
+    @apply bg-card rounded-3xl p-5 border border-border/70 shadow-[0_1px_2px_hsl(250_40%_20%/0.04)];
   }
 
   .card-surface-elevated {
-    @apply bg-card rounded-2xl p-5 border border-border shadow-none;
+    @apply bg-card rounded-3xl p-5 border border-border/60 shadow-[0_8px_24px_-12px_hsl(252_82%_45%/0.22)];
   }
 
   .card-dark {
@@ -162,7 +163,7 @@
   }
 
   .display-heading {
-    @apply text-[28px] leading-[1.1] font-extrabold text-foreground tracking-tight;
+    @apply text-[30px] leading-[1.05] font-extrabold text-foreground tracking-[-0.03em];
   }
 
   .field-label {
@@ -210,7 +211,7 @@
 
   /* Surface variant matching the mockup — softer, more padded card */
   .card-soft {
-    @apply bg-card rounded-2xl p-5 border border-border/70;
+    @apply bg-card rounded-3xl p-5 border border-border/60;
   }
 
   /* === Scoped dark + green theme for the dashboard page === */
@@ -255,30 +256,30 @@
 
   /* === Garage page scoped theme — Apple / Linear inspired === */
   .theme-garage {
-    /* Light (default) — soft neutral grey, near-white cards */
-    --background: 240 10% 98%;        /* #F8F8FA */
-    --foreground: 240 10% 8%;         /* near-black ink */
+    /* Light — periwinkle canvas, white cards, violet primary */
+    --background: 224 78% 96%;
+    --foreground: 240 30% 12%;
     --card: 0 0% 100%;
-    --card-foreground: 240 10% 8%;
+    --card-foreground: 240 30% 12%;
     --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 8%;
-    --primary: 240 8% 12%;            /* near-black primary (Linear-style) */
+    --popover-foreground: 240 30% 12%;
+    --primary: 252 82% 62%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 240 6% 95%;
-    --secondary-foreground: 240 10% 12%;
-    --muted: 240 6% 95%;
-    --muted-foreground: 240 4% 46%;
-    --accent: 217 91% 53%;            /* iOS blue accent for links */
+    --secondary: 226 60% 93%;
+    --secondary-foreground: 250 40% 26%;
+    --muted: 226 55% 94%;
+    --muted-foreground: 240 12% 46%;
+    --accent: 20 90% 57%;
     --accent-foreground: 0 0% 100%;
-    --border: 240 6% 90%;
-    --input: 240 6% 90%;
-    --ring: 217 91% 53%;
-    --garage-tint-a: 218 90% 60%;
-    --garage-tint-b: 152 76% 46%;
+    --border: 226 40% 88%;
+    --input: 226 40% 88%;
+    --ring: 252 82% 62%;
+    --garage-tint-a: 252 82% 62%;
+    --garage-tint-b: 20 90% 57%;
     --garage-glass: 0 0% 100%;
-    --garage-glass-alpha: 1;          /* solid for Apple/Linear feel */
-    --garage-hairline: 240 10% 8%;
-    --garage-hairline-alpha: 0.08;
+    --garage-glass-alpha: 1;
+    --garage-hairline: 250 30% 20%;
+    --garage-hairline-alpha: 0.1;
 
     background: hsl(var(--background));
     color: hsl(var(--foreground));
@@ -318,27 +319,27 @@
 
   /* Dark variant of the Garage scope — Linear-inspired near-black */
   .dark .theme-garage {
-    --background: 240 6% 7%;          /* #111113 */
-    --foreground: 0 0% 96%;
-    --card: 240 5% 10%;               /* #18181B */
-    --card-foreground: 0 0% 96%;
-    --popover: 240 5% 10%;
-    --popover-foreground: 0 0% 96%;
-    --primary: 0 0% 96%;              /* light primary in dark */
-    --primary-foreground: 240 6% 7%;
-    --secondary: 240 4% 14%;
-    --secondary-foreground: 0 0% 96%;
-    --muted: 240 4% 14%;
-    --muted-foreground: 240 5% 60%;
-    --accent: 217 91% 60%;
+    --background: 250 30% 8%;
+    --foreground: 250 20% 96%;
+    --card: 250 26% 12%;
+    --card-foreground: 250 20% 96%;
+    --popover: 250 26% 12%;
+    --popover-foreground: 250 20% 96%;
+    --primary: 252 88% 70%;
+    --primary-foreground: 250 40% 10%;
+    --secondary: 250 22% 17%;
+    --secondary-foreground: 250 20% 96%;
+    --muted: 250 22% 17%;
+    --muted-foreground: 250 12% 66%;
+    --accent: 20 90% 60%;
     --accent-foreground: 0 0% 100%;
-    --border: 240 4% 18%;
-    --input: 240 4% 18%;
-    --ring: 217 91% 60%;
-    --garage-glass: 240 5% 10%;
+    --border: 250 20% 22%;
+    --input: 250 20% 22%;
+    --ring: 252 88% 70%;
+    --garage-glass: 250 26% 12%;
     --garage-glass-alpha: 1;
     --garage-hairline: 0 0% 100%;
-    --garage-hairline-alpha: 0.08;
+    --garage-hairline-alpha: 0.1;
   }
 
   /* Solid surface used inside .theme-garage (Apple/Linear: no glass) */
@@ -357,23 +358,23 @@
 
   /* === Dashboard page — shares Apple/Linear palette with Garage === */
   .theme-dashboard {
-    --background: 240 10% 98%;
-    --foreground: 240 10% 8%;
+    --background: 224 78% 96%;
+    --foreground: 240 30% 12%;
     --card: 0 0% 100%;
-    --card-foreground: 240 10% 8%;
+    --card-foreground: 240 30% 12%;
     --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 8%;
-    --primary: 240 8% 12%;
+    --popover-foreground: 240 30% 12%;
+    --primary: 252 82% 62%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 240 6% 95%;
-    --secondary-foreground: 240 10% 12%;
-    --muted: 240 6% 95%;
-    --muted-foreground: 240 4% 46%;
-    --accent: 217 91% 53%;
+    --secondary: 226 60% 93%;
+    --secondary-foreground: 250 40% 26%;
+    --muted: 226 55% 94%;
+    --muted-foreground: 240 12% 46%;
+    --accent: 20 90% 57%;
     --accent-foreground: 0 0% 100%;
-    --border: 240 6% 90%;
-    --input: 240 6% 90%;
-    --ring: 217 91% 53%;
+    --border: 226 40% 88%;
+    --input: 226 40% 88%;
+    --ring: 252 82% 62%;
 
     background: hsl(var(--background));
     color: hsl(var(--foreground));
@@ -412,23 +413,35 @@
   }
 
   .dark .theme-dashboard {
-    --background: 240 6% 7%;
-    --foreground: 0 0% 96%;
-    --card: 240 5% 10%;
-    --card-foreground: 0 0% 96%;
-    --popover: 240 5% 10%;
-    --popover-foreground: 0 0% 96%;
-    --primary: 0 0% 96%;
-    --primary-foreground: 240 6% 7%;
-    --secondary: 240 4% 14%;
-    --secondary-foreground: 0 0% 96%;
-    --muted: 240 4% 14%;
-    --muted-foreground: 240 5% 60%;
-    --accent: 217 91% 60%;
+    --background: 250 30% 8%;
+    --foreground: 250 20% 96%;
+    --card: 250 26% 12%;
+    --card-foreground: 250 20% 96%;
+    --popover: 250 26% 12%;
+    --popover-foreground: 250 20% 96%;
+    --primary: 252 88% 70%;
+    --primary-foreground: 250 40% 10%;
+    --secondary: 250 22% 17%;
+    --secondary-foreground: 250 20% 96%;
+    --muted: 250 22% 17%;
+    --muted-foreground: 250 12% 66%;
+    --accent: 20 90% 60%;
     --accent-foreground: 0 0% 100%;
-    --border: 240 4% 18%;
-    --input: 240 4% 18%;
-    --ring: 217 91% 60%;
+    --border: 250 20% 22%;
+    --input: 250 20% 22%;
+    --ring: 252 88% 70%;
+  }
+
+  /* Signal accents */
+  .signal-arc {
+    background: hsl(var(--primary));
+    border-bottom-left-radius: 100%;
+  }
+  .signal-pill {
+    @apply inline-flex items-center gap-1.5 rounded-full bg-primary/10 text-primary text-[11px] font-bold uppercase tracking-[0.1em] px-3 py-1.5;
+  }
+  .signal-dot {
+    @apply inline-block w-1.5 h-1.5 rounded-full bg-accent;
   }
 }
 
