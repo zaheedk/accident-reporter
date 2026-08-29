@@ -55,72 +55,63 @@ function ringSummary(days: number | null): string {
 }
 
 /** Circular vehicle dial: three concentric tappable rings (WOF outer → Ins inner). */
-function VehicleDial({
+/** Dark premium garage card — car icon, name, rego and soonest-expiry pill. */
+function VehicleCard({
   vehicle,
-  rings,
-  onRingTap,
+  index,
+  onTap,
 }: {
   vehicle: Vehicle;
-  rings: { kind: RingKind; days: number | null }[];
-  onRingTap: (v: Vehicle, kind: RingKind) => void;
+  index: number;
+  onTap: (v: Vehicle, kind: RingKind) => void;
 }) {
-  const SIZE = 168;
-  const C = SIZE / 2;
-  const RADII = [70, 56, 42];
-  const worst = rings.reduce<number | null>((acc, r) => {
-    if (r.days === null) return acc;
-    return acc === null || r.days < acc ? r.days : acc;
-  }, null);
-  const overdue = worst !== null && worst < 0;
+  const expiries: { kind: RingKind; label: string; days: number | null }[] = [
+    { kind: 'WOF', label: 'WOF', days: daysUntil(vehicle.wofExpiry) },
+    { kind: 'Rego', label: 'Rego', days: daysUntil(vehicle.regoExpiry) },
+    { kind: 'Ins', label: 'Insurance', days: daysUntil(vehicle.insuranceExpiry) },
+  ];
+  const soonest = expiries
+    .filter(e => e.days !== null)
+    .sort((a, b) => (a.days! - b.days!))[0] ?? null;
+
+  const pill = soonest === null
+    ? { text: 'Add expiries', dot: 'bg-muted-foreground/50', cls: 'text-muted-foreground' }
+    : soonest.days! < 0
+      ? { text: `${soonest.label} overdue ${Math.abs(soonest.days!)}d`, dot: 'bg-red-400', cls: 'text-red-300' }
+      : soonest.days! === 0
+        ? { text: `${soonest.label} due today`, dot: 'bg-amber-400', cls: 'text-amber-300' }
+        : soonest.days! <= 30
+          ? { text: `${soonest.label} due in ${soonest.days}d`, dot: 'bg-amber-400', cls: 'text-amber-300' }
+          : { text: `${soonest.label} due in ${soonest.days}d`, dot: 'bg-emerald-400', cls: 'text-emerald-300' };
+
+  // Alternate subtle accent glow per card
+  const glow = index % 2 === 0 ? 'bg-primary/30' : 'bg-accent/30';
+
   return (
-    <div className="relative mx-auto" style={{ width: SIZE, height: SIZE }}>
-      <svg viewBox={`0 0 ${SIZE} ${SIZE}`} className="w-full h-full -rotate-90">
-        {rings.map(({ kind, days }, i) => {
-          const r = RADII[i];
-          const circ = 2 * Math.PI * r;
-          const meta = RING_META[kind];
-          const pct = days === null ? 0 : Math.max(0, Math.min(1, days / meta.windowDays));
-          const fill = days !== null && days < 0 ? 1 : pct;
-          return (
-            <g key={kind}>
-              {/* track */}
-              <circle cx={C} cy={C} r={r} fill="none" stroke="hsl(var(--muted))" strokeWidth="7" />
-              {/* progress */}
-              <circle
-                cx={C} cy={C} r={r} fill="none"
-                stroke={ringColor(days, meta.color)}
-                strokeWidth="7" strokeLinecap="round"
-                strokeDasharray={circ} strokeDashoffset={circ * (1 - fill)}
-                className="transition-[stroke-dashoffset] duration-700"
-              />
-              {/* wide invisible hit target */}
-              <circle
-                cx={C} cy={C} r={r} fill="none" stroke="transparent" strokeWidth="18"
-                className="cursor-pointer"
-                onClick={() => onRingTap(vehicle, kind)}
-              >
-                <title>{kind} — {ringSummary(days)}</title>
-              </circle>
-            </g>
-          );
-        })}
-      </svg>
-      <button
-        onClick={() => onRingTap(vehicle, rings.find(r => r.days !== null)?.kind ?? 'WOF')}
-        className="absolute rounded-full bg-card flex flex-col items-center justify-center text-center overflow-hidden border border-border/60 active:scale-[0.97] transition-transform"
-        style={{ left: C - 33, top: C - 33, width: 66, height: 66 }}
-      >
-        {vehicle.photoUrl ? (
-          <img src={vehicle.photoUrl} alt={`${vehicle.make} ${vehicle.model}`} className="absolute inset-0 w-full h-full object-cover opacity-25" loading="lazy" />
-        ) : null}
-        <span className="relative text-[13px] font-extrabold tracking-[-0.02em] tabular-nums text-foreground leading-none">
-          {vehicle.regoNumber}
+    <button
+      onClick={() => onTap(vehicle, soonest?.kind ?? 'WOF')}
+      className="relative shrink-0 w-[188px] snap-start rounded-3xl bg-foreground text-background p-4 text-left overflow-hidden active:scale-[0.97] transition-transform"
+    >
+      <div aria-hidden="true" className={`pointer-events-none absolute -top-12 -right-12 w-36 h-36 rounded-full blur-3xl ${glow}`} />
+      <div className="relative flex items-start justify-between">
+        <span className="w-11 h-11 rounded-2xl bg-background/10 flex items-center justify-center overflow-hidden">
+          {vehicle.photoUrl ? (
+            <img src={vehicle.photoUrl} alt={`${vehicle.make} ${vehicle.model}`} className="w-full h-full object-cover" loading="lazy" />
+          ) : (
+            <Car className="w-5 h-5 text-primary" strokeWidth={1.8} />
+          )}
         </span>
-        <span className={`relative mt-1 text-[8px] font-bold uppercase tracking-[0.14em] ${overdue ? 'text-destructive' : 'text-muted-foreground'}`}>
-          {overdue ? 'Action due' : 'All good'}
+        <span className="text-background/40 text-lg leading-none tracking-widest px-1">···</span>
+      </div>
+      <div className="relative mt-7">
+        <div className="text-[15px] font-bold truncate tracking-[-0.01em]">{vehicle.make} {vehicle.model}</div>
+        <div className="text-[11px] text-background/50 tabular-nums mt-0.5">{vehicle.regoNumber}</div>
+        <span className={`mt-3 inline-flex items-center gap-1.5 rounded-full bg-background/10 px-2.5 py-1 text-[10px] font-semibold ${pill.cls}`}>
+          <span className={`w-1.5 h-1.5 rounded-full ${pill.dot}`} />
+          {pill.text}
         </span>
-      </button>
-    </div>
+      </div>
+    </button>
   );
 }
 
