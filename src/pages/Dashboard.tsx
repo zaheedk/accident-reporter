@@ -32,6 +32,47 @@ function StatusDot({ days }: { days: number | null }) {
   return <span className={`w-1.5 h-1.5 rounded-full ${tone}`} />;
 }
 
+/** Circular progress "hot button" showing how much of a 12-month window is left. */
+function ExpiryRing({ days }: { days: number | null }) {
+  const R = 20;
+  const C = 2 * Math.PI * R;
+  const pct = days === null ? 0 : Math.max(0, Math.min(1, days / 365));
+  const stroke =
+    days === null ? 'hsl(var(--muted-foreground) / 0.35)' :
+    days < 0 ? 'hsl(var(--destructive))' :
+    days <= 30 ? 'hsl(38 92% 50%)' :
+    'hsl(152 60% 42%)';
+  const text =
+    days === null ? 'text-muted-foreground' :
+    days < 0 ? 'text-destructive' :
+    days <= 30 ? 'text-amber-600 dark:text-amber-400' :
+    'text-foreground';
+  const label =
+    days === null ? '—' :
+    days < 0 ? `${Math.abs(days)}d` :
+    days === 0 ? 'now' :
+    days > 365 ? `${Math.round(days / 365)}y` :
+    `${days}d`;
+  return (
+    <span className="relative inline-flex items-center justify-center w-[52px] h-[52px]">
+      <svg viewBox="0 0 48 48" className="w-full h-full -rotate-90">
+        <circle cx="24" cy="24" r={R} fill="none" stroke="hsl(var(--muted))" strokeWidth="4" />
+        <circle
+          cx="24" cy="24" r={R} fill="none" stroke={stroke} strokeWidth="4" strokeLinecap="round"
+          strokeDasharray={C} strokeDashoffset={C * (1 - (days !== null && days < 0 ? 1 : pct))}
+          className="transition-[stroke-dashoffset] duration-700"
+        />
+      </svg>
+      <span className={`absolute text-[11px] font-bold tabular-nums leading-none ${text}`}>{label}</span>
+      {days !== null && days < 0 && (
+        <span className="absolute -bottom-0.5 text-[7px] font-bold uppercase tracking-wider text-destructive">over</span>
+      )}
+    </span>
+  );
+}
+
+
+
 export default function Dashboard() {
   const { user, isAdmin } = useAuth();
 
