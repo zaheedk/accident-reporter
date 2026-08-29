@@ -548,36 +548,21 @@ export default function Dashboard() {
                     </Link>
                   </div>
 
-                  <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-x-2 gap-y-6">
-                    {vehicles.map(v => (
-                      <div key={v.id} className="flex flex-col items-center gap-2">
-                        <VehicleDial
-                          vehicle={v}
-                          rings={[
-                            { kind: 'WOF', days: daysUntil(v.wofExpiry) },
-                            { kind: 'Rego', days: daysUntil(v.regoExpiry) },
-                            { kind: 'Ins', days: daysUntil(v.insuranceExpiry) },
-                          ]}
-                          onRingTap={(veh, kind) => setVehicleAction({ vehicle: veh, ring: kind })}
-                        />
-                        <div className="text-center">
-                          <div className="text-[13px] font-semibold text-foreground truncate max-w-[140px]">{v.make} {v.model}</div>
-                          <div className="flex items-center justify-center gap-2 mt-1 text-[9px] font-bold uppercase tracking-[0.1em] text-muted-foreground">
-                            <span className="inline-flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full" style={{ background: RING_META.WOF.color }} />WOF</span>
-                            <span className="inline-flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full" style={{ background: RING_META.Rego.color }} />Rego</span>
-                            <span className="inline-flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full" style={{ background: RING_META.Ins.color }} />Ins</span>
-                          </div>
-                        </div>
-                      </div>
+                  <div className="flex gap-3 overflow-x-auto snap-x snap-mandatory pb-2 -mx-4 px-4 md:mx-0 md:px-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                    {vehicles.map((v, i) => (
+                      <VehicleCard
+                        key={v.id}
+                        vehicle={v}
+                        index={i}
+                        onTap={(veh, kind) => setVehicleAction({ vehicle: veh, ring: kind })}
+                      />
                     ))}
                     <Link
                       to="/vehicles/new"
-                      className="flex flex-col items-center gap-2 group"
+                      className="shrink-0 w-[120px] snap-start rounded-3xl border-2 border-dashed border-primary/30 bg-primary/[0.04] flex flex-col items-center justify-center gap-2 text-primary hover:bg-primary/10 transition-colors"
                     >
-                      <span className="w-[168px] h-[168px] rounded-full border-2 border-dashed border-primary/30 bg-primary/[0.04] flex flex-col items-center justify-center gap-2 text-primary group-hover:bg-primary/10 transition-colors">
-                        <Plus className="w-6 h-6" strokeWidth={2} />
-                        <span className="text-[12px] font-semibold">Add vehicle</span>
-                      </span>
+                      <Plus className="w-6 h-6" strokeWidth={2} />
+                      <span className="text-[12px] font-semibold">Add</span>
                     </Link>
                   </div>
                 </motion.div>
