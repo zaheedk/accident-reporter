@@ -64,9 +64,6 @@ function ExpiryRing({ days }: { days: number | null }) {
         />
       </svg>
       <span className={`absolute text-[11px] font-bold tabular-nums leading-none ${text}`}>{label}</span>
-      {days !== null && days < 0 && (
-        <span className="absolute -bottom-0.5 text-[7px] font-bold uppercase tracking-wider text-destructive">over</span>
-      )}
     </span>
   );
 }
