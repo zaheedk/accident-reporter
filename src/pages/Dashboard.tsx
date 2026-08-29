@@ -513,29 +513,44 @@ export default function Dashboard() {
 
             {/* Main column */}
             <div className="space-y-6">
-              {/* Mobile hero action tiles — kept as-is for mobile */}
-              <motion.div variants={fadeUp} className="grid grid-cols-2 gap-3 md:hidden">
-                <button
-                  onClick={() => setAccidentSheetOpen(true)}
-                  className="rounded-2xl bg-foreground text-background p-5 text-left transition-all active:scale-[0.98] min-h-[140px] flex flex-col justify-between"
-                >
-                  <div className="w-10 h-10 rounded-xl bg-background/10 flex items-center justify-center">
-                    <AlertTriangle className="w-5 h-5" strokeWidth={2} />
+              {/* Mobile emergency strip — circular "cockpit dial" buttons on a dark band */}
+              <motion.div variants={fadeUp} className="md:hidden">
+                <div className="relative rounded-3xl bg-foreground text-background overflow-hidden">
+                  <div aria-hidden="true" className="pointer-events-none absolute -top-16 -left-16 w-44 h-44 rounded-full bg-primary/25 blur-3xl" />
+                  <div aria-hidden="true" className="pointer-events-none absolute -bottom-16 -right-10 w-40 h-40 rounded-full bg-accent/25 blur-3xl" />
+                  <div className="relative flex items-center">
+                    <button
+                      onClick={() => setAccidentSheetOpen(true)}
+                      className="flex-1 flex items-center gap-3.5 p-4 text-left active:bg-background/5 transition-colors rounded-l-3xl"
+                    >
+                      <span className="relative shrink-0 w-14 h-14">
+                        <span aria-hidden="true" className="absolute inset-0 rounded-full border-2 border-primary/50" />
+                        <span aria-hidden="true" className="absolute inset-[5px] rounded-full bg-primary/15" />
+                        <span className="absolute inset-[9px] rounded-full bg-primary text-primary-foreground flex items-center justify-center">
+                          <AlertTriangle className="w-5 h-5" strokeWidth={2} />
+                        </span>
+                      </span>
+                      <span>
+                        <span className="block text-[14px] font-bold leading-tight tracking-[-0.01em]">Had an accident?</span>
+                        <span className="block text-[11px] text-background/55 mt-0.5">Tow or report now</span>
+                      </span>
+                    </button>
+                    <div aria-hidden="true" className="w-px self-stretch my-4 bg-background/10" />
+                    <a href="tel:111" className="flex items-center gap-3 p-4 active:bg-background/5 transition-colors rounded-r-3xl">
+                      <span className="relative shrink-0 w-14 h-14">
+                        <span aria-hidden="true" className="absolute inset-0 rounded-full border-2 border-accent/60" />
+                        <span aria-hidden="true" className="absolute inset-[5px] rounded-full bg-accent/20" />
+                        <span className="absolute inset-[9px] rounded-full bg-accent text-accent-foreground flex items-center justify-center">
+                          <Shield className="w-5 h-5" strokeWidth={2} />
+                        </span>
+                      </span>
+                      <span>
+                        <span className="block text-[14px] font-bold leading-tight tracking-[-0.01em]">111</span>
+                        <span className="block text-[11px] text-background/55 mt-0.5">Call police</span>
+                      </span>
+                    </a>
                   </div>
-                  <div>
-                    <div className="text-[15px] font-semibold leading-tight">Had<br/>accident?</div>
-                    <div className="text-[11px] text-background/60 mt-1.5">Tow or report now</div>
-                  </div>
-                </button>
-                <a href="tel:111" className="rounded-2xl text-destructive-foreground p-5 transition-all active:scale-[0.98] flex flex-col justify-between min-h-[140px] bg-accent">
-                  <div className="w-10 h-10 rounded-xl bg-destructive-foreground/15 flex items-center justify-center">
-                    <Shield className="w-5 h-5" strokeWidth={2} />
-                  </div>
-                  <div>
-                    <div className="text-[15px] font-semibold leading-tight">Call<br/>police</div>
-                    <div className="text-[11px] text-destructive-foreground/75 mt-1.5">Emergency 111</div>
-                  </div>
-                </a>
+                </div>
               </motion.div>
 
               {/* Vehicle cards — Apple/Linear flat thumbnails */}
