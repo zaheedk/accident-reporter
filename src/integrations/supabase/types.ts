@@ -926,6 +926,35 @@ export type Database = {
         }
         Relationships: []
       }
+      hazard_confirmations: {
+        Row: {
+          created_at: string
+          hazard_id: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          hazard_id: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          hazard_id?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hazard_confirmations_hazard_id_fkey"
+            columns: ["hazard_id"]
+            isOneToOne: false
+            referencedRelation: "road_hazards"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       insurance_companies: {
         Row: {
           claims_method: string
@@ -1346,6 +1375,51 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      road_hazards: {
+        Row: {
+          created_at: string
+          description: string
+          expires_at: string
+          hazard_type: string
+          id: string
+          is_active: boolean
+          latitude: number
+          location_label: string
+          longitude: number
+          region: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string
+          expires_at?: string
+          hazard_type: string
+          id?: string
+          is_active?: boolean
+          latitude: number
+          location_label?: string
+          longitude: number
+          region?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          expires_at?: string
+          hazard_type?: string
+          id?: string
+          is_active?: boolean
+          latitude?: number
+          location_label?: string
+          longitude?: number
+          region?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       shop_job_events: {
         Row: {

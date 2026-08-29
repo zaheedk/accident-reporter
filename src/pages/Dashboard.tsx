@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { Car, Plus, AlertTriangle, ChevronRight, User, Shield, Phone, Search, MapPin, X, MessageSquare, FileWarning, ShieldAlert, CalendarClock, ArrowUpRight, Activity, FileText, Wrench, Truck, BookOpen, Lightbulb, Star, Users, Ambulance, Camera, Zap } from 'lucide-react';
+import { Car, Plus, AlertTriangle, ChevronRight, User, Shield, Phone, Search, MapPin, X, MessageSquare, FileWarning, ShieldAlert, CalendarClock, ArrowUpRight, Activity, FileText, Wrench, Truck, BookOpen, Lightbulb, Star, Users, Ambulance, Camera, Zap, Scale, Radar, Building2 } from 'lucide-react';
 import { getVehicles, getClaims } from '@/lib/storage';
 import { useAuth } from '@/contexts/AuthContext';
 import AppLayout from '@/components/AppLayout';
@@ -747,6 +747,34 @@ export default function Dashboard() {
                     ))}
                   </div>
                 </div>
+              </motion.div>
+
+              {/* Community tools — quiz, hazard radar, council reporting */}
+              <motion.div variants={fadeUp} className="grid grid-cols-3 gap-2">
+                <Link
+                  to="/fault-quiz"
+                  className="rounded-2xl bg-card border border-border p-3 flex flex-col gap-1.5 hover:border-foreground/20 transition-colors"
+                >
+                  <Scale className="w-4.5 h-4.5 text-primary" strokeWidth={2} />
+                  <span className="text-[12px] font-semibold text-foreground leading-tight">Who's at fault?</span>
+                  <span className="text-[10px] text-muted-foreground leading-tight">Daily quiz</span>
+                </Link>
+                <Link
+                  to="/hazard-radar"
+                  className="rounded-2xl bg-card border border-border p-3 flex flex-col gap-1.5 hover:border-foreground/20 transition-colors"
+                >
+                  <Radar className="w-4.5 h-4.5 text-accent" strokeWidth={2} />
+                  <span className="text-[12px] font-semibold text-foreground leading-tight">Hazard radar</span>
+                  <span className="text-[10px] text-muted-foreground leading-tight">Live near you</span>
+                </Link>
+                <Link
+                  to="/report-to-council"
+                  className="rounded-2xl bg-card border border-border p-3 flex flex-col gap-1.5 hover:border-foreground/20 transition-colors"
+                >
+                  <Building2 className="w-4.5 h-4.5 text-foreground" strokeWidth={2} />
+                  <span className="text-[12px] font-semibold text-foreground leading-tight">Report a fault</span>
+                  <span className="text-[10px] text-muted-foreground leading-tight">To your council</span>
+                </Link>
               </motion.div>
 
 

@@ -59,6 +59,9 @@ const RentalPartnersAdmin = lazy(() => import("./pages/admin/RentalPartners"));
 const WidgetSetup = lazy(() => import("./pages/WidgetSetup"));
 const FaultGuide = lazy(() => import("./pages/FaultGuide"));
 const NotAtFaultCarHire = lazy(() => import("./pages/NotAtFaultCarHire"));
+const FaultQuiz = lazy(() => import("./pages/FaultQuiz"));
+const HazardRadar = lazy(() => import("./pages/HazardRadar"));
+const CouncilReport = lazy(() => import("./pages/CouncilReport"));
 const PanelBeatersIndex = lazy(() => import("./pages/PanelBeatersIndex"));
 const PanelBeatersLocation = lazy(() => import("./pages/PanelBeatersLocation"));
 const PanelBeatersByMakeIndex = lazy(() => import("./pages/PanelBeatersByMakeIndex"));
@@ -189,6 +192,9 @@ const App = () => (
               <Route path="/widget-setup" element={<ProtectedRoute><WidgetSetup /></ProtectedRoute>} />
               <Route path="/fault-guide" element={<FaultGuide />} />
               <Route path="/not-at-fault-car-hire" element={<NotAtFaultCarHire />} />
+              <Route path="/fault-quiz" element={<FaultQuiz />} />
+              <Route path="/hazard-radar" element={<ProtectedRoute><HazardRadar /></ProtectedRoute>} />
+              <Route path="/report-to-council" element={<CouncilReport />} />
               <Route path="/about" element={<About />} />
               <Route path="/how-it-works" element={<HowItWorks />} />
               <Route path="/faq" element={<FAQ />} />
