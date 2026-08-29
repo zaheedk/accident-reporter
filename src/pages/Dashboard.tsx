@@ -215,25 +215,6 @@ export default function Dashboard() {
   const displayName = profile?.display_name || '';
   const firstName = displayName ? displayName.split(' ')[0] : 'there';
 
-  // Upcoming expiries from vehicle WOF/Rego/Insurance
-  const upcomingExpiries = useMemo(() => {
-    const items: { vehicleId: string; slug?: string; rego: string; label: string; date: string; days: number }[] = [];
-    vehicles.forEach(v => {
-      const fields: [string, string | undefined][] = [
-        ['WOF', v.wofExpiry],
-        ['Rego', v.regoExpiry],
-        ['Insurance', v.insuranceExpiry],
-      ];
-      fields.forEach(([label, date]) => {
-        const d = daysUntil(date);
-        if (d !== null && d <= 60) {
-          items.push({ vehicleId: v.id, slug: v.slug, rego: v.regoNumber, label, date: date!, days: d });
-        }
-      });
-    });
-    return items.sort((a, b) => a.days - b.days).slice(0, 5);
-  }, [vehicles]);
-
   // Recent activity from claims
   const recentActivity = useMemo(() => {
     return [...claims]
