@@ -202,6 +202,36 @@ export default function Dashboard() {
 
   const featuredArticles = useMemo(() => blogArticles.slice(0, 2), []);
 
+  /** Smart expiry alerts — overdue or due within 30 days, soonest first. */
+  const expiryAlerts = useMemo(() => {
+    const items: { vehicle: Vehicle; kind: RingKind; label: string; days: number }[] = [];
+    vehicles.forEach(v => {
+      ([
+        ['WOF', 'WOF', v.wofExpiry],
+        ['Rego', 'Rego', v.regoExpiry],
+        ['Ins', 'Insurance', v.insuranceExpiry],
+      ] as [RingKind, string, string | undefined][]).forEach(([kind, label, date]) => {
+        const d = daysUntil(date);
+        if (d !== null && d <= 30) items.push({ vehicle: v, kind, label, days: d });
+      });
+    });
+    return items.sort((a, b) => a.days - b.days);
+  }, [vehicles]);
+
+  /** Insurer to call in one tap — default vehicle first, else first insured vehicle. */
+  const insurerQuickCall = useMemo(() => {
+    const candidate =
+      vehicles.find(v => v.isDefault && v.insuranceCompany && insurerPhones[v.insuranceCompany]) ||
+      vehicles.find(v => v.insuranceCompany && insurerPhones[v.insuranceCompany]);
+    if (!candidate?.insuranceCompany) return null;
+    return {
+      vehicle: candidate,
+      name: candidate.insuranceCompany,
+      phone: insurerPhones[candidate.insuranceCompany],
+    };
+  }, [vehicles, insurerPhones]);
+
+
   const avatarUrl = profile?.avatar_url || '';
   const displayName = profile?.display_name || '';
   const firstName = displayName ? displayName.split(' ')[0] : 'there';
