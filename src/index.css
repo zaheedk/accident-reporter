@@ -113,11 +113,11 @@
   }
 
   .card-surface {
-    @apply bg-card rounded-2xl p-5 border border-border shadow-none;
+    @apply bg-card rounded-3xl p-5 border border-border/70 shadow-[0_1px_2px_hsl(250_40%_20%/0.04)];
   }
 
   .card-surface-elevated {
-    @apply bg-card rounded-2xl p-5 border border-border shadow-none;
+    @apply bg-card rounded-3xl p-5 border border-border/60 shadow-[0_8px_24px_-12px_hsl(252_82%_45%/0.22)];
   }
 
   .card-dark {
@@ -163,7 +163,7 @@
   }
 
   .display-heading {
-    @apply text-[28px] leading-[1.1] font-extrabold text-foreground tracking-tight;
+    @apply text-[30px] leading-[1.05] font-extrabold text-foreground tracking-[-0.03em];
   }
 
   .field-label {
@@ -211,7 +211,7 @@
 
   /* Surface variant matching the mockup — softer, more padded card */
   .card-soft {
-    @apply bg-card rounded-2xl p-5 border border-border/70;
+    @apply bg-card rounded-3xl p-5 border border-border/60;
   }
 
   /* === Scoped dark + green theme for the dashboard page === */
