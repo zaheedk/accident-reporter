@@ -192,6 +192,9 @@ const App = () => (
               <Route path="/widget-setup" element={<ProtectedRoute><WidgetSetup /></ProtectedRoute>} />
               <Route path="/fault-guide" element={<FaultGuide />} />
               <Route path="/not-at-fault-car-hire" element={<NotAtFaultCarHire />} />
+              <Route path="/fault-quiz" element={<FaultQuiz />} />
+              <Route path="/hazard-radar" element={<ProtectedRoute><HazardRadar /></ProtectedRoute>} />
+              <Route path="/report-to-council" element={<CouncilReport />} />
               <Route path="/about" element={<About />} />
               <Route path="/how-it-works" element={<HowItWorks />} />
               <Route path="/faq" element={<FAQ />} />
