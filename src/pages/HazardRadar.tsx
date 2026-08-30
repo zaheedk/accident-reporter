@@ -77,15 +77,21 @@ export default function HazardRadar() {
 
   const load = useCallback(async () => {
     setLoading(true);
-    const [{ data: hz }, { data: cf }] = await Promise.all([
+    const [{ data: hz }, { data: cf }, { data: ta }] = await Promise.all([
       supabase
         .from('road_hazards')
         .select('*')
         .order('created_at', { ascending: false })
         .limit(200),
       supabase.from('hazard_confirmations').select('hazard_id, user_id'),
+      supabase
+        .from('traffic_alerts')
+        .select('*')
+        .order('published_at', { ascending: false })
+        .limit(12),
     ]);
     setHazards((hz as Hazard[]) || []);
+    setAlerts((ta as TrafficAlert[]) || []);
     const counts: Record<string, number> = {};
     const mine = new Set<string>();
     (cf || []).forEach((row: { hazard_id: string; user_id: string }) => {
@@ -96,6 +102,7 @@ export default function HazardRadar() {
     setMyConfirms(mine);
     setLoading(false);
   }, [user?.id]);
+
 
   useEffect(() => {
     load();
