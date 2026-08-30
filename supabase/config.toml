@@ -15,3 +15,6 @@ project_id = "kmapvntjwhhtfgvjzsof"
     verify_jwt = false
   [functions.inbound-rental-agreement]
     verify_jwt = false
+  [functions.poll-traffic-alerts]
+    verify_jwt = false
+
