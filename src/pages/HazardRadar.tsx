@@ -43,9 +43,29 @@ type Hazard = {
   expires_at: string;
 };
 
+type TrafficAlert = {
+  id: string;
+  source: string;
+  source_url: string;
+  title: string;
+  summary: string;
+  region: string;
+  category: string;
+  published_at: string;
+};
+
+const CATEGORY_STYLES: Record<string, string> = {
+  serious: 'bg-destructive/10 text-destructive',
+  closure: 'bg-accent/10 text-accent',
+  weather: 'bg-primary/10 text-primary',
+  roadworks: 'bg-muted text-muted-foreground',
+  incident: 'bg-muted text-muted-foreground',
+};
+
 export default function HazardRadar() {
   const { user } = useAuth();
   const [hazards, setHazards] = useState<Hazard[]>([]);
+  const [alerts, setAlerts] = useState<TrafficAlert[]>([]);
   const [confirmCounts, setConfirmCounts] = useState<Record<string, number>>({});
   const [myConfirms, setMyConfirms] = useState<Set<string>>(new Set());
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
@@ -53,6 +73,7 @@ export default function HazardRadar() {
   const [sheetOpen, setSheetOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState({ type: 'pothole', description: '', label: '' });
+
 
   const load = useCallback(async () => {
     setLoading(true);
