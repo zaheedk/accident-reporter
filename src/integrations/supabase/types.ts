@@ -1702,6 +1702,45 @@ export type Database = {
           },
         ]
       }
+      traffic_alerts: {
+        Row: {
+          category: string
+          created_at: string
+          guid: string
+          id: string
+          published_at: string
+          region: string
+          source: string
+          source_url: string
+          summary: string
+          title: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          guid: string
+          id?: string
+          published_at?: string
+          region?: string
+          source: string
+          source_url: string
+          summary?: string
+          title: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          guid?: string
+          id?: string
+          published_at?: string
+          region?: string
+          source?: string
+          source_url?: string
+          summary?: string
+          title?: string
+        }
+        Relationships: []
+      }
       user_documents: {
         Row: {
           category: string
