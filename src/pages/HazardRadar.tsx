@@ -280,6 +280,51 @@ export default function HazardRadar() {
           </ul>
         )}
 
+        {alerts.length > 0 && (
+          <section className="space-y-2.5 pt-2">
+            <div className="flex items-center gap-2">
+              <Newspaper className="w-4 h-4 text-primary" />
+              <h2 className="text-[15px] font-bold text-foreground">In the news</h2>
+              <span className="text-[11px] text-muted-foreground">Auto-updated crash &amp; road closure reports</span>
+            </div>
+            <ul className="space-y-2.5">
+              {alerts.map((a) => (
+                <li key={a.id}>
+                  <a
+                    href={a.source_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block rounded-2xl bg-card border border-border p-4 space-y-1.5 hover:border-foreground/20 transition-colors"
+                  >
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span
+                        className={`text-[10px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full ${
+                          CATEGORY_STYLES[a.category] || CATEGORY_STYLES.incident
+                        }`}
+                      >
+                        {a.category}
+                      </span>
+                      {a.region && <span className="text-[11px] text-muted-foreground">{a.region}</span>}
+                      <span className="text-[11px] text-muted-foreground ml-auto">
+                        {formatDistanceToNow(new Date(a.published_at), { addSuffix: true })}
+                      </span>
+                    </div>
+                    <div className="text-[14px] font-semibold text-foreground leading-snug">{a.title}</div>
+                    {a.summary && (
+                      <p className="text-[12px] text-muted-foreground leading-relaxed line-clamp-2">{a.summary}</p>
+                    )}
+                    <div className="text-[11px] text-muted-foreground/80 inline-flex items-center gap-1">
+                      {a.source} <ExternalLink className="w-3 h-3" />
+                    </div>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+
+
         <Link
           to="/report-to-council"
           className="flex items-center gap-3 p-4 rounded-2xl bg-card border border-border hover:border-foreground/20 transition-colors"
