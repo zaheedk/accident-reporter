@@ -10,6 +10,9 @@ import {
   Trash2,
   Radar,
   ChevronRight,
+  Newspaper,
+  ExternalLink,
+
 } from 'lucide-react';
 import AppLayout from '@/components/AppLayout';
 import { supabase } from '@/integrations/supabase/client';
