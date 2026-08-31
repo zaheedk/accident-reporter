@@ -914,7 +914,7 @@ export default function Dashboard() {
                     const inner = (
                       <>
                         <span className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${a.iconClass}`}>
-                          <Icon className="w-4.5 h-4.5" strokeWidth={2} />
+                          <Icon className="w-[18px] h-[18px]" strokeWidth={2} />
                         </span>
                         <span className="flex-1 min-w-0 text-left">
                           <span className="block text-[13.5px] font-semibold text-foreground truncate">{a.label}</span>
