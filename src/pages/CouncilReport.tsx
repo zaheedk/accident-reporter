@@ -55,7 +55,9 @@ export default function CouncilReport() {
       '',
       details || 'Please inspect and repair this road fault.',
       '',
-      photoName ? `A photo (${photoName}) is attached.` : 'Photos can be supplied on request.',
+      photoName
+        ? `A photo of the fault (${photoName}) has been taken and can be supplied on request.`
+        : 'Photos can be supplied on request.',
       '',
       'Reported via SAVO (savo.co.nz)',
     ].filter(Boolean);
