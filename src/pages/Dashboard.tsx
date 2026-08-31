@@ -458,7 +458,7 @@ export default function Dashboard() {
                 What needs<br />your attention?
               </h1>
             </div>
-            <Link to="/profile" className="shrink-0">
+            <Link to="/profile" className="relative z-10 shrink-0">
               <Avatar className="w-11 h-11 ring-1 ring-border">
                 <AvatarImage src={avatarUrl} alt={displayName} />
                 <AvatarFallback className="bg-muted text-foreground text-[11px] font-semibold">
