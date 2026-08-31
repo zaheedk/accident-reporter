@@ -822,7 +822,7 @@ export default function Dashboard() {
 
       {/* Vehicle ring action popup */}
       <Sheet open={!!vehicleAction} onOpenChange={(open) => { if (!open) setVehicleAction(null); }}>
-        <SheetContent side="bottom" className="rounded-t-3xl p-0" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
+        <SheetContent side="bottom" className="rounded-t-3xl p-0 w-full sm:max-w-md sm:mx-auto border-border/70 shadow-[0_-12px_40px_-12px_hsl(250_40%_20%/0.25)]" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
           {vehicleAction && (() => {
             const v = vehicleAction.vehicle;
             const phone = v.insuranceCompany ? insurerPhones[v.insuranceCompany] : '';
@@ -831,64 +831,105 @@ export default function Dashboard() {
               { kind: 'Rego', label: 'Rego', date: v.regoExpiry, days: daysUntil(v.regoExpiry) },
               { kind: 'Ins', label: 'Insurance', date: v.insuranceExpiry, days: daysUntil(v.insuranceExpiry) },
             ];
+            const actions = [
+              {
+                key: 'edit',
+                to: `/vehicles/${v.slug || v.id}/edit`,
+                icon: Wrench,
+                iconClass: 'bg-secondary text-secondary-foreground',
+                label: 'Edit vehicle',
+                sub: 'Details, dates, insurer',
+              },
+              {
+                key: 'report',
+                to: `/claims/new?vehicleId=${v.id}`,
+                icon: AlertTriangle,
+                iconClass: 'bg-destructive/10 text-destructive',
+                label: 'Report incident',
+                sub: 'Start a guided claim',
+              },
+              phone
+                ? {
+                    key: 'call',
+                    href: `tel:${phone.replace(/\s/g, '')}`,
+                    icon: Phone,
+                    iconClass: 'bg-primary/10 text-primary',
+                    label: `Call ${v.insuranceCompany}`,
+                    sub: phone,
+                  }
+                : {
+                    key: 'insurer',
+                    to: `/vehicles/${v.slug || v.id}/edit`,
+                    icon: Plus,
+                    iconClass: 'bg-primary/10 text-primary',
+                    label: 'Add insurer',
+                    sub: 'Get one-tap claim calls',
+                  },
+            ];
             return (
-              <div className="px-5 pt-5 pb-6">
+              <div className="px-5 pt-3 pb-6">
+                <div className="mx-auto mb-4 h-1.5 w-10 rounded-full bg-muted-foreground/25" />
+
                 <SheetHeader className="text-left">
-                  <SheetTitle className="flex items-center gap-3">
-                    <span className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0">
-                      <Car className="w-5 h-5" strokeWidth={1.8} />
-                    </span>
+                  <SheetTitle className="flex items-center gap-3.5">
+                    {v.photoUrl ? (
+                      <img src={v.photoUrl} alt={`${v.make} ${v.model}`} className="w-12 h-12 rounded-2xl object-cover ring-1 ring-border shrink-0" />
+                    ) : (
+                      <span className="w-12 h-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                        <Car className="w-6 h-6" strokeWidth={1.8} />
+                      </span>
+                    )}
                     <span className="min-w-0">
-                      <span className="block text-[17px] font-extrabold tracking-[-0.02em] tabular-nums truncate">{v.regoNumber}</span>
-                      <span className="block text-[12px] font-normal text-muted-foreground truncate">{v.year} {v.make} {v.model}</span>
+                      <span className="block text-[18px] font-extrabold tracking-[-0.02em] tabular-nums truncate">{v.regoNumber}</span>
+                      <span className="block text-[12.5px] font-normal text-muted-foreground truncate">{v.year} {v.make} {v.model}</span>
                     </span>
                   </SheetTitle>
                 </SheetHeader>
 
-                <div className="mt-4 rounded-2xl bg-muted/50 divide-y divide-border overflow-hidden">
-                  {ringDefs.map(({ kind, label, date, days }) => (
-                    <div key={kind} className={`flex items-center gap-3 px-4 py-3 ${vehicleAction.ring === kind ? 'bg-primary/[0.06]' : ''}`}>
-                      <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: ringColor(days, RING_META[kind].color) }} />
-                      <span className="flex-1 text-[13px] font-semibold text-foreground">{label}</span>
-                      <span className="text-[12px] text-muted-foreground tabular-nums">{date || 'Not set'}</span>
-                      <span className={`text-[12px] font-semibold tabular-nums ${days !== null && days < 0 ? 'text-destructive' : days !== null && days <= 30 ? 'text-amber-600 dark:text-amber-400' : 'text-muted-foreground'}`}>
-                        {ringSummary(days)}
-                      </span>
-                    </div>
-                  ))}
+                <div className="mt-5 rounded-2xl border border-border/70 bg-card divide-y divide-border/70 overflow-hidden">
+                  {ringDefs.map(({ kind, label, date, days }) => {
+                    const overdue = days !== null && days < 0;
+                    const soon = days !== null && days >= 0 && days <= 30;
+                    return (
+                      <div key={kind} className={`flex items-center gap-3 px-4 py-3 ${vehicleAction.ring === kind ? 'bg-primary/[0.05]' : ''}`}>
+                        <span className="w-2.5 h-2.5 rounded-full shrink-0 ring-4 ring-muted/60" style={{ background: ringColor(days, RING_META[kind].color) }} />
+                        <span className="flex-1 text-[13px] font-semibold text-foreground">{label}</span>
+                        <span className="text-[12px] text-muted-foreground tabular-nums">{date || 'Not set'}</span>
+                        <span className={`text-[11px] font-bold tabular-nums px-2 py-0.5 rounded-full ${
+                          overdue ? 'bg-destructive/10 text-destructive'
+                          : soon ? 'bg-warning/15 text-warning'
+                          : days !== null ? 'bg-success/10 text-success'
+                          : 'bg-muted text-muted-foreground'
+                        }`}>
+                          {ringSummary(days)}
+                        </span>
+                      </div>
+                    );
+                  })}
                 </div>
 
-                <div className="mt-4 space-y-2">
-                  <Link
-                    to={`/vehicles/${v.slug || v.id}/edit`}
-                    onClick={() => setVehicleAction(null)}
-                    className="w-full h-11 rounded-full bg-foreground text-background text-[13px] font-semibold inline-flex items-center justify-center gap-2 active:scale-[0.98] transition-transform"
-                  >
-                    <Wrench className="w-4 h-4" strokeWidth={2.2} /> Edit vehicle
-                  </Link>
-                  <Link
-                    to={`/claims/new?vehicleId=${v.id}`}
-                    onClick={() => setVehicleAction(null)}
-                    className="w-full h-11 rounded-full bg-destructive/10 text-destructive text-[13px] font-semibold inline-flex items-center justify-center gap-2 active:scale-[0.98] transition-transform"
-                  >
-                    <AlertTriangle className="w-4 h-4" strokeWidth={2.2} /> Report incident
-                  </Link>
-                  {phone ? (
-                    <a
-                      href={`tel:${phone.replace(/\s/g, '')}`}
-                      className="w-full h-11 rounded-full bg-primary/10 text-primary text-[13px] font-semibold inline-flex items-center justify-center gap-2 active:scale-[0.98] transition-transform"
-                    >
-                      <Phone className="w-4 h-4" strokeWidth={2.2} /> Call {v.insuranceCompany}
-                    </a>
-                  ) : (
-                    <Link
-                      to={`/vehicles/${v.slug || v.id}/edit`}
-                      onClick={() => setVehicleAction(null)}
-                      className="w-full h-11 rounded-full bg-primary/10 text-primary text-[13px] font-semibold inline-flex items-center justify-center gap-2 active:scale-[0.98] transition-transform"
-                    >
-                      <Plus className="w-4 h-4" strokeWidth={2.2} /> Add insurer
-                    </Link>
-                  )}
+                <div className="mt-4 rounded-2xl border border-border/70 bg-card divide-y divide-border/70 overflow-hidden">
+                  {actions.map((a) => {
+                    const Icon = a.icon;
+                    const inner = (
+                      <>
+                        <span className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${a.iconClass}`}>
+                          <Icon className="w-[18px] h-[18px]" strokeWidth={2} />
+                        </span>
+                        <span className="flex-1 min-w-0 text-left">
+                          <span className="block text-[13.5px] font-semibold text-foreground truncate">{a.label}</span>
+                          <span className="block text-[11.5px] text-muted-foreground truncate">{a.sub}</span>
+                        </span>
+                        <ChevronRight className="w-4 h-4 text-muted-foreground/50 shrink-0" />
+                      </>
+                    );
+                    const cls = 'flex items-center gap-3 px-4 py-3.5 transition-colors hover:bg-muted/50 active:bg-muted';
+                    return a.href ? (
+                      <a key={a.key} href={a.href} className={cls}>{inner}</a>
+                    ) : (
+                      <Link key={a.key} to={a.to!} onClick={() => setVehicleAction(null)} className={cls}>{inner}</Link>
+                    );
+                  })}
                 </div>
               </div>
             );
