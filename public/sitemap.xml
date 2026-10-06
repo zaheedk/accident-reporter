@@ -81,6 +81,21 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://www.savo.co.nz/blog/aa-insurance-car-claim-guide-nz</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://www.savo.co.nz/blog/state-ami-car-insurance-claim-guide-nz</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://www.savo.co.nz/blog/tower-insurance-car-claim-guide-nz</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://www.savo.co.nz/blog/why-capturing-accident-details-matters-nz</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
