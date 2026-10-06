@@ -1632,6 +1632,53 @@ export type Database = {
           },
         ]
       }
+      shop_outreach: {
+        Row: {
+          created_at: string
+          email: string
+          error: string
+          id: string
+          opt_out_token: string
+          opted_out_at: string | null
+          panel_shop_id: string
+          sent_at: string
+          sent_by: string | null
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          error?: string
+          id?: string
+          opt_out_token?: string
+          opted_out_at?: string | null
+          panel_shop_id: string
+          sent_at?: string
+          sent_by?: string | null
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          error?: string
+          id?: string
+          opt_out_token?: string
+          opted_out_at?: string | null
+          panel_shop_id?: string
+          sent_at?: string
+          sent_by?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shop_outreach_panel_shop_id_fkey"
+            columns: ["panel_shop_id"]
+            isOneToOne: true
+            referencedRelation: "panel_shops"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       shop_staff: {
         Row: {
           created_at: string
