@@ -75,9 +75,9 @@ export default function ClaimWizard() {
   const queryClient = useQueryClient();
   const [step, setStep] = useState(0);
   const [claim, setClaim] = useState<ClaimReport>(() => {
-    if (id) return emptyClaim;
+    if (id) return emptyClaim();
     const h = takeFaultHandoff();
-    return h ? { ...emptyClaim, atFault: h.atFault, blameDescription: h.blameDescription } : emptyClaim;
+    return h ? { ...emptyClaim(), atFault: h.atFault, blameDescription: h.blameDescription } : emptyClaim();
   });
   const [claimNumber, setClaimNumber] = useState<number | null>(null);
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
