@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Shield, Camera, FileText, Clock, Phone, Wrench, Truck, ChevronRight, ArrowRight, CheckCircle2, BookOpen, HelpCircle, Newspaper, Menu, X, Info, User, Users, Briefcase, Building2, Hammer } from 'lucide-react';
+import { Shield, Camera, FileText, Clock, Phone, Wrench, Truck, ChevronRight, ArrowRight, CheckCircle2, BookOpen, HelpCircle, Newspaper, Menu, X, Info, Scale, Gavel, User, Users, Briefcase, Building2, Hammer } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 import SEO from '@/components/SEO';
+import LegalDisclaimer from '@/components/LegalDisclaimer';
+import { RIGHTS_TOPICS } from '@/lib/rights-data';
 const heroScene = '/hero-scene.jpg';
 
 const stagger = { hidden: {}, visible: { transition: { staggerChildren: 0.1 } } };
@@ -13,8 +15,8 @@ export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const contentLinks = [
-    { to: '/panel-shops', icon: Wrench, label: 'Panel Shops' },
-    { to: '/tow-companies', icon: Truck, label: 'Tow Companies' },
+    { to: '/rights', icon: Scale, label: 'Your Rights' },
+    { to: '/fault-guide', icon: Gavel, label: 'Who\'s at Fault?' },
     { to: '/how-it-works', icon: BookOpen, label: 'How It Works' },
     { to: '/blog', icon: Newspaper, label: 'Blog' },
     { to: '/faq', icon: HelpCircle, label: 'FAQ' },
@@ -24,8 +26,8 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-background">
       <SEO
-        title="SAVO — Car Accident Claims & Insurance Help | NZ"
-        description="Had a car accident in New Zealand? SAVO helps you document damage, lodge insurance claims, request a courtesy car, find panel beaters and tow trucks — all free."
+        title="SAVO — Know Your Rights After a Car Accident | NZ"
+        description="Had a car accident in NZ? Find out who is at fault, what you are entitled to, and how to handle your insurance claim smoothly. Free plain-English guides and tools."
         path="/"
         image="/hero-scene.jpg"
         jsonLd={{
@@ -48,7 +50,7 @@ export default function Home() {
           </Link>
           <nav className="hidden md:flex items-center gap-5 text-sm text-muted-foreground font-medium">
             {contentLinks.map(({ to, label }) => (
-              <Link key={to} to={to} className="hover:text-foreground transition-colors">{label.replace('Panel ', '').replace(' Companies', '')}</Link>
+              <Link key={to} to={to} className="hover:text-foreground transition-colors">{label}</Link>
             ))}
           </nav>
           <div className="flex items-center gap-2">
@@ -94,24 +96,24 @@ export default function Home() {
           <div className="max-w-5xl mx-auto px-4 py-16 md:py-24 relative z-10 flex flex-col md:flex-row items-center gap-10 md:gap-16">
             <motion.div variants={fadeUp} className="flex-1 max-w-xl">
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold bg-white/[0.06] text-white/80 border border-white/10 mb-6">
-                <Shield className="w-3.5 h-3.5" /> Made for New Zealand drivers
+                <Scale className="w-3.5 h-3.5" /> Your claim rights, in plain English
               </span>
               <h1 className="text-4xl md:text-6xl font-bold text-white leading-[1.05] tracking-tight">
-                Car accident?<br />
-                <span className="text-white/60">We've got you covered.</span>
+                Know your rights<br />
+                <span className="text-white/60">after a car accident.</span>
               </h1>
               <p className="mt-5 text-base md:text-lg text-white/60 leading-relaxed max-w-md">
-                SAVO helps New Zealand drivers document accidents, lodge insurance claims, request courtesy cars, and find panel beaters — all in one free app.
+                Find out who is at fault, what you are entitled to, and how to get your insurance claim handled smoothly. Free for New Zealand drivers.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
-                <Link to="/signup">
+                <Link to="/fault-guide">
                   <Button size="lg" className="text-sm font-semibold gap-2 h-12 px-6 bg-primary hover:bg-primary/90 text-primary-foreground">
-                    Get started — it's free <ArrowRight className="w-4 h-4" />
+                    Check who's at fault <ArrowRight className="w-4 h-4" />
                   </Button>
                 </Link>
-                <Link to="/how-it-works">
+                <Link to="/rights">
                   <Button variant="outline" size="lg" className="text-sm font-semibold h-12 px-6 border-white/15 text-white bg-transparent hover:bg-white/[0.06]">
-                    How it works
+                    Know your rights
                   </Button>
                 </Link>
                 <a
@@ -156,7 +158,7 @@ export default function Home() {
         <motion.section variants={stagger} initial="hidden" whileInView="visible" viewport={{ once: true }}
           className="border-b border-border bg-card">
           <div className="max-w-5xl mx-auto px-4 py-6 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-xs text-muted-foreground font-medium">
-            {['100% Free', 'Courtesy Car Requests', 'All NZ Insurers', 'Works on Any Phone'].map(item => (
+            {['100% Free', 'Based on NZ Road Rules', 'Insurer-Neutral', 'Plain English'].map(item => (
               <motion.div key={item} variants={fadeUp} className="flex items-center gap-1.5">
                 <CheckCircle2 className="w-3.5 h-3.5 text-primary" />
                 {item}
@@ -165,11 +167,29 @@ export default function Home() {
           </div>
         </motion.section>
 
+        {/* Rights */}
+        <section className="max-w-5xl mx-auto px-4 pt-16 md:pt-20">
+          <div className="text-center mb-10">
+            <h2 className="text-2xl md:text-3xl font-extrabold text-foreground">What you are entitled to</h2>
+            <p className="mt-3 text-muted-foreground max-w-lg mx-auto">Most drivers never find out what they can claim. Start with the question that matches your situation.</p>
+          </div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {RIGHTS_TOPICS.map((t) => (
+              <Link key={t.slug} to={`/rights/${t.slug}`} className="card-surface-elevated hover:border-primary/30 transition-colors">
+                <h3 className="text-sm font-bold text-foreground">{t.title}</h3>
+                <p className="mt-1.5 text-xs text-muted-foreground leading-relaxed">{t.summary}</p>
+                <span className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-primary">Read guide <ChevronRight className="w-3.5 h-3.5" /></span>
+              </Link>
+            ))}
+          </div>
+          <LegalDisclaimer compact className="mt-6" />
+        </section>
+
         {/* Features */}
         <motion.section variants={stagger} initial="hidden" whileInView="visible" viewport={{ once: true }}
           className="max-w-5xl mx-auto px-4 py-16 md:py-20">
           <motion.div variants={fadeUp} className="text-center mb-12">
-            <h2 className="text-2xl md:text-3xl font-extrabold text-foreground">Everything you need after a car accident</h2>
+            <h2 className="text-2xl md:text-3xl font-extrabold text-foreground">Then handle your claim smoothly</h2>
             <p className="mt-3 text-muted-foreground max-w-lg mx-auto">From capturing evidence to lodging your insurance claim and arranging a courtesy car — SAVO handles it all.</p>
           </motion.div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">

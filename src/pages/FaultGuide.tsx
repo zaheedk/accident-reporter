@@ -421,12 +421,7 @@ export default function FaultGuide() {
                 <p className="text-sm text-foreground leading-relaxed">{result.claimGuidance}</p>
               </Card>
 
-              <Card className="p-3 bg-muted/40 border-dashed">
-                <p className="text-xs text-muted-foreground leading-relaxed flex gap-2">
-                  <Info className="w-3.5 h-3.5 shrink-0 mt-0.5" />
-                  <span>This is a guide based on the road rules — not legal advice. Final liability is determined by insurers or a court. Use this assessment as supporting evidence alongside photos, dashcam footage and witness details.</span>
-                </p>
-              </Card>
+              <LegalDisclaimer />
 
               <div className="grid grid-cols-2 gap-2">
                 <Button variant="outline" onClick={shareResult}><Share2 className="w-4 h-4" />Share</Button>
