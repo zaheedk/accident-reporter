@@ -39,6 +39,115 @@ export interface BlogArticle {
 
 export const blogArticles: BlogArticle[] = [
   {
+    slug: "can-i-choose-my-own-panel-beater-nz",
+    title: "Can I Choose My Own Panel Beater in NZ? Your Rights Explained (2026)",
+    metaDescription: "Can you pick your own panel beater after a crash in New Zealand? What your insurer can and can't insist on, and what changes if you weren't at fault.",
+    heroImage: comprehensiveVsThirdPartyHero,
+    excerpt: "Your insurer suggests a repairer — but do you have to use them? Here's what NZ drivers should know.",
+    date: "2026-10-06",
+    readTime: "4 min read",
+    faq: [
+      { q: "Do I have to use my insurer's approved repairer?", a: "Not always. Many NZ policies let you request your own repairer, though the insurer may need to approve the quote. Check your policy wording." },
+      { q: "What if I wasn't at fault?", a: "If you claim against the at-fault driver's insurer, you can generally ask for repairs at a reasonable repairer of your choice." },
+      { q: "Will choosing my own shop affect my warranty?", a: "Approved-repairer networks often come with a lifetime repair guarantee from the insurer. An independent shop provides its own workmanship guarantee instead." },
+    ],
+    content: `
+## The short answer
+
+Usually yes — but how much say you have depends on your policy and on who caused the crash.
+
+## Claiming on your own policy
+
+Insurers run approved-repairer networks to control cost and quality. Many policies let you nominate your own workshop, but the insurer can ask for a competing quote or cap what it pays. Read the "repairs" section of your policy wording.
+
+## When the other driver was at fault
+
+If you claim directly from the at-fault driver's insurer, you're entitled to have your car put back to its pre-accident condition at a reasonable cost. That generally includes choosing a reasonable repairer. Read our [guide to choosing a repairer](/rights/choosing-repairer) and [check who's at fault](/fault-guide).
+
+## Finding a good workshop
+
+Compare [top-rated panel beaters near you](/panel-beaters) — every listing has a Google rating of 4.5★ or higher.
+
+## While your car is off the road
+
+Not at fault? You may be entitled to a [free replacement car](/not-at-fault-car-hire) paid for by the at-fault party.
+
+*General information only — not legal advice.*
+    `
+  },
+  {
+    slug: "do-i-pay-excess-if-not-at-fault-nz",
+    title: "Do I Pay Excess If the Accident Wasn't My Fault? (NZ Guide 2026)",
+    metaDescription: "Not at fault in a car accident in New Zealand? Learn when you pay excess, how to get it refunded, and how to avoid paying it altogether.",
+    heroImage: insuranceExcessHero,
+    excerpt: "Your excess should come back to you if someone else caused the crash — here's how it works in NZ.",
+    date: "2026-10-06",
+    readTime: "4 min read",
+    faq: [
+      { q: "Will I pay excess if I'm not at fault?", a: "Usually you either don't pay it or get it refunded once your insurer recovers costs from the at-fault driver's insurer, provided you can identify the other driver." },
+      { q: "What if the other driver is uninsured?", a: "Your insurer may still try to recover from them personally. Some policies waive excess for uninsured at-fault drivers you can identify." },
+      { q: "How long does an excess refund take?", a: "It depends on how quickly liability is agreed between insurers — often weeks, sometimes months when fault is disputed." },
+    ],
+    content: `
+## How excess works
+
+Excess is the amount you contribute when you claim on your own policy. If you weren't at fault, your insurer will usually try to recover everything — including your excess — from the at-fault party.
+
+## Three ways to avoid or recover it
+
+1. **Claim directly from the other driver's insurer.** You don't claim on your own policy, so no excess applies.
+2. **Claim on your own policy and get it refunded** once your insurer recovers costs.
+3. **Check for an excess waiver** — many NZ policies waive excess when you identify an at-fault driver.
+
+## What you need
+
+The other driver's name, phone, rego and insurer, plus photos. SAVO's [incident report](/auth) captures all of this at the scene. Unsure about fault? Use the [fault checker](/fault-guide).
+
+## Related
+
+- [Understanding insurance excess in NZ](/blog/understanding-insurance-excess-new-zealand)
+- [Your rights when you're not at fault](/rights/not-at-fault)
+
+*General information only — not legal advice. Check your policy wording.*
+    `
+  },
+  {
+    slug: "other-driver-wont-give-insurance-details-nz",
+    title: "Other Driver Won't Give Their Details After a Crash? What to Do in NZ",
+    metaDescription: "What to do in New Zealand when the other driver refuses to give their name, address or insurance details after a car accident — and the law that requires it.",
+    heroImage: hitAndRunHero,
+    excerpt: "Drivers in NZ are legally required to exchange details after a crash. Here's what to do if they won't.",
+    date: "2026-10-06",
+    readTime: "4 min read",
+    faq: [
+      { q: "Do drivers have to exchange details after a crash in NZ?", a: "Yes. Under the Land Transport Act 1998, drivers involved in a crash must give their name and address, the vehicle owner's details and the rego to anyone involved who asks." },
+      { q: "Do they have to tell me their insurer?", a: "There's no strict legal duty to name their insurer, but your insurer can usually find it using the rego and owner details." },
+      { q: "When must I report a crash to Police?", a: "If someone is injured, report it immediately. If the details can't be exchanged at the scene, report it to Police as soon as possible and within 24 hours." },
+    ],
+    content: `
+## What the law says
+
+Drivers involved in a crash in New Zealand must stop and give their name and address, the owner's name and address, and the registration number to anyone involved who asks.
+
+## If they refuse
+
+1. **Stay calm and stay safe** — don't block or follow them.
+2. **Photograph the rego plate**, the vehicle and the damage.
+3. **Note the time, place and any witnesses.**
+4. **Report it to Police** on 105 (or 111 if anyone is hurt or in danger).
+
+## Claiming without their details
+
+Your insurer can trace the owner from the rego. If you can't identify them, read our [hit-and-run guide](/blog/hit-and-run-accident-nz-what-to-do) and your rights when the [other driver is uninsured](/rights/uninsured-driver).
+
+## Next steps
+
+[Check who's at fault](/fault-guide), and if you weren't, you may be entitled to a [free replacement car](/not-at-fault-car-hire).
+
+*General information only — not legal advice.*
+    `
+  },
+  {
     slug: "why-capturing-accident-details-matters-nz",
     title: "Why Capturing Every Detail at an Accident Scene Matters in New Zealand",
     metaDescription: "Learn why documenting every detail at the accident scene is critical for fast insurance claim processing in New Zealand. Tips for NZ drivers.",
