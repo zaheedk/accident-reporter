@@ -183,7 +183,7 @@ export default function PanelBeatersLocation() {
             },
           };
           if (s.phone) item.telephone = s.phone;
-          if (s.website) item.url = s.website;
+          item.url = `${ORIGIN}/panel-beaters/${slugifyLocation(s.city)}/${slugifyLocation(s.name)}`;
           // Intentionally omit aggregateRating: Google requires reviewCount/ratingCount
           // alongside ratingValue, which we don't store. Including a partial rating
           // triggers Search Console warnings.
@@ -206,7 +206,9 @@ export default function PanelBeatersLocation() {
   const renderShopCard = (s: Shop, opts?: { featured?: boolean }) => (
     <Card key={s.id} className={`p-4 ${opts?.featured ? 'border-primary/40' : ''}`}>
       <div className="flex items-start justify-between gap-3 mb-2">
-        <h3 className="text-lg font-semibold text-foreground">{s.name}</h3>
+        <h3 className="text-lg font-semibold text-foreground">
+          <Link className="hover:underline" to={`/panel-beaters/${slugifyLocation(s.city)}/${slugifyLocation(s.name)}`}>{s.name}</Link>
+        </h3>
         {s.google_rating ? (
           <Badge variant="secondary" className="flex items-center gap-1 shrink-0">
             <Star className="w-3 h-3 fill-current" /> {s.google_rating}
@@ -233,6 +235,9 @@ export default function PanelBeatersLocation() {
             </a>
           </Button>
         )}
+        <Button asChild variant="outline" size="sm">
+          <Link to={`/panel-beaters/${slugifyLocation(s.city)}/${slugifyLocation(s.name)}`}>Hours &amp; details</Link>
+        </Button>
         <Button asChild variant="outline" size="sm">
           <a href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(`${s.address}, ${s.city}`)}`} target="_blank" rel="noopener noreferrer">
             Directions

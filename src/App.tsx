@@ -67,6 +67,7 @@ const HazardRadar = lazy(() => import("./pages/HazardRadar"));
 const CouncilReport = lazy(() => import("./pages/CouncilReport"));
 const PanelBeatersIndex = lazy(() => import("./pages/PanelBeatersIndex"));
 const PanelBeatersLocation = lazy(() => import("./pages/PanelBeatersLocation"));
+const PanelShopDetail = lazy(() => import("./pages/PanelShopDetail"));
 const PanelBeatersByMakeIndex = lazy(() => import("./pages/PanelBeatersByMakeIndex"));
 const PanelBeatersByMake = lazy(() => import("./pages/PanelBeatersByMake"));
 const TowTrucksIndex = lazy(() => import("./pages/TowTrucksIndex"));
@@ -178,6 +179,7 @@ const App = () => (
               <Route path="/tow-companies" element={<TowCompanies />} />
               <Route path="/panel-beaters" element={<PanelBeatersIndex />} />
               <Route path="/panel-beaters/:slug" element={<PanelBeatersLocation />} />
+              <Route path="/panel-beaters/:slug/:shop" element={<PanelShopDetail />} />
               <Route path="/panel-beaters-for" element={<PanelBeatersByMakeIndex />} />
               <Route path="/panel-beaters-for/:make" element={<PanelBeatersByMake />} />
               <Route path="/tow-trucks" element={<TowTrucksIndex />} />
