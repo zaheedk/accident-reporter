@@ -46,6 +46,9 @@ const staticEntries: Entry[] = [
 ];
 
 const blogSlugs = [
+  'aa-insurance-car-claim-guide-nz',
+  'state-ami-car-insurance-claim-guide-nz',
+  'tower-insurance-car-claim-guide-nz',
   'why-capturing-accident-details-matters-nz',
   'step-by-step-guide-filing-car-insurance-claim-nz',
   'common-mistakes-nz-drivers-insurance-claims',
