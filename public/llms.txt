@@ -1,6 +1,6 @@
 # SAVO
 
-> Free New Zealand app that helps drivers document car accidents, lodge insurance claims, request courtesy cars, and find trusted panel beaters and tow companies.
+> Free New Zealand resource that helps drivers understand their insurance claim rights, work out who is at fault, and handle their claim smoothly. General information, not legal advice.
 
 SAVO guides Kiwi drivers through exactly what insurers (IAG, AA, Tower, State, AMI, Vero) need after a crash — photos, GPS, third-party details, witnesses, and a signed PDF report ready to email.
 
@@ -12,7 +12,8 @@ SAVO guides Kiwi drivers through exactly what insurers (IAG, AA, Tower, State, A
 - [FAQ](/faq): Answers to common questions about claims, panel shops, and using SAVO.
 - [Panel Beaters](/panel-shops): Directory of trusted NZ repair shops with locations and contact details.
 - [Tow Companies](/tow-companies): Directory of NZ tow operators sorted by proximity.
-- [Fault Guide](/fault-guide): Plain-English guide to who is at fault in common NZ accident scenarios.
+- [Know Your Rights](/rights): Plain-English NZ guides to not-at-fault claims, courtesy cars, repairers, declined claims and disputes.
+- [Who is at fault?](/fault-guide): Fault checker citing the NZ road rule that applies.
 - [Blog](/blog): Articles on NZ car insurance, claims, courtesy cars, and road safety.
 - [Legal](/legal): Terms of service.
 - [Privacy](/privacy): Privacy policy.

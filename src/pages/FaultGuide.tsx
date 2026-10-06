@@ -1,4 +1,6 @@
 import { useMemo, useState } from 'react';
+import LegalDisclaimer from '@/components/LegalDisclaimer';
+import { saveFaultHandoff } from '@/lib/fault-handoff';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Share2, Download, FileText, RotateCcw, Scale, Info } from 'lucide-react';
 import AppLayout from '@/components/AppLayout';
@@ -228,6 +230,7 @@ export default function FaultGuide() {
       <SEO
         title="Fault Determination Guide | SAVO"
         description="Step-by-step fault assessment for car accidents in NZ and Australia, citing the actual road rule. Use as supporting evidence for your claim."
+        path="/fault-guide"
       />
       <div className="max-w-xl mx-auto">
         <div className="flex items-center gap-3 mb-4">
@@ -418,19 +421,14 @@ export default function FaultGuide() {
                 <p className="text-sm text-foreground leading-relaxed">{result.claimGuidance}</p>
               </Card>
 
-              <Card className="p-3 bg-muted/40 border-dashed">
-                <p className="text-xs text-muted-foreground leading-relaxed flex gap-2">
-                  <Info className="w-3.5 h-3.5 shrink-0 mt-0.5" />
-                  <span>This is a guide based on the road rules — not legal advice. Final liability is determined by insurers or a court. Use this assessment as supporting evidence alongside photos, dashcam footage and witness details.</span>
-                </p>
-              </Card>
+              <LegalDisclaimer />
 
               <div className="grid grid-cols-2 gap-2">
                 <Button variant="outline" onClick={shareResult}><Share2 className="w-4 h-4" />Share</Button>
                 <Button variant="outline" onClick={downloadResult}><Download className="w-4 h-4" />Download</Button>
               </div>
               <Button asChild className="w-full">
-                <Link to="/claims/new"><FileText className="w-4 h-4" />Add to a new report</Link>
+                <Link to="/claims/new" onClick={() => saveFaultHandoff(result)}><FileText className="w-4 h-4" />Add to a new report</Link>
               </Button>
               <Button variant="ghost" className="w-full" onClick={restart}><RotateCcw className="w-4 h-4" />Start over</Button>
             </div>
