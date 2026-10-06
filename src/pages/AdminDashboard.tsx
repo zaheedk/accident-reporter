@@ -4,7 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import AppLayout from '@/components/AppLayout';
 import { Navigate, Link } from 'react-router-dom';
-import { Car, FileText, Users, ChevronRight, Search, Building2 } from 'lucide-react';
+import { Car, FileText, Users, ChevronRight, Search, Building2, Mail } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -84,6 +84,19 @@ export default function AdminDashboard() {
             <div>
               <div className="text-sm font-bold text-foreground">Insurance Companies</div>
               <div className="text-xs text-muted-foreground mt-0.5">Manage dropdown options</div>
+            </div>
+          </div>
+          <ChevronRight className="w-4 h-4 text-muted-foreground/40" strokeWidth={1.5} />
+        </Link>
+
+        <Link to="/admin/outreach" className="card-surface flex items-center justify-between hover:border-foreground/20 transition-colors">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-muted flex items-center justify-center">
+              <Mail className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
+            </div>
+            <div>
+              <div className="text-sm font-bold text-foreground">Panel beater outreach</div>
+              <div className="text-xs text-muted-foreground mt-0.5">Email top shops to link to SAVO</div>
             </div>
           </div>
           <ChevronRight className="w-4 h-4 text-muted-foreground/40" strokeWidth={1.5} />

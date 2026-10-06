@@ -57,6 +57,8 @@ const Broker = lazy(() => import("./pages/Broker"));
 const RentalPartner = lazy(() => import("./pages/RentalPartner"));
 const RentalPartnersAdmin = lazy(() => import("./pages/admin/RentalPartners"));
 const SeoDashboard = lazy(() => import("./pages/admin/SeoDashboard"));
+const ShopOutreach = lazy(() => import("./pages/admin/ShopOutreach"));
+const OutreachUnsubscribe = lazy(() => import("./pages/OutreachUnsubscribe"));
 const WidgetSetup = lazy(() => import("./pages/WidgetSetup"));
 const FaultGuide = lazy(() => import("./pages/FaultGuide"));
 const Rights = lazy(() => import("./pages/Rights"));
@@ -189,6 +191,8 @@ const App = () => (
               <Route path="/admin/insurance-companies" element={<ProtectedRoute><InsuranceCompanies /></ProtectedRoute>} />
               <Route path="/admin/rental-partners" element={<ProtectedRoute><RentalPartnersAdmin /></ProtectedRoute>} />
               <Route path="/admin/seo" element={<ProtectedRoute><SeoDashboard /></ProtectedRoute>} />
+              <Route path="/admin/outreach" element={<ProtectedRoute><ShopOutreach /></ProtectedRoute>} />
+              <Route path="/outreach/unsubscribe" element={<OutreachUnsubscribe />} />
               <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
               <Route path="/documents" element={<ProtectedRoute><Documents /></ProtectedRoute>} />
               <Route path="/family" element={<ProtectedRoute><Family /></ProtectedRoute>} />
