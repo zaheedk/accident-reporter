@@ -1,3 +1,4 @@
+import Free2DriveOffer from '@/components/Free2DriveOffer';
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Printer, Mail, X, Download, Share2, Phone, Pencil, Save, Loader2, Send, Car, Users, Wrench, Trash2, Video, Mic } from 'lucide-react';
@@ -542,7 +543,7 @@ export default function ClaimDetail() {
     <AppLayout>
       <div className="theme-garage relative">
         <div className="space-y-8 overflow-x-hidden" id="claim-report" ref={printRef}>
-          {/* Header — matches Garage / VehicleForm pattern */}
+{HEADER_PLACEHOLDER}          {/* Header — matches Garage / VehicleForm pattern */}
           <div className="flex items-end justify-between gap-3 pt-2 print:hidden">
             <div className="flex items-start gap-2 min-w-0">
               <button

@@ -1,3 +1,4 @@
+import Free2DriveOffer from '@/components/Free2DriveOffer';
 import { useMemo, useState } from 'react';
 import LegalDisclaimer from '@/components/LegalDisclaimer';
 import { saveFaultHandoff } from '@/lib/fault-handoff';
@@ -420,6 +421,9 @@ export default function FaultGuide() {
                 <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-1">What this means for your claim</p>
                 <p className="text-sm text-foreground leading-relaxed">{result.claimGuidance}</p>
               </Card>
+
+              {result.verdict === 'not_at_fault' && <Free2DriveOffer source="fault-checker" />}
+              {result.verdict === 'shared' && <Free2DriveOffer source="fault-checker-shared" title="Partly not at fault? You may still qualify" body="Where the other driver shares the blame, a replacement car can sometimes still be claimed against their insurer. Free 2 Drive can check your eligibility for free." />}
 
               <LegalDisclaimer />
 
