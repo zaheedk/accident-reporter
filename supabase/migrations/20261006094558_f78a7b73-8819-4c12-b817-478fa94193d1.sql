@@ -1,0 +1,6 @@
+ALTER TABLE public.panel_shops
+  ADD COLUMN IF NOT EXISTS opening_hours text NOT NULL DEFAULT '',
+  ADD COLUMN IF NOT EXISTS services text[] NOT NULL DEFAULT '{}',
+  ADD COLUMN IF NOT EXISTS photo_url text NOT NULL DEFAULT '',
+  ADD COLUMN IF NOT EXISTS review_count integer NOT NULL DEFAULT 0,
+  ADD COLUMN IF NOT EXISTS description text NOT NULL DEFAULT '';

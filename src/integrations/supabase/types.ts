@@ -1061,12 +1061,17 @@ export type Database = {
           address: string
           city: string
           created_at: string
+          description: string
           email: string
           google_rating: number
           id: string
           name: string
+          opening_hours: string
           phone: string
+          photo_url: string
           region: string
+          review_count: number
+          services: string[]
           updated_at: string
           website: string
         }
@@ -1074,12 +1079,17 @@ export type Database = {
           address: string
           city?: string
           created_at?: string
+          description?: string
           email?: string
           google_rating?: number
           id?: string
           name: string
+          opening_hours?: string
           phone?: string
+          photo_url?: string
           region?: string
+          review_count?: number
+          services?: string[]
           updated_at?: string
           website?: string
         }
@@ -1087,12 +1097,17 @@ export type Database = {
           address?: string
           city?: string
           created_at?: string
+          description?: string
           email?: string
           google_rating?: number
           id?: string
           name?: string
+          opening_hours?: string
           phone?: string
+          photo_url?: string
           region?: string
+          review_count?: number
+          services?: string[]
           updated_at?: string
           website?: string
         }

@@ -53,6 +53,9 @@ const staticEntries: Entry[] = [
 ];
 
 const blogSlugs = [
+  'can-i-choose-my-own-panel-beater-nz',
+  'do-i-pay-excess-if-not-at-fault-nz',
+  'other-driver-wont-give-insurance-details-nz',
   'aa-insurance-car-claim-guide-nz',
   'state-ami-car-insurance-claim-guide-nz',
   'tower-insurance-car-claim-guide-nz',
@@ -112,9 +115,9 @@ async function main() {
   for (const slug of blogSlugs) entries.push({ path: `/blog/${slug}`, changefreq: 'monthly', priority: '0.6' });
 
   // Panel beaters: city + region pages
-  const shops = await fetchRows<{ city: string; region: string }>(
+  const shops = await fetchRows<{ city: string; region: string; name: string }>(
     'panel_shops',
-    'select=city,region&google_rating=gte.4.5'
+    'select=city,region,name&google_rating=gte.4.5'
   );
   const cities = new Set<string>();
   const regions = new Set<string>();
@@ -126,6 +129,11 @@ async function main() {
   for (const c of cities) panelSlugs.add(slugify(c));
   for (const r of regions) panelSlugs.add(slugify(r));
   for (const slug of panelSlugs) entries.push({ path: `/panel-beaters/${slug}`, changefreq: 'weekly', priority: '0.8', lastmod: TODAY });
+
+  // Individual shop pages
+  const shopPaths = new Set<string>();
+  for (const s of shops) if (s.city && s.name) shopPaths.add(`/panel-beaters/${slugify(s.city)}/${slugify(s.name)}`);
+  for (const p of shopPaths) entries.push({ path: p, changefreq: 'monthly', priority: '0.6', lastmod: TODAY });
 
   // Tow trucks: region pages + city pages
   const tows = await fetchRows<{ region: string; address: string }>('tow_companies', 'select=region,address');
@@ -149,7 +157,7 @@ async function main() {
 
   const out = xml(entries);
   writeFileSync(resolve('public/sitemap.xml'), out);
-  console.log(`[sitemap] wrote ${entries.length} entries (panel-beaters: ${panelSlugs.size}, makes: ${makeSlugs.length}, tow-trucks: ${towRegions.size} regions + ${towCitySlugs.size} cities)`);
+  console.log(`[sitemap] wrote ${entries.length} entries (panel-beaters: ${panelSlugs.size}, shops: ${shopPaths.size}, makes: ${makeSlugs.length}, tow-trucks: ${towRegions.size} regions + ${towCitySlugs.size} cities)`);
 }
 
 main().catch((err) => {
