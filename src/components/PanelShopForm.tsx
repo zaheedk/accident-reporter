@@ -14,6 +14,11 @@ type PanelShop = {
   email: string;
   google_rating: number;
   website: string;
+  opening_hours?: string;
+  services?: string[];
+  photo_url?: string;
+  review_count?: number;
+  description?: string;
 };
 
 type Props = {
@@ -25,12 +30,15 @@ type Props = {
 
 const emptyShop: Omit<PanelShop, 'id'> = {
   name: '', address: '', city: '', region: '', phone: '', email: '', google_rating: 4.5, website: '',
+  opening_hours: '', services: [], photo_url: '', review_count: 0, description: '',
 };
 
 export default function PanelShopForm({ open, onOpenChange, shop, onSave }: Props) {
   const [form, setForm] = useState<Omit<PanelShop, 'id'>>(shop ? {
     name: shop.name, address: shop.address, city: shop.city, region: shop.region,
     phone: shop.phone, email: shop.email, google_rating: shop.google_rating, website: shop.website,
+    opening_hours: shop.opening_hours ?? '', services: shop.services ?? [], photo_url: shop.photo_url ?? '',
+    review_count: shop.review_count ?? 0, description: shop.description ?? '',
   } : emptyShop);
   const [saving, setSaving] = useState(false);
 
@@ -46,7 +54,7 @@ export default function PanelShopForm({ open, onOpenChange, shop, onSave }: Prop
     }
   };
 
-  const update = (field: keyof typeof form, value: string | number) =>
+  const update = (field: keyof typeof form, value: string | number | string[]) =>
     setForm(prev => ({ ...prev, [field]: value }));
 
   return (
@@ -92,6 +100,27 @@ export default function PanelShopForm({ open, onOpenChange, shop, onSave }: Prop
           <div>
             <Label htmlFor="website">Website</Label>
             <Input id="website" value={form.website} onChange={e => update('website', e.target.value)} />
+          </div>
+          <div>
+            <Label htmlFor="review_count">Google review count</Label>
+            <Input id="review_count" type="number" min="0" value={form.review_count ?? 0} onChange={e => update('review_count', parseInt(e.target.value) || 0)} />
+          </div>
+          <div>
+            <Label htmlFor="hours">Opening hours</Label>
+            <Input id="hours" placeholder="Mon–Fri 8am–5pm" value={form.opening_hours ?? ''} onChange={e => update('opening_hours', e.target.value)} />
+          </div>
+          <div>
+            <Label htmlFor="services">Services (comma separated)</Label>
+            <Input id="services" placeholder="Collision repair, Spray painting, EV certified" value={(form.services ?? []).join(', ')}
+              onChange={e => update('services', e.target.value.split(',').map(x => x.trim()).filter(Boolean))} />
+          </div>
+          <div>
+            <Label htmlFor="photo">Photo URL</Label>
+            <Input id="photo" value={form.photo_url ?? ''} onChange={e => update('photo_url', e.target.value)} />
+          </div>
+          <div>
+            <Label htmlFor="desc">Short description</Label>
+            <Input id="desc" value={form.description ?? ''} onChange={e => update('description', e.target.value)} />
           </div>
           <div className="flex gap-2 pt-2">
             <Button type="button" variant="outline" className="flex-1" onClick={() => onOpenChange(false)}>
