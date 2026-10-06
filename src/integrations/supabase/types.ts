@@ -1421,6 +1421,27 @@ export type Database = {
         }
         Relationships: []
       }
+      seo_snapshots: {
+        Row: {
+          created_at: string
+          data: Json
+          id: string
+          site_url: string
+        }
+        Insert: {
+          created_at?: string
+          data: Json
+          id?: string
+          site_url: string
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          id?: string
+          site_url?: string
+        }
+        Relationships: []
+      }
       shop_job_events: {
         Row: {
           actor_user_id: string | null
