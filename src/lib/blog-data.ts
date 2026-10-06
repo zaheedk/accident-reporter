@@ -2450,6 +2450,123 @@ SAVO's accident report walks you through all of this at the scene and produces a
 
 *Off the road after a crash that wasn't your fault? See [how not-at-fault car hire works in New Zealand](/not-at-fault-car-hire), or open SAVO and capture the scene before anything moves.*
     `
+  },
+  {
+    slug: "aa-insurance-car-claim-guide-nz",
+    title: "How to Make an AA Insurance Car Claim in NZ: Step-by-Step Guide (2026)",
+    metaDescription: "A plain-English guide to lodging an AA Insurance car claim in New Zealand — what to gather, how repairs and excess work, and how to speed things up.",
+    heroImage: filingClaimHero,
+    excerpt: "Lodging a car claim with AA Insurance? Here's what to have ready, how the repair process usually works, and the mistakes that slow claims down.",
+    date: "2026-10-06",
+    readTime: "6 min read",
+    faq: [
+      { q: "How do I lodge an AA Insurance car claim?", a: "Most AA Insurance claims can be lodged online or by phone. Have your policy number, the date, time and location of the accident, photos, and the other driver's details ready before you start." },
+      { q: "Do I have to use an AA Insurance approved repairer?", a: "Using an approved repairer is usually the fastest route because quotes are pre-agreed. Check your policy wording if you'd prefer your own panel beater — some policies allow it, but approval may take longer." },
+      { q: "Do I pay excess if I wasn't at fault?", a: "With most NZ insurers you may get your excess back if the other driver is identified and found at fault. Always check your own policy wording for the exact rules." },
+    ],
+    content: `
+## Before you call: gather your evidence
+
+The single biggest thing that speeds up any AA Insurance claim is having complete information at the first contact:
+
+- Your policy number and vehicle registration
+- Date, time and exact location of the accident
+- Photos of all vehicles, the damage, the wider scene and number plates
+- The other driver's name, phone, address, rego and insurer
+- Witness names and phone numbers
+- A police event number if police attended
+
+SAVO captures all of this at the scene and creates a single report you can send with your claim.
+
+## Step 1 — Lodge the claim
+
+Lodge online or by phone as soon as possible. Describe what happened factually and avoid admitting fault — let the insurer assess liability.
+
+## Step 2 — Assessment and repair
+
+Your insurer will usually direct you to an approved repairer for an assessment. You can compare [top-rated panel beaters near you](/panel-beaters) before choosing.
+
+## Step 3 — Excess and recovery
+
+If the other party was at fault and is identified, your insurer may recover costs from them and refund your excess. Keep every document — it makes recovery much easier.
+
+## Need a car while yours is repaired?
+
+If you weren't at fault, you may be entitled to a like-for-like replacement vehicle paid for by the at-fault party. See [how not-at-fault car hire works](/not-at-fault-car-hire).
+
+*Always check your own policy wording — this guide is general information, not advice from AA Insurance.*
+    `
+  },
+  {
+    slug: "state-ami-car-insurance-claim-guide-nz",
+    title: "State and AMI Car Insurance Claims in NZ: What to Expect (2026)",
+    metaDescription: "How to lodge a car insurance claim with State or AMI in New Zealand — evidence to collect, the repair process, excess and replacement cars.",
+    heroImage: talkingToInsurerHero,
+    excerpt: "State and AMI are two of NZ's largest car insurers. Here's how a typical claim works and how to avoid delays.",
+    date: "2026-10-06",
+    readTime: "5 min read",
+    faq: [
+      { q: "Can I lodge a State or AMI claim online?", a: "Yes, both insurers offer online claim lodgement as well as phone claims. Online is often fastest for straightforward vehicle damage." },
+      { q: "How long does a State or AMI car repair take?", a: "Simple cosmetic repairs often take a few days once approved; larger jobs can take several weeks, mostly depending on parts availability." },
+      { q: "Will my premium go up after a claim?", a: "An at-fault claim can affect your no-claims bonus or premium at renewal. Not-at-fault claims where costs are recovered usually have less impact — check your policy." },
+    ],
+    content: `
+## The evidence that makes claims fast
+
+Whichever insurer you're with, claims move fastest when you supply everything up front: photos of both vehicles and the scene, the other driver's details and insurer, witness contacts and a police event number if relevant.
+
+## How a typical claim works
+
+1. **Lodge** online or by phone, with a factual description of what happened.
+2. **Assessment** — you'll usually be directed to a repairer on the insurer's network.
+3. **Repair** — the repairer liaises with the insurer on the quote and parts.
+4. **Excess** — you pay your excess to the repairer, unless it is waived or later recovered.
+
+Browse [panel beaters by city](/panel-beaters) to see highly rated shops near you, or check [tow trucks](/tow-trucks) if your car can't be driven.
+
+## Common delays to avoid
+
+- Missing third-party details
+- Photos taken after the cars have moved
+- Waiting days before lodging the claim
+
+Read our [7 common claim mistakes](/blog/common-mistakes-nz-drivers-insurance-claims) for more.
+
+*General information only — always check your State or AMI policy wording.*
+    `
+  },
+  {
+    slug: "tower-insurance-car-claim-guide-nz",
+    title: "Tower Car Insurance Claims in NZ: A Practical Guide (2026)",
+    metaDescription: "A practical guide to making a Tower car insurance claim in New Zealand — what to prepare, the repair process, excess and not-at-fault claims.",
+    heroImage: comprehensiveVsThirdPartyHero,
+    excerpt: "Claiming with Tower? Here's how to prepare, what happens next, and how to keep your claim moving.",
+    date: "2026-10-06",
+    readTime: "5 min read",
+    faq: [
+      { q: "What do I need to make a Tower car claim?", a: "Your policy details, the accident date, time and location, photos of the damage and scene, and the other driver's details and insurer." },
+      { q: "What if the other driver doesn't have insurance?", a: "Your own comprehensive cover usually still applies. Some policies include uninsured motorist cover for third-party policies — check your wording." },
+      { q: "Can I get a replacement car while mine is repaired?", a: "If you weren't at fault, the at-fault party is generally responsible for reasonable replacement transport. Some policies also include rental car cover." },
+    ],
+    content: `
+## Get your evidence in order first
+
+Before you lodge, collect photos, third-party details, witness contacts and the exact location. A complete first report avoids back-and-forth that can add days to your claim. SAVO packages all of this into one report.
+
+## Lodging and assessment
+
+Lodge your claim online or by phone, then follow your insurer's instructions for assessment. You'll usually be directed to an approved repairer — compare [top-rated local panel beaters](/panel-beaters) if you have a choice.
+
+## Not at fault?
+
+If another driver caused the crash, tell your insurer straight away and provide their details. You may be able to recover your excess, and you may be entitled to a [replacement vehicle at no cost](/not-at-fault-car-hire).
+
+## If your car is written off
+
+Read [what happens when your car is written off in NZ](/blog/car-written-off-nz-what-happens-next) to understand settlement and your options.
+
+*General information only — not advice from Tower. Always check your policy wording.*
+    `
   }
 ];
 

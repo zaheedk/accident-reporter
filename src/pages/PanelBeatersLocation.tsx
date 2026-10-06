@@ -48,6 +48,36 @@ const CITY_INTROS: Record<string, { blurb: string; insurers: string; suburbs: st
     insurers: 'AA Insurance, State, Tower and AMI are the main insurers approving repairs in Otago',
     suburbs: 'South Dunedin, Green Island, Mosgiel, North East Valley and Andersons Bay',
   },
+  'palmerston-north': {
+    blurb: 'Palmerston North panel beaters serve Manawatū, Feilding and the wider lower North Island farming belt. Rural and highway damage — stock, gravel and State Highway 1/3 collisions — make up a large share of work, alongside student and commuter fender-benders around Massey.',
+    insurers: 'AA Insurance, State, AMI and Tower all hold approved repairers in Manawatū',
+    suburbs: 'Kelvin Grove, Roslyn, Takaro, Terrace End and Feilding',
+  },
+  napier: {
+    blurb: 'Napier and Hastings share one Hawke\'s Bay repair market, and drivers often cross between the two cities for insurer-approved work. Post-cyclone demand pushed booking times out, so getting an assessment booked early is worthwhile.',
+    insurers: 'State, AA Insurance, Tower and AMI maintain approved networks in Hawke\'s Bay',
+    suburbs: 'Onekawa, Pandora, Taradale, Hastings and Havelock North',
+  },
+  nelson: {
+    blurb: 'Nelson panel beaters cover Nelson, Richmond and Tasman. With fewer shops than the bigger centres, popular workshops book up quickly, and parts for less common makes may need to come from Christchurch or the North Island.',
+    insurers: 'AA Insurance, State, AMI and Tower are the main insurers approving repairs in Nelson Tasman',
+    suburbs: 'Stoke, Annesbrook, Tahunanui, Richmond and Motueka',
+  },
+  'new-plymouth': {
+    blurb: 'New Plymouth panel beaters serve the whole of Taranaki, from Waitara to Hāwera. Work is a mix of urban collisions, rural road damage and utes and 4WDs from the farming and energy sectors.',
+    insurers: 'AA Insurance, State, AMI and Tower all approve repairers across Taranaki',
+    suburbs: 'Bell Block, Fitzroy, Moturoa, Waiwhakaiho and Waitara',
+  },
+  rotorua: {
+    blurb: 'Rotorua panel beaters handle a lot of visitor and rental-vehicle damage alongside local claims, plus State Highway 5 and 30 collisions. Geothermal air can be hard on paint and metal, so match paintwork carefully on older vehicles.',
+    insurers: 'State, AA Insurance, AMI and Tower maintain approved repairers in Rotorua',
+    suburbs: 'Fairy Springs, Ngongotahā, Western Heights and the Rotorua industrial area',
+  },
+  queenstown: {
+    blurb: 'Queenstown panel beaters deal with high volumes of rental-car, winter-ice and alpine-road damage. The small local market means parts and paint often come from Dunedin or Christchurch, so allow extra time for repairs.',
+    insurers: 'AA Insurance, State, AMI and Tower handle most Queenstown Lakes claims',
+    suburbs: 'Frankton, Remarkables Park, Arrowtown and Cromwell',
+  },
 };
 
 function cityIntro(name: string, slug: string, count: number): string {
@@ -115,6 +145,11 @@ export default function PanelBeatersLocation() {
 
   const topPicks = shops.slice(0, 5);
   const rest = shops.slice(5);
+  // Thin city pages (<3 shops) get padded with nearby same-region workshops so
+  // the page stays genuinely useful instead of a near-empty listing.
+  const nearby = isCity && shops.length < 3
+    ? all.filter((s) => s.region === region && slugifyLocation(s.city) !== slug).slice(0, 6)
+    : [];
   const tow_slug = slug; // mirror city slug for tow directory cross-link
 
   const title = `Best Panel Beaters in ${locationName} — ${shops.length || 'Top-rated'} Collision Repair Shops NZ (2026)`;
@@ -253,6 +288,17 @@ export default function PanelBeatersLocation() {
                 <h2 className="text-xl font-serif text-foreground mb-3">Full directory ({rest.length} more)</h2>
                 <div className="space-y-3">
                   {rest.map((s) => renderShopCard(s))}
+                </div>
+              </section>
+            )}
+            {nearby.length > 0 && (
+              <section className="mb-10">
+                <h2 className="text-xl font-serif text-foreground mb-3">More panel beaters near {locationName}</h2>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Highly rated workshops elsewhere in {region} that regularly take work from {locationName} drivers.
+                </p>
+                <div className="space-y-3">
+                  {nearby.map((s) => renderShopCard(s))}
                 </div>
               </section>
             )}
