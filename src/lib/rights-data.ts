@@ -147,7 +147,7 @@ export const RIGHTS_TOPICS: RightsTopic[] = [
       {
         heading: 'Against another driver',
         body: [
-          'The Disputes Tribunal hears claims up to $30,000 (or $30,000 by agreement) and lawyers generally cannot appear. The filing fee is low. You need evidence: photos, quotes, witness details and the road rule that applies.',
+          'The Disputes Tribunal hears claims up to $30,000, and lawyers generally cannot appear. The filing fee is low. You need evidence: photos, quotes, witness details and the road rule that applies.',
         ],
       },
     ],
