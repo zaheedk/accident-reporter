@@ -1,3 +1,4 @@
+import { takeFaultHandoff } from '@/lib/fault-handoff';
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams, useSearchParams, Link } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, Save, Camera, Loader2, MapPin, Car, Trash2, Check, CarFront, Ban, ParkingSquare, Plus, User, Users, Phone, AlertTriangle, FileText } from 'lucide-react';
@@ -73,7 +74,11 @@ export default function ClaimWizard() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [step, setStep] = useState(0);
-  const [claim, setClaim] = useState<ClaimReport>(emptyClaim);
+  const [claim, setClaim] = useState<ClaimReport>(() => {
+    if (id) return emptyClaim;
+    const h = takeFaultHandoff();
+    return h ? { ...emptyClaim, atFault: h.atFault, blameDescription: h.blameDescription } : emptyClaim;
+  });
   const [claimNumber, setClaimNumber] = useState<number | null>(null);
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [photos, setPhotos] = useState<ClaimPhoto[]>([]);

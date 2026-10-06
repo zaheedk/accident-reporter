@@ -59,6 +59,8 @@ const RentalPartnersAdmin = lazy(() => import("./pages/admin/RentalPartners"));
 const SeoDashboard = lazy(() => import("./pages/admin/SeoDashboard"));
 const WidgetSetup = lazy(() => import("./pages/WidgetSetup"));
 const FaultGuide = lazy(() => import("./pages/FaultGuide"));
+const Rights = lazy(() => import("./pages/Rights"));
+const RightsTopic = lazy(() => import("./pages/RightsTopic"));
 const NotAtFaultCarHire = lazy(() => import("./pages/NotAtFaultCarHire"));
 const FaultQuiz = lazy(() => import("./pages/FaultQuiz"));
 const HazardRadar = lazy(() => import("./pages/HazardRadar"));
@@ -193,6 +195,8 @@ const App = () => (
               <Route path="/rental-partner" element={<ProtectedRoute><RentalPartner /></ProtectedRoute>} />
               <Route path="/widget-setup" element={<ProtectedRoute><WidgetSetup /></ProtectedRoute>} />
               <Route path="/fault-guide" element={<FaultGuide />} />
+              <Route path="/rights" element={<Rights />} />
+              <Route path="/rights/:slug" element={<RightsTopic />} />
               <Route path="/not-at-fault-car-hire" element={<NotAtFaultCarHire />} />
               <Route path="/fault-quiz" element={<FaultQuiz />} />
               <Route path="/hazard-radar" element={<ProtectedRoute><HazardRadar /></ProtectedRoute>} />

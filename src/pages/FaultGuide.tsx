@@ -1,4 +1,6 @@
 import { useMemo, useState } from 'react';
+import LegalDisclaimer from '@/components/LegalDisclaimer';
+import { saveFaultHandoff } from '@/lib/fault-handoff';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Share2, Download, FileText, RotateCcw, Scale, Info } from 'lucide-react';
 import AppLayout from '@/components/AppLayout';
@@ -228,6 +230,7 @@ export default function FaultGuide() {
       <SEO
         title="Fault Determination Guide | SAVO"
         description="Step-by-step fault assessment for car accidents in NZ and Australia, citing the actual road rule. Use as supporting evidence for your claim."
+        path="/fault-guide"
       />
       <div className="max-w-xl mx-auto">
         <div className="flex items-center gap-3 mb-4">
@@ -430,7 +433,7 @@ export default function FaultGuide() {
                 <Button variant="outline" onClick={downloadResult}><Download className="w-4 h-4" />Download</Button>
               </div>
               <Button asChild className="w-full">
-                <Link to="/claims/new"><FileText className="w-4 h-4" />Add to a new report</Link>
+                <Link to="/claims/new" onClick={() => saveFaultHandoff(result)}><FileText className="w-4 h-4" />Add to a new report</Link>
               </Button>
               <Button variant="ghost" className="w-full" onClick={restart}><RotateCcw className="w-4 h-4" />Start over</Button>
             </div>
