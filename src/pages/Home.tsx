@@ -1,3 +1,4 @@
+import Free2DriveOffer from '@/components/Free2DriveOffer';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Shield, Camera, FileText, Clock, Phone, Wrench, Truck, ChevronRight, ArrowRight, CheckCircle2, BookOpen, HelpCircle, Newspaper, Menu, X, Info, Scale, Gavel, User, Users, Briefcase, Building2, Hammer } from 'lucide-react';
@@ -166,6 +167,8 @@ export default function Home() {
             ))}
           </div>
         </motion.section>
+
+        <section className="max-w-3xl mx-auto px-4 py-6"><Free2DriveOffer source="home" /></section>
 
         {/* Rights */}
         <section className="max-w-5xl mx-auto px-4 pt-16 md:pt-20">

@@ -543,7 +543,7 @@ export default function ClaimDetail() {
     <AppLayout>
       <div className="theme-garage relative">
         <div className="space-y-8 overflow-x-hidden" id="claim-report" ref={printRef}>
-{HEADER_PLACEHOLDER}          {/* Header — matches Garage / VehicleForm pattern */}
+          {/* Header — matches Garage / VehicleForm pattern */}
           <div className="flex items-end justify-between gap-3 pt-2 print:hidden">
             <div className="flex items-start gap-2 min-w-0">
               <button
@@ -577,6 +577,7 @@ export default function ClaimDetail() {
               </button>
             </div>
           </div>
+          {claim.atFault === 'other_party' && <Free2DriveOffer source="claim-detail" title="Not your fault? Get a free replacement car" />}
 
           <div className="hidden print:block mb-6">
             <h1 className="text-xl font-bold text-foreground">Incident report</h1>
