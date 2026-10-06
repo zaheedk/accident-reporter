@@ -77,7 +77,7 @@ export default function ClaimWizard() {
   const [claim, setClaim] = useState<ClaimReport>(() => {
     if (id) return emptyClaim();
     const h = takeFaultHandoff();
-    return h ? { ...emptyClaim(), atFault: h.atFault, blameDescription: h.blameDescription } : emptyClaim();
+    return h ? { ...emptyClaim(), atFault: h.atFault as ClaimReport["atFault"], blameDescription: h.blameDescription } : emptyClaim();
   });
   const [claimNumber, setClaimNumber] = useState<number | null>(null);
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
