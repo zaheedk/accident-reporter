@@ -1,3 +1,4 @@
+import Free2DriveOffer from '@/components/Free2DriveOffer';
 import { Link, Navigate, useParams } from 'react-router-dom';
 import { ArrowLeft, ChevronRight } from 'lucide-react';
 import AppLayout from '@/components/AppLayout';
@@ -56,6 +57,10 @@ export default function RightsTopic() {
             {s.body.map((p, i) => <p key={i} className="text-sm text-muted-foreground leading-relaxed">{p}</p>)}
           </section>
         ))}
+
+        {['not-at-fault','courtesy-car','uninsured-driver','claim-declined'].includes(topic.slug) && (
+          <Free2DriveOffer source={`rights-${topic.slug}`} />
+        )}
 
         {topic.faqs.length > 0 && (
           <section>

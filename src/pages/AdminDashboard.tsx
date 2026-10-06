@@ -102,6 +102,8 @@ export default function AdminDashboard() {
           <ChevronRight className="w-4 h-4 text-muted-foreground/40" strokeWidth={1.5} />
         </Link>
 
+        <Free2DriveClicksCard />
+
         <Link to="/admin/rental-partners" className="card-surface flex items-center justify-between hover:border-foreground/20 transition-colors">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-xl bg-muted flex items-center justify-center">
@@ -187,5 +189,31 @@ export default function AdminDashboard() {
         </Tabs>
       </div>
     </AppLayout>
+  );
+}
+
+function Free2DriveClicksCard() {
+  const { data } = useQuery({
+    queryKey: ['f2d-clicks'],
+    queryFn: async () => {
+      const since = new Date(Date.now() - 30 * 864e5).toISOString();
+      const { data } = await supabase.from('partner_referral_clicks' as any)
+        .select('source, action').gte('created_at', since).limit(5000);
+      return (data ?? []) as unknown as { source: string; action: string }[];
+    },
+  });
+  const rows = data ?? [];
+  const bySource = Object.entries(rows.reduce<Record<string, number>>((m, r) => { m[r.source] = (m[r.source] || 0) + 1; return m; }, {})).sort((a, b) => b[1] - a[1]);
+  const calls = rows.filter(r => r.action === 'call').length;
+  return (
+    <div className="card-surface">
+      <div className="text-sm font-bold text-foreground">Free 2 Drive referrals (30 days)</div>
+      <div className="text-xs text-muted-foreground mt-0.5 tabular-nums">{rows.length - calls} applications opened · {calls} calls</div>
+      {bySource.length > 0 && (
+        <ul className="mt-2 space-y-1 text-xs tabular-nums">
+          {bySource.map(([s, n]) => <li key={s} className="flex justify-between"><span className="text-muted-foreground">{s}</span><span className="font-semibold text-foreground">{n}</span></li>)}
+        </ul>
+      )}
+    </div>
   );
 }

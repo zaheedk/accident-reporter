@@ -1,3 +1,4 @@
+import Free2DriveOffer from '@/components/Free2DriveOffer';
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Printer, Mail, X, Download, Share2, Phone, Pencil, Save, Loader2, Send, Car, Users, Wrench, Trash2, Video, Mic } from 'lucide-react';
@@ -576,6 +577,7 @@ export default function ClaimDetail() {
               </button>
             </div>
           </div>
+          {claim.atFault === 'other_party' && <Free2DriveOffer source="claim-detail" title="Not your fault? Get a free replacement car" />}
 
           <div className="hidden print:block mb-6">
             <h1 className="text-xl font-bold text-foreground">Incident report</h1>

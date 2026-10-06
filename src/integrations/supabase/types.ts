@@ -1145,6 +1145,33 @@ export type Database = {
           },
         ]
       }
+      partner_referral_clicks: {
+        Row: {
+          action: string
+          created_at: string
+          id: string
+          partner: string
+          source: string
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          id?: string
+          partner?: string
+          source: string
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          id?: string
+          partner?: string
+          source?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       phone_otps: {
         Row: {
           created_at: string
