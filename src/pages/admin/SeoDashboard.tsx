@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { Navigate, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { FunctionsHttpError } from '@supabase/supabase-js';
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
 import { RefreshCw, ArrowLeft, TrendingUp, TrendingDown } from 'lucide-react';
@@ -85,7 +85,7 @@ function Table({ title, rows, pages }: { title: string; rows: Row[]; pages?: boo
 }
 
 export default function SeoDashboard() {
-  const { isAdmin, loading } = useAuth() as { isAdmin: boolean; loading?: boolean };
+  const { isAdmin } = useAuth();
   const qc = useQueryClient();
   const [refreshing, setRefreshing] = useState(false);
 
@@ -96,7 +96,6 @@ export default function SeoDashboard() {
     staleTime: 10 * 60 * 1000,
   });
 
-  if (!loading && !isAdmin) return <Navigate to="/dashboard" replace />;
 
   const refresh = async (siteUrl?: string) => {
     setRefreshing(true);
@@ -126,7 +125,8 @@ export default function SeoDashboard() {
           </Button>
         </div>
 
-        {isLoading && <p className="text-sm text-muted-foreground">Loading search data…</p>}
+        {!isAdmin && <p className="text-sm text-muted-foreground">This page is for admins only.</p>}
+        {isAdmin && isLoading && <p className="text-sm text-muted-foreground">Loading search data…</p>}
         {error && <Card className="p-4 text-sm text-destructive">{(error as Error).message}</Card>}
 
         {data?.selection_required && (
