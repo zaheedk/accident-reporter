@@ -22,6 +22,12 @@ import multiVehiclePileupHero from '@/assets/blog/multi-vehicle-pileup-hero.jpg'
 import hireCarNotAtFaultHero from '@/assets/blog/hire-car-not-at-fault-hero.jpg';
 import replacementCarNzHero from '@/assets/blog/replacement-car-nz-hero.jpg';
 
+/** Byline shown on every article and emitted as the Article author in JSON-LD. */
+export const BLOG_AUTHOR = {
+  name: "Zaheed K",
+  role: "Free 2 Drive courtesy-car expert",
+};
+
 export interface BlogArticle {
   slug: string;
   title: string;
