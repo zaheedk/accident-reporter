@@ -41,7 +41,7 @@ export default function BlogPost() {
         image: `https://www.savo.co.nz${article.heroImage}`,
         datePublished: article.date,
         dateModified: article.updated ?? article.date,
-        author: { "@type": "Organization", name: "SAVO" },
+        author: { "@type": "Person", name: BLOG_AUTHOR.name, jobTitle: BLOG_AUTHOR.role },
         publisher: {
           "@type": "Organization",
           name: "SAVO",
@@ -101,7 +101,10 @@ export default function BlogPost() {
             height={512}
           />
           <h1 className="text-2xl font-bold text-foreground leading-tight">{article.title}</h1>
-          <div className="flex items-center gap-4 mt-3 text-xs text-muted-foreground">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-3 text-xs text-muted-foreground">
+            <span className="font-medium text-foreground">
+              By {BLOG_AUTHOR.name} · {BLOG_AUTHOR.role}
+            </span>
             <span className="flex items-center gap-1">
               <Calendar className="w-3 h-3" />
               {new Date(article.date).toLocaleDateString('en-NZ', { day: 'numeric', month: 'short', year: 'numeric' })}
