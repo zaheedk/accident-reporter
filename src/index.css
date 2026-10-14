@@ -6,55 +6,55 @@
 
 @layer base {
   :root {
-    /* === Signal: periwinkle canvas, violet primary, orange accent === */
-    --background: 224 78% 96%;
-    --foreground: 240 30% 12%;
+    /* === Free 2 Drive palette: white canvas, deep navy, fresh green === */
+    --background: 0 0% 100%;
+    --foreground: 238 44% 16%;
 
     --card: 0 0% 100%;
-    --card-foreground: 240 30% 12%;
+    --card-foreground: 238 44% 16%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 240 30% 12%;
+    --popover-foreground: 238 44% 16%;
 
-    --primary: 252 82% 62%;
+    --primary: 154 47% 45%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 226 60% 93%;
-    --secondary-foreground: 250 40% 26%;
+    --secondary: 154 40% 94%;
+    --secondary-foreground: 238 44% 20%;
 
-    --muted: 226 55% 94%;
-    --muted-foreground: 240 12% 46%;
+    --muted: 230 25% 95%;
+    --muted-foreground: 238 12% 44%;
 
-    --accent: 20 90% 57%;
+    --accent: 238 44% 16%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 356 72% 52%;
     --destructive-foreground: 0 0% 100%;
 
-    --success: 158 62% 38%;
+    --success: 154 47% 38%;
     --success-foreground: 0 0% 100%;
 
     --warning: 34 92% 52%;
     --warning-foreground: 0 0% 100%;
 
-    --border: 226 40% 88%;
-    --input: 226 40% 88%;
-    --ring: 252 82% 62%;
+    --border: 230 25% 89%;
+    --input: 230 25% 89%;
+    --ring: 154 47% 45%;
 
     --radius: 1.125rem;
 
-    --dark-surface: 250 45% 16%;
+    --dark-surface: 238 44% 16%;
     --dark-surface-foreground: 0 0% 100%;
-    --dark-surface-muted: 250 20% 74%;
+    --dark-surface-muted: 238 20% 74%;
 
-    --sidebar-background: 250 45% 16%;
+    --sidebar-background: 238 44% 16%;
     --sidebar-foreground: 0 0% 92%;
-    --sidebar-primary: 252 82% 62%;
+    --sidebar-primary: 154 47% 45%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 250 40% 22%;
+    --sidebar-accent: 238 40% 24%;
     --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 250 35% 26%;
-    --sidebar-ring: 252 82% 62%;
+    --sidebar-border: 238 35% 28%;
+    --sidebar-ring: 154 47% 45%;
   }
 }
 
@@ -256,29 +256,29 @@
 
   /* === Garage page scoped theme — Apple / Linear inspired === */
   .theme-garage {
-    /* Light — periwinkle canvas, white cards, violet primary */
-    --background: 224 78% 96%;
-    --foreground: 240 30% 12%;
+    /* Light — white canvas, navy text, green primary (Free 2 Drive) */
+    --background: 0 0% 100%;
+    --foreground: 238 44% 16%;
     --card: 0 0% 100%;
-    --card-foreground: 240 30% 12%;
+    --card-foreground: 238 44% 16%;
     --popover: 0 0% 100%;
-    --popover-foreground: 240 30% 12%;
-    --primary: 252 82% 62%;
+    --popover-foreground: 238 44% 16%;
+    --primary: 154 47% 45%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 226 60% 93%;
-    --secondary-foreground: 250 40% 26%;
-    --muted: 226 55% 94%;
-    --muted-foreground: 240 12% 46%;
-    --accent: 20 90% 57%;
+    --secondary: 154 40% 94%;
+    --secondary-foreground: 238 44% 20%;
+    --muted: 230 25% 95%;
+    --muted-foreground: 238 12% 44%;
+    --accent: 238 44% 16%;
     --accent-foreground: 0 0% 100%;
-    --border: 226 40% 88%;
-    --input: 226 40% 88%;
-    --ring: 252 82% 62%;
-    --garage-tint-a: 252 82% 62%;
-    --garage-tint-b: 20 90% 57%;
+    --border: 230 25% 89%;
+    --input: 230 25% 89%;
+    --ring: 154 47% 45%;
+    --garage-tint-a: 154 47% 45%;
+    --garage-tint-b: 238 44% 16%;
     --garage-glass: 0 0% 100%;
     --garage-glass-alpha: 1;
-    --garage-hairline: 250 30% 20%;
+    --garage-hairline: 238 30% 20%;
     --garage-hairline-alpha: 0.1;
 
     background: hsl(var(--background));
@@ -319,24 +319,24 @@
 
   /* Dark variant of the Garage scope — Linear-inspired near-black */
   .dark .theme-garage {
-    --background: 250 30% 8%;
-    --foreground: 250 20% 96%;
-    --card: 250 26% 12%;
-    --card-foreground: 250 20% 96%;
-    --popover: 250 26% 12%;
-    --popover-foreground: 250 20% 96%;
-    --primary: 252 88% 70%;
-    --primary-foreground: 250 40% 10%;
-    --secondary: 250 22% 17%;
-    --secondary-foreground: 250 20% 96%;
-    --muted: 250 22% 17%;
-    --muted-foreground: 250 12% 66%;
-    --accent: 20 90% 60%;
-    --accent-foreground: 0 0% 100%;
-    --border: 250 20% 22%;
-    --input: 250 20% 22%;
-    --ring: 252 88% 70%;
-    --garage-glass: 250 26% 12%;
+    --background: 238 40% 10%;
+    --foreground: 240 20% 96%;
+    --card: 238 36% 14%;
+    --card-foreground: 240 20% 96%;
+    --popover: 238 36% 14%;
+    --popover-foreground: 240 20% 96%;
+    --primary: 154 55% 55%;
+    --primary-foreground: 238 44% 12%;
+    --secondary: 238 28% 20%;
+    --secondary-foreground: 240 20% 96%;
+    --muted: 238 28% 20%;
+    --muted-foreground: 238 12% 66%;
+    --accent: 154 55% 55%;
+    --accent-foreground: 238 44% 12%;
+    --border: 238 25% 24%;
+    --input: 238 25% 24%;
+    --ring: 154 55% 55%;
+    --garage-glass: 238 36% 14%;
     --garage-glass-alpha: 1;
     --garage-hairline: 0 0% 100%;
     --garage-hairline-alpha: 0.1;
@@ -358,23 +358,23 @@
 
   /* === Dashboard page — shares Apple/Linear palette with Garage === */
   .theme-dashboard {
-    --background: 224 78% 96%;
-    --foreground: 240 30% 12%;
+    --background: 0 0% 100%;
+    --foreground: 238 44% 16%;
     --card: 0 0% 100%;
-    --card-foreground: 240 30% 12%;
+    --card-foreground: 238 44% 16%;
     --popover: 0 0% 100%;
-    --popover-foreground: 240 30% 12%;
-    --primary: 252 82% 62%;
+    --popover-foreground: 238 44% 16%;
+    --primary: 154 47% 45%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 226 60% 93%;
-    --secondary-foreground: 250 40% 26%;
-    --muted: 226 55% 94%;
-    --muted-foreground: 240 12% 46%;
-    --accent: 20 90% 57%;
+    --secondary: 154 40% 94%;
+    --secondary-foreground: 238 44% 20%;
+    --muted: 230 25% 95%;
+    --muted-foreground: 238 12% 44%;
+    --accent: 238 44% 16%;
     --accent-foreground: 0 0% 100%;
-    --border: 226 40% 88%;
-    --input: 226 40% 88%;
-    --ring: 252 82% 62%;
+    --border: 230 25% 89%;
+    --input: 230 25% 89%;
+    --ring: 154 47% 45%;
 
     background: hsl(var(--background));
     color: hsl(var(--foreground));
@@ -413,23 +413,23 @@
   }
 
   .dark .theme-dashboard {
-    --background: 250 30% 8%;
-    --foreground: 250 20% 96%;
-    --card: 250 26% 12%;
-    --card-foreground: 250 20% 96%;
-    --popover: 250 26% 12%;
-    --popover-foreground: 250 20% 96%;
-    --primary: 252 88% 70%;
-    --primary-foreground: 250 40% 10%;
-    --secondary: 250 22% 17%;
-    --secondary-foreground: 250 20% 96%;
-    --muted: 250 22% 17%;
-    --muted-foreground: 250 12% 66%;
-    --accent: 20 90% 60%;
-    --accent-foreground: 0 0% 100%;
-    --border: 250 20% 22%;
-    --input: 250 20% 22%;
-    --ring: 252 88% 70%;
+    --background: 238 40% 10%;
+    --foreground: 240 20% 96%;
+    --card: 238 36% 14%;
+    --card-foreground: 240 20% 96%;
+    --popover: 238 36% 14%;
+    --popover-foreground: 240 20% 96%;
+    --primary: 154 55% 55%;
+    --primary-foreground: 238 44% 12%;
+    --secondary: 238 28% 20%;
+    --secondary-foreground: 240 20% 96%;
+    --muted: 238 28% 20%;
+    --muted-foreground: 238 12% 66%;
+    --accent: 154 55% 55%;
+    --accent-foreground: 238 44% 12%;
+    --border: 238 25% 24%;
+    --input: 238 25% 24%;
+    --ring: 154 55% 55%;
   }
 
   /* Signal accents */
