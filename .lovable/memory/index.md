@@ -61,3 +61,4 @@ Storage: All buckets private, require signed URLs. `service_role` required for s
 - [Insurance Broker](mem://features/insurance-broker) — Self-signup + admin approval; brokers view+add only on linked customer data
 - [Replacement Vehicle Links](mem://features/replacement-vehicle-links) — F2D wording rules + seeded, varied anchor text component for directory/blog pages
 - [Directory Prerender](mem://tech/directory-prerender) — postbuild static HTML for tow/panel-beater routes, MAX_PRERENDER_PAGES cap
+- [Marketing plan](mem://reference/marketing-plan) — No-ads growth plan saved in Project Files 2026-10-14
