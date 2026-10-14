@@ -1,5 +1,5 @@
 import { useParams, Link, Navigate } from 'react-router-dom';
-import { getArticleBySlug } from '@/lib/blog-data';
+import { getArticleBySlug, BLOG_AUTHOR } from '@/lib/blog-data';
 import { ArrowLeft, Calendar, Clock } from 'lucide-react';
 import AppLayout from '@/components/AppLayout';
 import ReactMarkdown from 'react-markdown';
