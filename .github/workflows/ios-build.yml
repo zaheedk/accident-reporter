@@ -38,6 +38,22 @@ on:
           - signed       # default: App Store/TestFlight upload, fails if secrets missing
           - auto         # signed if secrets exist, otherwise unsigned
           - unsigned     # always unsigned (no signing required)
+      marketing_version:
+        description: "App Store version (e.g. 1.0 or 1.3.3)"
+        required: true
+        default: "1.0"
+        type: string
+      upload_to_testflight:
+        description: "Upload the signed IPA to App Store Connect"
+        default: true
+        type: boolean
+      capture_screenshots:
+        description: "Also generate native iPhone and iPad sign-in screenshots"
+        default: true
+        type: boolean
+
+permissions:
+  contents: read
 
 jobs:
   build:
@@ -213,6 +229,7 @@ jobs:
           ASC_KEY_ID: ${{ secrets.APPSTORE_KEY_ID || secrets.APP_STORE_CONNECT_API_KEY_ID }}
           ASC_ISSUER_ID: ${{ secrets.APPSTORE_ISSUER_ID || secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
           ASC_KEY: ${{ secrets.APPSTORE_PRIVATE_KEY || secrets.APP_STORE_CONNECT_API_KEY_BASE64 }}
+          UPLOAD_REQUESTED: ${{ inputs.upload_to_testflight }}
         run: |
           set -e
           HAVE_SECRETS=no
@@ -227,40 +244,21 @@ jobs:
             echo "::error::Signed build requested but IOS_P12_BASE64 / IOS_MOBILEPROVISION_BASE64 / IOS_TEAM_ID are missing."
             exit 1
           fi
-          if [ "$MODE" = "signed" ] && { [ -z "$ASC_KEY_ID" ] || [ -z "$ASC_ISSUER_ID" ] || [ -z "$ASC_KEY" ]; }; then
+          if [ "$MODE" = "signed" ] && [ "$UPLOAD_REQUESTED" = "true" ] && { [ -z "$ASC_KEY_ID" ] || [ -z "$ASC_ISSUER_ID" ] || [ -z "$ASC_KEY" ]; }; then
             echo "::error::Signed build is configured, but TestFlight upload secrets are missing. Add APPSTORE_KEY_ID, APPSTORE_ISSUER_ID, and APPSTORE_PRIVATE_KEY GitHub secrets."
             exit 1
           fi
           echo "mode=$MODE" >> "$GITHUB_OUTPUT"
           echo "Build mode: $MODE"
 
-      - name: Stamp unique iOS TestFlight version
-        if: steps.mode.outputs.mode == 'signed'
+      - name: Prepare release version and privacy resources
+        env:
+          MARKETING_VERSION: ${{ inputs.marketing_version }}
         run: |
           set -e
-          PLIST="ios/App/App/Info.plist"
-          PROJECT="ios/App/App.xcodeproj/project.pbxproj"
-          MARKETING_VERSION="1.0"
-          BUILD_NUMBER="${GITHUB_RUN_NUMBER}"
-
-          /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString ${MARKETING_VERSION}" "$PLIST" 2>/dev/null || \
-            /usr/libexec/PlistBuddy -c "Add :CFBundleShortVersionString string ${MARKETING_VERSION}" "$PLIST"
-          /usr/libexec/PlistBuddy -c "Set :CFBundleVersion ${BUILD_NUMBER}" "$PLIST" 2>/dev/null || \
-            /usr/libexec/PlistBuddy -c "Add :CFBundleVersion string ${BUILD_NUMBER}" "$PLIST"
-
-          if [ -f "$PROJECT" ]; then
-            python3 - <<'PY'
-          from pathlib import Path
-          import os, re
-          project = Path("ios/App/App.xcodeproj/project.pbxproj")
-          text = project.read_text()
-          text = re.sub(r"MARKETING_VERSION = [^;]+;", "MARKETING_VERSION = 1.0;", text)
-          text = re.sub(r"CURRENT_PROJECT_VERSION = [^;]+;", f"CURRENT_PROJECT_VERSION = {os.environ['GITHUB_RUN_NUMBER']};", text)
-          project.write_text(text)
-          PY
-          fi
-
-          echo "Using iOS version ${MARKETING_VERSION} build ${BUILD_NUMBER}. Apple requires the build number to be unique for each TestFlight upload."
+          python3 scripts/prepare-ios-release.py --version "$MARKETING_VERSION" --run-number "$GITHUB_RUN_NUMBER" --attempt "$GITHUB_RUN_ATTEMPT"
+          gem install xcodeproj --no-document --user-install
+          ruby scripts/embed-ios-privacy.rb
 
       - name: Install CocoaPods if project uses Podfile
         working-directory: ios/App
@@ -348,6 +346,10 @@ jobs:
           PROFILE_APP_ID=$(/usr/libexec/PlistBuddy -c "Print :Entitlements:application-identifier" /dev/stdin <<< "$PROFILE_PLIST")
           # Strip the team prefix (e.g. "ABCDE12345.nz.co.savo.app" -> "nz.co.savo.app")
           PROFILE_BUNDLE_ID="${PROFILE_APP_ID#*.}"
+          if [ "$PROFILE_BUNDLE_ID" != "$BUNDLE_ID" ]; then
+            echo "::error::Provisioning profile bundle ID does not match the configured app bundle ID."
+            exit 1
+          fi
           cp "$PROFILE_PATH" "$PROFILES_DIR/$UUID.mobileprovision"
           echo "Installed provisioning profile: $PROFILE_NAME (UUID=$UUID, bundle=$PROFILE_BUNDLE_ID)"
           echo "PROFILE_UUID=$UUID" >> "$GITHUB_ENV"
@@ -401,7 +403,6 @@ jobs:
             -destination 'generic/platform=iOS' \
             -archivePath build/App.xcarchive \
             -xcconfig "$XCCONFIG" \
-            -allowProvisioningUpdates=NO \
             ARCHS=arm64 \
             ONLY_ACTIVE_ARCH=NO \
             archive
@@ -417,7 +418,7 @@ jobs:
           <plist version="1.0">
           <dict>
             <key>method</key>
-            <string>app-store</string>
+            <string>app-store-connect</string>
             <key>teamID</key>
             <string>${TEAM_ID}</string>
             <key>signingStyle</key>
@@ -448,13 +449,40 @@ jobs:
         with:
           name: app-release-ipa
           path: ios/App/build/ipa/*.ipa
-          retention-days: 7
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Assemble App Store handover materials
+        env:
+          RELEASE_VERSION: ${{ inputs.marketing_version }}
+        run: |
+          mkdir -p ios/App/build/submission
+          cp -R release/app-store/. ios/App/build/submission/
+          cp resources/ios-app-icon-1024.png ios/App/build/submission/app-icon-1024.png
+          printf 'Workflow run: %s\nVersion: %s\nAttempt: %s\n' "$GITHUB_RUN_NUMBER" "$RELEASE_VERSION" "$GITHUB_RUN_ATTEMPT" > ios/App/build/submission/BUILD-INFO.txt
+
+      - name: Upload App Store handover materials
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-store-submission-materials
+          path: ios/App/build/submission/
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Upload debug symbols
+        if: steps.mode.outputs.mode == 'signed'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-debug-symbols
+          path: ios/App/build/App.xcarchive/dSYMs/
+          if-no-files-found: error
+          retention-days: 30
 
       # ──────────────────────────────────────────────────────────────────
       # Optional: upload to TestFlight via App Store Connect API
       # ──────────────────────────────────────────────────────────────────
       - name: Upload to TestFlight
-        if: steps.mode.outputs.mode == 'signed'
+        if: steps.mode.outputs.mode == 'signed' && inputs.upload_to_testflight
         env:
           ASC_KEY_ID: ${{ secrets.APPSTORE_KEY_ID || secrets.APP_STORE_CONNECT_API_KEY_ID }}
           ASC_ISSUER_ID: ${{ secrets.APPSTORE_ISSUER_ID || secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
@@ -486,3 +514,40 @@ jobs:
         if: always() && steps.mode.outputs.mode == 'signed'
         run: |
           security delete-keychain "$RUNNER_TEMP/build.keychain-db" || true
+          rm -f "$RUNNER_TEMP/cert.p12" "$RUNNER_TEMP/profile.mobileprovision"
+          rm -rf "$HOME/.appstoreconnect/private_keys"
+
+  screenshots:
+    if: inputs.capture_screenshots
+    runs-on: macos-26
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Prepare iOS simulator runtime
+        run: |
+          sudo xcodebuild -runFirstLaunch
+          xcodebuild -downloadPlatform iOS
+      - name: Install and bundle SAVO
+        env:
+          RELEASE_VERSION: ${{ inputs.marketing_version }}
+        run: |
+          npm ci --legacy-peer-deps
+          npm run build
+          if [ ! -d ios/App/App.xcodeproj ]; then npx cap add ios --packagemanager SPM; fi
+          npx cap sync ios
+          cp resources/ios-app-icon-1024.png ios/App/App/Assets.xcassets/AppIcon.appiconset/AppIcon-512@2x.png
+          python3 scripts/prepare-ios-release.py --version "$RELEASE_VERSION" --run-number "$GITHUB_RUN_NUMBER" --attempt "$GITHUB_RUN_ATTEMPT"
+          gem install xcodeproj --no-document --user-install
+          ruby scripts/embed-ios-privacy.rb
+      - name: Capture native iPhone and iPad screenshots
+        run: bash scripts/capture-ios-store.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: app-store-native-screenshots
+          path: ios/App/build/store-screenshots/
+          if-no-files-found: error
+          retention-days: 30

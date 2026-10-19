@@ -1,0 +1,20 @@
+{
+  "name": "SAVO",
+  "subtitle": "Accident reports & your rights",
+  "locale": "en-NZ",
+  "version": "1.0",
+  "bundle_id": "nz.co.savo.app",
+  "primary_category": "Utilities",
+  "secondary_category": "Reference",
+  "suggested_territories": ["New Zealand"],
+  "promotional_text": "Keep accident details together and understand your options after a crash. SAVO helps New Zealand drivers record incidents and navigate insurance claims.",
+  "description": "SAVO helps New Zealand drivers organise the details after a car accident and understand their options when dealing with insurance claims.\n\nRECORD WHAT HAPPENED\nCreate an incident report with the date, location, vehicles involved, other-driver details and witnesses. Attach scene and damage photos, save your progress and keep your records together.\n\nKEEP YOUR VEHICLE DETAILS HANDY\nStore vehicle and insurance details, keep track of WOF and registration expiry dates, and access your saved incident reports.\n\nUNDERSTAND YOUR OPTIONS\nRead practical information about not-at-fault accidents, replacement vehicles, uninsured drivers and declined claims. Use the fault guide to explore common accident scenarios and factors that may affect responsibility.\n\nFIND SUPPORT\nFind panel beaters and tow operators, and follow links to Free 2 Drive to apply for a replacement vehicle when appropriate. Eligibility, availability and costs depend on your circumstances and the provider's terms; a replacement vehicle is not guaranteed.\n\nSAVO is a consumer information and accident-recording resource, not a law firm or insurer. Information and fault guidance are general information, not legal advice, and do not determine legal liability or guarantee a claim outcome. Obtain advice for your circumstances when needed.\n\nAn account is required to save personal reports and vehicle details. Some features require an internet connection. Camera, photo and location access are requested when relevant to the features you use.",
+  "keywords": "accident,insurance,claim,vehicle,rego,WOF,crash,driver,rights,New Zealand,car,report",
+  "support_url": "https://www.savo.co.nz/about",
+  "marketing_url": "https://www.savo.co.nz/",
+  "privacy_policy_url": "https://www.savo.co.nz/privacy",
+  "privacy_choices_url": "https://www.savo.co.nz/account-deletion",
+  "support_email": "support@savo.co.nz",
+  "copyright": "TO CONFIRM: 2026 legal rights-holder name",
+  "release_notes": "Initial App Store release: accident reports, vehicle records and general insurance-rights information for New Zealand drivers."
+}
