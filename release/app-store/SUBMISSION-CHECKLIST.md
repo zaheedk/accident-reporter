@@ -6,6 +6,7 @@ Listing text and keywords, review instructions, a privacy worksheet, an opaque 1
 ## Build using the existing GitHub pipeline
 1. Let these changes sync to your existing GitHub repository. Open **Actions → iOS Build → Run workflow** on the synced branch.
 2. Keep `build_mode` set to `signed`. Set `marketing_version` to the version you intend to submit (default `1.0`; change it if Apple already has a released version).
+   The new build-number format is run-sequence based with a separate rerun component. Compare it with any existing build in that version before uploading; if an older build has a higher number, use the next appropriate marketing version instead. The workflow cannot inspect your Apple build history from this environment.
 3. Leave `upload_to_testflight` on to upload automatically, or turn it off to export an IPA for manual upload with Apple's Transporter. Choose `capture_screenshots` to build native simulator screenshots too.
 4. Download `app-release-ipa`, `app-store-submission-materials` and `app-store-native-screenshots` from the successful run. Unsigned archives are not uploadable.
 5. Wait for Apple processing, then select the processed build in App Store Connect. A TestFlight upload is not an App Store review submission or public release.

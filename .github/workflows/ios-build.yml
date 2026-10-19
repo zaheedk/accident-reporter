@@ -453,11 +453,13 @@ jobs:
           retention-days: 30
 
       - name: Assemble App Store handover materials
+        env:
+          RELEASE_VERSION: ${{ inputs.marketing_version }}
         run: |
           mkdir -p ios/App/build/submission
           cp -R release/app-store/. ios/App/build/submission/
           cp resources/ios-app-icon-1024.png ios/App/build/submission/app-icon-1024.png
-          printf 'Workflow run: %s\nVersion: %s\nAttempt: %s\n' "$GITHUB_RUN_NUMBER" "${{ inputs.marketing_version }}" "$GITHUB_RUN_ATTEMPT" > ios/App/build/submission/BUILD-INFO.txt
+          printf 'Workflow run: %s\nVersion: %s\nAttempt: %s\n' "$GITHUB_RUN_NUMBER" "$RELEASE_VERSION" "$GITHUB_RUN_ATTEMPT" > ios/App/build/submission/BUILD-INFO.txt
 
       - name: Upload App Store handover materials
         uses: actions/upload-artifact@v4
@@ -530,13 +532,15 @@ jobs:
           sudo xcodebuild -runFirstLaunch
           xcodebuild -downloadPlatform iOS
       - name: Install and bundle SAVO
+        env:
+          RELEASE_VERSION: ${{ inputs.marketing_version }}
         run: |
           npm ci --legacy-peer-deps
           npm run build
           if [ ! -d ios/App/App.xcodeproj ]; then npx cap add ios --packagemanager SPM; fi
           npx cap sync ios
           cp resources/ios-app-icon-1024.png ios/App/App/Assets.xcassets/AppIcon.appiconset/AppIcon-512@2x.png
-          python3 scripts/prepare-ios-release.py --version "${{ inputs.marketing_version }}" --run-number "$GITHUB_RUN_NUMBER" --attempt "$GITHUB_RUN_ATTEMPT"
+          python3 scripts/prepare-ios-release.py --version "$RELEASE_VERSION" --run-number "$GITHUB_RUN_NUMBER" --attempt "$GITHUB_RUN_ATTEMPT"
           gem install xcodeproj --no-document --user-install
           ruby scripts/embed-ios-privacy.rb
       - name: Capture native iPhone and iPad screenshots
