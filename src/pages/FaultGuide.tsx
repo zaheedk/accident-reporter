@@ -1,9 +1,10 @@
 import Free2DriveOffer from '@/components/Free2DriveOffer';
+import faultWatermark from '@/assets/illustrations/fault-guide-watermark.png';
 import { useMemo, useState } from 'react';
 import LegalDisclaimer from '@/components/LegalDisclaimer';
 import { saveFaultHandoff } from '@/lib/fault-handoff';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Share2, Download, FileText, RotateCcw, Scale, Info } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, Share2, Download, FileText, RotateCcw, Scale, Info } from 'lucide-react';
 import AppLayout from '@/components/AppLayout';
 import SEO from '@/components/SEO';
 import { Button } from '@/components/ui/button';
@@ -85,13 +86,15 @@ interface OptProps<T extends string> {
 function Option<T extends string>({ value, selected, onSelect, label, icon }: OptProps<T>) {
   const isSelected = selected === value;
   return (
-    <button
+    <Button
+      variant="ghost"
       type="button"
+      aria-pressed={isSelected}
       onClick={() => onSelect(value)}
-      className={`w-full text-left rounded-xl border px-4 py-3 flex items-center gap-3 transition-all ${
+      className={`w-full h-auto min-h-12 whitespace-normal justify-start text-left rounded-2xl border px-4 py-3 flex items-center gap-3 transition-all hover:text-foreground ${
         isSelected
-          ? 'border-primary bg-primary/5 ring-1 ring-primary/30'
-          : 'border-border bg-card hover:border-foreground/30 hover:bg-muted/40'
+           ? 'border-primary bg-secondary/90 ring-1 ring-primary/20 hover:bg-secondary'
+           : 'border-border/60 bg-card/90 hover:border-primary/40 hover:bg-secondary/50'
       }`}
     >
       {icon && (
@@ -99,8 +102,11 @@ function Option<T extends string>({ value, selected, onSelect, label, icon }: Op
           isSelected ? 'bg-primary/15 text-primary' : 'bg-muted text-muted-foreground'
         }`}>{icon}</span>
       )}
-      <span className="text-sm text-foreground font-medium leading-snug">{label}</span>
-    </button>
+      <span className="flex-1 text-sm text-foreground font-medium leading-snug">{label}</span>
+      <span className={`w-5 h-5 rounded-full border shrink-0 flex items-center justify-center ${isSelected ? 'border-primary bg-primary text-primary-foreground' : 'border-border'}`}>
+        {isSelected && <Check className="w-3 h-3" />}
+      </span>
+    </Button>
   );
 }
 
@@ -233,11 +239,19 @@ export default function FaultGuide() {
         description="Step-by-step fault assessment for car accidents in NZ and Australia, citing the actual road rule. Use as supporting evidence for your claim."
         path="/fault-guide"
       />
-      <div className="max-w-xl mx-auto">
-        <div className="flex items-center gap-3 mb-4">
-          <button onClick={goBack} aria-label="Back" className="w-9 h-9 rounded-lg border border-border bg-card flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors">
+      <div className={`fault-guide relative isolate max-w-xl mx-auto ${step !== 'result' ? 'fault-guide-questions' : ''}`}>
+        {step !== 'result' && (
+          <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+            <img src={faultWatermark} alt="" width={1024} height={768} className="absolute bottom-4 -right-8 w-[340px] max-w-none opacity-[0.14] sm:w-[460px] sm:opacity-[0.12]" />
+            <svg viewBox="0 0 560 180" fill="none" className="absolute bottom-0 -left-16 w-[560px] text-primary/10">
+              <path d="M0 70 Q70 10 140 70 T280 70 T420 70 T560 70 M0 100 Q70 40 140 100 T280 100 T420 100 T560 100 M0 130 Q70 70 140 130 T280 130 T420 130 T560 130" stroke="currentColor" strokeWidth="2" />
+            </svg>
+          </div>
+        )}
+        <div className="flex items-center gap-3 mb-5">
+          <Button variant="outline" size="icon" onClick={goBack} aria-label="Back" className="w-9 h-9 rounded-full shrink-0 text-muted-foreground hover:bg-secondary hover:text-foreground">
             <ArrowLeft className="w-4 h-4" />
-          </button>
+          </Button>
           <div className="flex items-center gap-2">
             <Scale className="w-4 h-4 text-primary" />
             <h1 className="text-base font-semibold text-foreground">Fault determination guide</h1>
@@ -398,9 +412,13 @@ export default function FaultGuide() {
           )}
 
           {step !== 'result' && (
-            <Button className="w-full mt-2" disabled={!canContinue} onClick={handleNext}>
-              {step === 'evasive' ? 'See result' : 'Continue'}
-            </Button>
+            <div className="fault-guide-action fixed left-0 right-0 z-20 bg-background/95 backdrop-blur-sm px-4 py-3">
+              <div className="max-w-xl mx-auto">
+                <Button className="w-full rounded-full" disabled={!canContinue} onClick={handleNext}>
+                  {step === 'evasive' ? 'See result' : 'Continue'}<ArrowRight className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
           )}
 
           {step === 'result' && result && (
