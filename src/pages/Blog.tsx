@@ -92,7 +92,7 @@ export default function Blog() {
                 <PaginationItem>
                   <PaginationPrevious
                     onClick={() => goToPage(safePage - 1)}
-                    className="cursor-pointer"
+                    className="cursor-pointer [&>span]:hidden sm:[&>span]:inline"
                   />
                 </PaginationItem>
               )}
@@ -111,7 +111,7 @@ export default function Blog() {
                 <PaginationItem>
                   <PaginationNext
                     onClick={() => goToPage(safePage + 1)}
-                    className="cursor-pointer"
+                    className="cursor-pointer [&>span]:hidden sm:[&>span]:inline"
                   />
                 </PaginationItem>
               )}
