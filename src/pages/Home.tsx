@@ -82,6 +82,23 @@ const FeaturesList = () => {
   );
 };
 
+/** Rights topic card — shared by the mobile top-2 list and the desktop grid */
+const RightsCard = ({ topic: t, index: i }: { topic: (typeof RIGHTS_TOPICS)[number]; index: number }) => (
+  <Link
+    to={`/rights/${t.slug}`}
+    className={`group rounded-[2rem] p-6 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_20px_40px_-16px_hsl(var(--primary)/0.25)] ${
+      i % 2 === 0 ? 'bg-secondary' : 'bg-muted'
+    } ${i % 3 === 1 ? 'lg:translate-y-6' : ''}`}
+  >
+    <h3 className="font-display text-lg font-bold text-foreground leading-snug">{t.title}</h3>
+    <svg aria-hidden="true" className="mt-2 w-12 h-2 text-primary/60" viewBox="0 0 48 8" fill="none">
+      <path d="M2 5c6-4 10 2 16-1s10 2 16-1 8 1 12 0" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+    </svg>
+    <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{t.summary}</p>
+    <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-primary">Read guide <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" /></span>
+  </Link>
+);
+
 const stagger = { hidden: {}, visible: { transition: { staggerChildren: 0.1 } } };
 const fadeUp = { hidden: { opacity: 0, y: 24 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' as const } } };
 
