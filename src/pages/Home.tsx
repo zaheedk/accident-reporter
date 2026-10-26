@@ -11,6 +11,19 @@ import heroIllustration from '@/assets/illustrations/hero.jpg';
 import rightsIllustration from '@/assets/illustrations/rights.jpg';
 import captureIllustration from '@/assets/illustrations/capture.jpg';
 import courtesyIllustration from '@/assets/illustrations/courtesy.jpg';
+import wmScales from '@/assets/illustrations/wm-scales.jpg';
+import wmClipboard from '@/assets/illustrations/wm-clipboard.jpg';
+import wmWheel from '@/assets/illustrations/wm-wheel.jpg';
+
+/** Soft hand-drawn wavy lines used as a faint section background */
+const WavyLines = ({ className = '' }: { className?: string }) => (
+  <svg aria-hidden="true" viewBox="0 0 400 120" fill="none" preserveAspectRatio="none"
+    className={`pointer-events-none select-none absolute text-primary ${className}`}>
+    <path d="M0 20c50-25 100 25 150 0s100 25 150 0 75-15 100 0" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+    <path d="M0 60c50-25 100 25 150 0s100 25 150 0 75-15 100 0" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+    <path d="M0 100c50-25 100 25 150 0s100 25 150 0 75-15 100 0" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+  </svg>
+);
 
 const stagger = { hidden: {}, visible: { transition: { staggerChildren: 0.1 } } };
 const fadeUp = { hidden: { opacity: 0, y: 24 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' as const } } };
@@ -195,7 +208,8 @@ export default function Home() {
 
         {/* Rights */}
         <section className="relative max-w-5xl mx-auto px-4 pt-16 md:pt-24">
-          <img src={rightsIllustration} alt="" aria-hidden="true" className="pointer-events-none select-none absolute -right-28 -top-6 w-[440px] opacity-[0.07] hidden lg:block" />
+          <img src={wmScales} alt="" aria-hidden="true" className="pointer-events-none select-none absolute -right-28 -top-6 w-[440px] opacity-[0.07] hidden lg:block" />
+          <WavyLines className="left-0 bottom-0 w-[520px] h-40 opacity-[0.08] hidden lg:block" />
           {/* playful doodles */}
           <svg aria-hidden="true" className="absolute -top-2 left-2 w-16 h-16 text-primary/25 hidden md:block" viewBox="0 0 64 64" fill="none">
             <path d="M6 40c8-18 20-26 30-24 8 2 10 12 4 16-6 5-16 1-14-8" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
@@ -231,7 +245,8 @@ export default function Home() {
         {/* Features */}
         <motion.section variants={stagger} initial="hidden" whileInView="visible" viewport={{ once: true }}
           className="relative max-w-5xl mx-auto px-4 py-16 md:py-20">
-          <img src={captureIllustration} alt="" aria-hidden="true" className="pointer-events-none select-none absolute -left-28 top-16 w-[440px] opacity-[0.07] hidden lg:block" />
+          <img src={wmClipboard} alt="" aria-hidden="true" className="pointer-events-none select-none absolute -left-28 top-16 w-[440px] opacity-[0.07] hidden lg:block" />
+          <WavyLines className="right-0 top-0 w-[520px] h-40 opacity-[0.08] hidden lg:block" />
           <motion.div variants={fadeUp} className="text-center mb-12">
             <h2 className="text-2xl md:text-3xl font-extrabold text-foreground">Then handle your claim smoothly</h2>
             <p className="mt-3 text-muted-foreground max-w-lg mx-auto">From capturing evidence to lodging your insurance claim and arranging a courtesy car — SAVO handles it all.</p>
@@ -296,7 +311,8 @@ export default function Home() {
         {/* Audience segments */}
         <motion.section variants={stagger} initial="hidden" whileInView="visible" viewport={{ once: true }}
           className="relative max-w-5xl mx-auto px-4 py-16 md:py-20">
-          <img src={courtesyIllustration} alt="" aria-hidden="true" className="pointer-events-none select-none absolute -right-28 top-16 w-[440px] opacity-[0.07] hidden lg:block" />
+          <img src={wmWheel} alt="" aria-hidden="true" className="pointer-events-none select-none absolute -right-28 top-16 w-[440px] opacity-[0.07] hidden lg:block" />
+          <WavyLines className="left-0 bottom-0 w-[520px] h-40 opacity-[0.08] hidden lg:block" />
           <motion.div variants={fadeUp} className="text-center mb-12">
             <h2 className="text-2xl md:text-3xl font-extrabold text-foreground">Built for everyone on the road</h2>
             <p className="mt-3 text-muted-foreground max-w-lg mx-auto">Whether you're a single driver or managing a national fleet, SAVO has a tailored experience for you.</p>
