@@ -100,7 +100,7 @@ export default function BlogPost() {
             width={896}
             height={512}
           />
-          <h1 className="text-2xl font-bold text-foreground leading-tight">{article.title}</h1>
+          <h1 className="font-display text-3xl font-bold text-foreground leading-tight">{article.title}</h1>
           <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-3 text-xs text-muted-foreground">
             <span className="font-medium text-foreground">
               By {BLOG_AUTHOR.name} · {BLOG_AUTHOR.role}
@@ -135,7 +135,7 @@ export default function BlogPost() {
 
           {article.faq?.length ? (
             <section className="mt-10">
-              <h2 className="text-lg font-bold text-foreground mb-4">Frequently asked questions</h2>
+              <h2 className="font-display text-xl font-bold text-foreground mb-4">Frequently asked questions</h2>
               <div className="space-y-3">
                 {article.faq.map((f) => (
                   <details key={f.q} className="rounded-lg border border-border bg-card p-4">

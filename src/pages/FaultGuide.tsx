@@ -258,7 +258,7 @@ export default function FaultGuide() {
         <div className="space-y-4">
           {step === 'jurisdiction' && (
             <>
-              <h2 className="text-lg font-semibold text-foreground leading-snug">Where did the accident happen?</h2>
+              <h2 className="font-display text-xl font-bold text-foreground leading-snug">Where did the accident happen?</h2>
               <p className="text-sm text-muted-foreground">Road rules differ between New Zealand and Australia. We'll cite the rule that applies to your jurisdiction.</p>
               <div className="space-y-2">
                 <Option value="NZ" selected={answers.jurisdiction} onSelect={(v) => { set('jurisdiction', v); try { localStorage.setItem('savo_fault_jurisdiction', v); } catch {} }} label="New Zealand" />
@@ -269,7 +269,7 @@ export default function FaultGuide() {
 
           {step === 'collision' && (
             <>
-              <h2 className="text-lg font-semibold text-foreground leading-snug">What type of collision occurred?</h2>
+              <h2 className="font-display text-xl font-bold text-foreground leading-snug">What type of collision occurred?</h2>
               <p className="text-sm text-muted-foreground">Pick the scenario that best matches your situation.</p>
               <div className="space-y-2">
                 {COLLISION_OPTIONS.map((c) => (
@@ -281,7 +281,7 @@ export default function FaultGuide() {
 
           {step === 'detail' && answers.collision === 'intersection' && (
             <>
-              <h2 className="text-lg font-semibold text-foreground leading-snug">Which vehicle entered the intersection first?</h2>
+              <h2 className="font-display text-xl font-bold text-foreground leading-snug">Which vehicle entered the intersection first?</h2>
               <p className="text-sm text-muted-foreground">A visual of the geometry helps map your scenario to the correct rule.</p>
               <Card className="p-3 bg-muted/40">
                 <svg viewBox="0 0 240 90" className="w-full h-24">
@@ -303,7 +303,7 @@ export default function FaultGuide() {
 
           {step === 'detail' && answers.collision === 'rearend' && (
             <>
-              <h2 className="text-lg font-semibold text-foreground leading-snug">Were you the following vehicle?</h2>
+              <h2 className="font-display text-xl font-bold text-foreground leading-snug">Were you the following vehicle?</h2>
               <p className="text-sm text-muted-foreground">The driver who rear-ends another vehicle is almost always considered at fault.</p>
               <div className="space-y-2">
                 <Option value="them" selected={answers.follower} onSelect={(v) => set('follower', v)} label="No — I was hit from behind" />
@@ -314,7 +314,7 @@ export default function FaultGuide() {
 
           {step === 'detail' && answers.collision === 'lanechange' && (
             <>
-              <h2 className="text-lg font-semibold text-foreground leading-snug">Who was changing lanes?</h2>
+              <h2 className="font-display text-xl font-bold text-foreground leading-snug">Who was changing lanes?</h2>
               <p className="text-sm text-muted-foreground">A driver changing lanes must give way to vehicles already in the destination lane.</p>
               <div className="space-y-2">
                 <Option value="them" selected={answers.whoChanged} onSelect={(v) => set('whoChanged', v)} label="The other driver moved into my lane" />
@@ -325,7 +325,7 @@ export default function FaultGuide() {
 
           {step === 'detail' && answers.collision === 'reversing' && (
             <>
-              <h2 className="text-lg font-semibold text-foreground leading-snug">Which vehicle was reversing?</h2>
+              <h2 className="font-display text-xl font-bold text-foreground leading-snug">Which vehicle was reversing?</h2>
               <p className="text-sm text-muted-foreground">The reversing driver must give way to all other road users.</p>
               <div className="space-y-2">
                 <Option value="them" selected={answers.whoReversed} onSelect={(v) => set('whoReversed', v)} label="The other vehicle was reversing" />
@@ -337,7 +337,7 @@ export default function FaultGuide() {
 
           {step === 'detail' && answers.collision === 'roundabout' && (
             <>
-              <h2 className="text-lg font-semibold text-foreground leading-snug">Who was already in the roundabout?</h2>
+              <h2 className="font-display text-xl font-bold text-foreground leading-snug">Who was already in the roundabout?</h2>
               <p className="text-sm text-muted-foreground">Drivers entering a roundabout must give way to all vehicles already on it.</p>
               <div className="space-y-2">
                 <Option value="you" selected={answers.alreadyInRoundabout} onSelect={(v) => set('alreadyInRoundabout', v)} label="I was already in the roundabout" />
@@ -349,7 +349,7 @@ export default function FaultGuide() {
 
           {step === 'control' && answers.collision === 'intersection' && (
             <>
-              <h2 className="text-lg font-semibold text-foreground leading-snug">Were traffic signals or signs present?</h2>
+              <h2 className="font-display text-xl font-bold text-foreground leading-snug">Were traffic signals or signs present?</h2>
               <p className="text-sm text-muted-foreground">This determines which rule applies.</p>
               <div className="space-y-2">
                 <Option value="lights" selected={answers.control} onSelect={(v) => set('control', v)} label="Traffic lights" />
@@ -362,7 +362,7 @@ export default function FaultGuide() {
 
           {step === 'context' && answers.collision === 'intersection' && (
             <>
-              <h2 className="text-lg font-semibold text-foreground leading-snug">What were both drivers doing?</h2>
+              <h2 className="font-display text-xl font-bold text-foreground leading-snug">What were both drivers doing?</h2>
               <p className="text-sm text-muted-foreground">Tell us your action and the other driver's action.</p>
               <div>
                 <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">You were…</p>
@@ -386,7 +386,7 @@ export default function FaultGuide() {
 
           {step === 'evasive' && (
             <>
-              <h2 className="text-lg font-semibold text-foreground leading-snug">Did you take any evasive action?</h2>
+              <h2 className="font-display text-xl font-bold text-foreground leading-snug">Did you take any evasive action?</h2>
               <p className="text-sm text-muted-foreground">Braking, swerving, or horn use can support your version of events.</p>
               <div className="space-y-2">
                 <Option value="braked" selected={answers.evasiveAction} onSelect={(v) => set('evasiveAction', v)} label="Yes — I braked hard" />

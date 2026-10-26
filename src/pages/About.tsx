@@ -38,7 +38,7 @@ export default function About() {
       />
       <div className="space-y-8">
         <div>
-          <h1 className="text-2xl font-bold text-foreground mb-2">About SAVO</h1>
+          <h1 className="font-display text-3xl font-bold text-foreground mb-2">About SAVO</h1>
           <p className="text-sm text-muted-foreground leading-relaxed">
             SAVO is a free New Zealand–made app that helps drivers document accidents properly the first time, so insurance claims go through smoothly — without the back-and-forth, missing details, or rejected paperwork.
           </p>
@@ -48,7 +48,7 @@ export default function About() {
         <div className="card-surface space-y-4">
           <div className="flex items-center gap-2">
             <Lightbulb className="w-4 h-4 text-primary" />
-            <h2 className="text-base font-semibold text-foreground">How SAVO Started — A Kiwi Story</h2>
+            <h2 className="font-display text-lg font-bold text-foreground">How SAVO Started — A Kiwi Story</h2>
           </div>
           <p className="text-sm text-muted-foreground leading-relaxed">
             SAVO was born out of frustration. After a minor accident on a wet Auckland morning, our founder did what most Kiwis do — exchanged a few details with the other driver, snapped a couple of photos, and assumed the insurer would take it from there.
@@ -70,7 +70,7 @@ export default function About() {
         <div className="card-surface space-y-4">
           <div className="flex items-center gap-2">
             <ShieldCheck className="w-4 h-4 text-primary" />
-            <h2 className="text-base font-semibold text-foreground">Built Around What Insurers Actually Need</h2>
+            <h2 className="font-display text-lg font-bold text-foreground">Built Around What Insurers Actually Need</h2>
           </div>
           <p className="text-sm text-muted-foreground leading-relaxed">
             We worked backwards from real claim forms used by NZ insurers — IAG, AA, Tower, State, AMI, Vero and others — to figure out exactly what details get a claim approved on the first attempt. SAVO's guided capture flow walks you through every one of them, step by step, even when you're shaken up.
@@ -88,7 +88,7 @@ export default function About() {
         <div className="card-surface space-y-4">
           <div className="flex items-center gap-2">
             <Heart className="w-4 h-4 text-primary" />
-            <h2 className="text-base font-semibold text-foreground">Helping Kiwis Claim with Confidence</h2>
+            <h2 className="font-display text-lg font-bold text-foreground">Helping Kiwis Claim with Confidence</h2>
           </div>
           <p className="text-sm text-muted-foreground leading-relaxed">
             Today, hundreds of New Zealanders use SAVO at the roadside, in supermarket carparks, and after motorway prangs to capture everything their insurer will need — before they leave the scene. Users tell us their claims are processed faster, with fewer follow-up calls, and far less stress.
@@ -111,7 +111,7 @@ export default function About() {
         </div>
 
         <div className="card-surface space-y-4">
-          <h2 className="text-base font-semibold text-foreground">Contact Us</h2>
+          <h2 className="font-display text-lg font-bold text-foreground">Contact Us</h2>
           <div className="space-y-3">
             <div className="flex items-center gap-3 text-sm text-muted-foreground">
               <Mail className="w-4 h-4 text-primary" /> support@savo.co.nz
@@ -126,7 +126,7 @@ export default function About() {
         </div>
 
         <form onSubmit={handleSubmit} className="card-surface space-y-4">
-          <h2 className="text-base font-semibold text-foreground">Send a Message</h2>
+          <h2 className="font-display text-lg font-bold text-foreground">Send a Message</h2>
           <div>
             <label className="form-label">Name</label>
             <input className="form-input" value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} required />
