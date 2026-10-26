@@ -88,9 +88,7 @@ export default function FAQ() {
         </div>
 
         <div className="card-surface flex items-start gap-4">
-          <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
-            <MessageSquare className="w-5 h-5 text-primary" />
-          </div>
+          <img src={faqHelpArt} alt="" aria-hidden loading="lazy" width={512} height={512} className="w-14 h-14 shrink-0 object-contain" />
           <div>
             <h3 className="text-sm font-semibold text-foreground mb-1">Still have questions?</h3>
             <p className="text-sm text-muted-foreground mb-3">We're here to help. Reach out and we'll get back to you within 24 hours.</p>
