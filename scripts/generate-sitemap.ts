@@ -82,6 +82,11 @@ const blogSlugs = [
   'multi-vehicle-pile-up-nz-fault-claims',
   'who-pays-hire-car-not-at-fault-accident-nz',
   'how-to-get-replacement-car-nz-after-accident',
+  'how-long-does-a-car-insurance-claim-take-nz',
+  'what-am-i-entitled-to-after-a-not-at-fault-accident-nz',
+  'insurance-claim-declined-nz-what-to-do',
+  'someone-hit-my-parked-car-nz',
+  'other-driver-uninsured-nz-what-are-my-options',
 ];
 
 async function fetchRows<T>(table: string, query: string): Promise<T[]> {
