@@ -304,18 +304,18 @@ export default function Home() {
 
         {/* CTA */}
         <motion.section initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}
-          className="relative overflow-hidden bg-dark-surface">
+          className="relative overflow-hidden bg-secondary">
           <div className="max-w-5xl mx-auto px-4 py-16 md:py-20 text-center relative z-10">
-            <h2 className="text-3xl md:text-4xl font-bold text-white tracking-tight">Ready to protect your next claim?</h2>
-            <p className="mt-3 text-white/60 max-w-md mx-auto">Join Kiwi drivers who use SAVO to document accidents, lodge insurance claims, and arrange courtesy cars with confidence.</p>
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground tracking-tight">Ready to protect your next claim?</h2>
+            <p className="mt-3 text-muted-foreground max-w-md mx-auto">Join Kiwi drivers who use SAVO to document accidents, lodge insurance claims, and arrange courtesy cars with confidence.</p>
             <div className="mt-8 flex flex-wrap justify-center gap-3">
               <Link to="/signup">
-                <Button size="lg" className="text-sm font-semibold gap-2 h-12 px-8 bg-primary hover:bg-primary/90 text-primary-foreground">
+                <Button size="lg" className="text-sm font-semibold gap-2 h-12 px-8 rounded-full">
                   Create free account <ArrowRight className="w-4 h-4" />
                 </Button>
               </Link>
               <Link to="/login">
-                <Button variant="outline" size="lg" className="text-sm font-semibold h-12 px-6 border-white/15 text-white bg-transparent hover:bg-white/[0.06]">
+                <Button variant="outline" size="lg" className="text-sm font-semibold h-12 px-6 rounded-full bg-card">
                   Log in
                 </Button>
               </Link>
