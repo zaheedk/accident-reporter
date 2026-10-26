@@ -45,7 +45,7 @@ export default function RightsTopic() {
           <ArrowLeft className="w-3.5 h-3.5" />All rights guides
         </Link>
         <header>
-          <h1 className="text-2xl font-bold text-foreground">{topic.title}</h1>
+          <h1 className="font-display text-3xl font-bold text-foreground">{topic.title}</h1>
           <p className="text-sm text-muted-foreground mt-2 leading-relaxed">{topic.summary}</p>
         </header>
 
@@ -53,7 +53,7 @@ export default function RightsTopic() {
 
         {topic.sections.map((s) => (
           <section key={s.heading} className="space-y-2">
-            <h2 className="text-base font-semibold text-foreground">{s.heading}</h2>
+            <h2 className="font-display text-lg font-bold text-foreground">{s.heading}</h2>
             {s.body.map((p, i) => <p key={i} className="text-sm text-muted-foreground leading-relaxed">{p}</p>)}
           </section>
         ))}

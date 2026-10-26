@@ -16,7 +16,7 @@ export default function Rights() {
       <div className="max-w-2xl mx-auto space-y-6">
         <div>
           <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary mb-2"><Scale className="w-3.5 h-3.5" />Know your rights</span>
-          <h1 className="text-2xl font-bold text-foreground">Your rights after a car accident in NZ</h1>
+          <h1 className="font-display text-3xl font-bold text-foreground">Your rights after a car accident in NZ</h1>
           <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
             Insurance can feel stacked against you. These guides explain, in plain English, what you are usually entitled to and how to push back.
           </p>

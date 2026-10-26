@@ -61,7 +61,7 @@ export default function FAQ() {
       />
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl font-bold text-foreground mb-2">FAQ & Help Centre</h1>
+          <h1 className="font-display text-3xl font-bold text-foreground mb-2">FAQ & Help Centre</h1>
           <p className="text-sm text-muted-foreground leading-relaxed">
             Find answers to common questions about using SAVO.
           </p>

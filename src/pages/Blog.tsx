@@ -38,7 +38,7 @@ export default function Blog() {
       />
       <div className="max-w-2xl mx-auto px-4 py-6 pb-24">
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-foreground">SAVO Blog</h1>
+          <h1 className="font-display text-3xl font-bold text-foreground">SAVO Blog</h1>
           <p className="text-sm text-muted-foreground mt-1">
             Tips and guides for handling car insurance claims in New Zealand
           </p>
@@ -49,7 +49,7 @@ export default function Blog() {
             <Link
               key={article.slug}
               to={`/blog/${article.slug}`}
-              className="block rounded-xl border border-border bg-card overflow-hidden hover:border-primary/30 transition-colors group"
+              className="block rounded-[2rem] bg-card overflow-hidden shadow-[0_2px_16px_-6px_hsl(238_44%_16%/0.08)] hover:shadow-[0_12px_32px_-16px_hsl(145_63%_40%/0.25)] hover:-translate-y-1 transition-all group"
             >
               <img
                 src={article.heroImage}
@@ -60,7 +60,7 @@ export default function Blog() {
                 height={512}
               />
               <div className="p-4">
-                <h2 className="text-base font-semibold text-foreground group-hover:text-primary transition-colors leading-snug">
+                <h2 className="font-display text-lg font-bold text-foreground group-hover:text-primary transition-colors leading-snug">
                   {article.title}
                 </h2>
                 <p className="text-sm text-muted-foreground mt-2 line-clamp-2">
