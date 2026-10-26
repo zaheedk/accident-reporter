@@ -2682,6 +2682,222 @@ Read [what happens when your car is written off in NZ](/blog/car-written-off-nz-
 
 *General information only — not advice from Tower. Always check your policy wording.*
     `
+  },
+  {
+    slug: "how-long-does-a-car-insurance-claim-take-nz",
+    title: "How Long Does a Car Insurance Claim Take in NZ? (2026)",
+    metaDescription: "How long car insurance claims really take in New Zealand — typical timelines for assessment, repairs and settlement, and what causes delays.",
+    heroImage: filingClaimHero,
+    excerpt: "Days or months? Here's what affects how long your NZ car insurance claim takes — and how to speed it up.",
+    date: "2026-10-26",
+    readTime: "4 min read",
+    faq: [
+      { q: "How long does a simple car insurance claim take in NZ?", a: "Straightforward claims with clear fault and complete evidence are often assessed within days, with repairs starting within one to two weeks. Disputed fault or write-offs take longer." },
+      { q: "What slows a claim down?", a: "Missing third-party details, no photos, disputes over fault, waiting for assessors, and parts delays are the most common causes." },
+      { q: "Can I complain if my claim is taking too long?", a: "Yes. Raise it with your insurer's internal complaints process first, then the Insurance & Financial Services Ombudsman (IFSO) — a free, independent service." },
+    ],
+    content: `
+## Typical timelines
+
+Every claim is different, but most NZ car insurance claims follow this pattern:
+
+- **Lodging to assessment:** a few days if your evidence is complete
+- **Assessment to repair approval:** about a week for straightforward damage
+- **Repairs:** one to four weeks depending on parts and workshop workload
+- **Write-off settlements:** usually two to four weeks once valuation is agreed
+
+Disputed fault, injuries, or uninsured third parties can stretch any of these stages.
+
+## What speeds a claim up
+
+The single biggest factor is the quality of your first report. Claims stall when the insurer has to chase basic facts. Include:
+
+- Clear photos of all damage and the scene, taken before vehicles move
+- The other driver's name, contact details, rego and insurer
+- Witness names and contact details
+- The exact location, date and time
+
+SAVO captures all of this at the scene and packages it into one report your insurer can act on immediately.
+
+## What slows it down
+
+- Waiting days to lodge the claim
+- Disagreement over who was at fault — our [fault guide](/fault-guide) explains which NZ road rules usually apply
+- Repairer availability — compare [top-rated panel beaters near you](/panel-beaters)
+- Parts on backorder, especially for newer or imported models
+
+## If it's dragging on
+
+Ask your insurer for a timeline in writing. If you're not satisfied, use their internal complaints process, then the free [IFSO scheme](https://www.ifso.nz). Read more in our [guide to declined or delayed claims](/rights/claim-declined).
+
+*General information only — not legal advice. Timelines vary by insurer and claim.*
+    `
+  },
+  {
+    slug: "what-am-i-entitled-to-after-a-not-at-fault-accident-nz",
+    title: "Not At Fault in a Car Accident? Everything You're Entitled To in NZ (2026)",
+    metaDescription: "Hit by another driver in New Zealand? Your full list of entitlements after a not-at-fault accident: repairs, replacement car, excess recovery and more.",
+    heroImage: courtesyCarHero,
+    excerpt: "If the other driver caused the crash, you're entitled to more than most people realise. Here's the full list.",
+    date: "2026-10-26",
+    readTime: "5 min read",
+    faq: [
+      { q: "What can I claim if the accident wasn't my fault?", a: "Repair costs (or your car's pre-accident value if written off), reasonable replacement transport, towing, and other direct losses caused by the crash." },
+      { q: "Do I have to pay my excess if I wasn't at fault?", a: "Often not, if the at-fault driver is identified and your insurer can recover the costs from them or their insurer. Check your policy wording." },
+      { q: "Can I get a free courtesy car?", a: "Yes — the at-fault party is generally responsible for the reasonable cost of replacement transport while yours is off the road. Providers like Free 2 Drive arrange this at no cost to you." },
+    ],
+    content: `
+## The principle: you're put back where you were
+
+In NZ, if another driver causes a crash, they're responsible for your reasonable losses — the law aims to put you back in the position you were in before the accident. In practice that means:
+
+## 1. Repairs or your car's value
+
+Your car must be repaired to its pre-accident condition at a reasonable cost, or — if it's written off — you're owed its pre-accident market value. You can generally choose a [reasonable repairer](/rights/choosing-repairer).
+
+## 2. A replacement car while yours is off the road
+
+The reasonable cost of a replacement vehicle forms part of your loss. You shouldn't be left without transport because someone else hit you. [Free replacement cars](/not-at-fault-car-hire) are arranged through providers like Free 2 Drive, who recover the cost from the at-fault party — no excess, nothing upfront. Read our [courtesy car rights guide](/rights/courtesy-car).
+
+## 3. Your excess back
+
+If you claim on your own policy but weren't at fault, your insurer will usually refund or waive your excess once they recover the costs from the at-fault driver's insurer. Read [do I pay excess if not at fault](/blog/do-i-pay-excess-if-not-at-fault-nz).
+
+## 4. Towing and other direct costs
+
+Reasonable towing, storage and related costs caused by the crash are claimable too. If you need a tow, compare [tow companies near you](/tow-trucks).
+
+## How to protect your entitlements
+
+Everything above depends on proving the other driver was at fault. Capture evidence at the scene — photos, details, witnesses — and [check who's at fault](/fault-guide) before you call anyone.
+
+*General information only — not legal advice. Entitlements depend on your policy and the circumstances.*
+    `
+  },
+  {
+    slug: "insurance-claim-declined-nz-what-to-do",
+    title: "Insurance Claim Declined in NZ? What To Do Next (2026)",
+    metaDescription: "Your NZ car insurance claim was declined — now what? The exact steps to challenge the decision, from internal review to the free IFSO ombudsman.",
+    heroImage: commonMistakesHero,
+    excerpt: "A declined claim isn't the end. Here's how to challenge the decision — including a free, independent ombudsman.",
+    date: "2026-10-26",
+    readTime: "5 min read",
+    faq: [
+      { q: "Why do insurers decline car claims in NZ?", a: "Common reasons include alleged non-disclosure, policy exclusions, late notification, or a dispute over what actually happened. The insurer must explain the reason and point to the policy clause." },
+      { q: "Can I challenge a declined claim?", a: "Yes. Start with the insurer's internal complaints process. If that fails, the Insurance & Financial Services Ombudsman (IFSO) offers a free, independent review." },
+      { q: "Does it cost anything to complain to the ombudsman?", a: "No. The IFSO scheme is free for consumers and independent of insurers." },
+    ],
+    content: `
+## First: get the reason in writing
+
+Your insurer must tell you why the claim was declined and which part of your policy they rely on. Ask for this in writing if you only received a phone call. Vague answers like "not covered" aren't enough.
+
+## Check the reason against your policy
+
+Read the exact clause they quote. Common decline reasons — and what to check:
+
+- **Non-disclosure:** did you actually fail to mention something material when you took out the policy?
+- **Exclusions:** does the exclusion genuinely apply to your situation?
+- **Late notification:** did the delay actually prejudice the insurer?
+- **Disputed facts:** is there evidence (photos, witnesses) that supports your version?
+
+## Escalate through the insurer's complaints process
+
+Every NZ insurer must have an internal complaints process. Put your complaint in writing, attach your evidence, and ask for a formal response. Many declines are overturned at this stage.
+
+## Go to the IFSO — it's free
+
+If the insurer holds its position, you can take the dispute to the [Insurance & Financial Services Ombudsman](https://www.ifso.nz) — a free, independent scheme that can make binding decisions. You don't need a lawyer.
+
+Read our full [guide to disputes and complaints](/rights/disputes-complaints) and what to do when a [claim is declined or delayed](/rights/claim-declined).
+
+## If the other driver was at fault
+
+A declined claim on your own policy doesn't stop you claiming directly against the at-fault driver. [Check who's at fault](/fault-guide) and see your [not-at-fault rights](/rights/not-at-fault).
+
+*General information only — not legal advice. Consider Community Law or Citizens Advice for free help.*
+    `
+  },
+  {
+    slug: "someone-hit-my-parked-car-nz",
+    title: "Someone Hit My Parked Car in NZ — What Now? (2026)",
+    metaDescription: "Someone hit your parked car in New Zealand? What to do if they left a note or drove off, who pays, and how to claim — step by step.",
+    heroImage: parkingAccidentsHero,
+    excerpt: "Came back to a dented car? Whether they left a note or drove off, here's exactly what to do and who pays.",
+    date: "2026-10-26",
+    readTime: "4 min read",
+    faq: [
+      { q: "What should I do first if someone hit my parked car?", a: "Photograph the damage and scene before moving the car, look for a note under the wipers, check for witnesses and nearby CCTV, then report it to your insurer." },
+      { q: "What if the driver didn't leave a note?", a: "Leaving the scene of an accident without providing details is an offence in NZ. Report it to Police (105) and your insurer — your comprehensive cover usually still applies." },
+      { q: "Will my premium go up if my parked car was hit?", a: "If the other driver is identified and at fault, your insurer can usually recover costs and your excess and no-claims bonus are often protected. Check your policy." },
+    ],
+    content: `
+## Step 1: Document everything before you move
+
+Take photos of the damage, the whole car, the parking spot, and any paint transfer or debris. Note the exact time and location. If there's a note under your windscreen, photograph it too.
+
+## Step 2: Look for witnesses and cameras
+
+Ask nearby shops, offices or residents. Many car parks and streets have CCTV — ask quickly, as footage is often overwritten within days.
+
+## Step 3: If they left a note
+
+You're in a good position — the other driver is identified and was at fault (your car was stationary). Contact them, get their insurer details, and decide whether to claim through your own insurer or directly against theirs. You may be entitled to a [replacement car while yours is repaired](/rights/courtesy-car).
+
+## Step 4: If they drove off
+
+Leaving the scene without providing details is an offence. Report it to Police on 105 (non-emergency) and get a reference number — your insurer will want it. Then lodge a claim on your own comprehensive policy. Read our [hit and run guide](/blog/hit-and-run-accident-nz-what-to-do) for the full process.
+
+## Who pays?
+
+- **Driver identified:** their insurance (or them personally) pays. Your excess is usually recoverable.
+- **Driver unknown:** your comprehensive cover applies, though you may pay an excess depending on your policy.
+
+If your car can't be driven, find a [tow company near you](/tow-trucks), and compare [top-rated panel beaters](/panel-beaters) for the repair.
+
+*General information only — not legal advice. Check your policy wording.*
+    `
+  },
+  {
+    slug: "other-driver-uninsured-nz-what-are-my-options",
+    title: "Hit by an Uninsured Driver in NZ? Your Options (2026)",
+    metaDescription: "The driver who hit you has no insurance — what are your options in New Zealand? Own-policy claims, direct recovery, the Disputes Tribunal and more.",
+    heroImage: afterAccidentHero,
+    excerpt: "No insurance doesn't mean no responsibility. Here's how to recover your costs when the at-fault driver is uninsured.",
+    date: "2026-10-26",
+    readTime: "5 min read",
+    faq: [
+      { q: "Can I still claim if the other driver has no insurance?", a: "Yes. If you have comprehensive cover, your own insurer pays and then pursues the uninsured driver. Without comprehensive cover, you can claim directly against the driver personally." },
+      { q: "What if I only have third-party insurance?", a: "Some third-party policies include uninsured motorist cover (often up to a few thousand dollars) when the other driver is identified and at fault. Check your policy wording." },
+      { q: "Can I take an uninsured driver to court?", a: "Yes — the Disputes Tribunal handles claims up to $60,000 and is designed for people without lawyers. It's a common route for recovering accident costs from uninsured drivers." },
+    ],
+    content: `
+## Uninsured doesn't mean off the hook
+
+A driver who causes a crash is personally responsible for the damage, insurance or not. Around one in ten NZ drivers is uninsured, so this situation is common — and you have real options.
+
+## Option 1: Your own comprehensive policy
+
+If you have comprehensive cover, this is the easy path. Your insurer repairs your car and then pursues the uninsured driver for the costs. Your excess and no-claims bonus are often protected once the other driver is confirmed at fault — check your policy.
+
+## Option 2: Uninsured motorist cover on third-party policies
+
+Many third-party, fire and theft policies include a limited benefit (commonly $3,000–$5,000) when an identified, uninsured driver is at fault. Read your policy wording — many drivers don't know they have this.
+
+## Option 3: Claim directly against the driver
+
+You can ask the at-fault driver to pay directly. Put your claim in writing with quotes for the repair. Many people agree to a payment plan when approached calmly and formally.
+
+## Option 4: The Disputes Tribunal
+
+If they won't pay, the Disputes Tribunal hears claims up to $60,000. It's inexpensive, informal, and designed for people without lawyers. Bring your evidence: photos, repair quotes, witness statements and any admission of fault.
+
+## Evidence matters even more here
+
+Without an insurer on the other side, your evidence is everything. Capture photos, details and witnesses at the scene, [check who's at fault](/fault-guide), and read our full [uninsured driver rights guide](/rights/uninsured-driver).
+
+*General information only — not legal advice. Community Law centres offer free legal help.*
+    `
   }
 ];
 
