@@ -1,6 +1,6 @@
 import AppLayout from '@/components/AppLayout';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { HelpCircle, MessageSquare } from 'lucide-react';
+import faqHelpArt from '@/assets/illustrations/faq-help.png';
 import SEO from '@/components/SEO';
 
 const faqs = [
@@ -60,11 +60,14 @@ export default function FAQ() {
         }}
       />
       <div className="space-y-6">
-        <div>
-          <h1 className="font-display text-3xl font-bold text-foreground mb-2">FAQ & Help Centre</h1>
-          <p className="text-sm text-muted-foreground leading-relaxed">
-            Find answers to common questions about using SAVO.
-          </p>
+        <div className="flex items-center gap-4">
+          <img src={faqHelpArt} alt="" aria-hidden loading="lazy" width={512} height={512} className="w-20 h-20 sm:w-24 sm:h-24 shrink-0 object-contain" />
+          <div>
+            <h1 className="font-display text-3xl font-bold text-foreground mb-2">FAQ & Help Centre</h1>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Find answers to common questions about using SAVO.
+            </p>
+          </div>
         </div>
 
         <div className="card-surface p-0 overflow-hidden">
