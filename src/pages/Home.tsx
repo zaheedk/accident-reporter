@@ -137,7 +137,7 @@ export default function Home() {
       <header className="bg-card sticky top-0 z-30 border-b border-border/50">
         <div className="max-w-5xl mx-auto px-4 py-3 pt-[max(0.75rem,env(safe-area-inset-top))] flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2.5">
-            <img src="/savo-logo.svg" alt="SAVO" className="h-11" width="110" height="44" />
+            <SavoLogo className="h-10 w-auto" />
           </Link>
           <nav className="hidden md:flex items-center gap-5 text-sm text-muted-foreground font-medium">
             {contentLinks.map(({ to, label }) => (
@@ -423,7 +423,7 @@ export default function Home() {
           <div className="max-w-5xl mx-auto px-4 py-10">
             <div className="flex flex-col sm:flex-row items-start justify-between gap-8">
               <div>
-                <img src="/savo-logo.svg" alt="SAVO" className="h-8 invert" width="80" height="32" loading="lazy" />
+                <SavoLogo className="h-8 w-auto" />
                 <p className="mt-2 text-xs text-muted-foreground max-w-xs">Car accident claims, courtesy cars, and insurance help — free for all New Zealand drivers.</p>
               </div>
               <div className="grid grid-cols-2 gap-x-12 gap-y-2 text-xs">
