@@ -75,8 +75,7 @@ export default function FAQ() {
             {faqs.map(({ q, a }, i) => (
               <AccordionItem key={i} value={`faq-${i}`} className="border-b border-border/60 last:border-0">
                 <AccordionTrigger className="px-5 py-4 text-sm font-medium text-foreground hover:no-underline hover:bg-muted/30 [&[data-state=open]]:bg-muted/20">
-                  <span className="flex items-center gap-2.5 text-left">
-                    <HelpCircle className="w-4 h-4 text-primary flex-shrink-0" />
+                  <span className="text-left">
                     {q}
                   </span>
                 </AccordionTrigger>
