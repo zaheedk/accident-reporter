@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Navigate, Link } from 'react-router-dom';
 import { Mail, Lock, User, Loader2, LogIn, Phone, Eye, EyeOff, ArrowLeft } from 'lucide-react';
+import { SavoLogo } from '@/components/SavoLogo';
 import { supabase } from '@/integrations/supabase/client';
 import SEO from '@/components/SEO';
 
@@ -103,7 +104,7 @@ export default function Auth() {
 
       <div className="flex-1 w-full max-w-full flex items-center justify-center px-4 sm:px-5 py-10 overflow-x-hidden">
         <div className="w-full max-w-sm min-w-0">
-          <img src="/savo-logo.svg" alt="SAVO" className="h-20 w-auto mb-6 mx-auto" />
+          <SavoLogo className="h-20 w-auto" />
           <h1 className="text-2xl font-bold text-foreground tracking-tight">
             {mode === 'forgot' ? 'Reset password' : mode === 'login' ? 'Welcome back' : 'Create account'}
           </h1>

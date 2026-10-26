@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Lock, Loader2, CheckCircle, Eye, EyeOff } from 'lucide-react';
+import { SavoLogo } from '@/components/SavoLogo';
 import { supabase } from '@/integrations/supabase/client';
 
 export default function ResetPassword() {
@@ -54,7 +55,7 @@ export default function ResetPassword() {
     <div className="min-h-screen bg-background flex items-center justify-center px-6">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
-          <img src="/savo-logo.svg" alt="SAVO" className="h-16 mx-auto mb-4" />
+          <SavoLogo className="h-16 w-auto" />
           <h1 className="text-2xl font-bold text-foreground" style={{ fontFamily: "'Playfair Display', serif" }}>
             Reset your password
           </h1>
