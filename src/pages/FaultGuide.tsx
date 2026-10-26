@@ -457,8 +457,6 @@ export default function FaultGuide() {
               {result.verdict === 'not_at_fault' && <Free2DriveOffer source="fault-checker" />}
               {result.verdict === 'shared' && <Free2DriveOffer source="fault-checker-shared" title="Partly not at fault? You may still qualify" body="Where the other driver shares the blame, a replacement car can sometimes still be claimed against their insurer. Free 2 Drive can check your eligibility for free." />}
 
-              <LegalDisclaimer />
-
               <div className="grid grid-cols-2 gap-2">
                 <Button variant="outline" onClick={shareResult}><Share2 className="w-4 h-4" />Share</Button>
                 <Button variant="outline" onClick={downloadResult}><Download className="w-4 h-4" />Download</Button>
@@ -467,6 +465,8 @@ export default function FaultGuide() {
                 <Link to="/claims/new" onClick={() => saveFaultHandoff(result)}><FileText className="w-4 h-4" />Add to a new report</Link>
               </Button>
               <Button variant="ghost" className="w-full" onClick={restart}><RotateCcw className="w-4 h-4" />Start over</Button>
+
+              <LegalDisclaimer />
             </div>
           )}
         </div>
