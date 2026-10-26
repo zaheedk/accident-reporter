@@ -207,7 +207,7 @@ export default function Home() {
         <section className="max-w-3xl mx-auto px-4 py-6"><Free2DriveOffer source="home" /></section>
 
         {/* Rights */}
-        <section className="relative max-w-5xl mx-auto px-4 pt-16 md:pt-24">
+        <section className="relative max-w-5xl mx-auto px-4 pt-16 md:pt-24 overflow-hidden">
           <img src={wmScales} alt="" aria-hidden="true" className="pointer-events-none select-none absolute -right-16 -top-4 w-44 opacity-[0.05] lg:-right-28 lg:-top-6 lg:w-[440px] lg:opacity-[0.07]" />
           <WavyLines className="left-0 bottom-0 w-72 h-24 opacity-[0.06] lg:w-[520px] lg:h-40 lg:opacity-[0.08]" />
           {/* playful doodles */}
@@ -244,7 +244,7 @@ export default function Home() {
 
         {/* Features */}
         <motion.section variants={stagger} initial="hidden" whileInView="visible" viewport={{ once: true }}
-          className="relative max-w-5xl mx-auto px-4 py-16 md:py-20">
+          className="relative max-w-5xl mx-auto px-4 py-16 md:py-20 overflow-hidden">
           <img src={wmClipboard} alt="" aria-hidden="true" className="pointer-events-none select-none absolute -left-16 top-10 w-44 opacity-[0.05] lg:-left-28 lg:top-16 lg:w-[440px] lg:opacity-[0.07]" />
           <WavyLines className="right-0 top-0 w-72 h-24 opacity-[0.06] lg:w-[520px] lg:h-40 lg:opacity-[0.08]" />
           <motion.div variants={fadeUp} className="text-center mb-12">
@@ -310,7 +310,7 @@ export default function Home() {
 
         {/* Audience segments */}
         <motion.section variants={stagger} initial="hidden" whileInView="visible" viewport={{ once: true }}
-          className="relative max-w-5xl mx-auto px-4 py-16 md:py-20">
+          className="relative max-w-5xl mx-auto px-4 py-16 md:py-20 overflow-hidden">
           <img src={wmWheel} alt="" aria-hidden="true" className="pointer-events-none select-none absolute -right-16 top-10 w-44 opacity-[0.05] lg:-right-28 lg:top-16 lg:w-[440px] lg:opacity-[0.07]" />
           <WavyLines className="left-0 bottom-0 w-72 h-24 opacity-[0.06] lg:w-[520px] lg:h-40 lg:opacity-[0.08]" />
           <motion.div variants={fadeUp} className="text-center mb-12">
