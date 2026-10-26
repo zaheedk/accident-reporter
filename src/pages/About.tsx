@@ -1,5 +1,8 @@
 import AppLayout from '@/components/AppLayout';
-import { Mail, Phone, MapPin, Send, Lightbulb, ShieldCheck, Heart, Quote } from 'lucide-react';
+import { Mail, Phone, MapPin, Send, Quote } from 'lucide-react';
+import aboutIdeaArt from '@/assets/illustrations/about-idea.png';
+import aboutShieldArt from '@/assets/illustrations/about-shield.png';
+import aboutHeartArt from '@/assets/illustrations/about-heart.png';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
@@ -46,8 +49,8 @@ export default function About() {
 
         {/* Founder's story */}
         <div className="card-surface space-y-4">
-          <div className="flex items-center gap-2">
-            <Lightbulb className="w-4 h-4 text-primary" />
+          <div className="flex items-center gap-3">
+            <img src={aboutIdeaArt} alt="" aria-hidden loading="lazy" width={512} height={512} className="w-11 h-11 shrink-0 object-contain" />
             <h2 className="font-display text-lg font-bold text-foreground">How SAVO Started — A Kiwi Story</h2>
           </div>
           <p className="text-sm text-muted-foreground leading-relaxed">
@@ -68,8 +71,8 @@ export default function About() {
 
         {/* What we do */}
         <div className="card-surface space-y-4">
-          <div className="flex items-center gap-2">
-            <ShieldCheck className="w-4 h-4 text-primary" />
+          <div className="flex items-center gap-3">
+            <img src={aboutShieldArt} alt="" aria-hidden loading="lazy" width={512} height={512} className="w-11 h-11 shrink-0 object-contain" />
             <h2 className="font-display text-lg font-bold text-foreground">Built Around What Insurers Actually Need</h2>
           </div>
           <p className="text-sm text-muted-foreground leading-relaxed">
@@ -86,8 +89,8 @@ export default function About() {
 
         {/* Impact */}
         <div className="card-surface space-y-4">
-          <div className="flex items-center gap-2">
-            <Heart className="w-4 h-4 text-primary" />
+          <div className="flex items-center gap-3">
+            <img src={aboutHeartArt} alt="" aria-hidden loading="lazy" width={512} height={512} className="w-11 h-11 shrink-0 object-contain" />
             <h2 className="font-display text-lg font-bold text-foreground">Helping Kiwis Claim with Confidence</h2>
           </div>
           <p className="text-sm text-muted-foreground leading-relaxed">

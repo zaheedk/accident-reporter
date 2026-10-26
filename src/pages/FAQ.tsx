@@ -1,6 +1,6 @@
 import AppLayout from '@/components/AppLayout';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { HelpCircle, MessageSquare } from 'lucide-react';
+import faqHelpArt from '@/assets/illustrations/faq-help.png';
 import SEO from '@/components/SEO';
 
 const faqs = [
@@ -60,11 +60,14 @@ export default function FAQ() {
         }}
       />
       <div className="space-y-6">
-        <div>
-          <h1 className="font-display text-3xl font-bold text-foreground mb-2">FAQ & Help Centre</h1>
-          <p className="text-sm text-muted-foreground leading-relaxed">
-            Find answers to common questions about using SAVO.
-          </p>
+        <div className="flex items-center gap-4">
+          <img src={faqHelpArt} alt="" aria-hidden loading="lazy" width={512} height={512} className="w-20 h-20 sm:w-24 sm:h-24 shrink-0 object-contain" />
+          <div>
+            <h1 className="font-display text-3xl font-bold text-foreground mb-2">FAQ & Help Centre</h1>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Find answers to common questions about using SAVO.
+            </p>
+          </div>
         </div>
 
         <div className="card-surface p-0 overflow-hidden">
@@ -72,8 +75,7 @@ export default function FAQ() {
             {faqs.map(({ q, a }, i) => (
               <AccordionItem key={i} value={`faq-${i}`} className="border-b border-border/60 last:border-0">
                 <AccordionTrigger className="px-5 py-4 text-sm font-medium text-foreground hover:no-underline hover:bg-muted/30 [&[data-state=open]]:bg-muted/20">
-                  <span className="flex items-center gap-2.5 text-left">
-                    <HelpCircle className="w-4 h-4 text-primary flex-shrink-0" />
+                  <span className="text-left">
                     {q}
                   </span>
                 </AccordionTrigger>
@@ -86,9 +88,7 @@ export default function FAQ() {
         </div>
 
         <div className="card-surface flex items-start gap-4">
-          <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
-            <MessageSquare className="w-5 h-5 text-primary" />
-          </div>
+          <img src={faqHelpArt} alt="" aria-hidden loading="lazy" width={512} height={512} className="w-14 h-14 shrink-0 object-contain" />
           <div>
             <h3 className="text-sm font-semibold text-foreground mb-1">Still have questions?</h3>
             <p className="text-sm text-muted-foreground mb-3">We're here to help. Reach out and we'll get back to you within 24 hours.</p>

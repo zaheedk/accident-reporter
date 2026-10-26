@@ -1,25 +1,29 @@
 import AppLayout from '@/components/AppLayout';
-import { Car, FileText, Wrench, CheckCircle2, ArrowRight } from 'lucide-react';
+import stepGarageArt from '@/assets/illustrations/step-garage.png';
+import stepReportArt from '@/assets/illustrations/step-report.png';
+import stepPanelArt from '@/assets/illustrations/step-panel.png';
+import stepSubmitArt from '@/assets/illustrations/step-submit.png';
+import { ArrowRight } from 'lucide-react';
 import SEO from '@/components/SEO';
 
 const steps = [
   {
-    icon: Car,
+    art: stepGarageArt,
     title: 'Add Your Vehicle',
     desc: 'Register your vehicle details — make, model, rego, WOF & registration expiry — so they\'re ready when you need them.',
   },
   {
-    icon: FileText,
+    art: stepReportArt,
     title: 'File an Incident Report',
     desc: 'Our step-by-step wizard walks you through documenting the incident: date, location, third parties, witnesses, and conditions.',
   },
   {
-    icon: Wrench,
+    art: stepPanelArt,
     title: 'Choose a Panel Shop',
     desc: 'Browse our network of trusted panel shops, compare ratings, and select a repairer that suits you.',
   },
   {
-    icon: CheckCircle2,
+    art: stepSubmitArt,
     title: 'Track & Submit',
     desc: 'Review your completed report, attach photos, and submit it to your insurer. Keep track of everything in one place.',
   },
@@ -42,13 +46,9 @@ export default function HowItWorks() {
         </div>
 
         <div className="space-y-4">
-          {steps.map(({ icon: Icon, title, desc }, i) => (
-            <div key={title} className="card-surface flex gap-4 items-start">
-              <div className="flex-shrink-0">
-                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                  <Icon className="w-5 h-5 text-primary" />
-                </div>
-              </div>
+          {steps.map(({ art, title, desc }, i) => (
+            <div key={title} className="card-surface flex gap-4 items-center">
+              <img src={art} alt="" aria-hidden loading="lazy" width={512} height={512} className="w-20 h-20 sm:w-24 sm:h-24 shrink-0 object-contain" />
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">
                   <span className="step-badge step-badge-active text-[11px]">{i + 1}</span>
@@ -57,7 +57,7 @@ export default function HowItWorks() {
                 <p className="text-sm text-muted-foreground leading-relaxed">{desc}</p>
               </div>
               {i < steps.length - 1 && (
-                <ArrowRight className="w-4 h-4 text-muted-foreground/40 flex-shrink-0 mt-3 hidden sm:block" />
+                <ArrowRight className="w-4 h-4 text-muted-foreground/40 flex-shrink-0 hidden sm:block" />
               )}
             </div>
           ))}

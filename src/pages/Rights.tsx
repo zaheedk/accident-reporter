@@ -1,8 +1,9 @@
 import { Link } from 'react-router-dom';
-import { ChevronRight, Scale, Gavel } from 'lucide-react';
+import { ChevronRight, Scale } from 'lucide-react';
 import AppLayout from '@/components/AppLayout';
 import SEO from '@/components/SEO';
 import LegalDisclaimer from '@/components/LegalDisclaimer';
+import faultVerdictArt from '@/assets/illustrations/fault-verdict.png';
 import { RIGHTS_TOPICS } from '@/lib/rights-data';
 
 export default function Rights() {
@@ -23,7 +24,7 @@ export default function Rights() {
         </div>
 
         <Link to="/fault-guide" className="card-surface-elevated flex items-center gap-4 hover:border-primary/30 transition-colors">
-          <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center shrink-0"><Gavel className="w-5 h-5 text-primary" /></div>
+          <img src={faultVerdictArt} alt="" aria-hidden loading="lazy" width={512} height={512} className="w-12 h-12 shrink-0 object-contain" />
           <div className="flex-1 min-w-0">
             <p className="text-sm font-bold text-foreground">Who is at fault?</p>
             <p className="text-xs text-muted-foreground">Answer a few questions and see which NZ road rule applies.</p>
