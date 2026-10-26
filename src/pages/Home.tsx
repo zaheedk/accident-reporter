@@ -306,15 +306,15 @@ export default function Home() {
               { icon: Briefcase, title: 'For Brokers', desc: 'Onboard clients, see their vehicles and claims, and accelerate settlements.', href: '/broker', cta: 'Broker portal' },
               { icon: Truck, title: 'For Rental Partners', desc: 'Auto-attach hire vehicles to customer accounts via inbound email PDFs.', href: '/rental-partner', cta: 'Partner with us' },
               { icon: Hammer, title: 'For Panel Shops', desc: 'Get listed in our directory and receive qualified repair leads near you.', href: '/panel-shops', cta: 'List your shop' },
-            ].map(({ icon: Icon, title, desc, href, cta }) => (
-              <motion.div key={title} variants={fadeUp} className="card-surface-elevated group hover:border-primary/30 transition-all flex flex-col">
-                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center mb-3">
+            ].map(({ icon: Icon, title, desc, href, cta }, i) => (
+              <motion.div key={title} variants={fadeUp} className={`group rounded-[2rem] p-6 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_20px_40px_-16px_hsl(var(--primary)/0.25)] flex flex-col ${i % 2 === 0 ? 'bg-muted' : 'bg-secondary'}`}>
+                <div className="w-12 h-12 rounded-full bg-card shadow-[0_4px_12px_-4px_hsl(var(--primary)/0.3)] flex items-center justify-center mb-4">
                   <Icon className="w-5 h-5 text-primary" />
                 </div>
-                <h3 className="text-sm font-bold text-foreground">{title}</h3>
-                <p className="mt-1.5 text-xs text-muted-foreground leading-relaxed flex-1">{desc}</p>
-                <Link to={href} className="mt-4 inline-flex items-center gap-1 text-xs font-semibold text-primary hover:gap-1.5 transition-all">
-                  {cta} <ChevronRight className="w-3.5 h-3.5" />
+                <h3 className="font-display text-lg font-bold text-foreground">{title}</h3>
+                <p className="mt-1.5 text-sm text-muted-foreground leading-relaxed flex-1">{desc}</p>
+                <Link to={href} className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-primary hover:gap-1.5 transition-all">
+                  {cta} <ChevronRight className="w-4 h-4" />
                 </Link>
               </motion.div>
             ))}
