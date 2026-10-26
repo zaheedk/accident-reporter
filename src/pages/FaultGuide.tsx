@@ -1,5 +1,8 @@
 import Free2DriveOffer from '@/components/Free2DriveOffer';
 import faultWatermark from '@/assets/illustrations/fault-guide-watermark.png';
+import faultVerdictArt from '@/assets/illustrations/fault-verdict.png';
+import faultRuleArt from '@/assets/illustrations/fault-rule.png';
+import faultClaimArt from '@/assets/illustrations/fault-claim.png';
 import { useMemo, useState } from 'react';
 import LegalDisclaimer from '@/components/LegalDisclaimer';
 import { saveFaultHandoff } from '@/lib/fault-handoff';
@@ -425,25 +428,34 @@ export default function FaultGuide() {
             <div className="space-y-3 animate-in fade-in slide-in-from-bottom-2 duration-300">
               <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Assessment complete</p>
               <Card className={`p-4 border ${verdictBg[result.verdict]}`}>
-                <p className="text-base font-semibold leading-snug">{result.headline}</p>
-                <p className="text-sm mt-1 leading-relaxed opacity-90">{result.explanation}</p>
+                <div className="flex items-center gap-3">
+                  <img src={faultVerdictArt} alt="" aria-hidden loading="lazy" width={256} height={256} className="w-16 h-16 shrink-0 object-contain" />
+                  <div className="min-w-0">
+                    <p className="text-base font-semibold leading-snug">{result.headline}</p>
+                    <p className="text-sm mt-1 leading-relaxed opacity-90">{result.explanation}</p>
+                  </div>
+                </div>
               </Card>
 
               <Card className="p-4">
-                <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-1">Applicable rule</p>
-                <p className="text-sm font-semibold text-foreground">{result.rule.citation}</p>
+                <div className="flex items-center gap-3">
+                  <img src={faultRuleArt} alt="" aria-hidden loading="lazy" width={256} height={256} className="w-14 h-14 shrink-0 object-contain" />
+                  <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground flex-1">Applicable rule</p>
+                </div>
+                <p className="text-sm font-semibold text-foreground mt-2">{result.rule.citation}</p>
                 <p className="text-sm text-muted-foreground mt-1 leading-relaxed">{result.rule.text}</p>
               </Card>
 
               <Card className="p-4">
-                <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-1">What this means for your claim</p>
-                <p className="text-sm text-foreground leading-relaxed">{result.claimGuidance}</p>
+                <div className="flex items-center gap-3">
+                  <img src={faultClaimArt} alt="" aria-hidden loading="lazy" width={256} height={256} className="w-14 h-14 shrink-0 object-contain" />
+                  <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground flex-1">What this means for your claim</p>
+                </div>
+                <p className="text-sm text-foreground mt-2 leading-relaxed">{result.claimGuidance}</p>
               </Card>
 
               {result.verdict === 'not_at_fault' && <Free2DriveOffer source="fault-checker" />}
               {result.verdict === 'shared' && <Free2DriveOffer source="fault-checker-shared" title="Partly not at fault? You may still qualify" body="Where the other driver shares the blame, a replacement car can sometimes still be claimed against their insurer. Free 2 Drive can check your eligibility for free." />}
-
-              <LegalDisclaimer />
 
               <div className="grid grid-cols-2 gap-2">
                 <Button variant="outline" onClick={shareResult}><Share2 className="w-4 h-4" />Share</Button>
@@ -453,6 +465,8 @@ export default function FaultGuide() {
                 <Link to="/claims/new" onClick={() => saveFaultHandoff(result)}><FileText className="w-4 h-4" />Add to a new report</Link>
               </Button>
               <Button variant="ghost" className="w-full" onClick={restart}><RotateCcw className="w-4 h-4" />Start over</Button>
+
+              <LegalDisclaimer />
             </div>
           )}
         </div>
