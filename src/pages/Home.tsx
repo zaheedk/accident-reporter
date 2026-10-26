@@ -194,21 +194,37 @@ export default function Home() {
         <section className="max-w-3xl mx-auto px-4 py-6"><Free2DriveOffer source="home" /></section>
 
         {/* Rights */}
-        <section className="max-w-5xl mx-auto px-4 pt-16 md:pt-20">
-          <div className="text-center mb-10">
-            <h2 className="text-2xl md:text-3xl font-extrabold text-foreground">What you are entitled to</h2>
+        <section className="relative max-w-5xl mx-auto px-4 pt-16 md:pt-24">
+          {/* playful doodles */}
+          <svg aria-hidden="true" className="absolute -top-2 left-2 w-16 h-16 text-primary/25 hidden md:block" viewBox="0 0 64 64" fill="none">
+            <path d="M6 40c8-18 20-26 30-24 8 2 10 12 4 16-6 5-16 1-14-8" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+          </svg>
+          <svg aria-hidden="true" className="absolute top-10 right-4 w-10 h-10 text-primary/30 hidden md:block" viewBox="0 0 40 40" fill="none">
+            <circle cx="20" cy="20" r="14" stroke="currentColor" strokeWidth="3" strokeDasharray="4 7" strokeLinecap="round" />
+          </svg>
+          <div className="text-center mb-12">
+            <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground">What you are entitled to</h2>
             <p className="mt-3 text-muted-foreground max-w-lg mx-auto">Most drivers never find out what they can claim. Start with the question that matches your situation.</p>
           </div>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {RIGHTS_TOPICS.map((t) => (
-              <Link key={t.slug} to={`/rights/${t.slug}`} className="card-surface-elevated hover:border-primary/30 transition-colors">
-                <h3 className="text-sm font-bold text-foreground">{t.title}</h3>
-                <p className="mt-1.5 text-xs text-muted-foreground leading-relaxed">{t.summary}</p>
-                <span className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-primary">Read guide <ChevronRight className="w-3.5 h-3.5" /></span>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {RIGHTS_TOPICS.map((t, i) => (
+              <Link
+                key={t.slug}
+                to={`/rights/${t.slug}`}
+                className={`group rounded-[2rem] p-6 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_20px_40px_-16px_hsl(var(--primary)/0.25)] ${
+                  i % 2 === 0 ? 'bg-secondary' : 'bg-muted'
+                } ${i % 3 === 1 ? 'lg:translate-y-6' : ''}`}
+              >
+                <h3 className="font-display text-lg font-bold text-foreground leading-snug">{t.title}</h3>
+                <svg aria-hidden="true" className="mt-2 w-12 h-2 text-primary/60" viewBox="0 0 48 8" fill="none">
+                  <path d="M2 5c6-4 10 2 16-1s10 2 16-1 8 1 12 0" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+                </svg>
+                <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{t.summary}</p>
+                <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-primary">Read guide <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" /></span>
               </Link>
             ))}
           </div>
-          <LegalDisclaimer compact className="mt-6" />
+          <LegalDisclaimer compact className="mt-14 lg:mt-16" />
         </section>
 
         {/* Features */}
@@ -218,24 +234,28 @@ export default function Home() {
             <h2 className="text-2xl md:text-3xl font-extrabold text-foreground">Then handle your claim smoothly</h2>
             <p className="mt-3 text-muted-foreground max-w-lg mx-auto">From capturing evidence to lodging your insurance claim and arranging a courtesy car — SAVO handles it all.</p>
           </motion.div>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {[
-              { icon: Camera, title: 'Photo Documentation', desc: 'Capture and organise damage photos, licence plates, and scene evidence with guided prompts.' },
-              { icon: FileText, title: 'Smart Claim Reports', desc: 'Generate comprehensive incident reports that match what NZ insurers actually need.' },
-              { icon: Clock, title: 'Fast Insurance Claims', desc: 'Lodge your insurance claim directly with any NZ insurer in minutes, not days.' },
-              { icon: Phone, title: 'Courtesy Car Requests', desc: 'Request a courtesy car through your insurer or our partners so you stay mobile while repairs happen.' },
-              { icon: Wrench, title: 'Find Panel Beaters', desc: 'Browse top-rated panel shops near you with ratings, distance, and one-tap calling.' },
-              { icon: Truck, title: 'Emergency Towing', desc: 'Find and call the nearest tow company instantly when you need help on the road.' },
-            ].map(({ icon: Icon, title, desc }) => (
-              <motion.div key={title} variants={fadeUp} className="card-surface-elevated group hover:border-primary/20 transition-all">
-                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center mb-3">
-                  <Icon className="w-5 h-5 text-primary" />
+          <motion.div variants={fadeUp} className="rounded-[2.5rem] bg-secondary/60 px-6 py-8 md:px-12 md:py-12">
+            <div className="grid sm:grid-cols-2 gap-x-10">
+              {[
+                { icon: Camera, title: 'Photo Documentation', desc: 'Capture and organise damage photos, licence plates, and scene evidence with guided prompts.' },
+                { icon: FileText, title: 'Smart Claim Reports', desc: 'Generate comprehensive incident reports that match what NZ insurers actually need.' },
+                { icon: Clock, title: 'Fast Insurance Claims', desc: 'Lodge your insurance claim directly with any NZ insurer in minutes, not days.' },
+                { icon: Phone, title: 'Courtesy Car Requests', desc: 'Request a courtesy car through your insurer or our partners so you stay mobile while repairs happen.' },
+                { icon: Wrench, title: 'Find Panel Beaters', desc: 'Browse top-rated panel shops near you with ratings, distance, and one-tap calling.' },
+                { icon: Truck, title: 'Emergency Towing', desc: 'Find and call the nearest tow company instantly when you need help on the road.' },
+              ].map(({ icon: Icon, title, desc }, i, arr) => (
+                <div key={title} className={`flex items-start gap-4 py-5 ${i < arr.length - (arr.length % 2 === 0 ? 2 : 1) ? 'border-b border-border/60' : ''}`}>
+                  <div className="w-12 h-12 rounded-full bg-card shadow-[0_4px_12px_-4px_hsl(var(--primary)/0.3)] flex items-center justify-center shrink-0">
+                    <Icon className="w-5 h-5 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-bold text-foreground">{title}</h3>
+                    <p className="mt-1 text-xs text-muted-foreground leading-relaxed">{desc}</p>
+                  </div>
                 </div>
-                <h3 className="text-sm font-bold text-foreground">{title}</h3>
-                <p className="mt-1.5 text-xs text-muted-foreground leading-relaxed">{desc}</p>
-              </motion.div>
-            ))}
-          </div>
+              ))}
+            </div>
+          </motion.div>
         </motion.section>
 
         {/* How it works */}
