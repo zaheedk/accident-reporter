@@ -308,27 +308,8 @@ export default function Home() {
             <h2 className="text-2xl md:text-3xl font-extrabold text-foreground">Then handle your claim smoothly</h2>
             <p className="mt-3 text-muted-foreground max-w-lg mx-auto">From capturing evidence to lodging your insurance claim and arranging a courtesy car — SAVO handles it all.</p>
           </motion.div>
-          <div className="rounded-[2.5rem] bg-secondary/60 px-6 py-8 md:px-12 md:py-12">
-            <div className="grid sm:grid-cols-2 gap-x-10">
-              {[
-                { icon: Camera, title: 'Photo Documentation', desc: 'Capture and organise damage photos, licence plates, and scene evidence with guided prompts.' },
-                { icon: FileText, title: 'Smart Claim Reports', desc: 'Generate comprehensive incident reports that match what NZ insurers actually need.' },
-                { icon: Clock, title: 'Fast Insurance Claims', desc: 'Lodge your insurance claim directly with any NZ insurer in minutes, not days.' },
-                { icon: Phone, title: 'Courtesy Car Requests', desc: 'Request a courtesy car through your insurer or our partners so you stay mobile while repairs happen.' },
-                { icon: Wrench, title: 'Find Panel Beaters', desc: 'Browse top-rated panel shops near you with ratings, distance, and one-tap calling.' },
-                { icon: Truck, title: 'Emergency Towing', desc: 'Find and call the nearest tow company instantly when you need help on the road.' },
-              ].map(({ icon: Icon, title, desc }, i, arr) => (
-                <div key={title} className={`flex items-start gap-4 py-5 ${i < arr.length - (arr.length % 2 === 0 ? 2 : 1) ? 'border-b border-border/60' : ''}`}>
-                  <div className="w-12 h-12 rounded-full bg-card shadow-[0_4px_12px_-4px_hsl(var(--primary)/0.3)] flex items-center justify-center shrink-0">
-                    <Icon className="w-5 h-5 text-primary" />
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-bold text-foreground">{title}</h3>
-                    <p className="mt-1 text-xs text-muted-foreground leading-relaxed">{desc}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
+          <div className="rounded-[2.5rem] bg-secondary/60 px-6 py-4 sm:py-8 md:px-12 md:py-12">
+            <FeaturesList />
           </div>
         </motion.section>
 
