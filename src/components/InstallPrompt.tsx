@@ -66,7 +66,7 @@ export default function InstallPrompt() {
         </button>
 
         <div className="flex items-start gap-3">
-          <img src="/savo-icon.svg" alt="SAVO" className="w-12 h-12 rounded-xl flex-shrink-0" />
+          <img src={savoMark} alt="SAVO" className="w-12 h-12 rounded-xl flex-shrink-0" width={48} height={48} />
           <div className="flex-1 min-w-0">
             <h3 className="text-sm font-bold text-foreground">Install SAVO</h3>
             <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
