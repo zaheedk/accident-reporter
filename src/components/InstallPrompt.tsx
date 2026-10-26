@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Download, X, Share } from 'lucide-react';
+import savoMark from '@/assets/savo-mark.png';
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
