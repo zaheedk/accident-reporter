@@ -133,6 +133,11 @@
     @apply text-base font-semibold text-foreground;
   }
 
+  /* Playfair Display headings — friendly editorial tone */
+  .font-display {
+    font-family: 'Playfair Display', Georgia, serif;
+  }
+
   .step-badge {
     @apply inline-flex items-center justify-center w-7 h-7 rounded-full text-xs font-bold;
   }
