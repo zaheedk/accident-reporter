@@ -295,7 +295,8 @@ export default function Home() {
 
         {/* Audience segments */}
         <motion.section variants={stagger} initial="hidden" whileInView="visible" viewport={{ once: true }}
-          className="max-w-5xl mx-auto px-4 py-16 md:py-20">
+          className="relative max-w-5xl mx-auto px-4 py-16 md:py-20">
+          <img src={courtesyIllustration} alt="" aria-hidden="true" className="pointer-events-none select-none absolute -right-28 top-16 w-[440px] opacity-[0.07] hidden lg:block" />
           <motion.div variants={fadeUp} className="text-center mb-12">
             <h2 className="text-2xl md:text-3xl font-extrabold text-foreground">Built for everyone on the road</h2>
             <p className="mt-3 text-muted-foreground max-w-lg mx-auto">Whether you're a single driver or managing a national fleet, SAVO has a tailored experience for you.</p>
