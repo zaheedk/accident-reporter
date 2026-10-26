@@ -455,6 +455,25 @@
   }
 }
 
+/* Keep the fault guide action above shared navigation, including iOS safe areas. */
+.fault-guide-questions {
+  min-height: calc(100dvh - 180px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+  padding-bottom: 5rem;
+}
+
+.fault-guide-action {
+  bottom: calc(64px + env(safe-area-inset-bottom, 0px));
+}
+
+@media (min-width: 768px) {
+  .fault-guide-action {
+    bottom: 36px;
+  }
+  .fault-guide-questions {
+    min-height: calc(100dvh - 152px - env(safe-area-inset-top, 0px));
+  }
+}
+
 /* Print styles for claim report */
 @media print {
   body {
