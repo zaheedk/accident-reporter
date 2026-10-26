@@ -278,22 +278,23 @@ export default function Home() {
             <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground">What you are entitled to</h2>
             <p className="mt-3 text-muted-foreground max-w-lg mx-auto">Most drivers never find out what they can claim. Start with the question that matches your situation.</p>
           </div>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {/* Mobile: top 2 topics + link to all */}
+          <div className="grid gap-5 sm:hidden">
+            {RIGHTS_TOPICS.slice(0, 2).map((t, i) => (
+              <RightsCard key={t.slug} topic={t} index={i} />
+            ))}
+            <Link
+              to="/rights"
+              className="group rounded-[2rem] p-6 border-2 border-dashed border-primary/40 bg-card flex items-center justify-between gap-3 transition-all hover:border-primary"
+            >
+              <span className="text-sm font-bold text-foreground">See all {RIGHTS_TOPICS.length} guides</span>
+              <span className="inline-flex items-center gap-1 text-sm font-semibold text-primary">View all <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" /></span>
+            </Link>
+          </div>
+          {/* Desktop: full grid */}
+          <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {RIGHTS_TOPICS.map((t, i) => (
-              <Link
-                key={t.slug}
-                to={`/rights/${t.slug}`}
-                className={`group rounded-[2rem] p-6 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_20px_40px_-16px_hsl(var(--primary)/0.25)] ${
-                  i % 2 === 0 ? 'bg-secondary' : 'bg-muted'
-                } ${i % 3 === 1 ? 'lg:translate-y-6' : ''}`}
-              >
-                <h3 className="font-display text-lg font-bold text-foreground leading-snug">{t.title}</h3>
-                <svg aria-hidden="true" className="mt-2 w-12 h-2 text-primary/60" viewBox="0 0 48 8" fill="none">
-                  <path d="M2 5c6-4 10 2 16-1s10 2 16-1 8 1 12 0" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
-                </svg>
-                <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{t.summary}</p>
-                <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-primary">Read guide <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" /></span>
-              </Link>
+              <RightsCard key={t.slug} topic={t} index={i} />
             ))}
           </div>
           <LegalDisclaimer compact className="mt-14 lg:mt-16" />
