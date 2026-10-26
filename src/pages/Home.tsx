@@ -1,7 +1,7 @@
 import Free2DriveOffer from '@/components/Free2DriveOffer';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Shield, Camera, FileText, Clock, Phone, Wrench, Truck, ChevronRight, ArrowRight, CheckCircle2, BookOpen, HelpCircle, Newspaper, Menu, X, Info, Scale, Gavel, User, Users, Briefcase, Building2, Hammer } from 'lucide-react';
+import { Shield, Camera, FileText, Clock, Phone, Wrench, Truck, ChevronRight, ChevronDown, ArrowRight, CheckCircle2, BookOpen, HelpCircle, Newspaper, Menu, X, Info, Scale, Gavel, User, Users, Briefcase, Building2, Hammer } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 import SEO from '@/components/SEO';
@@ -24,6 +24,63 @@ const WavyLines = ({ className = '' }: { className?: string }) => (
     <path d="M0 100c50-25 100 25 150 0s100 25 150 0 75-15 100 0" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
   </svg>
 );
+
+const FEATURES = [
+  { icon: Camera, title: 'Photo Documentation', desc: 'Capture and organise damage photos, licence plates, and scene evidence with guided prompts.' },
+  { icon: FileText, title: 'Smart Claim Reports', desc: 'Generate comprehensive incident reports that match what NZ insurers actually need.' },
+  { icon: Clock, title: 'Fast Insurance Claims', desc: 'Lodge your insurance claim directly with any NZ insurer in minutes, not days.' },
+  { icon: Phone, title: 'Courtesy Car Requests', desc: 'Request a courtesy car through your insurer or our partners so you stay mobile while repairs happen.' },
+  { icon: Wrench, title: 'Find Panel Beaters', desc: 'Browse top-rated panel shops near you with ratings, distance, and one-tap calling.' },
+  { icon: Truck, title: 'Emergency Towing', desc: 'Find and call the nearest tow company instantly when you need help on the road.' },
+];
+
+/** Features: accordion on mobile (titles only, tap to expand), full grid on desktop */
+const FeaturesList = () => {
+  const [open, setOpen] = useState<number | null>(null);
+  return (
+    <>
+      {/* Mobile accordion */}
+      <div className="sm:hidden divide-y divide-border/60">
+        {FEATURES.map(({ icon: Icon, title, desc }, i) => {
+          const isOpen = open === i;
+          return (
+            <div key={title}>
+              <button
+                type="button"
+                onClick={() => setOpen(isOpen ? null : i)}
+                aria-expanded={isOpen}
+                className="w-full flex items-center gap-3 py-4 text-left"
+              >
+                <div className="w-10 h-10 rounded-full bg-card shadow-[0_4px_12px_-4px_hsl(var(--primary)/0.3)] flex items-center justify-center shrink-0">
+                  <Icon className="w-4 h-4 text-primary" />
+                </div>
+                <span className="flex-1 text-sm font-bold text-foreground">{title}</span>
+                <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+              </button>
+              {isOpen && (
+                <p className="pb-4 pl-[52px] text-xs text-muted-foreground leading-relaxed">{desc}</p>
+              )}
+            </div>
+          );
+        })}
+      </div>
+      {/* Desktop grid */}
+      <div className="hidden sm:grid sm:grid-cols-2 gap-x-10">
+        {FEATURES.map(({ icon: Icon, title, desc }, i, arr) => (
+          <div key={title} className={`flex items-start gap-4 py-5 ${i < arr.length - (arr.length % 2 === 0 ? 2 : 1) ? 'border-b border-border/60' : ''}`}>
+            <div className="w-12 h-12 rounded-full bg-card shadow-[0_4px_12px_-4px_hsl(var(--primary)/0.3)] flex items-center justify-center shrink-0">
+              <Icon className="w-5 h-5 text-primary" />
+            </div>
+            <div>
+              <h3 className="text-sm font-bold text-foreground">{title}</h3>
+              <p className="mt-1 text-xs text-muted-foreground leading-relaxed">{desc}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </>
+  );
+};
 
 const stagger = { hidden: {}, visible: { transition: { staggerChildren: 0.1 } } };
 const fadeUp = { hidden: { opacity: 0, y: 24 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' as const } } };
