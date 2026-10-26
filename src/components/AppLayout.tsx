@@ -1,7 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { LayoutDashboard, Car, FileText, Plus, Wrench, Truck, Info, HelpCircle, BookOpen, Shield, Menu, X, LogOut, Newspaper, Home, Phone, FolderOpen, Sun, Moon, Users, Scale, Briefcase, ShieldCheck } from 'lucide-react';
-import savoLogo from '@/assets/savo-logo.png';
-import savoLogoDark from '@/assets/savo-logo-dark.png';
+import { SavoLogo } from '@/components/SavoLogo';
 import NotificationBell from '@/components/NotificationBell';
 import WidgetActionsSheet from '@/components/WidgetActionsSheet';
 import { useState, useEffect } from 'react';
@@ -66,8 +65,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 0.75rem)' }}
       >
         <Link to={logoLink} className="flex items-center min-w-0">
-          <img src={savoLogo} alt="SAVO" className="h-8 w-auto dark:hidden" width="114" height="32" />
-          <img src={savoLogoDark} alt="SAVO" className="h-8 w-auto hidden dark:block" width="114" height="32" />
+          <SavoLogo className="h-8 w-auto" />
         </Link>
         <div className="flex items-center gap-2 shrink-0">
           {user && <NotificationBell />}

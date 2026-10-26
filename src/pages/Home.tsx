@@ -2,6 +2,7 @@ import Free2DriveOffer from '@/components/Free2DriveOffer';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Shield, Camera, FileText, Clock, Phone, Wrench, Truck, ChevronRight, ChevronDown, ArrowRight, CheckCircle2, BookOpen, HelpCircle, Newspaper, Menu, X, Info, Scale, Gavel, User, Users, Briefcase, Building2, Hammer } from 'lucide-react';
+import { SavoLogo } from '@/components/SavoLogo';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 import SEO from '@/components/SEO';
