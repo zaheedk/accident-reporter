@@ -195,6 +195,7 @@ export default function Home() {
 
         {/* Rights */}
         <section className="relative max-w-5xl mx-auto px-4 pt-16 md:pt-24">
+          <img src={rightsIllustration} alt="" aria-hidden="true" className="pointer-events-none select-none absolute -right-28 -top-6 w-[440px] opacity-[0.07] hidden lg:block" />
           {/* playful doodles */}
           <svg aria-hidden="true" className="absolute -top-2 left-2 w-16 h-16 text-primary/25 hidden md:block" viewBox="0 0 64 64" fill="none">
             <path d="M6 40c8-18 20-26 30-24 8 2 10 12 4 16-6 5-16 1-14-8" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
@@ -229,7 +230,8 @@ export default function Home() {
 
         {/* Features */}
         <motion.section variants={stagger} initial="hidden" whileInView="visible" viewport={{ once: true }}
-          className="max-w-5xl mx-auto px-4 py-16 md:py-20">
+          className="relative max-w-5xl mx-auto px-4 py-16 md:py-20">
+          <img src={captureIllustration} alt="" aria-hidden="true" className="pointer-events-none select-none absolute -left-28 top-16 w-[440px] opacity-[0.07] hidden lg:block" />
           <motion.div variants={fadeUp} className="text-center mb-12">
             <h2 className="text-2xl md:text-3xl font-extrabold text-foreground">Then handle your claim smoothly</h2>
             <p className="mt-3 text-muted-foreground max-w-lg mx-auto">From capturing evidence to lodging your insurance claim and arranging a courtesy car — SAVO handles it all.</p>
@@ -293,7 +295,8 @@ export default function Home() {
 
         {/* Audience segments */}
         <motion.section variants={stagger} initial="hidden" whileInView="visible" viewport={{ once: true }}
-          className="max-w-5xl mx-auto px-4 py-16 md:py-20">
+          className="relative max-w-5xl mx-auto px-4 py-16 md:py-20">
+          <img src={courtesyIllustration} alt="" aria-hidden="true" className="pointer-events-none select-none absolute -right-28 top-16 w-[440px] opacity-[0.07] hidden lg:block" />
           <motion.div variants={fadeUp} className="text-center mb-12">
             <h2 className="text-2xl md:text-3xl font-extrabold text-foreground">Built for everyone on the road</h2>
             <p className="mt-3 text-muted-foreground max-w-lg mx-auto">Whether you're a single driver or managing a national fleet, SAVO has a tailored experience for you.</p>
