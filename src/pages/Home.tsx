@@ -234,7 +234,7 @@ export default function Home() {
             <h2 className="text-2xl md:text-3xl font-extrabold text-foreground">Then handle your claim smoothly</h2>
             <p className="mt-3 text-muted-foreground max-w-lg mx-auto">From capturing evidence to lodging your insurance claim and arranging a courtesy car — SAVO handles it all.</p>
           </motion.div>
-          <motion.div variants={fadeUp} className="rounded-[2.5rem] bg-secondary/60 px-6 py-8 md:px-12 md:py-12">
+          <div className="rounded-[2.5rem] bg-secondary/60 px-6 py-8 md:px-12 md:py-12">
             <div className="grid sm:grid-cols-2 gap-x-10">
               {[
                 { icon: Camera, title: 'Photo Documentation', desc: 'Capture and organise damage photos, licence plates, and scene evidence with guided prompts.' },
