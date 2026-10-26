@@ -1,5 +1,8 @@
 import Free2DriveOffer from '@/components/Free2DriveOffer';
 import faultWatermark from '@/assets/illustrations/fault-guide-watermark.png';
+import faultVerdictArt from '@/assets/illustrations/fault-verdict.png';
+import faultRuleArt from '@/assets/illustrations/fault-rule.png';
+import faultClaimArt from '@/assets/illustrations/fault-claim.png';
 import { useMemo, useState } from 'react';
 import LegalDisclaimer from '@/components/LegalDisclaimer';
 import { saveFaultHandoff } from '@/lib/fault-handoff';
