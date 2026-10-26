@@ -7,7 +7,10 @@ import { motion } from 'framer-motion';
 import SEO from '@/components/SEO';
 import LegalDisclaimer from '@/components/LegalDisclaimer';
 import { RIGHTS_TOPICS } from '@/lib/rights-data';
-const heroScene = '/hero-scene.jpg';
+import heroIllustration from '@/assets/illustrations/hero.jpg';
+import rightsIllustration from '@/assets/illustrations/rights.jpg';
+import captureIllustration from '@/assets/illustrations/capture.jpg';
+import courtesyIllustration from '@/assets/illustrations/courtesy.jpg';
 
 const stagger = { hidden: {}, visible: { transition: { staggerChildren: 0.1 } } };
 const fadeUp = { hidden: { opacity: 0, y: 24 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' as const } } };
@@ -92,28 +95,28 @@ export default function Home() {
         {/* Hero */}
         <motion.section
           variants={stagger} initial="hidden" animate="visible"
-          className="relative overflow-hidden bg-dark-surface"
+          className="relative overflow-hidden bg-background"
         >
-          <div className="max-w-5xl mx-auto px-4 py-16 md:py-24 relative z-10 flex flex-col md:flex-row items-center gap-10 md:gap-16">
+          <div className="max-w-6xl mx-auto px-4 py-12 md:py-20 relative z-10 flex flex-col md:flex-row items-center gap-8 md:gap-12">
             <motion.div variants={fadeUp} className="flex-1 max-w-xl">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold bg-white/[0.06] text-white/80 border border-white/10 mb-6">
-                <Scale className="w-3.5 h-3.5" /> Your claim rights, in plain English
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold bg-secondary text-secondary-foreground mb-6">
+                <Scale className="w-3.5 h-3.5 text-primary" /> Your claim rights, in plain English
               </span>
-              <h1 className="text-4xl md:text-6xl font-bold text-white leading-[1.05] tracking-tight">
-                Know your rights<br />
-                <span className="text-white/60">after a car accident.</span>
+              <h1 className="text-4xl md:text-6xl font-bold text-foreground leading-[1.05] tracking-tight">
+                Had an accident?<br />
+                <span className="text-primary">We've got your back.</span>
               </h1>
-              <p className="mt-5 text-base md:text-lg text-white/60 leading-relaxed max-w-md">
+              <p className="mt-5 text-base md:text-lg text-muted-foreground leading-relaxed max-w-md">
                 Find out who is at fault, what you are entitled to, and how to get your insurance claim handled smoothly. Free for New Zealand drivers.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
                 <Link to="/fault-guide">
-                  <Button size="lg" className="text-sm font-semibold gap-2 h-12 px-6 bg-primary hover:bg-primary/90 text-primary-foreground">
+                  <Button size="lg" className="text-sm font-semibold gap-2 h-12 px-6 rounded-full">
                     Check who's at fault <ArrowRight className="w-4 h-4" />
                   </Button>
                 </Link>
                 <Link to="/rights">
-                  <Button variant="outline" size="lg" className="text-sm font-semibold h-12 px-6 border-white/15 text-white bg-transparent hover:bg-white/[0.06]">
+                  <Button variant="outline" size="lg" className="text-sm font-semibold h-12 px-6 rounded-full">
                     Know your rights
                   </Button>
                 </Link>
@@ -122,7 +125,7 @@ export default function Home() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="Download SAVO on Google Play"
-                  className="inline-flex items-center gap-2.5 h-12 px-5 rounded-md bg-black text-white border border-white/15 hover:bg-black/80 transition-colors"
+                  className="inline-flex items-center gap-2.5 h-12 px-5 rounded-full bg-foreground text-background hover:bg-foreground/85 transition-colors"
                 >
                   <svg viewBox="0 0 512 512" className="w-6 h-6" aria-hidden="true">
                     <path fill="#EA4335" d="M325.3 234.3L104.6 13l280.8 161.2-60.1 60.1z"/>
@@ -137,28 +140,25 @@ export default function Home() {
                 </a>
               </div>
             </motion.div>
-            <motion.div variants={fadeUp} className="flex-shrink-0 w-64 md:w-80 lg:w-96">
-              <picture>
-                <source srcSet="/hero-scene.webp" type="image/webp" />
-                <img
-                  src={heroScene}
-                  alt="Person documenting car accident with smartphone"
-                  className="w-full rounded-2xl border border-white/10"
-                  width={800}
-                  height={800}
-                  loading="eager"
-                  fetchPriority="high"
-                  decoding="async"
-                />
-              </picture>
+            <motion.div variants={fadeUp} className="flex-1 w-full max-w-xl">
+              <img
+                src={heroIllustration}
+                alt="Friendly helper handing car keys to a relieved driver beside a green courtesy car"
+                className="w-full h-auto"
+                width={1280}
+                height={896}
+                loading="eager"
+                fetchPriority="high"
+                decoding="async"
+              />
             </motion.div>
           </div>
         </motion.section>
 
         {/* Trust bar */}
         <motion.section variants={stagger} initial="hidden" whileInView="visible" viewport={{ once: true }}
-          className="border-b border-border bg-card">
-          <div className="max-w-5xl mx-auto px-4 py-6 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-xs text-muted-foreground font-medium">
+          className="border-y border-border bg-secondary/60">
+          <div className="max-w-5xl mx-auto px-4 py-6 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-xs text-secondary-foreground font-medium">
             {['100% Free', 'Based on NZ Road Rules', 'Insurer-Neutral', 'Plain English'].map(item => (
               <motion.div key={item} variants={fadeUp} className="flex items-center gap-1.5">
                 <CheckCircle2 className="w-3.5 h-3.5 text-primary" />
@@ -167,6 +167,29 @@ export default function Home() {
             ))}
           </div>
         </motion.section>
+
+        {/* How SAVO helps — illustrated */}
+        <section className="max-w-6xl mx-auto px-4 pt-16 md:pt-20">
+          <div className="text-center mb-10">
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground tracking-tight">Less stress, from crash to keys</h2>
+            <p className="mt-3 text-muted-foreground max-w-lg mx-auto">Three simple ways SAVO helps after an accident.</p>
+          </div>
+          <div className="grid md:grid-cols-3 gap-6">
+            {[
+              { img: rightsIllustration, title: 'Cut through the confusion', text: 'Plain-English guides to who is at fault and what you are owed.', to: '/fault-guide', alt: 'Tangled arrows turning into one clear path' },
+              { img: captureIllustration, title: 'Your claim in your pocket', text: 'Capture photos, location and details on the spot — calmly.', to: '/signup', alt: 'Person recording accident details on a phone' },
+              { img: courtesyIllustration, title: 'Keep moving', text: 'Not at fault? Get a courtesy car while your car is repaired.', to: '/rights/courtesy-car', alt: 'Driver waving from a courtesy car while a mechanic repairs their car' },
+            ].map(card => (
+              <Link key={card.title} to={card.to} className="group rounded-3xl border border-border bg-card p-5 hover:border-primary/40 transition-colors">
+                <img src={card.img} alt={card.alt} width={1280} height={896} loading="lazy" decoding="async" className="w-full h-auto rounded-2xl" />
+                <h3 className="mt-4 text-lg font-semibold text-foreground">{card.title}</h3>
+                <p className="mt-1 text-sm text-muted-foreground">{card.text}</p>
+                <span className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-primary">Learn more <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" /></span>
+              </Link>
+            ))}
+          </div>
+        </section>
+
 
         <section className="max-w-3xl mx-auto px-4 py-6"><Free2DriveOffer source="home" /></section>
 
@@ -281,18 +304,18 @@ export default function Home() {
 
         {/* CTA */}
         <motion.section initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}
-          className="relative overflow-hidden bg-dark-surface">
+          className="relative overflow-hidden bg-secondary">
           <div className="max-w-5xl mx-auto px-4 py-16 md:py-20 text-center relative z-10">
-            <h2 className="text-3xl md:text-4xl font-bold text-white tracking-tight">Ready to protect your next claim?</h2>
-            <p className="mt-3 text-white/60 max-w-md mx-auto">Join Kiwi drivers who use SAVO to document accidents, lodge insurance claims, and arrange courtesy cars with confidence.</p>
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground tracking-tight">Ready to protect your next claim?</h2>
+            <p className="mt-3 text-muted-foreground max-w-md mx-auto">Join Kiwi drivers who use SAVO to document accidents, lodge insurance claims, and arrange courtesy cars with confidence.</p>
             <div className="mt-8 flex flex-wrap justify-center gap-3">
               <Link to="/signup">
-                <Button size="lg" className="text-sm font-semibold gap-2 h-12 px-8 bg-primary hover:bg-primary/90 text-primary-foreground">
+                <Button size="lg" className="text-sm font-semibold gap-2 h-12 px-8 rounded-full">
                   Create free account <ArrowRight className="w-4 h-4" />
                 </Button>
               </Link>
               <Link to="/login">
-                <Button variant="outline" size="lg" className="text-sm font-semibold h-12 px-6 border-white/15 text-white bg-transparent hover:bg-white/[0.06]">
+                <Button variant="outline" size="lg" className="text-sm font-semibold h-12 px-6 rounded-full bg-card">
                   Log in
                 </Button>
               </Link>
