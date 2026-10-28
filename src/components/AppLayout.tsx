@@ -8,6 +8,8 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
+import { AccountBackdrop } from '@/components/AccountArtwork';
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
@@ -59,7 +61,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const logoLink = user ? '/dashboard' : '/';
 
   return (
-    <div className="min-h-screen w-full max-w-full bg-background" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 60px)' }}>
+    <div className={`min-h-screen w-full max-w-full bg-background ${user ? 'signed-in-experience' : ''}`} style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 60px)' }}>
       <header
         className="w-full max-w-full min-w-0 bg-card pl-2 pr-4 pb-3 flex items-center justify-between gap-3 border-b border-border/50 fixed top-0 left-0 right-0 z-30"
         style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 0.75rem)' }}
@@ -79,9 +81,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               </Link>
             </>
           )}
-          <button onClick={() => setMenuOpen(!menuOpen)} aria-label={menuOpen ? 'Close menu' : 'Open menu'} className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors">
+          <Button variant="ghost" size="icon" onClick={() => setMenuOpen(!menuOpen)} aria-label={menuOpen ? 'Close menu' : 'Open menu'} className="w-8 h-8 rounded-full text-muted-foreground hover:text-foreground">
             {menuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-          </button>
+          </Button>
         </div>
       </header>
 
@@ -147,12 +149,13 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </div>
       )}
 
-      <main className="w-full max-w-2xl lg:max-w-5xl mx-auto px-4 lg:px-8 py-5 pb-32">
-        {children}
+      <main className="relative isolate w-full max-w-2xl lg:max-w-5xl mx-auto px-4 lg:px-8 py-5 pb-32">
+        {user && <AccountBackdrop pathname={location.pathname} />}
+        <div className="relative account-content">{children}</div>
       </main>
 
       <div className="hidden md:block fixed bottom-0 left-0 right-0 bg-card/80 backdrop-blur-sm border-t border-border/40 z-10">
-        <div className="flex items-center justify-center gap-3 px-4 py-2 text-xs text-muted-foreground">
+        <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 px-4 py-2 text-xs text-muted-foreground">
           {contentLinks.map(({ to, label }, i) => (
             <span key={to} className="flex items-center gap-3">
               {i > 0 && <span className="text-border">·</span>}
