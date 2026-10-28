@@ -7,3 +7,8 @@
 ## Design rollout (Oct 26)
 - [x] Apply new light/friendly style (white canvas, serif headings, soft borderless panels, wavy accents, rounded-full buttons) to all public pages: Rights, RightsTopic, FaultGuide, About, FAQ, Blog, BlogPost, HowItWorks
 - [x] Verify each page in preview (mobile + desktop)
+
+## Signed-in design rollout
+- [ ] Apply the light illustrated style to the shared signed-in layout and dashboard, keeping tools unchanged.
+- [ ] Restyle vehicle, report, document, profile and account-management pages with flowing sections and readable forms.
+- [ ] Verify signed-in navigation and key pages on desktop and mobile.
