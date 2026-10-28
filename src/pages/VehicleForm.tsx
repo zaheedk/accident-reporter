@@ -1,3 +1,5 @@
+import { Button } from '@/components/ui/button';
+import { AccountArtwork } from '@/components/AccountArtwork';
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams, Link, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, Check, Camera, X, Loader2, AlertTriangle, Car, FileText, Phone, Shield, ScanLine, Briefcase } from 'lucide-react';
@@ -186,14 +188,14 @@ export default function VehicleForm() {
   const Toggle = ({ active, onToggle, label }: { active: boolean; onToggle: () => void; label: string }) => (
     <label className="flex items-center justify-between gap-3 cursor-pointer" onClick={onToggle}>
       <span className="text-sm font-medium text-foreground">{label}</span>
-      <button
+      <Button variant="ghost"
         type="button"
         role="switch"
         aria-checked={active}
         onClick={(e) => { e.stopPropagation(); onToggle(); }}
         className={`relative w-11 h-6 rounded-full transition-colors shrink-0 ${active ? 'bg-foreground' : 'bg-muted border border-border'}`}>
         <span className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-background shadow transition-transform ${active ? 'translate-x-5' : ''}`} />
-      </button>
+      </Button>
     </label>
   );
 
@@ -207,13 +209,13 @@ export default function VehicleForm() {
           {/* Header — Apple/Linear: matches Garage page */}
           <div className="flex items-end justify-between gap-3 pt-2 min-w-0 max-w-full">
             <div className="flex items-start gap-2 min-w-0">
-              <button
+              <Button variant="ghost"
                 onClick={() => navigate(-1)}
                 aria-label="Back"
                 className="w-9 h-9 -ml-1 mt-1 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex-shrink-0"
               >
                 <ArrowLeft className="w-[18px] h-[18px]" strokeWidth={2} />
-              </button>
+              </Button>
               <div className="min-w-0">
                 <h1 className="text-[28px] leading-tight font-semibold text-foreground tracking-[-0.02em] truncate">
                   {isEdit ? `${form.year} ${form.make} ${form.model}`.trim() || 'Vehicle' : 'Add vehicle'}
@@ -224,13 +226,13 @@ export default function VehicleForm() {
               </div>
             </div>
             {isEdit && vehicleUuid && (
-              <button
+              <Button variant="ghost"
                 onClick={() => navigate(`/claims/new?vehicleId=${vehicleUuid}`)}
                 className="hidden sm:inline-flex md:hidden items-center justify-center gap-1.5 h-9 px-3.5 rounded-lg bg-destructive text-destructive-foreground text-[13px] font-medium transition-all active:scale-[0.98] shrink-0"
               >
                 <AlertTriangle className="w-3.5 h-3.5" strokeWidth={2.2} />
                 Report incident
-              </button>
+              </Button>
             )}
           </div>
 
@@ -256,7 +258,7 @@ export default function VehicleForm() {
                 className="block rounded-xl bg-card border border-border hover:border-foreground/20 transition-colors p-3.5"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-lg bg-foreground text-background flex items-center justify-center shrink-0">
+                  <div className="w-9 h-9 rounded-lg bg-primary text-primary-foreground flex items-center justify-center shrink-0">
                     <Car className="w-4 h-4" strokeWidth={2} />
                   </div>
                   <div className="min-w-0">
@@ -267,7 +269,7 @@ export default function VehicleForm() {
               </Link>
 
               {/* Vehicle summary panel — mirrors Alerts panel on Garage */}
-              <div className="rounded-xl bg-card border border-border overflow-hidden">
+              <div className="account-panel overflow-hidden">
                 <div className="px-3.5 pt-3 pb-2 text-[11px] font-medium text-muted-foreground">Vehicle</div>
                 <div className="divide-y divide-border">
                   {[
@@ -286,16 +288,16 @@ export default function VehicleForm() {
 
               {/* Quick actions panel */}
               {isEdit && vehicleUuid && (
-                <div className="rounded-xl bg-card border border-border overflow-hidden">
+                <div className="account-panel overflow-hidden">
                   <div className="px-3.5 pt-3 pb-2 text-[11px] font-medium text-muted-foreground">Quick actions</div>
                   <div className="divide-y divide-border">
-                    <button
+                    <Button variant="ghost"
                       onClick={() => navigate(`/claims/new?vehicleId=${vehicleUuid}`)}
                       className="w-full flex items-center gap-3 px-3.5 py-2.5 hover:bg-muted/50 transition-colors text-left"
                     >
                       <AlertTriangle className="w-3.5 h-3.5 text-destructive" strokeWidth={2} />
                       <p className="flex-1 min-w-0 text-[13px] text-foreground">Report incident</p>
-                    </button>
+                    </Button>
                     <a
                       href="tel:111"
                       className="w-full flex items-center gap-3 px-3.5 py-2.5 hover:bg-muted/50 transition-colors text-left"
@@ -312,13 +314,13 @@ export default function VehicleForm() {
             <div className="space-y-6 pb-24 min-w-0 max-w-full overflow-x-hidden">
               {/* Mobile-only: Report incident */}
               {isEdit && vehicleUuid && (
-                <button
+                <Button variant="ghost"
                   onClick={() => navigate(`/claims/new?vehicleId=${vehicleUuid}`)}
                   className="sm:hidden w-full inline-flex items-center justify-center gap-2 h-11 rounded-xl bg-destructive text-destructive-foreground text-sm font-semibold transition-all active:scale-[0.98]"
                 >
                   <AlertTriangle className="w-4 h-4" strokeWidth={2.2} />
                   Report incident with this vehicle
-                </button>
+                </Button>
               )}
 
           {/* Vehicle Photo */}
@@ -327,22 +329,22 @@ export default function VehicleForm() {
             {photoPreview ? (
               <div className="relative rounded-xl overflow-hidden border border-border bg-card">
                 <img src={photoPreview} alt="Vehicle" className="w-full h-48 object-cover" />
-                <button onClick={handleRemovePhoto}
+                <Button variant="ghost" onClick={handleRemovePhoto}
                   className="absolute top-2 right-2 w-8 h-8 rounded-full bg-foreground/85 backdrop-blur text-background hover:bg-foreground transition-colors flex items-center justify-center"
                   aria-label="Remove photo">
                   <X className="w-4 h-4" strokeWidth={2.2} />
-                </button>
-                <button
+                </Button>
+                <Button variant="ghost"
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
                   disabled={uploading}
                   className="absolute bottom-2 right-2 inline-flex items-center gap-1.5 h-8 px-3 rounded-lg bg-background/90 backdrop-blur text-[12px] font-semibold text-foreground hover:bg-background transition-colors"
                 >
                   <Camera className="w-3.5 h-3.5" /> Change
-                </button>
+                </Button>
               </div>
             ) : (
-              <button
+              <Button variant="ghost"
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
                 disabled={uploading}
@@ -354,14 +356,14 @@ export default function VehicleForm() {
                   </span>
                 ) : (
                   <>
-                    <div className="w-11 h-11 rounded-xl bg-foreground text-background flex items-center justify-center mb-2.5">
-                      <Camera className="w-5 h-5" strokeWidth={1.8} />
+                    <div className="w-16 h-16 flex items-center justify-center mb-2.5">
+                      <AccountArtwork kind="garage" className="w-16 h-16" />
                     </div>
                     <span className="text-sm font-semibold text-foreground max-w-full break-words">Add a photo of your vehicle</span>
                     <span className="text-[12px] text-muted-foreground mt-0.5">JPG or PNG, up to 10 MB</span>
                   </>
                 )}
-              </button>
+              </Button>
             )}
             <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handlePhotoUpload} />
           </div>
@@ -396,7 +398,7 @@ export default function VehicleForm() {
               <div className="min-w-0">
                 <label className={labelCls}>WOF expiry</label>
                 <input type="date" className={`${inputCls} tabular-nums`} value={form.wofExpiry} onChange={e => update('wofExpiry', e.target.value)} />
-                <button
+                <Button variant="ghost"
                   type="button"
                   onClick={() => wofScanRef.current?.click()}
                   disabled={scanning !== null}
@@ -404,13 +406,13 @@ export default function VehicleForm() {
                 >
                   {scanning === 'wof' ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <ScanLine className="w-3.5 h-3.5" />}
                   {scanning === 'wof' ? 'Reading label…' : 'Scan WOF label'}
-                </button>
+                </Button>
                 <input ref={wofScanRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={e => handleLabelScan(e, 'wof')} />
               </div>
               <div className="min-w-0">
                 <label className={labelCls}>Rego expiry</label>
                 <input type="date" className={`${inputCls} tabular-nums`} value={form.regoExpiry} onChange={e => update('regoExpiry', e.target.value)} />
-                <button
+                <Button variant="ghost"
                   type="button"
                   onClick={() => regoScanRef.current?.click()}
                   disabled={scanning !== null}
@@ -418,7 +420,7 @@ export default function VehicleForm() {
                 >
                   {scanning === 'rego' ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <ScanLine className="w-3.5 h-3.5" />}
                   {scanning === 'rego' ? 'Reading label…' : 'Scan Rego label'}
-                </button>
+                </Button>
                 <input ref={regoScanRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={e => handleLabelScan(e, 'rego')} />
               </div>
             </div>
@@ -534,14 +536,14 @@ export default function VehicleForm() {
 
           {/* Sticky-feel footer action */}
           <div className="pt-2">
-            <button
+            <Button variant="ghost"
               onClick={handleSave}
               disabled={saving || !form.make || !form.model || !form.regoNumber}
-              className="w-full h-12 rounded-2xl bg-foreground text-background text-sm font-semibold transition-all active:scale-[0.98] disabled:opacity-40 disabled:pointer-events-none inline-flex items-center justify-center gap-2"
+              className="w-full h-12 rounded-2xl bg-primary text-primary-foreground text-sm font-semibold transition-all active:scale-[0.98] disabled:opacity-40 disabled:pointer-events-none inline-flex items-center justify-center gap-2"
             >
               {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" strokeWidth={2.2} />}
               {isEdit ? 'Update vehicle' : 'Save vehicle'}
-            </button>
+            </Button>
           </div>
             </div>
           </div>
