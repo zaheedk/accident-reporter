@@ -411,7 +411,8 @@
     margin-bottom: -8rem;
     padding: 1.25rem 1rem 8rem 1rem;
     min-height: calc(100vh - 53px);
-    overflow-x: hidden;
+    /* clip (not hidden) so position: sticky headers inside still pin to the viewport */
+    overflow-x: clip;
   }
 
   .theme-garage > * {
@@ -506,7 +507,8 @@
     margin-bottom: -8rem;
     padding: 1.25rem 1rem 8rem 1rem;
     min-height: calc(100vh - 53px);
-    overflow-x: hidden;
+    /* clip (not hidden) so position: sticky headers inside still pin to the viewport */
+    overflow-x: clip;
   }
 
   .theme-dashboard > * {
