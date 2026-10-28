@@ -2,7 +2,7 @@
 
 ## iOS archive failure
 - [x] Replace unsupported target-conditional signing overlay with App-target project settings and preserve archive diagnostics on failure.
-- [ ] Validate the signing helper with a generated project and run release helper regression tests.
+- [x] Validate signing helper (2 tests, 13 assertions), release helpers (4 tests), workflow YAML and all 24 shell blocks.
 - [ ] Confirm a signed archive in GitHub Actions — blocked by unavailable macOS/GitHub execution access.
 
 - [x] Prepare App Store listing, review instructions, privacy worksheet and existing store icon.
