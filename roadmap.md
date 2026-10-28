@@ -14,4 +14,4 @@
 - [x] Verify signed-in navigation and key pages on desktop and mobile; opened the accident actions and read existing vehicle details back through the edit page.
 
 ## Daily fault quiz imagery
-- [ ] Replace reused generic pictures with scenario-specific NZ road diagrams and verify every scenario plus the daily answer flow.
+- [x] Replace reused generic pictures with fourteen scenario-specific NZ road diagrams; visually checked all diagrams on phones and verified answer feedback, desktop rendering and no horizontal overflow.
