@@ -1,5 +1,10 @@
 # App Store release preparation
 
+## iOS archive failure
+- [x] Replace unsupported target-conditional signing overlay with App-target project settings and preserve archive diagnostics on failure.
+- [ ] Validate the signing helper with a generated project and run release helper regression tests.
+- [ ] Confirm a signed archive in GitHub Actions — blocked by unavailable macOS/GitHub execution access.
+
 - [x] Prepare App Store listing, review instructions, privacy worksheet and existing store icon.
 - [x] Update the iOS pipeline to produce configurable signed releases, native simulator screenshots and a submission bundle.
 - [x] Validate release helpers and listing limits; inspect browser screenshot drafts and the package entries. Native output awaits macOS workflow execution.
