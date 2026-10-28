@@ -38,10 +38,10 @@ export default function QuizDiagram({ id, description }: { id: QuizDiagramId; de
   let scene: React.ReactNode;
   switch (id) {
     case 'uncontrolled-right':
-      scene = <>{cross}<Car x={282} y={295} label="You" /><Car x={355} y={65} angle={180} label="Oncoming" />{arrow('M282 250 V211 Q282 165 335 165 H474')}{arrow('M355 109 V238', true)}<Impact x={355} y={165} /><Label x={22} y={45}>No signs or signals</Label></>;
+      scene = <>{cross}<Car x={282} y={295} label="You" /><Car x={355} y={65} angle={180} other label="Oncoming" />{arrow('M282 250 V211 Q282 165 335 165 H474')}{arrow('M355 109 V238', true)}<Impact x={355} y={165} /><Label x={22} y={45}>No signs or signals</Label></>;
       break;
     case 'rear-end':
-      scene = <>{vertical}<path d="M250 73 H390" className="quiz-edge" /><Car x={283} y={116} label="You · stopped" /><Car x={283} y={260} other label="Following car" />{arrow('M283 215 V161', true)}<Impact x={283} y={156} /><rect x="418" y="36" width="28" height="72" rx="7" className="quiz-signal" /><circle cx="432" cy="52" r="8" className="quiz-red" /><Label x={458} y={60}>Red light</Label></>;
+      scene = <>{vertical}<path d="M250 73 H320" className="quiz-edge" /><Car x={283} y={116} label="You · stopped" /><Car x={283} y={260} other label="Following car" />{arrow('M283 215 V161', true)}<Impact x={283} y={156} /><rect x="418" y="36" width="28" height="72" rx="7" className="quiz-signal" /><circle cx="432" cy="52" r="8" className="quiz-red" /><Label x={458} y={60}>Red light</Label></>;
       break;
     case 'car-park-reverse':
       scene = <><path d="M0 113 H640 V247 H0 Z" className="quiz-road" /><path d="M225 0 V110 H335 V0 M225 360 V250 H335 V360" className="quiz-edge" /><Car x={281} y={57} /><Car x={281} y={304} angle={180} other />{arrow('M281 103 V164')}{arrow('M281 257 V196', true)}<Impact x={281} y={180} /><Label x={338} y={55}>Reversing out</Label><Label x={338} y={307}>Reversing out</Label></>;
@@ -65,7 +65,7 @@ export default function QuizDiagram({ id, description }: { id: QuizDiagramId; de
       scene = <>{vertical}<ellipse cx="281" cy="173" rx="28" ry="60" className="quiz-water" /><Car x={283} y={279} label="You" />{arrow('M283 234 Q312 174 365 131 L400 95')}<path d="M407 30 V307" className="quiz-barrier" /><Impact x={407} y={95} /><Label x={442} y={110}>Barrier</Label><Label x={27} y={65}>Wet road</Label><Label x={27} y={92}>80 km/h</Label><path d="M50 124 l-8 16 m42 -16 l-8 16 m42 -16 l-8 16" className="quiz-route-other" /></>;
       break;
     case 'give-way-sign':
-      scene = <>{horizontal}<path d="M250 270 H338 V360 H250 Z" className="quiz-road" /><path d="M0 282 H248 M340 282 H640" className="quiz-edge" /><Car x={285} y={321} label="You" /><Car x={485} y={167} angle={-90} label="Through car" />{arrow('M285 276 V231 Q285 166 233 166 H175')}{arrow('M439 167 H319', true)}<Impact x={285} y={167} /><Label x={383} y={326}>Driveway</Label><Label x={25} y={65}>Main road</Label></>;
+      scene = <>{horizontal}<path d="M250 270 H338 V360 H250 Z" className="quiz-road" /><path d="M0 282 H248 M340 282 H640" className="quiz-edge" /><Car x={285} y={321} label="You" /><Car x={485} y={167} angle={-90} other label="Through car" />{arrow('M285 276 V231 Q285 166 233 166 H175')}{arrow('M439 167 H319', true)}<Impact x={285} y={167} /><Label x={383} y={326}>Driveway</Label><Label x={25} y={65}>Main road</Label></>;
       break;
     case 'towed-trailer':
       scene = <>{vertical}<Car x={282} y={73} label="You · towing" /><rect x="264" y="145" width="36" height="48" rx="4" className="quiz-car-you" /><path d="M282 111 V129 M272 134 l20 -8" className="quiz-edge" /><Car x={282} y={285} other label="Other car" />{arrow('M282 203 V239')}<Impact x={282} y={244} /><Label x={396} y={164}>Detached trailer</Label></>;

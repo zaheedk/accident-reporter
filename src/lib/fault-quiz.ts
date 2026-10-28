@@ -1,13 +1,4 @@
-import rearEndImg from '@/assets/quiz/rear-end.jpg';
-import intersectionImg from '@/assets/quiz/intersection.jpg';
-import roundaboutImg from '@/assets/quiz/roundabout.jpg';
-import carparkImg from '@/assets/quiz/carpark.jpg';
-import doorImg from '@/assets/quiz/door.jpg';
-import motorwayImg from '@/assets/quiz/motorway.jpg';
-import pedestrianImg from '@/assets/quiz/pedestrian.jpg';
-import weatherImg from '@/assets/quiz/weather.jpg';
-import towingImg from '@/assets/quiz/towing.jpg';
-import claimImg from '@/assets/quiz/claim.jpg';
+import type { QuizDiagramId } from '@/components/QuizDiagram';
 
 export type QuizOption = {
   id: string;
@@ -15,9 +6,8 @@ export type QuizOption = {
 };
 
 export type QuizScenario = {
-  id: string;
+  id: QuizDiagramId;
   scenario: string;
-  image: string;
   imageAlt: string;
   options: QuizOption[];
   answerId: string;
@@ -34,7 +24,6 @@ export const quizScenarios: QuizScenario[] = [
     id: 'rear-end',
     scenario:
       'You stop at a red light in Auckland. The car behind fails to stop in time and hits your rear bumper.',
-    image: rearEndImg,
     imageAlt: 'Illustration of a car rear-ending another car stopped at a red light',
     options: [
       { id: 'a', label: 'You are at fault' },
@@ -50,7 +39,6 @@ export const quizScenarios: QuizScenario[] = [
     id: 'uncontrolled-right',
     scenario:
       'You are turning right at an uncontrolled intersection. An oncoming car is going straight through. You collide.',
-    image: intersectionImg,
     imageAlt: 'Illustration of a car turning right across an oncoming vehicle at an intersection',
     options: [
       { id: 'a', label: 'You are at fault' },
@@ -66,7 +54,6 @@ export const quizScenarios: QuizScenario[] = [
     id: 'car-park-reverse',
     scenario:
       'Two drivers reverse out of opposite supermarket car park bays at the same time and collide in the middle.',
-    image: carparkImg,
     imageAlt: 'Illustration of two cars reversing out of opposite car park bays',
     options: [
       { id: 'a', label: 'The first to start reversing is at fault' },
@@ -82,7 +69,6 @@ export const quizScenarios: QuizScenario[] = [
     id: 'roundabout',
     scenario:
       'You enter a roundabout and are hit by a vehicle already circulating on your right.',
-    image: roundaboutImg,
     imageAlt: 'Illustration of two cars on a roundabout',
     options: [
       { id: 'a', label: 'You are at fault' },
@@ -98,7 +84,6 @@ export const quizScenarios: QuizScenario[] = [
     id: 'door-opening',
     scenario:
       'A parked driver opens their door into your lane in Wellington and you clip it while driving past at the speed limit.',
-    image: doorImg,
     imageAlt: 'Illustration of a parked car opening its door into a passing vehicle',
     options: [
       { id: 'a', label: 'You are at fault' },
@@ -114,7 +99,6 @@ export const quizScenarios: QuizScenario[] = [
     id: 'lane-change',
     scenario:
       'You are travelling straight in your lane on the motorway. A car merges into your lane from the on-ramp and side-swipes you.',
-    image: motorwayImg,
     imageAlt: 'Illustration of a car merging onto a motorway beside another vehicle',
     options: [
       { id: 'a', label: 'The merging driver is at fault' },
@@ -130,7 +114,6 @@ export const quizScenarios: QuizScenario[] = [
     id: 'stolen-signal',
     scenario:
       'You are turning left at a green light. A pedestrian is crossing with the green pedestrian signal and you hit them.',
-    image: pedestrianImg,
     imageAlt: 'Illustration of a car turning across a pedestrian crossing',
     options: [
       { id: 'a', label: 'The pedestrian is at fault' },
@@ -146,7 +129,6 @@ export const quizScenarios: QuizScenario[] = [
     id: 'hit-and-run',
     scenario:
       'You return to your parked car and find fresh damage with no note left. What is the correct first step?',
-    image: carparkImg,
     imageAlt: 'Illustration of parked cars in a car park',
     options: [
       { id: 'a', label: 'Claim on your insurance immediately' },
@@ -162,7 +144,6 @@ export const quizScenarios: QuizScenario[] = [
     id: 'wet-road',
     scenario:
       'On a wet Christchurch road you aquaplane at the posted 80 km/h limit and hit a barrier.',
-    image: weatherImg,
     imageAlt: 'Illustration of a car aquaplaning on a wet road',
     options: [
       { id: 'a', label: 'No fault — weather event' },
@@ -178,7 +159,6 @@ export const quizScenarios: QuizScenario[] = [
     id: 'give-way-sign',
     scenario:
       'You pull out from a driveway onto a main road and are struck by a car travelling along it.',
-    image: intersectionImg,
     imageAlt: 'Illustration of a car entering a main road',
     options: [
       { id: 'a', label: 'The through driver is at fault' },
@@ -194,7 +174,6 @@ export const quizScenarios: QuizScenario[] = [
     id: 'towed-trailer',
     scenario:
       'Your trailer detaches on State Highway 1 and damages another vehicle.',
-    image: towingImg,
     imageAlt: 'Illustration of a car towing a trailer that is detaching',
     options: [
       { id: 'a', label: 'You are at fault as the towing driver' },
@@ -210,7 +189,6 @@ export const quizScenarios: QuizScenario[] = [
     id: 'emergency-stop',
     scenario:
       'A car in front brakes hard to avoid a dog. You hit them, and the car behind hits you.',
-    image: rearEndImg,
     imageAlt: 'Illustration of a chain collision between cars',
     options: [
       { id: 'a', label: 'You are at fault for the front hit, the rear driver for yours' },
@@ -226,7 +204,6 @@ export const quizScenarios: QuizScenario[] = [
     id: 'reversing-driveway',
     scenario:
       'You reverse out of your driveway and hit a car parked legally on the street.',
-    image: carparkImg,
     imageAlt: 'Illustration of a car reversing towards a parked vehicle',
     options: [
       { id: 'a', label: 'The parked driver is at fault' },
@@ -242,7 +219,6 @@ export const quizScenarios: QuizScenario[] = [
     id: 'insurance-excess',
     scenario:
       'A driver hits you and admits fault at the scene. Do you still pay your excess?',
-    image: claimImg,
     imageAlt: 'Illustration of an insurance claim form with a car and shield',
     options: [
       { id: 'a', label: 'Always, no exceptions' },
