@@ -1,3 +1,5 @@
+import { Button } from '@/components/ui/button';
+import { AccountArtwork } from '@/components/AccountArtwork';
 import { takeFaultHandoff } from '@/lib/fault-handoff';
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams, useSearchParams, Link } from 'react-router-dom';
@@ -329,15 +331,16 @@ export default function ClaimWizard() {
           {/* Header — desktop / tablet (Apple/Linear) */}
           <div className="hidden md:flex items-end justify-between gap-3 pt-2">
             <div className="flex items-start gap-2 min-w-0">
-              <button onClick={async () => { if (shouldSave()) await autoSave(); navigate(-1); }}
+              <Button variant="unstyled" size="unstyled" onClick={async () => { if (shouldSave()) await autoSave(); navigate(-1); }}
                 className="w-9 h-9 -ml-1 mt-1 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex-shrink-0"
                 aria-label="Back">
                 <ArrowLeft className="w-[18px] h-[18px]" strokeWidth={2} />
-              </button>
+              </Button>
               <div className="min-w-0">
                 <h1 className="text-[28px] leading-tight font-semibold text-foreground tracking-[-0.02em] truncate">
                   Report incident
                 </h1>
+                <AccountArtwork kind="report" className="w-16 h-16 mx-auto mt-2" />
                 <p className="text-[13px] text-muted-foreground mt-1">
                   {isEdit ? 'Edit claim' : 'New claim'}{reportRef ? ` · ${reportRef}` : ''}
                 </p>
@@ -351,11 +354,11 @@ export default function ClaimWizard() {
               {claim.id && (
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
-                    <button type="button" disabled={deleting}
+                    <Button variant="unstyled" size="unstyled" type="button" disabled={deleting}
                       className="w-9 h-9 rounded-lg hover:bg-muted transition-colors disabled:opacity-50 flex items-center justify-center"
                       title="Delete report">
                       <Trash2 className="w-4 h-4 text-muted-foreground" strokeWidth={2} />
-                    </button>
+                    </Button>
                   </AlertDialogTrigger>
                   <AlertDialogContent>
                     <AlertDialogHeader>
@@ -376,29 +379,30 @@ export default function ClaimWizard() {
           </div>
 
           {/* Header — mobile dark hero card with integrated stepper */}
-          <div className="md:hidden -mx-4 sm:-mx-6 -mt-10 sm:-mt-10 px-5 pt-5 pb-5 bg-foreground text-background rounded-b-3xl shadow-sm">
+          <div className="account-welcome md:hidden px-1 pt-5 pb-5 text-foreground">
             <div className="flex items-start justify-between gap-2">
-              <button onClick={async () => { if (shouldSave()) await autoSave(); navigate(-1); }}
-                className="w-9 h-9 -ml-2 rounded-full flex items-center justify-center text-background/70 hover:text-background hover:bg-background/10 transition-colors flex-shrink-0"
+              <Button variant="unstyled" size="unstyled" onClick={async () => { if (shouldSave()) await autoSave(); navigate(-1); }}
+                className="w-9 h-9 -ml-2 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-background/10 transition-colors flex-shrink-0"
                 aria-label="Back">
                 <ArrowLeft className="w-[18px] h-[18px]" strokeWidth={2.2} />
-              </button>
+              </Button>
               <div className="flex-1 min-w-0 text-center px-1">
-                <p className="text-[10px] uppercase tracking-[0.18em] text-background/50 font-semibold">
+                <p className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground font-semibold">
                   {isEdit ? 'Edit claim' : 'New claim'}{reportRef ? ` · ${reportRef}` : ''}
                 </p>
                 <h1 className="text-[22px] leading-tight font-bold tracking-[-0.02em] mt-0.5">
                   Report incident
                 </h1>
+                <AccountArtwork kind="report" className="w-16 h-16 mx-auto mt-2" />
               </div>
               {claim.id ? (
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
-                    <button type="button" disabled={deleting}
-                      className="w-9 h-9 -mr-1 rounded-full hover:bg-background/10 transition-colors disabled:opacity-50 flex items-center justify-center text-background/70 hover:text-background"
+                    <Button variant="unstyled" size="unstyled" type="button" disabled={deleting}
+                      className="w-9 h-9 -mr-1 rounded-full hover:bg-background/10 transition-colors disabled:opacity-50 flex items-center justify-center text-muted-foreground hover:text-foreground"
                       title="Delete report">
                       <Trash2 className="w-4 h-4" strokeWidth={2} />
-                    </button>
+                    </Button>
                   </AlertDialogTrigger>
                   <AlertDialogContent>
                     <AlertDialogHeader>
@@ -424,24 +428,24 @@ export default function ClaimWizard() {
                 const isActive = status === 'active';
                 return (
                   <div key={label} className={`flex items-center min-w-0 ${isActive ? 'flex-1' : 'flex-none'}`}>
-                    <button
+                    <Button variant="unstyled" size="unstyled"
                       type="button"
                       onClick={async () => { if (shouldSave()) await autoSave(); setStep(i); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
                       className="flex items-center gap-1.5 min-w-0"
                     >
                       <span className={`w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-bold tabular-nums shrink-0 transition-colors ${
-                        isActive ? 'bg-background text-foreground' :
-                        status === 'done' ? 'bg-background/90 text-foreground' :
-                        'bg-background/15 text-background/60'
+                        isActive ? 'bg-primary text-primary-foreground' :
+                        status === 'done' ? 'bg-secondary text-success' :
+                        'bg-muted text-muted-foreground'
                       }`}>
                         {status === 'done' ? <Check className="w-3 h-3" strokeWidth={3} /> : i + 1}
                       </span>
                       {isActive && (
-                        <span className="text-[12px] font-semibold text-background whitespace-nowrap">{label}</span>
+                        <span className="text-[12px] font-semibold text-foreground whitespace-nowrap">{label}</span>
                       )}
-                    </button>
+                    </Button>
                     {i < STEPS.length - 1 && (
-                      <div className={`h-px flex-1 min-w-[8px] ml-1.5 ${i < step ? 'bg-background/80' : 'bg-background/20'}`} />
+                      <div className={`h-px flex-1 min-w-[8px] ml-1.5 ${i < step ? 'bg-primary/50' : 'bg-border'}`} />
                     )}
                   </div>
                 );
@@ -454,33 +458,33 @@ export default function ClaimWizard() {
             {/* Left rail — Garage-style cards */}
             <aside className="hidden md:block space-y-4">
               {/* Progress panel */}
-              <div className="rounded-xl bg-card border border-border overflow-hidden">
+              <div className="account-panel overflow-hidden">
                 <div className="px-3.5 pt-3 pb-2 text-[11px] font-medium text-muted-foreground">Progress</div>
                 <div className="divide-y divide-border">
                   {STEPS.map((label, i) => {
                     const status = i < step ? 'done' : i === step ? 'active' : 'idle';
                     return (
-                      <button
+                      <Button variant="unstyled" size="unstyled"
                         key={label}
                         onClick={async () => { if (shouldSave()) await autoSave(); setStep(i); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
                         className={`w-full flex items-center gap-3 px-3.5 py-2.5 text-left hover:bg-muted/50 transition-colors ${status === 'active' ? 'bg-muted/40' : ''}`}
                       >
                         <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-semibold tabular-nums shrink-0 ${
-                          status === 'done' ? 'bg-foreground text-background' :
-                          status === 'active' ? 'bg-foreground text-background' :
+                          status === 'done' ? 'bg-primary text-primary-foreground' :
+                          status === 'active' ? 'bg-primary text-primary-foreground' :
                           'bg-muted text-muted-foreground'
                         }`}>
                           {status === 'done' ? <Check className="w-3 h-3" strokeWidth={3} /> : i + 1}
                         </span>
                         <p className={`flex-1 min-w-0 text-[13px] ${status === 'idle' ? 'text-muted-foreground' : 'text-foreground font-medium'}`}>{label}</p>
-                      </button>
+                      </Button>
                     );
                   })}
                 </div>
               </div>
 
               {/* Quick actions panel */}
-              <div className="rounded-xl bg-card border border-border overflow-hidden">
+              <div className="account-panel overflow-hidden">
                 <div className="px-3.5 pt-3 pb-2 text-[11px] font-medium text-muted-foreground">Emergency</div>
                 <div className="divide-y divide-border">
                   <a href="tel:111" className="w-full flex items-center gap-3 px-3.5 py-2.5 hover:bg-muted/50 transition-colors text-left">
@@ -523,10 +527,10 @@ export default function ClaimWizard() {
                 <div>
                   <label className="field-label">Your vehicle</label>
                   {vehicles.length === 0 ? (
-                    <button onClick={async () => { await autoSave(); navigate('/vehicles/new'); }}
+                    <Button variant="unstyled" size="unstyled" onClick={async () => { await autoSave(); navigate('/vehicles/new'); }}
                       className="w-full p-4 rounded-2xl border border-dashed border-border bg-muted/30 text-sm text-muted-foreground hover:bg-muted/50 transition-colors">
                       No vehicles yet — <span className="text-foreground font-semibold">Add one</span>
-                    </button>
+                    </Button>
                   ) : (
                     (() => {
                       const selected = vehicles.find(v => v.id === claim.vehicleId);
@@ -596,13 +600,13 @@ export default function ClaimWizard() {
                   <label className="field-label">Incident type</label>
                   <div className="grid grid-cols-3 gap-2">
                     {INCIDENT_TYPES.map(({ value, label, icon: Icon }) => (
-                      <button key={value} type="button"
+                      <Button variant="unstyled" size="unstyled" key={value} type="button"
                         onClick={() => setIncidentType(value)}
                         data-active={incidentType === value}
                         className="seg-tile">
                         <Icon className="seg-tile-icon" strokeWidth={1.7} />
                         <span className="seg-tile-label">{label}</span>
-                      </button>
+                      </Button>
                     ))}
                   </div>
                 </div>
@@ -631,11 +635,11 @@ export default function ClaimWizard() {
                           {claim.incidentLocation ? 'Tap to edit · auto-saved' : 'Detect or type the address'}
                         </div>
                       </div>
-                      <button type="button" onClick={detectLocation} disabled={detectingLocation}
+                      <Button variant="unstyled" size="unstyled" type="button" onClick={detectLocation} disabled={detectingLocation}
                         className="shrink-0 h-9 px-3.5 rounded-full bg-muted text-xs font-semibold text-foreground hover:bg-muted/70 transition-colors flex items-center gap-1.5 disabled:opacity-50">
                         {detectingLocation ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <MapPin className="w-3.5 h-3.5" />}
                         {detectingLocation ? 'Detecting' : 'Detect'}
-                      </button>
+                      </Button>
                     </div>
                   </div>
                 </div>
@@ -832,21 +836,21 @@ export default function ClaimWizard() {
                   <div className="flex items-center justify-between">
                     <label className="field-label mb-0 flex items-center gap-1.5"><Users className="w-3 h-3" /> Other vehicles</label>
                     {claim.thirdParties.length > 0 && (
-                      <button onClick={addTP} className="text-xs font-semibold text-primary hover:underline">+ Add</button>
+                      <Button variant="unstyled" size="unstyled" onClick={addTP} className="text-xs font-semibold text-primary hover:underline">+ Add</Button>
                     )}
                   </div>
                   {claim.thirdParties.length === 0 && (
-                    <button onClick={addTP} className="dashed-zone w-full p-5 flex flex-col items-center gap-1.5">
+                    <Button variant="unstyled" size="unstyled" onClick={addTP} className="dashed-zone w-full p-5 flex flex-col items-center gap-1.5">
                       <Plus className="w-5 h-5 text-muted-foreground" />
                       <span className="text-sm font-semibold text-foreground">Add other vehicle</span>
                       <span className="text-xs text-muted-foreground">Driver, rego, insurer, photos</span>
-                    </button>
+                    </Button>
                   )}
                   {claim.thirdParties.map((tp, i) => (
                     <div key={i} className="card-soft space-y-3">
                       <div className="flex items-center justify-between">
                         <span className="eyebrow">Vehicle {i + 1}</span>
-                        <button onClick={() => rmTP(i)} className="text-xs text-destructive hover:underline font-semibold">Remove</button>
+                        <Button variant="unstyled" size="unstyled" onClick={() => rmTP(i)} className="text-xs text-destructive hover:underline font-semibold">Remove</Button>
                       </div>
                       <input className="w-full h-11 px-3.5 rounded-xl border border-border bg-background text-base font-bold tabular-nums tracking-wide focus:outline-none focus:ring-2 focus:ring-ring/30"
                         placeholder="REGO" value={tp.regoNumber} onChange={e => updTP(i, 'regoNumber', e.target.value.toUpperCase())} />
@@ -888,21 +892,21 @@ export default function ClaimWizard() {
                   <div className="flex items-center justify-between">
                     <label className="field-label mb-0 flex items-center gap-1.5"><User className="w-3 h-3" /> Witnesses</label>
                     {claim.witnesses.length > 0 && (
-                      <button onClick={addW} className="text-xs font-semibold text-primary hover:underline">+ Add</button>
+                      <Button variant="unstyled" size="unstyled" onClick={addW} className="text-xs font-semibold text-primary hover:underline">+ Add</Button>
                     )}
                   </div>
                   {claim.witnesses.length === 0 && (
-                    <button onClick={addW} className="dashed-zone w-full p-5 flex flex-col items-center gap-1.5">
+                    <Button variant="unstyled" size="unstyled" onClick={addW} className="dashed-zone w-full p-5 flex flex-col items-center gap-1.5">
                       <Plus className="w-5 h-5 text-muted-foreground" />
                       <span className="text-sm font-semibold text-foreground">Add witness</span>
                       <span className="text-xs text-muted-foreground">Optional but helpful</span>
-                    </button>
+                    </Button>
                   )}
                   {claim.witnesses.map((w, i) => (
                     <div key={i} className="card-soft space-y-3">
                       <div className="flex items-center justify-between">
                         <span className="eyebrow">Witness {i + 1}</span>
-                        <button onClick={() => rmW(i)} className="text-xs text-destructive hover:underline font-semibold">Remove</button>
+                        <Button variant="unstyled" size="unstyled" onClick={() => rmW(i)} className="text-xs text-destructive hover:underline font-semibold">Remove</Button>
                       </div>
                       <div className="grid grid-cols-2 gap-2">
                         <input className="h-11 px-3.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring/30"
@@ -1003,22 +1007,22 @@ export default function ClaimWizard() {
         <div className="space-y-2 pt-2">
           <div className="flex gap-3">
             {step > 0 && (
-              <button onClick={prev} disabled={navigating}
+              <Button variant="unstyled" size="unstyled" onClick={prev} disabled={navigating}
                 className="h-12 px-5 rounded-2xl bg-muted text-foreground text-sm font-semibold transition-all active:scale-[0.98] disabled:opacity-40 inline-flex items-center justify-center gap-2 shrink-0">
                 {navigating ? <Loader2 className="w-4 h-4 animate-spin" /> : <ArrowLeft className="w-4 h-4" strokeWidth={2.2} />}
                 Back
-              </button>
+              </Button>
             )}
             {step < STEPS.length - 1 ? (
-              <button onClick={next} disabled={navigating}
-                className="flex-1 h-12 rounded-2xl bg-foreground text-background text-[15px] font-semibold transition-all active:scale-[0.98] disabled:opacity-40 inline-flex items-center justify-center gap-2 shadow-sm">
+              <Button variant="unstyled" size="unstyled" onClick={next} disabled={navigating}
+                className="flex-1 h-12 rounded-2xl bg-primary text-primary-foreground text-[15px] font-semibold transition-all active:scale-[0.98] disabled:opacity-40 inline-flex items-center justify-center gap-2 shadow-sm">
                 {navigating ? <Loader2 className="w-4 h-4 animate-spin" /> : <>Continue to {STEPS[step + 1].toLowerCase()} <ArrowRight className="w-4 h-4" strokeWidth={2.2} /></>}
-              </button>
+              </Button>
             ) : (
-              <button onClick={submit} disabled={submitting}
-                className="flex-1 h-12 rounded-2xl bg-foreground text-background text-[15px] font-semibold transition-all active:scale-[0.98] disabled:opacity-40 inline-flex items-center justify-center gap-2 shadow-sm">
+              <Button variant="unstyled" size="unstyled" onClick={submit} disabled={submitting}
+                className="flex-1 h-12 rounded-2xl bg-primary text-primary-foreground text-[15px] font-semibold transition-all active:scale-[0.98] disabled:opacity-40 inline-flex items-center justify-center gap-2 shadow-sm">
                 {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Save className="w-4 h-4" /> Save report</>}
-              </button>
+              </Button>
             )}
           </div>
           <p className="md:hidden text-center text-[11px] text-muted-foreground">
@@ -1037,7 +1041,7 @@ function ToggleRow({ id, label, checked, onChange }: { id: string; label: string
   return (
     <label htmlFor={id} className="flex items-center justify-between gap-3 cursor-pointer">
       <span className="text-sm font-medium text-foreground">{label}</span>
-      <button
+      <Button variant="unstyled" size="unstyled"
         type="button"
         role="switch"
         aria-checked={checked}
@@ -1045,7 +1049,7 @@ function ToggleRow({ id, label, checked, onChange }: { id: string; label: string
         id={id}
         className={`relative w-11 h-6 rounded-full transition-colors ${checked ? 'bg-foreground' : 'bg-muted border border-border'}`}>
         <span className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-background shadow transition-transform ${checked ? 'translate-x-5' : ''}`} />
-      </button>
+      </Button>
     </label>
   );
 }

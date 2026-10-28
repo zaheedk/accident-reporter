@@ -1,3 +1,5 @@
+import { Button } from '@/components/ui/button';
+import { AccountArtwork } from '@/components/AccountArtwork';
 import { useEffect, useState, useRef } from 'react';
 import { ArrowLeft, Camera, Loader2, User, Phone, MapPin, Mail, ShieldOff, Trash2, CheckCircle, AlertCircle, Send, Lock, Eye, EyeOff, Bell, CreditCard, CalendarDays } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
@@ -161,7 +163,7 @@ export default function Profile() {
     ? profile.display_name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : '?';
 
   if (loading) {
-    return <AppLayout><div className="theme-dashboard-dark"><div className="flex items-center justify-center py-20"><Loader2 className="w-6 h-6 animate-spin text-muted-foreground" /></div></div></AppLayout>;
+    return <AppLayout><div className="theme-garage"><div className="flex items-center justify-center py-20"><Loader2 className="w-6 h-6 animate-spin text-muted-foreground" /></div></div></AppLayout>;
   }
 
   return (
@@ -171,13 +173,13 @@ export default function Profile() {
           {/* Header — matches Garage / VehicleForm pattern */}
           <div className="flex items-end justify-between gap-3 pt-2">
             <div className="flex items-start gap-2 min-w-0">
-              <button
+              <Button variant="unstyled" size="unstyled"
                 onClick={() => navigate(-1)}
                 aria-label="Back"
                 className="w-9 h-9 -ml-1 mt-1 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex-shrink-0"
               >
                 <ArrowLeft className="w-[18px] h-[18px]" strokeWidth={2} />
-              </button>
+              </Button>
               <div className="min-w-0">
                 <h1 className="text-[28px] leading-tight font-semibold text-foreground tracking-[-0.02em] truncate">
                   {profile.display_name || 'Your profile'}
@@ -201,10 +203,10 @@ export default function Profile() {
                       <AvatarImage src={profile.avatar_url} alt={profile.display_name} />
                       <AvatarFallback className="bg-muted text-muted-foreground text-lg font-bold">{initials}</AvatarFallback>
                     </Avatar>
-                    <button onClick={() => fileInputRef.current?.click()} disabled={uploading}
-                      className="absolute -bottom-1 -right-1 w-8 h-8 rounded-full bg-foreground text-background flex items-center justify-center shadow-sm hover:bg-foreground/90 transition-colors">
+                    <Button variant="unstyled" size="unstyled" onClick={() => fileInputRef.current?.click()} disabled={uploading}
+                      className="absolute -bottom-1 -right-1 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-sm hover:bg-primary/90 transition-colors">
                       {uploading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Camera className="w-3.5 h-3.5" />}
-                    </button>
+                    </Button>
                   </div>
                   <div className="text-center min-w-0">
                     <p className="text-[13px] font-semibold text-foreground truncate">{profile.display_name || 'No name set'}</p>
@@ -214,7 +216,7 @@ export default function Profile() {
               </div>
 
               {/* Account summary panel */}
-              <div className="rounded-xl bg-card border border-border overflow-hidden">
+              <div className="account-panel overflow-hidden">
                 <div className="px-3.5 pt-3 pb-2 text-[11px] font-medium text-muted-foreground">Account</div>
                 <div className="divide-y divide-border">
                   {[
@@ -232,7 +234,7 @@ export default function Profile() {
               </div>
 
               {/* Quick actions */}
-              <div className="rounded-xl bg-card border border-border overflow-hidden">
+              <div className="account-panel overflow-hidden">
                 <div className="px-3.5 pt-3 pb-2 text-[11px] font-medium text-muted-foreground">Quick actions</div>
                 <div className="divide-y divide-border">
                   <Link to="/dashboard" className="w-full flex items-center gap-3 px-3.5 py-2.5 hover:bg-muted/50 transition-colors text-left">
@@ -256,10 +258,10 @@ export default function Profile() {
                     <AvatarImage src={profile.avatar_url} alt={profile.display_name} />
                     <AvatarFallback className="bg-muted text-muted-foreground text-lg font-bold">{initials}</AvatarFallback>
                   </Avatar>
-                  <button onClick={() => fileInputRef.current?.click()} disabled={uploading}
-                    className="absolute -bottom-1 -right-1 w-8 h-8 rounded-full bg-foreground text-background flex items-center justify-center shadow-sm hover:bg-foreground/90 transition-colors">
+                  <Button variant="unstyled" size="unstyled" onClick={() => fileInputRef.current?.click()} disabled={uploading}
+                    className="absolute -bottom-1 -right-1 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-sm hover:bg-primary/90 transition-colors">
                     {uploading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Camera className="w-3.5 h-3.5" />}
-                  </button>
+                  </Button>
                 </div>
                 <div className="text-center">
                   <p className="text-sm font-semibold text-foreground">{profile.display_name || 'No name set'}</p>
@@ -301,15 +303,15 @@ export default function Profile() {
                   onChange={e => setProfile(p => ({ ...p, email: e.target.value, email_verified: false }))}
                 />
                 {profile.email && !profile.email_verified && (
-                  <button
+                  <Button variant="unstyled" size="unstyled"
                     type="button"
                     onClick={handleSendVerification}
                     disabled={sendingVerification}
-                    className="h-10 px-3 rounded-xl text-xs font-semibold bg-foreground text-background hover:bg-foreground/90 disabled:opacity-40 disabled:pointer-events-none shrink-0 inline-flex items-center gap-1.5 transition-colors"
+                    className="h-10 px-3 rounded-xl text-xs font-semibold bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-40 disabled:pointer-events-none shrink-0 inline-flex items-center gap-1.5 transition-colors"
                   >
                     {sendingVerification ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
                     Verify
-                  </button>
+                  </Button>
                 )}
               </div>
               {profile.email && !profile.email_verified && (
@@ -344,9 +346,9 @@ export default function Profile() {
               </div>
             </div>
           </div>
-          <button type="submit" disabled={saving} className="w-full h-12 rounded-xl text-sm font-semibold bg-foreground text-background hover:bg-foreground/90 active:scale-[0.99] disabled:opacity-40 disabled:pointer-events-none inline-flex items-center justify-center gap-2 transition-all">
+          <Button variant="unstyled" size="unstyled" type="submit" disabled={saving} className="w-full h-12 rounded-xl text-sm font-semibold bg-primary text-primary-foreground hover:bg-primary/90 active:scale-[0.99] disabled:opacity-40 disabled:pointer-events-none inline-flex items-center justify-center gap-2 transition-all">
             {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Save changes'}
-          </button>
+          </Button>
         </form>
 
         {isSupported && (
@@ -401,9 +403,9 @@ export default function Profile() {
                   value={newPassword}
                   onChange={e => setNewPassword(e.target.value)}
                 />
-                <button type="button" onClick={() => setShowNewPw(!showNewPw)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                <Button variant="unstyled" size="unstyled" type="button" onClick={() => setShowNewPw(!showNewPw)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
                   {showNewPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                </button>
+                </Button>
               </div>
             </div>
             <div>
@@ -416,12 +418,12 @@ export default function Profile() {
                   value={confirmPassword}
                   onChange={e => setConfirmPassword(e.target.value)}
                 />
-                <button type="button" onClick={() => setShowConfirmPw(!showConfirmPw)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                <Button variant="unstyled" size="unstyled" type="button" onClick={() => setShowConfirmPw(!showConfirmPw)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
                   {showConfirmPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                </button>
+                </Button>
               </div>
             </div>
-            <button
+            <Button variant="unstyled" size="unstyled"
               type="button"
               disabled={!newPassword || newPassword.length < 6 || newPassword !== confirmPassword || changingPassword}
               onClick={async () => {
@@ -436,14 +438,14 @@ export default function Profile() {
                   setConfirmPassword('');
                 }
               }}
-              className="w-full h-12 rounded-xl text-sm font-semibold bg-foreground text-background hover:bg-foreground/90 active:scale-[0.99] disabled:opacity-40 disabled:pointer-events-none inline-flex items-center justify-center gap-2 transition-all"
+              className="w-full h-12 rounded-xl text-sm font-semibold bg-primary text-primary-foreground hover:bg-primary/90 active:scale-[0.99] disabled:opacity-40 disabled:pointer-events-none inline-flex items-center justify-center gap-2 transition-all"
             >
               {changingPassword ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Update password'}
-            </button>
+            </Button>
           </div>
         )}
 
-        <div className="card-soft">
+        <div>
           <DocumentVault
             title="My Documents"
             showCategories={['drivers_license', 'other']}
@@ -452,20 +454,20 @@ export default function Profile() {
 
         <div className="pt-4 space-y-3">
           <p className="eyebrow text-destructive">Danger zone</p>
-          <button onClick={() => setShowDeactivate(true)} className="w-full card-soft flex items-center gap-3 text-left hover:border-foreground/20 transition-colors">
+          <Button variant="unstyled" size="unstyled" onClick={() => setShowDeactivate(true)} className="w-full card-soft flex items-center gap-3 text-left hover:border-foreground/20 transition-colors">
             <div className="w-9 h-9 rounded-xl bg-muted flex items-center justify-center shrink-0"><ShieldOff className="w-4 h-4 text-muted-foreground" /></div>
             <div>
               <div className="text-sm font-semibold text-foreground">Deactivate Account</div>
               <div className="text-xs text-muted-foreground">Temporarily disable your account</div>
             </div>
-          </button>
-          <button onClick={() => setShowDelete(true)} className="w-full card-soft flex items-center gap-3 text-left hover:border-destructive/40 transition-colors !border-destructive/20">
+          </Button>
+          <Button variant="unstyled" size="unstyled" onClick={() => setShowDelete(true)} className="w-full card-soft flex items-center gap-3 text-left hover:border-destructive/40 transition-colors !border-destructive/20">
             <div className="w-9 h-9 rounded-xl bg-destructive/10 flex items-center justify-center shrink-0"><Trash2 className="w-4 h-4 text-destructive" /></div>
             <div>
               <div className="text-sm font-semibold text-destructive">Delete Account</div>
               <div className="text-xs text-muted-foreground">Permanently remove all your data</div>
             </div>
-          </button>
+          </Button>
         </div>
             </div>
           </div>

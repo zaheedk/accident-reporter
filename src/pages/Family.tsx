@@ -1,3 +1,4 @@
+import { AccountArtwork } from '@/components/AccountArtwork';
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import AppLayout from '@/components/AppLayout';
@@ -195,9 +196,9 @@ export default function Family() {
 
   return (
     <AppLayout>
-      <div className="max-w-3xl mx-auto p-4 space-y-6">
+      <div className="max-w-3xl mx-auto space-y-6">
         <div className="flex items-center gap-3">
-          <Users className="w-6 h-6 text-primary" />
+          <AccountArtwork kind="family" className="w-16 h-16" />
           <h1 className="text-2xl font-bold">Family</h1>
         </div>
         <p className="text-sm text-muted-foreground">
@@ -212,8 +213,8 @@ export default function Family() {
             {/* No family — show both options */}
             {!family && (
               <>
-                <Card className="p-5 space-y-3">
-                  <h2 className="font-semibold">Start a family</h2>
+                <section className="account-section py-5 space-y-3">
+                  <h2 className="font-display text-xl font-semibold">Start a family</h2>
                   <p className="text-sm text-muted-foreground">Invite someone by email or generate a share code.</p>
                   <div className="flex gap-2">
                     <Input
@@ -229,10 +230,10 @@ export default function Family() {
                   <Button variant="outline" onClick={() => createInvite(false)} disabled={busy} className="w-full">
                     Or generate a share code
                   </Button>
-                </Card>
+                </section>
 
-                <Card className="p-5 space-y-3">
-                  <h2 className="font-semibold">Have an invite code?</h2>
+                <section className="account-section py-5 space-y-3">
+                  <h2 className="font-display text-xl font-semibold">Have an invite code?</h2>
                   <div className="flex gap-2">
                     <Input
                       placeholder="ABCD1234"
@@ -243,16 +244,16 @@ export default function Family() {
                     />
                     <Button onClick={acceptInvite} disabled={busy}>Join</Button>
                   </div>
-                </Card>
+                </section>
               </>
             )}
 
             {/* In a family — show roster */}
             {family && (
-              <Card className="p-5 space-y-4">
+              <section className="account-section py-5 space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h2 className="font-semibold">{family.name}</h2>
+                    <h2 className="font-display text-xl font-semibold">{family.name}</h2>
                     <p className="text-xs text-muted-foreground">
                       {isHead ? "You're the head of family" : 'You are a member'}
                     </p>
@@ -305,14 +306,14 @@ export default function Family() {
                     );
                   })}
                 </div>
-              </Card>
+              </section>
             )}
 
             {/* Head — invite controls + pending invites */}
             {isHead && (
               <>
-                <Card className="p-5 space-y-3">
-                  <h2 className="font-semibold">Invite a family member</h2>
+                <section className="account-section py-5 space-y-3">
+                  <h2 className="font-display text-xl font-semibold">Invite a family member</h2>
                   <div className="flex gap-2">
                     <Input
                       type="email"
@@ -327,7 +328,7 @@ export default function Family() {
                   <Button variant="outline" onClick={() => createInvite(false)} disabled={busy} className="w-full">
                     Generate share code only
                   </Button>
-                </Card>
+                </section>
               </>
             )}
           </>

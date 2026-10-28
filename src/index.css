@@ -55,7 +55,88 @@
     --sidebar-accent-foreground: 0 0% 100%;
     --sidebar-border: 238 35% 28%;
     --sidebar-ring: 154 47% 45%;
+    --shadow-account: 0 6px 24px -16px hsl(238 44% 16% / 0.12);
+    --account-warning-ink: 30 82% 30%;
   }
+}
+
+/* Signed-in presentation inherits the public site's light editorial palette.
+   Keep selectors scoped: public pages and print/PDF output are unchanged. */
+.signed-in-experience :is(.theme-dashboard, .theme-garage, .theme-dashboard-dark) {
+  --background: 0 0% 100%;
+  --foreground: 238 44% 16%;
+  --card: 0 0% 100%;
+  --card-foreground: 238 44% 16%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 238 44% 16%;
+  --primary: 145 63% 40%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 145 55% 95%;
+  --secondary-foreground: 238 44% 20%;
+  --muted: 230 25% 95%;
+  --muted-foreground: 238 12% 44%;
+  --accent: 238 44% 16%;
+  --accent-foreground: 0 0% 100%;
+  --border: 230 25% 89%;
+  --input: 230 25% 89%;
+  --ring: 145 63% 40%;
+  --garage-glass: 0 0% 100%;
+  --garage-hairline: 238 30% 20%;
+  background: transparent;
+}
+
+.signed-in-experience .account-content :is(h1, h2, .section-title, .display-heading) {
+  font-family: 'Playfair Display', Georgia, serif;
+  letter-spacing: 0;
+}
+.signed-in-experience .account-content h1 { white-space: normal; overflow-wrap: anywhere; }
+.signed-in-experience .account-content h2 { line-height: 1.4; }
+.signed-in-experience .account-content :is(.card-soft, .card-surface, .card-surface-elevated) {
+  border-radius: 1.5rem;
+  box-shadow: none;
+  background: transparent;
+  border: 0;
+}
+.signed-in-experience .account-content :is(.card-soft, .card-surface) + :is(.card-soft, .card-surface) {
+  border-top: 1px solid hsl(var(--border) / 0.6);
+  padding-top: 1.5rem;
+}
+.signed-in-experience .account-panel {
+  border: 0;
+  border-radius: 1.5rem;
+  background: hsl(var(--secondary) / 0.65);
+  box-shadow: none;
+}
+.signed-in-experience .account-section {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+.signed-in-experience .account-record {
+  border-radius: 1.5rem;
+  background: hsl(var(--secondary) / 0.55);
+  border-color: transparent;
+  box-shadow: var(--shadow-account);
+}
+.signed-in-experience .account-content :is(input:not([type='checkbox']):not([type='radio']), select) {
+  border-radius: 999px;
+}
+.signed-in-experience .account-content textarea { border-radius: 1.25rem; }
+.signed-in-experience .account-content :is(a, button)[class*='rounded-lg'][class*='px-'] {
+  border-radius: 999px;
+}
+.signed-in-experience .account-content [class*='tracking-'] { letter-spacing: 0; }
+.signed-in-experience .account-content [class*='divide-border'] { border-color: hsl(var(--border) / 0.55); }
+.signed-in-experience .account-content .account-welcome { background: transparent; }
+.signed-in-experience .account-content .account-welcome h1 { max-width: 20rem; }
+.signed-in-experience .account-content .account-filter { border-radius: 1.25rem; }
+.signed-in-experience .account-content .account-filter[aria-pressed='true'] {
+  background: hsl(var(--secondary));
+  color: hsl(var(--foreground));
+  border-color: hsl(var(--primary) / 0.55);
+}
+@media print {
+  .account-backdrop { display: none; }
 }
 
 @layer base {

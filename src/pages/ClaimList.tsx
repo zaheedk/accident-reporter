@@ -1,3 +1,4 @@
+import { AccountArtwork } from '@/components/AccountArtwork';
 import { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
@@ -136,30 +137,30 @@ export default function ClaimList() {
 
   const MobileFilterTiles = (
     <div className="grid grid-cols-2 gap-2">
-      <button
+      <Button variant="unstyled" size="unstyled"
         onClick={() => setFilter(filter === 'draft' ? 'all' : 'draft')}
         className={`text-left rounded-xl p-3 border transition-all ${
-          filter === 'draft' ? 'bg-foreground text-background border-foreground' : 'bg-card border-border'
+          filter === 'draft' ? 'bg-secondary text-foreground border-primary/50' : 'bg-card border-border'
         }`}
       >
         <div className="flex items-center justify-between">
-          <span className={`text-[12px] font-medium ${filter === 'draft' ? 'text-background/70' : 'text-muted-foreground'}`}>Drafts</span>
-          <FileEdit className={`w-3.5 h-3.5 ${filter === 'draft' ? 'text-background/60' : 'text-muted-foreground/60'}`} strokeWidth={2} />
+          <span className={`text-[12px] font-medium ${filter === 'draft' ? 'text-foreground/70' : 'text-muted-foreground'}`}>Drafts</span>
+          <FileEdit className={`w-3.5 h-3.5 ${filter === 'draft' ? 'text-muted-foreground' : 'text-muted-foreground/60'}`} strokeWidth={2} />
         </div>
         <div className="text-[20px] font-semibold tabular-nums leading-none mt-1.5 tracking-tight">{draftCount}</div>
-      </button>
-      <button
+      </Button>
+      <Button variant="unstyled" size="unstyled"
         onClick={() => setFilter(filter === 'saved' ? 'all' : 'saved')}
         className={`text-left rounded-xl p-3 border transition-all ${
-          filter === 'saved' ? 'bg-foreground text-background border-foreground' : 'bg-card border-border'
+          filter === 'saved' ? 'bg-secondary text-foreground border-primary/50' : 'bg-card border-border'
         }`}
       >
         <div className="flex items-center justify-between">
-          <span className={`text-[12px] font-medium ${filter === 'saved' ? 'text-background/70' : 'text-muted-foreground'}`}>Submitted</span>
-          <CheckCircle2 className={`w-3.5 h-3.5 ${filter === 'saved' ? 'text-background/60' : 'text-muted-foreground/60'}`} strokeWidth={2} />
+          <span className={`text-[12px] font-medium ${filter === 'saved' ? 'text-foreground/70' : 'text-muted-foreground'}`}>Submitted</span>
+          <CheckCircle2 className={`w-3.5 h-3.5 ${filter === 'saved' ? 'text-muted-foreground' : 'text-muted-foreground/60'}`} strokeWidth={2} />
         </div>
         <div className="text-[20px] font-semibold tabular-nums leading-none mt-1.5 tracking-tight">{savedCount}</div>
-      </button>
+      </Button>
     </div>
   );
 
@@ -174,9 +175,9 @@ export default function ClaimList() {
         className="w-full pl-9 pr-9 h-10 rounded-lg bg-card border border-border text-[13px] placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-ring/30 focus:border-ring/40 transition-all"
       />
       {search && (
-        <button onClick={() => setSearch('')} className="absolute right-2.5 top-1/2 -translate-y-1/2 w-6 h-6 rounded-md hover:bg-muted flex items-center justify-center" aria-label="Clear search">
+        <Button variant="unstyled" size="unstyled" onClick={() => setSearch('')} className="absolute right-2.5 top-1/2 -translate-y-1/2 w-6 h-6 rounded-md hover:bg-muted flex items-center justify-center" aria-label="Clear search">
           <X className="w-3.5 h-3.5 text-muted-foreground" />
-        </button>
+        </Button>
       )}
     </div>
   ) : null;
@@ -191,9 +192,9 @@ export default function ClaimList() {
         >
           <div className="flex items-end justify-between gap-3">
             <div className="flex items-start gap-2 min-w-0">
-              <button onClick={() => navigate('/dashboard')} aria-label="Back" className="w-9 h-9 -ml-1 mt-1 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex-shrink-0">
+              <Button variant="unstyled" size="unstyled" onClick={() => navigate('/dashboard')} aria-label="Back" className="w-9 h-9 -ml-1 mt-1 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex-shrink-0">
                 <ArrowLeft className="w-[18px] h-[18px]" strokeWidth={2} />
-              </button>
+              </Button>
               <div className="min-w-0">
                 <h1 className="text-[24px] leading-tight font-semibold text-foreground tracking-[-0.02em] truncate">Incidents</h1>
                 {claims.length > 0 && (
@@ -215,13 +216,13 @@ export default function ClaimList() {
           {/* Header — desktop only */}
           <motion.div variants={fadeUp} className="hidden md:flex items-end justify-between gap-3 pt-2">
             <div className="flex items-start gap-2 min-w-0">
-              <button
+              <Button variant="unstyled" size="unstyled"
                 onClick={() => navigate('/dashboard')}
                 aria-label="Back"
                 className="w-9 h-9 -ml-1 mt-1 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex-shrink-0"
               >
                 <ArrowLeft className="w-[18px] h-[18px]" strokeWidth={2} />
-              </button>
+              </Button>
               <div className="min-w-0">
                 <h1 className="text-[28px] leading-tight font-semibold text-foreground tracking-[-0.02em] truncate">Incidents</h1>
                 {claims.length > 0 && (
@@ -245,7 +246,7 @@ export default function ClaimList() {
             className="md:hidden flex items-center gap-3 rounded-xl border border-border bg-card px-3.5 py-3 -mt-2 hover:border-foreground/20 transition-colors"
           >
             <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
-              <Scale className="w-4 h-4" strokeWidth={2} />
+              <AccountArtwork kind="shield" className="w-9 h-9" />
             </div>
             <div className="flex-1 min-w-0">
               <div className="text-[13px] font-semibold text-foreground">Who was at fault?</div>
@@ -260,38 +261,38 @@ export default function ClaimList() {
             <motion.aside variants={fadeUp} className="hidden md:block space-y-4">
               {/* Filter tiles */}
               <div className="hidden md:grid grid-cols-2 md:grid-cols-1 gap-2">
-                <button
+                <Button variant="unstyled" size="unstyled"
                   onClick={() => setFilter(filter === 'draft' ? 'all' : 'draft')}
                   className={`text-left rounded-xl p-3.5 border transition-all ${
                     filter === 'draft'
-                      ? 'bg-foreground text-background border-foreground'
+                      ? 'bg-secondary text-foreground border-primary/50'
                       : 'bg-card border-border hover:border-foreground/20'
                   }`}
                 >
                   <div className="flex items-center justify-between">
-                    <span className={`text-[12px] font-medium ${filter === 'draft' ? 'text-background/70' : 'text-muted-foreground'}`}>Drafts</span>
-                    <FileEdit className={`w-3.5 h-3.5 ${filter === 'draft' ? 'text-background/60' : 'text-muted-foreground/60'}`} strokeWidth={2} />
+                    <span className={`text-[12px] font-medium ${filter === 'draft' ? 'text-foreground/70' : 'text-muted-foreground'}`}>Drafts</span>
+                    <FileEdit className={`w-3.5 h-3.5 ${filter === 'draft' ? 'text-muted-foreground' : 'text-muted-foreground/60'}`} strokeWidth={2} />
                   </div>
                   <div className="text-[22px] font-semibold tabular-nums leading-none mt-2 tracking-tight">{draftCount}</div>
-                </button>
-                <button
+                </Button>
+                <Button variant="unstyled" size="unstyled"
                   onClick={() => setFilter(filter === 'saved' ? 'all' : 'saved')}
                   className={`text-left rounded-xl p-3.5 border transition-all ${
                     filter === 'saved'
-                      ? 'bg-foreground text-background border-foreground'
+                      ? 'bg-secondary text-foreground border-primary/50'
                       : 'bg-card border-border hover:border-foreground/20'
                   }`}
                 >
                   <div className="flex items-center justify-between">
-                    <span className={`text-[12px] font-medium ${filter === 'saved' ? 'text-background/70' : 'text-muted-foreground'}`}>Submitted</span>
-                    <CheckCircle2 className={`w-3.5 h-3.5 ${filter === 'saved' ? 'text-background/60' : 'text-muted-foreground/60'}`} strokeWidth={2} />
+                    <span className={`text-[12px] font-medium ${filter === 'saved' ? 'text-foreground/70' : 'text-muted-foreground'}`}>Submitted</span>
+                    <CheckCircle2 className={`w-3.5 h-3.5 ${filter === 'saved' ? 'text-muted-foreground' : 'text-muted-foreground/60'}`} strokeWidth={2} />
                   </div>
                   <div className="text-[22px] font-semibold tabular-nums leading-none mt-2 tracking-tight">{savedCount}</div>
-                </button>
+                </Button>
               </div>
 
               {/* Quick actions — desktop/tablet */}
-              <div className="hidden md:block rounded-xl bg-card border border-border overflow-hidden">
+              <div className="hidden md:block account-panel overflow-hidden">
                 <div className="px-3.5 pt-3 pb-2 text-[11px] font-medium text-muted-foreground">Quick actions</div>
                 <div className="divide-y divide-border">
                   <Link to="/claims/new" className="flex items-center gap-3 px-3.5 py-2.5 hover:bg-muted/50 transition-colors">
@@ -339,7 +340,7 @@ export default function ClaimList() {
 
               {/* Recent activity — desktop/tablet */}
               {recent.length > 0 && (
-                <div className="hidden md:block rounded-xl bg-card border border-border overflow-hidden">
+                <div className="hidden md:block account-panel overflow-hidden">
                   <div className="px-3.5 pt-3 pb-2 text-[11px] font-medium text-muted-foreground">Recent activity</div>
                   <div className="divide-y divide-border">
                     {recent.map(c => {
@@ -382,22 +383,22 @@ export default function ClaimList() {
                     className="w-full pl-9 pr-9 h-10 rounded-lg bg-card border border-border text-[13px] placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-ring/30 focus:border-ring/40 transition-all"
                   />
                   {search && (
-                    <button
+                    <Button variant="unstyled" size="unstyled"
                       onClick={() => setSearch('')}
                       className="absolute right-2.5 top-1/2 -translate-y-1/2 w-6 h-6 rounded-md hover:bg-muted flex items-center justify-center"
                       aria-label="Clear search"
                     >
                       <X className="w-3.5 h-3.5 text-muted-foreground" />
-                    </button>
+                    </Button>
                   )}
                 </motion.div>
               )}
 
               {/* List */}
               {claims.length === 0 ? (
-                <motion.div variants={fadeUp} className="rounded-xl bg-card border border-border p-10 text-center">
+                <motion.div variants={fadeUp} className="account-section py-10 text-center">
                   <div className="w-12 h-12 rounded-xl bg-muted text-muted-foreground mx-auto mb-4 flex items-center justify-center">
-                    <AlertTriangle className="w-6 h-6" strokeWidth={1.6} />
+                    <AccountArtwork kind="report" className="w-16 h-16" />
                   </div>
                   <p className="text-[15px] font-semibold text-foreground">No reports yet</p>
                   <p className="text-[13px] text-muted-foreground mt-1.5 max-w-[280px] mx-auto leading-relaxed">
@@ -411,14 +412,14 @@ export default function ClaimList() {
                   </Link>
                 </motion.div>
               ) : filteredClaims.length === 0 ? (
-                <motion.div variants={fadeUp} className="rounded-xl bg-card border border-border p-8 text-center">
+                <motion.div variants={fadeUp} className="account-section py-8 text-center">
                   <p className="text-[13px] text-muted-foreground">No reports match your filters</p>
-                  <button
+                  <Button variant="unstyled" size="unstyled"
                     onClick={() => { setSearch(''); setFilter('all'); }}
                     className="mt-3 text-[12px] font-medium text-accent hover:opacity-80"
                   >
                     Clear filters
-                  </button>
+                  </Button>
                 </motion.div>
               ) : (
                 <motion.div variants={fadeUp} className="space-y-2">
@@ -446,7 +447,7 @@ export default function ClaimList() {
                     return (
                       <div
                         key={c.id}
-                        className="rounded-xl bg-card border border-border overflow-hidden hover:border-foreground/20 transition-colors group"
+                        className="account-panel overflow-hidden hover:border-foreground/20 transition-colors group"
                       >
                         <Link to={href} className="block p-3">
                           <div className="flex items-center gap-3">
@@ -454,7 +455,7 @@ export default function ClaimList() {
                               {photoUrl ? (
                                 <img src={photoUrl} alt="Damage" className="w-full h-full object-cover" loading="lazy" />
                               ) : (
-                                <Car className="w-6 h-6 text-muted-foreground" strokeWidth={1.5} />
+                                <AccountArtwork kind="report" className="w-14 h-14" />
                               )}
                             </div>
                             <div className="flex-1 min-w-0">
@@ -469,13 +470,13 @@ export default function ClaimList() {
                                 {ref.value && rego && <span className="opacity-50">· {ref.label} #{ref.value}</span>}
                               </div>
                             </div>
-                            <button
+                            <Button variant="unstyled" size="unstyled"
                               onClick={(e) => { e.preventDefault(); e.stopPropagation(); setDeleteId(c.id); }}
                               aria-label="Delete report"
                               className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground/60 hover:text-destructive hover:bg-destructive/10 transition-colors shrink-0"
                             >
                               <Trash2 className="w-3.5 h-3.5" />
-                            </button>
+                            </Button>
                           </div>
                           <div className="flex flex-wrap gap-1.5 mt-3">
                             <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-medium ${statusTone}`}>

@@ -2,13 +2,14 @@ import { useEffect, useState } from 'react';
 import { ChevronRight, ChevronLeft, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/contexts/AuthContext';
-import welcomeImg from '@/assets/onboarding/welcome.png';
-import garageImg from '@/assets/onboarding/garage.png';
-import reportImg from '@/assets/onboarding/report.png';
-import photosImg from '@/assets/onboarding/photos.png';
-import callImg from '@/assets/onboarding/call.png';
-import vaultImg from '@/assets/onboarding/vault.png';
-import notificationsImg from '@/assets/onboarding/notifications.png';
+import { Button } from '@/components/ui/button';
+import welcomeImg from '@/assets/illustrations/about-shield.png';
+import garageImg from '@/assets/illustrations/step-garage.png';
+import reportImg from '@/assets/illustrations/step-report.png';
+import photosImg from '@/assets/illustrations/step-report.png';
+import callImg from '@/assets/illustrations/step-panel.png';
+import vaultImg from '@/assets/illustrations/fault-claim.png';
+import notificationsImg from '@/assets/illustrations/about-heart.png';
 
 interface Step {
   image: string;
@@ -119,13 +120,13 @@ export default function OnboardingTour() {
           onClick={(e) => e.stopPropagation()}
         >
           {/* Close button */}
-          <button
+          <Button variant="unstyled" size="unstyled"
             onClick={close}
             aria-label="Skip tour"
             className="absolute top-4 right-4 z-20 w-9 h-9 rounded-full bg-card/90 backdrop-blur ring-1 ring-border/50 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-card transition-all"
           >
             <X className="w-4 h-4" />
-          </button>
+          </Button>
 
           {/* Hero image area showing real app screenshots */}
           <div
@@ -147,7 +148,7 @@ export default function OnboardingTour() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
                 transition={{ duration: 0.35, ease: 'easeOut' }}
-                className="h-full w-auto object-contain object-top pt-6 drop-shadow-xl"
+                className="h-full w-auto object-contain p-8"
                 style={{ maxWidth: '70%' }}
               />
             </AnimatePresence>
@@ -176,7 +177,7 @@ export default function OnboardingTour() {
                 <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-primary/80">
                   {current.eyebrow}
                 </p>
-                <h2 className="mt-2 text-2xl font-bold text-foreground leading-tight tracking-tight">
+                <h2 className="font-display mt-2 text-2xl font-bold text-foreground leading-tight tracking-tight">
                   {current.title}
                 </h2>
                 <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
@@ -189,7 +190,7 @@ export default function OnboardingTour() {
             <div className="flex items-center justify-between mt-6 mb-5">
               <div className="flex items-center gap-1.5">
                 {STEPS.map((_, i) => (
-                  <button
+                  <Button variant="unstyled" size="unstyled"
                     key={i}
                     onClick={() => setStep(i)}
                     aria-label={`Go to step ${i + 1}`}
@@ -211,28 +212,28 @@ export default function OnboardingTour() {
             {/* Actions */}
             <div className="flex items-center gap-2">
               {!isFirst ? (
-                <button
+                <Button variant="unstyled" size="unstyled"
                   onClick={prev}
                   className="h-11 px-4 rounded-xl border border-border bg-card text-sm font-semibold text-foreground hover:bg-muted transition-colors inline-flex items-center gap-1.5"
                 >
                   <ChevronLeft className="w-4 h-4" />
                   Back
-                </button>
+                </Button>
               ) : (
-                <button
+                <Button variant="unstyled" size="unstyled"
                   onClick={close}
                   className="h-11 px-4 rounded-xl text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors"
                 >
                   Skip tour
-                </button>
+                </Button>
               )}
-              <button
+              <Button variant="unstyled" size="unstyled"
                 onClick={next}
                 className="flex-1 h-11 px-5 rounded-xl text-sm font-bold inline-flex items-center justify-center gap-1.5 active:scale-[0.98] transition-colors text-primary-foreground bg-primary hover:bg-primary/90"
               >
                 {isLast ? "Let's go" : 'Next'}
                 {!isLast && <ChevronRight className="w-4 h-4" />}
-              </button>
+              </Button>
             </div>
           </div>
         </motion.div>

@@ -1,3 +1,5 @@
+import { Button } from '@/components/ui/button';
+import { AccountArtwork } from '@/components/AccountArtwork';
 import { ArrowLeft, ChevronDown, Car, Mail, Briefcase } from 'lucide-react';
 import { Link, useSearchParams } from 'react-router-dom';
 import AppLayout from '@/components/AppLayout';
@@ -69,16 +71,16 @@ export default function Documents() {
           </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className="w-full flex items-center gap-2.5 rounded-xl border border-border bg-card hover:border-foreground/30 transition-colors text-left p-2.5">
-                <div className="w-9 h-9 rounded-lg bg-foreground text-background flex items-center justify-center shrink-0">
-                  <Car className="w-4 h-4" strokeWidth={2} />
+              <Button variant="unstyled" size="unstyled" className="w-full flex items-center gap-2.5 rounded-xl border border-border bg-card hover:border-foreground/30 transition-colors text-left p-2.5">
+                <div className="w-9 h-9 rounded-lg bg-primary text-primary-foreground flex items-center justify-center shrink-0">
+                  <AccountArtwork kind="garage" className="w-9 h-9" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-[13px] font-semibold text-foreground truncate leading-tight">{selectorLabel.primary}</p>
                   {selectorLabel.secondary && <p className="text-[11px] text-muted-foreground truncate mt-0.5">{selectorLabel.secondary}</p>}
                 </div>
                 <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0" strokeWidth={2} />
-              </button>
+              </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" className="w-[var(--radix-dropdown-menu-trigger-width)] rounded-xl">
               <DropdownMenuItem onClick={() => setSelected('personal')} className="py-2.5">
@@ -119,8 +121,8 @@ export default function Documents() {
 
         {/* Email-in tip */}
         <div className="card-soft !p-3 flex items-start gap-3">
-          <div className="w-9 h-9 rounded-lg bg-foreground text-background flex items-center justify-center shrink-0">
-            <Mail className="w-4 h-4" strokeWidth={2} />
+          <div className="w-9 h-9 rounded-lg bg-primary text-primary-foreground flex items-center justify-center shrink-0">
+            <AccountArtwork kind="documents" className="w-11 h-11" />
           </div>
           <div className="min-w-0 flex-1">
             <p className="text-[13px] font-semibold text-foreground leading-tight">
@@ -144,9 +146,9 @@ export default function Documents() {
           <p className="field-label">Showing documents for</p>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button className="w-full flex items-center gap-3 card-soft hover:border-foreground/30 transition-colors text-left !py-3 !px-3">
-              <div className="w-11 h-11 rounded-xl bg-foreground text-background flex items-center justify-center shrink-0">
-                <Car className="w-5 h-5" strokeWidth={2} />
+            <Button variant="unstyled" size="unstyled" className="w-full flex items-center gap-3 card-soft hover:border-foreground/30 transition-colors text-left !py-3 !px-3">
+              <div className="w-11 h-11 rounded-xl bg-primary text-primary-foreground flex items-center justify-center shrink-0">
+                <AccountArtwork kind="garage" className="w-11 h-11" />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-base font-semibold text-foreground truncate leading-tight">
@@ -159,7 +161,7 @@ export default function Documents() {
                 )}
               </div>
               <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0" strokeWidth={2} />
-            </button>
+            </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start" className="w-[var(--radix-dropdown-menu-trigger-width)] rounded-xl">
             <DropdownMenuItem onClick={() => setSelected('personal')} className="py-2.5">

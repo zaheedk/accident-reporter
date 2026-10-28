@@ -13,6 +13,8 @@ import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 import { useOfflineQuery } from '@/hooks/use-offline-query';
 import { blogArticles } from '@/lib/blog-data';
+import { Button } from '@/components/ui/button';
+import { AccountArtwork } from '@/components/AccountArtwork';
 
 function daysUntil(dateStr?: string | null): number | null {
   if (!dateStr) return null;
@@ -27,14 +29,14 @@ type RingKind = 'WOF' | 'Rego' | 'Ins';
 
 const RING_META: Record<RingKind, { color: string; windowDays: number }> = {
   WOF: { color: 'hsl(var(--primary))', windowDays: 365 },
-  Rego: { color: 'hsl(38 92% 50%)', windowDays: 365 },
-  Ins: { color: 'hsl(152 60% 42%)', windowDays: 365 },
+  Rego: { color: 'hsl(var(--warning))', windowDays: 365 },
+  Ins: { color: 'hsl(var(--success))', windowDays: 365 },
 };
 
 function ringColor(days: number | null, base: string): string {
   if (days === null) return 'hsl(var(--muted-foreground) / 0.3)';
   if (days < 0) return 'hsl(var(--destructive))';
-  if (days <= 30) return 'hsl(38 92% 50%)';
+  if (days <= 30) return 'hsl(var(--warning))';
   return base;
 }
 
@@ -65,45 +67,43 @@ function VehicleCard({
   ];
   const soonest = expiries
     .filter(e => e.days !== null)
-    .sort((a, b) => (a.days! - b.days!))[0] ?? null;
+    .sort((a, b) => ((a.days ?? Infinity) - (b.days ?? Infinity)))[0] ?? null;
 
   const pill = soonest === null
     ? { text: 'Add expiries', dot: 'bg-muted-foreground/50', cls: 'text-muted-foreground' }
-    : soonest.days! < 0
-      ? { text: `${soonest.label} overdue ${Math.abs(soonest.days!)}d`, dot: 'bg-red-400', cls: 'text-red-300' }
-      : soonest.days! === 0
-        ? { text: `${soonest.label} due today`, dot: 'bg-amber-400', cls: 'text-amber-300' }
-        : soonest.days! <= 30
-          ? { text: `${soonest.label} due in ${soonest.days}d`, dot: 'bg-amber-400', cls: 'text-amber-300' }
-          : { text: `${soonest.label} due in ${soonest.days}d`, dot: 'bg-emerald-400', cls: 'text-emerald-300' };
+    : (soonest.days ?? 0) < 0
+      ? { text: `${soonest.label} overdue ${Math.abs((soonest.days ?? 0))}d`, dot: 'bg-destructive', cls: 'text-destructive' }
+      : (soonest.days ?? 0) === 0
+        ? { text: `${soonest.label} due today`, dot: 'bg-warning', cls: 'text-foreground' }
+        : (soonest.days ?? 0) <= 30
+          ? { text: `${soonest.label} due in ${soonest.days}d`, dot: 'bg-warning', cls: 'text-foreground' }
+          : { text: `${soonest.label} due in ${soonest.days}d`, dot: 'bg-success', cls: 'text-success' };
 
-  // Alternate subtle accent glow per card
-  const glow = index % 2 === 0 ? 'bg-primary/30' : 'bg-accent/30';
+
   const insurerPhone = vehicle.insuranceCompany ? insurerPhones[vehicle.insuranceCompany] : null;
 
   return (
-    <button
+    <Button variant="unstyled" size="unstyled"
       onClick={() => onTap(vehicle, soonest?.kind ?? 'WOF')}
-      className="relative shrink-0 w-[188px] rounded-3xl bg-foreground text-background p-3 text-left overflow-hidden active:scale-[0.97] transition-transform"
+      className="relative shrink-0 w-[208px] rounded-3xl bg-secondary text-foreground p-4 text-left overflow-hidden active:scale-[0.97] transition-transform"
     >
-      <div aria-hidden="true" className={`pointer-events-none absolute -top-10 -right-10 w-28 h-28 rounded-full blur-3xl ${glow}`} />
       <div className="relative flex items-start gap-3">
-        <span className="shrink-0 w-11 h-11 rounded-2xl bg-background/10 flex items-center justify-center overflow-hidden">
+        <span className="shrink-0 w-11 h-11 rounded-2xl bg-card/80 flex items-center justify-center overflow-hidden">
           {vehicle.photoUrl ? (
             <img src={vehicle.photoUrl} alt={`${vehicle.make} ${vehicle.model}`} className="w-full h-full object-cover" loading="lazy" />
           ) : (
-            <Car className="w-5 h-5 text-primary" strokeWidth={1.8} />
+            <AccountArtwork kind="garage" className="w-11 h-11" />
           )}
         </span>
         <div className="min-w-0 flex-1">
           <div className="min-w-0">
             <div className="text-[14px] font-bold truncate tracking-[-0.01em]">{vehicle.make} {vehicle.model}</div>
-            <div className="text-[11px] text-background/50 tabular-nums mt-0.5">{vehicle.regoNumber}</div>
+            <div className="text-[11px] text-muted-foreground tabular-nums mt-0.5">{vehicle.regoNumber}</div>
           </div>
         </div>
       </div>
       <div className="mt-3 flex items-center justify-between gap-2">
-        <span className={`inline-flex items-center gap-1.5 rounded-full bg-background/10 px-2.5 py-1 text-[10px] font-semibold ${pill.cls}`}>
+        <span className={`inline-flex items-center gap-1.5 rounded-full bg-card/80 px-2.5 py-1 text-[10px] font-semibold ${pill.cls}`}>
           <span className={`w-1.5 h-1.5 rounded-full ${pill.dot}`} />
           {pill.text}
         </span>
@@ -117,10 +117,10 @@ function VehicleCard({
             <Phone className="w-3 h-3" strokeWidth={2.2} />
           </a>
         ) : (
-          <span className="text-background/40 text-base leading-none tracking-widest">···</span>
+          <span className="text-muted-foreground text-base leading-none tracking-widest">···</span>
         )}
       </div>
-    </button>
+    </Button>
   );
 }
 
@@ -325,14 +325,14 @@ export default function Dashboard() {
 
   // Sidebar — quick actions for tablet/desktop
   const QuickActions = () => (
-    <div className="rounded-xl bg-card border border-border overflow-hidden">
+    <div className="account-panel overflow-hidden">
       <div className="px-3.5 pt-3 pb-2 text-[11px] font-medium text-muted-foreground">Quick actions</div>
       <div className="divide-y divide-border">
-        <button
+        <Button variant="unstyled" size="unstyled"
           onClick={handleOpenTowSheet}
           className="w-full flex items-center gap-3 px-3.5 py-2.5 hover:bg-muted/50 transition-colors text-left"
         >
-          <div className="w-7 h-7 rounded-lg bg-foreground text-background flex items-center justify-center shrink-0">
+          <div className="w-7 h-7 rounded-lg bg-primary text-primary-foreground flex items-center justify-center shrink-0">
             <Phone className="w-3.5 h-3.5" strokeWidth={2} />
           </div>
           <div className="flex-1 min-w-0">
@@ -340,7 +340,7 @@ export default function Dashboard() {
             <div className="text-[11px] text-muted-foreground">24/7 nearby companies</div>
           </div>
           <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/40" />
-        </button>
+        </Button>
         <a href="tel:111" className="w-full flex items-center gap-3 px-3.5 py-2.5 hover:bg-muted/50 transition-colors">
           <div className="w-7 h-7 rounded-lg bg-destructive/10 text-destructive flex items-center justify-center shrink-0">
             <Shield className="w-3.5 h-3.5" strokeWidth={2} />
@@ -376,7 +376,7 @@ export default function Dashboard() {
   );
 
   const ActivityPanel = () => (
-    <div className="rounded-xl bg-card border border-border overflow-hidden">
+    <div className="account-panel overflow-hidden">
       <div className="px-3.5 pt-3 pb-2 flex items-center justify-between">
         <span className="text-[11px] font-medium text-muted-foreground">Recent activity</span>
         <Link to="/claims" className="text-[11px] font-medium text-accent hover:opacity-80">All</Link>
@@ -416,7 +416,7 @@ export default function Dashboard() {
   );
 
   const ProfilePanel = () => (
-    <div className="rounded-xl bg-card border border-border overflow-hidden">
+    <div className="account-panel overflow-hidden">
       <Link to="/profile" className="flex items-center gap-3 px-3.5 py-3 hover:bg-muted/50 transition-colors">
         <Avatar className="w-9 h-9">
           <AvatarImage src={avatarUrl} alt={displayName} />
@@ -432,7 +432,7 @@ export default function Dashboard() {
       </Link>
       {isAdmin && (
         <Link to="/admin" className="flex items-center gap-3 px-3.5 py-2.5 border-t border-border hover:bg-muted/50 transition-colors">
-          <div className="w-7 h-7 rounded-lg bg-foreground text-background flex items-center justify-center shrink-0">
+          <div className="w-7 h-7 rounded-lg bg-primary text-primary-foreground flex items-center justify-center shrink-0">
             <Shield className="w-3.5 h-3.5" strokeWidth={2} />
           </div>
           <div className="flex-1 min-w-0">
@@ -450,12 +450,12 @@ export default function Dashboard() {
       <div className="theme-dashboard relative">
         <motion.div className="relative space-y-6 md:space-y-8 md:-mt-5" variants={stagger} initial="hidden" animate="visible">
           {/* Mobile-only header */}
-          <motion.div variants={fadeUp} className="relative flex items-start justify-between gap-3 pt-2 md:hidden">
-            <div className="signal-arc pointer-events-none absolute -top-8 -right-16 w-44 h-44 opacity-95" aria-hidden="true" />
+          <motion.div variants={fadeUp} className="account-welcome relative flex items-start justify-between gap-3 pt-2 md:hidden">
+            <AccountArtwork kind="shield" className="absolute right-10 top-0 w-24 opacity-20" />
             <div className="min-w-0 relative">
               <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-primary">{greeting}, {firstName}</p>
               <h1 className="text-[32px] leading-[1.05] font-extrabold text-foreground tracking-[-0.03em] mt-2">
-                What needs<br />your attention?
+                We’ve got<br />your back.
               </h1>
             </div>
             <Link to="/profile" className="relative z-10 shrink-0">
@@ -492,10 +492,10 @@ export default function Dashboard() {
                 return (
                   <motion.div
                     variants={fadeUp}
-                    className={`rounded-2xl border p-4 ${overdue ? 'border-destructive/30 bg-destructive/[0.06]' : 'border-amber-500/30 bg-amber-500/[0.08]'}`}
+                    className={`rounded-2xl border p-4 ${overdue ? 'border-destructive/30 bg-destructive/[0.06]' : 'border-warning/30 bg-warning/[0.08]'}`}
                   >
                     <div className="flex items-start gap-3">
-                      <span className={`shrink-0 w-9 h-9 rounded-xl flex items-center justify-center ${overdue ? 'bg-destructive/15 text-destructive' : 'bg-amber-500/15 text-amber-600'}`}>
+                      <span className={`shrink-0 w-9 h-9 rounded-xl flex items-center justify-center ${overdue ? 'bg-destructive/15 text-destructive' : 'bg-warning/15 text-foreground'}`}>
                         <CalendarClock className="w-4.5 h-4.5" strokeWidth={2} />
                       </span>
                       <div className="min-w-0 flex-1">
@@ -515,7 +515,7 @@ export default function Dashboard() {
                         <div className="flex flex-wrap items-center gap-2 mt-3">
                           <Link
                             to={`/vehicles/${top.vehicle.slug || top.vehicle.id}/edit`}
-                            className="inline-flex items-center gap-1 rounded-full bg-foreground text-background px-3 py-1.5 text-[12px] font-semibold active:scale-[0.97] transition-transform"
+                            className="inline-flex items-center gap-1 rounded-full bg-primary text-primary-foreground px-3 py-1.5 text-[12px] font-semibold active:scale-[0.97] transition-transform"
                           >
                             Update {top.label} <ChevronRight className="w-3.5 h-3.5" />
                           </Link>
@@ -536,27 +536,27 @@ export default function Dashboard() {
               {/* Mobile emergency actions — big standalone circles with text inside */}
               <motion.div variants={fadeUp} className="md:hidden">
                 <div className="flex items-center justify-center gap-12">
-                  <button
+                  <Button variant="unstyled" size="unstyled"
                     onClick={() => setAccidentSheetOpen(true)}
-                    className="relative flex flex-col items-center justify-center w-[120px] h-[120px] rounded-full bg-foreground text-background active:scale-[0.96] transition-transform shadow-lg shadow-foreground/15"
+                    className="relative flex flex-col items-center justify-center w-[120px] h-[120px] rounded-3xl bg-secondary text-foreground active:scale-[0.96] transition-transform"
                   >
                     <span aria-hidden="true" className="absolute inset-2 rounded-full border border-primary/40" />
                     <span aria-hidden="true" className="absolute inset-4 rounded-full bg-primary/10" />
                     <span className="relative flex flex-col items-center justify-center text-center px-3">
-                      <AlertTriangle className="w-6 h-6 text-primary mb-1" strokeWidth={2} />
+                      <AccountArtwork kind="report" className="w-12 h-12 mb-1" />
                       <span className="text-[11px] font-bold leading-tight">Had an<br />accident?</span>
                     </span>
-                  </button>
+                  </Button>
                   <a
                     href="tel:111"
-                    className="relative flex flex-col items-center justify-center w-[120px] h-[120px] rounded-full bg-foreground text-background active:scale-[0.96] transition-transform shadow-lg shadow-foreground/15"
+                    className="relative flex flex-col items-center justify-center w-[120px] h-[120px] rounded-3xl bg-secondary text-foreground active:scale-[0.96] transition-transform"
                   >
                     <span aria-hidden="true" className="absolute inset-2 rounded-full border border-accent/40" />
                     <span aria-hidden="true" className="absolute inset-4 rounded-full bg-accent/10" />
                     <span className="relative flex flex-col items-center justify-center text-center px-3">
-                      <Shield className="w-6 h-6 text-accent mb-1" strokeWidth={2} />
+                      <AccountArtwork kind="shield" className="w-10 h-10 mb-1" />
                       <span className="text-[13px] font-bold leading-tight">111</span>
-                      <span className="text-[10px] text-background/60 leading-tight mt-0.5">Call police</span>
+                      <span className="text-[10px] text-muted-foreground leading-tight mt-0.5">Call police</span>
                     </span>
                   </a>
                 </div>
@@ -566,7 +566,7 @@ export default function Dashboard() {
               {vehicles.length > 0 && (
                 <motion.div variants={fadeUp} className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <h2 className="text-[15px] font-semibold text-foreground tracking-[-0.01em]">Your vehicles</h2>
+                    <h2 className="text-xl font-semibold text-foreground">Your vehicles</h2>
                     <Link to="/vehicles" className="text-[12px] font-medium text-accent hover:opacity-80 inline-flex items-center gap-0.5">
                       See all <ArrowUpRight className="w-3 h-3" />
                     </Link>
@@ -594,9 +594,9 @@ export default function Dashboard() {
               )}
 
               {vehicles.length === 0 && (
-                <motion.div variants={fadeUp} className="rounded-xl bg-card border border-border p-10 text-center">
+                <motion.div variants={fadeUp} className="account-section py-10 text-center">
                   <div className="w-12 h-12 rounded-xl bg-muted text-muted-foreground mx-auto mb-4 flex items-center justify-center">
-                    <Car className="w-6 h-6" strokeWidth={1.6} />
+                    <AccountArtwork kind="garage" className="w-16 h-16" />
                   </div>
                   <p className="text-[15px] font-semibold text-foreground">No vehicles yet</p>
                   <p className="text-[13px] text-muted-foreground mt-1.5 max-w-[280px] mx-auto leading-relaxed">
@@ -614,10 +614,10 @@ export default function Dashboard() {
               {/* Tablet/Desktop-only widgets to fill space */}
               <motion.div variants={fadeUp} className="hidden md:grid md:grid-cols-2 gap-4">
                 {/* Document vault snapshot */}
-                <div className="rounded-xl bg-card border border-border overflow-hidden flex flex-col">
+                <div className="account-section border-t border-border/60 pt-3 overflow-hidden flex flex-col">
                   <div className="px-4 pt-3.5 pb-2 flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <FileText className="w-3.5 h-3.5 text-muted-foreground" strokeWidth={2} />
+                      <AccountArtwork kind="documents" className="w-10 h-10" />
                       <span className="text-[12px] font-medium text-foreground">Document vault</span>
                     </div>
                     <Link to="/documents" className="text-[11px] font-medium text-accent hover:opacity-80">All</Link>
@@ -629,7 +629,7 @@ export default function Dashboard() {
                       </p>
                       <Link
                         to="/documents"
-                        className="inline-flex items-center gap-1.5 h-8 px-3 mt-3 text-[12px] font-medium rounded-lg bg-foreground text-background hover:opacity-90 transition-opacity"
+                        className="inline-flex items-center gap-1.5 h-8 px-3 mt-3 text-[12px] font-medium rounded-lg bg-primary text-primary-foreground hover:opacity-90 transition-opacity"
                       >
                         <Plus className="w-3.5 h-3.5" strokeWidth={2.2} /> Upload
                       </Link>
@@ -665,10 +665,10 @@ export default function Dashboard() {
                 </div>
 
                 {/* Nearby services — panel shops + tow */}
-                <div className="rounded-xl bg-card border border-border overflow-hidden flex flex-col">
+                <div className="account-section border-t border-border/60 pt-3 overflow-hidden flex flex-col">
                   <div className="px-4 pt-3.5 pb-2 flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <Wrench className="w-3.5 h-3.5 text-muted-foreground" strokeWidth={2} />
+                      <AccountArtwork kind="repair" className="w-10 h-10" />
                       <span className="text-[12px] font-medium text-foreground">Top-rated panel shops</span>
                     </div>
                     <Link to="/panel-shops" className="text-[11px] font-medium text-accent hover:opacity-80">All</Link>
@@ -691,29 +691,29 @@ export default function Dashboard() {
                             <div className="text-[11px] text-muted-foreground truncate">{s.city}{s.region ? ` · ${s.region}` : ''}</div>
                           </div>
                           <span className="inline-flex items-center gap-1 text-[11px] font-medium text-foreground/70 tabular-nums shrink-0">
-                            <Star className="w-3 h-3 fill-amber-500 text-amber-500" strokeWidth={0} />
+                            <Star className="w-3 h-3 fill-warning text-warning" strokeWidth={0} />
                             {Number(s.google_rating).toFixed(1)}
                           </span>
                         </Link>
                       ))}
                     </div>
                   )}
-                  <button
+                  <Button variant="unstyled" size="unstyled"
                     onClick={handleOpenTowSheet}
                     className="flex items-center gap-2 px-4 py-2.5 border-t border-border text-[12px] font-medium text-foreground hover:bg-muted/50 transition-colors"
                   >
                     <Truck className="w-3.5 h-3.5" strokeWidth={2} /> Need a tow truck?
                     <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/40 ml-auto" />
-                  </button>
+                  </Button>
                 </div>
               </motion.div>
 
               {/* Tips & blog highlights — full width on tablet/desktop */}
               <motion.div variants={fadeUp} className="hidden md:block">
-                <div className="rounded-xl bg-card border border-border overflow-hidden">
+                <div className="account-section border-t border-border/60 pt-3 overflow-hidden">
                   <div className="px-4 pt-3.5 pb-2 flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <Lightbulb className="w-3.5 h-3.5 text-muted-foreground" strokeWidth={2} />
+                      <AccountArtwork kind="help" className="w-10 h-10" />
                       <span className="text-[12px] font-medium text-foreground">Tips & guides</span>
                     </div>
                     <Link to="/blog" className="text-[11px] font-medium text-accent hover:opacity-80">All articles</Link>
@@ -753,25 +753,25 @@ export default function Dashboard() {
               <motion.div variants={fadeUp} className="grid grid-cols-3 gap-2">
                 <Link
                   to="/fault-quiz"
-                  className="rounded-2xl bg-card border border-border p-3 flex flex-col gap-1.5 hover:border-foreground/20 transition-colors"
+                  className="rounded-3xl bg-secondary/60 p-4 flex flex-col gap-2 hover:bg-secondary transition-colors"
                 >
-                  <Scale className="w-4.5 h-4.5 text-primary" strokeWidth={2} />
+                  <AccountArtwork kind="shield" className="w-12 h-12" />
                   <span className="text-[12px] font-semibold text-foreground leading-tight">Who's at fault?</span>
                   <span className="text-[10px] text-muted-foreground leading-tight">Daily quiz</span>
                 </Link>
                 <Link
                   to="/hazard-radar"
-                  className="rounded-2xl bg-card border border-border p-3 flex flex-col gap-1.5 hover:border-foreground/20 transition-colors"
+                  className="rounded-3xl bg-secondary/60 p-4 flex flex-col gap-2 hover:bg-secondary transition-colors"
                 >
-                  <Radar className="w-4.5 h-4.5 text-accent" strokeWidth={2} />
+                  <AccountArtwork kind="garage" className="w-12 h-12" />
                   <span className="text-[12px] font-semibold text-foreground leading-tight">Hazard radar</span>
                   <span className="text-[10px] text-muted-foreground leading-tight">Live near you</span>
                 </Link>
                 <Link
                   to="/report-to-council"
-                  className="rounded-2xl bg-card border border-border p-3 flex flex-col gap-1.5 hover:border-foreground/20 transition-colors"
+                  className="rounded-3xl bg-secondary/60 p-4 flex flex-col gap-2 hover:bg-secondary transition-colors"
                 >
-                  <Building2 className="w-4.5 h-4.5 text-foreground" strokeWidth={2} />
+                  <AccountArtwork kind="report" className="w-12 h-12" />
                   <span className="text-[12px] font-semibold text-foreground leading-tight">Report a fault</span>
                   <span className="text-[10px] text-muted-foreground leading-tight">To your council</span>
                 </Link>
@@ -782,10 +782,10 @@ export default function Dashboard() {
               <motion.div variants={fadeUp}>
                 <Link
                   to="/family"
-                  className="flex items-center gap-3 p-4 rounded-2xl bg-card border border-border hover:border-foreground/20 transition-colors group"
+                  className="flex items-center gap-3 p-4 rounded-3xl bg-secondary/60 hover:bg-secondary transition-colors group"
                 >
                   <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                    <Users className="w-5 h-5 text-primary" />
+                    <AccountArtwork kind="family" className="w-12 h-12" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="text-[14px] font-semibold text-foreground tracking-[-0.01em]">
@@ -804,7 +804,7 @@ export default function Dashboard() {
               <motion.div variants={fadeUp} className="md:hidden space-y-3">
                 {isAdmin && (
                   <Link to="/admin" className="rounded-xl bg-card border border-border p-4 flex items-center gap-3 hover:border-foreground/20 transition-colors">
-                    <div className="w-9 h-9 rounded-xl bg-foreground flex items-center justify-center shrink-0">
+                    <div className="w-9 h-9 rounded-xl bg-secondary flex items-center justify-center shrink-0">
                       <Shield className="w-4 h-4 text-background" strokeWidth={1.8} />
                     </div>
                     <div className="flex-1 min-w-0">
@@ -927,7 +927,7 @@ export default function Dashboard() {
                     return a.href ? (
                       <a key={a.key} href={a.href} className={cls}>{inner}</a>
                     ) : (
-                      <Link key={a.key} to={a.to!} onClick={() => setVehicleAction(null)} className={cls}>{inner}</Link>
+                      <Link key={a.key} to={a.to ?? '/vehicles'} onClick={() => setVehicleAction(null)} className={cls}>{inner}</Link>
                     );
                   })}
                 </div>
@@ -950,46 +950,46 @@ export default function Dashboard() {
             <Link
               to="/claims/quick-capture"
               onClick={() => setAccidentSheetOpen(false)}
-              className="w-full flex items-center gap-3 p-4 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 text-white text-left active:scale-[0.99] transition-transform shadow-lg shadow-orange-500/20"
+              className="w-full flex items-center gap-3 p-4 rounded-2xl bg-secondary text-foreground text-left active:scale-[0.99] transition-transform "
             >
-              <div className="w-11 h-11 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
+              <div className="w-11 h-11 rounded-xl bg-card/20 flex items-center justify-center shrink-0">
                 <Zap className="w-5 h-5" strokeWidth={2.2} fill="currentColor" />
               </div>
               <div className="flex-1 min-w-0">
                 <div className="text-[15px] font-semibold leading-tight flex items-center gap-1.5 flex-wrap">
                   Quick capture
-                  <span className="text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded bg-white/20 font-bold">Recommended</span>
+                  <span className="text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded bg-card/20 font-bold">Recommended</span>
                 </div>
-                <div className="text-[12px] text-white/90 mt-0.5">Guided photos · auto GPS &amp; time</div>
+                <div className="text-[12px] text-foreground/80 mt-0.5">Guided photos · auto GPS &amp; time</div>
               </div>
-              <ChevronRight className="w-5 h-5 text-white/80 shrink-0" />
+              <ChevronRight className="w-5 h-5 text-current shrink-0" />
             </Link>
             <a
               href="tel:111"
-              className="w-full flex items-center gap-3 p-4 rounded-2xl bg-red-600 text-white text-left active:scale-[0.99] transition-transform"
+              className="w-full flex items-center gap-3 p-4 rounded-2xl bg-destructive text-destructive-foreground text-left active:scale-[0.99] transition-transform"
             >
-              <div className="w-11 h-11 rounded-xl bg-white/15 flex items-center justify-center shrink-0">
+              <div className="w-11 h-11 rounded-xl bg-card/15 flex items-center justify-center shrink-0">
                 <Ambulance className="w-5 h-5" strokeWidth={2} />
               </div>
               <div className="flex-1 min-w-0">
                 <div className="text-[15px] font-semibold leading-tight">Call an ambulance</div>
-                <div className="text-[12px] text-white/80 mt-0.5">Emergency services — dial 111</div>
+                <div className="text-[12px] text-current mt-0.5">Emergency services — dial 111</div>
               </div>
-              <ChevronRight className="w-5 h-5 text-white/70 shrink-0" />
+              <ChevronRight className="w-5 h-5 text-current shrink-0" />
             </a>
-            <button
+            <Button variant="unstyled" size="unstyled"
               onClick={handleOpenTowSheet}
-              className="w-full flex items-center gap-3 p-4 rounded-2xl bg-foreground text-background text-left active:scale-[0.99] transition-transform"
+              className="w-full flex items-center gap-3 p-4 rounded-2xl bg-secondary text-foreground text-left active:scale-[0.99] transition-transform"
             >
-              <div className="w-11 h-11 rounded-xl bg-background/10 flex items-center justify-center shrink-0">
+              <div className="w-11 h-11 rounded-xl bg-card/80 flex items-center justify-center shrink-0">
                 <Truck className="w-5 h-5" strokeWidth={2} />
               </div>
               <div className="flex-1 min-w-0">
                 <div className="text-[15px] font-semibold leading-tight">Call a tow truck</div>
-                <div className="text-[12px] text-background/60 mt-0.5">See nearby 24/7 tow companies</div>
+                <div className="text-[12px] text-foreground/80 mt-0.5">See nearby 24/7 tow companies</div>
               </div>
-              <ChevronRight className="w-5 h-5 text-background/60 shrink-0" />
-            </button>
+              <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0" />
+            </Button>
           </div>
         </SheetContent>
       </Sheet>
@@ -1013,9 +1013,9 @@ export default function Dashboard() {
                 className="w-full pl-9 pr-9 py-2.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
               />
               {towSearch && (
-                <button onClick={() => setTowSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2">
+                <Button variant="unstyled" size="unstyled" onClick={() => setTowSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2">
                   <X className="w-4 h-4 text-muted-foreground" />
-                </button>
+                </Button>
               )}
             </div>
             {userCity && (
@@ -1044,7 +1044,7 @@ export default function Dashboard() {
                   </div>
                   <a
                     href={`tel:${tc.phone.replace(/\s/g, '')}`}
-                    className="shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold bg-foreground text-background whitespace-nowrap hover:bg-foreground/90 transition-colors"
+                    className="shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold bg-primary text-primary-foreground whitespace-nowrap hover:bg-foreground/90 transition-colors"
                   >
                     <Phone className="w-3.5 h-3.5" />
                     Call
