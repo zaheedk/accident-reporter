@@ -1,4 +1,14 @@
 import type { QuizDiagramId } from '@/components/QuizDiagram';
+import { knowledgeQuestions } from './nz-quiz-questions';
+
+export const QUIZ_TOPICS = {
+  fault: 'Fault scenarios',
+  driving: 'NZ driving rules',
+  accident: 'After an accident',
+  privacy: 'Privacy rights',
+  insurance: 'Insurance basics',
+} as const;
+export type QuizTopic = keyof typeof QUIZ_TOPICS;
 
 export type QuizOption = {
   id: string;
@@ -6,7 +16,10 @@ export type QuizOption = {
 };
 
 export type QuizScenario = {
-  id: QuizDiagramId;
+  id: string;
+  diagramId?: QuizDiagramId;
+  category?: QuizTopic;
+  sourceUrl?: string;
   scenario: string;
   imageAlt: string;
   options: QuizOption[];
@@ -19,7 +32,7 @@ export type QuizScenario = {
 export const QUESTIONS_PER_DAY = 3;
 
 /** Daily "Who's at fault?" scenarios based on NZ road rules and common insurer fault rulings. */
-export const quizScenarios: QuizScenario[] = [
+const faultScenarios: QuizScenario[] = [
   {
     id: 'rear-end',
     scenario:
@@ -32,8 +45,8 @@ export const quizScenarios: QuizScenario[] = [
     ],
     answerId: 'b',
     explanation:
-      'Drivers must keep enough following distance to stop safely. A rear-end collision is almost always the following driver\'s fault, even if you braked suddenly.',
-    rule: 'Following distance — Road User Rule 2004, clause 2.7',
+      'Following drivers must leave enough distance to stop safely. On these facts the following driver is likely responsible, but final liability depends on the evidence.',
+    rule: 'NZ Road Code — following distance',
   },
   {
     id: 'uncontrolled-right',
@@ -62,7 +75,7 @@ export const quizScenarios: QuizScenario[] = [
     ],
     answerId: 'b',
     explanation:
-      'Both drivers had a duty to reverse only when safe. Insurers usually apportion fault 50/50 unless dashcam footage shows one car was already established in the lane.',
+      'Both drivers must check it is safe to reverse. Both may contribute to this collision; evidence determines the split, not an automatic 50/50 rule.',
     rule: 'Reversing must be done safely at all times',
   },
   {
@@ -107,8 +120,8 @@ export const quizScenarios: QuizScenario[] = [
     ],
     answerId: 'a',
     explanation:
-      'The merging vehicle must give way to traffic already established in the lane. Merge-like-a-zip applies to slow-moving traffic, but the through vehicle keeps right of way.',
-    rule: 'Merging traffic gives way',
+      'A driver changing into an occupied lane must make sure the move is safe. On these facts the merging driver is likely responsible. At a lane ending, use merge-like-a-zip and cooperate rather than asserting priority.',
+    rule: 'Safe lane changes and motorway merging',
   },
   {
     id: 'stolen-signal',
@@ -137,7 +150,7 @@ export const quizScenarios: QuizScenario[] = [
     ],
     answerId: 'b',
     explanation:
-      'Evidence first. Photos, nearby cameras and witness details can identify the other party — without them your claim is treated as at-fault and your excess applies.',
+      'If it is safe, photograph the damage, look for witnesses or CCTV and report the incident to Police and your insurer. An unidentified driver does not automatically make you legally at fault. Any excess depends on your policy.',
     rule: 'Evidence gathering after an unattended-vehicle hit',
   },
   {
@@ -152,7 +165,7 @@ export const quizScenarios: QuizScenario[] = [
     ],
     answerId: 'b',
     explanation:
-      'The speed limit is a maximum, not a target. Drivers must adjust speed for conditions, so loss-of-control crashes in rain are treated as driver fault.',
+      'The limit is a maximum, not a target. You must slow down for rain and surface conditions. Responsibility for a crash still depends on its circumstances and evidence.',
     rule: 'Drive to the conditions',
   },
   {
@@ -197,7 +210,7 @@ export const quizScenarios: QuizScenario[] = [
     ],
     answerId: 'a',
     explanation:
-      'Fault in a chain collision is assessed per impact. Each following driver is responsible for the vehicle in front of them.',
+      'If you first hit the front car and are then hit from behind, each impact is assessed separately. If you were pushed forward before hitting the front car, responsibility may differ. Evidence and impact order matter.',
     rule: 'Chain collisions are assessed per impact',
   },
   {
@@ -222,19 +235,41 @@ export const quizScenarios: QuizScenario[] = [
     imageAlt: 'Illustration of an insurance claim form with a car and shield',
     options: [
       { id: 'a', label: 'Always, no exceptions' },
-      { id: 'b', label: 'Usually not, if the other party is identified and liability is accepted' },
+      { id: 'b', label: 'It depends on your policy and its waiver or refund conditions' },
       { id: 'c', label: 'Only if you have comprehensive cover' },
     ],
     answerId: 'b',
     explanation:
-      'When the at-fault party is identified and their insurer accepts liability, most NZ insurers waive or refund your excess. Recording their details at the scene is what makes this possible.',
-    rule: 'Excess waiver on not-at-fault claims',
+      'An admission at the scene does not automatically waive your excess. Your policy may require the other driver to be identified and responsibility or recovery to be established. Ask your insurer about waiver or refund conditions.',
+    rule: 'Policy-dependent excess waiver or refund',
   },
 ];
 
+export const quizScenarios: QuizScenario[] = [
+  ...faultScenarios.map((question) => ({
+    ...question,
+    diagramId: question.id as QuizDiagramId,
+    category: 'fault' as const,
+    sourceUrl: question.id === 'insurance-excess'
+      ? 'https://www.consumerprotection.govt.nz/help-product-service/insurance'
+      : 'https://www.nzta.govt.nz/roadcode/general-road-code/',
+  })),
+  ...knowledgeQuestions,
+];
+
+/** A shuffled practice set; no daily scores or streaks are changed. */
+export function practiceQuestions(topic: QuizTopic | 'all', count = 10): QuizScenario[] {
+  const pool = quizScenarios.filter((question) => topic === 'all' || question.category === topic);
+  for (let i = pool.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [pool[i], pool[j]] = [pool[j], pool[i]];
+  }
+  return pool.slice(0, count);
+}
+
 function dayNumberFor(date: Date): number {
   return Math.floor(
-    new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime() / 86400000,
+    Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) / 86400000,
   );
 }
 
