@@ -566,7 +566,7 @@ export default function Dashboard() {
               {vehicles.length > 0 && (
                 <motion.div variants={fadeUp} className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <h2 className="text-[15px] font-semibold text-foreground tracking-[-0.01em]">Your vehicles</h2>
+                    <h2 className="text-xl font-semibold text-foreground">Your vehicles</h2>
                     <Link to="/vehicles" className="text-[12px] font-medium text-accent hover:opacity-80 inline-flex items-center gap-0.5">
                       See all <ArrowUpRight className="w-3 h-3" />
                     </Link>
@@ -614,7 +614,7 @@ export default function Dashboard() {
               {/* Tablet/Desktop-only widgets to fill space */}
               <motion.div variants={fadeUp} className="hidden md:grid md:grid-cols-2 gap-4">
                 {/* Document vault snapshot */}
-                <div className="account-panel overflow-hidden flex flex-col">
+                <div className="account-section border-t border-border/60 pt-3 overflow-hidden flex flex-col">
                   <div className="px-4 pt-3.5 pb-2 flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <AccountArtwork kind="documents" className="w-10 h-10" />
@@ -665,7 +665,7 @@ export default function Dashboard() {
                 </div>
 
                 {/* Nearby services — panel shops + tow */}
-                <div className="account-panel overflow-hidden flex flex-col">
+                <div className="account-section border-t border-border/60 pt-3 overflow-hidden flex flex-col">
                   <div className="px-4 pt-3.5 pb-2 flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <AccountArtwork kind="repair" className="w-10 h-10" />
@@ -710,7 +710,7 @@ export default function Dashboard() {
 
               {/* Tips & blog highlights — full width on tablet/desktop */}
               <motion.div variants={fadeUp} className="hidden md:block">
-                <div className="account-panel overflow-hidden">
+                <div className="account-section border-t border-border/60 pt-3 overflow-hidden">
                   <div className="px-4 pt-3.5 pb-2 flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <AccountArtwork kind="help" className="w-10 h-10" />
@@ -979,14 +979,14 @@ export default function Dashboard() {
             </a>
             <Button variant="unstyled" size="unstyled"
               onClick={handleOpenTowSheet}
-              className="w-full flex items-center gap-3 p-4 rounded-2xl bg-primary text-primary-foreground text-left active:scale-[0.99] transition-transform"
+              className="w-full flex items-center gap-3 p-4 rounded-2xl bg-secondary text-foreground text-left active:scale-[0.99] transition-transform"
             >
               <div className="w-11 h-11 rounded-xl bg-card/80 flex items-center justify-center shrink-0">
                 <Truck className="w-5 h-5" strokeWidth={2} />
               </div>
               <div className="flex-1 min-w-0">
                 <div className="text-[15px] font-semibold leading-tight">Call a tow truck</div>
-                <div className="text-[12px] text-muted-foreground mt-0.5">See nearby 24/7 tow companies</div>
+                <div className="text-[12px] text-foreground/80 mt-0.5">See nearby 24/7 tow companies</div>
               </div>
               <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0" />
             </Button>
