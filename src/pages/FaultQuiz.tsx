@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Flame, CheckCircle2, XCircle, Scale, Share2, ChevronRight, Trophy, Bell, BellOff } from 'lucide-react';
 import AppLayout from '@/components/AppLayout';
+import QuizDiagram from '@/components/QuizDiagram';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import { usePushNotifications } from '@/hooks/use-push-notifications';
@@ -156,14 +157,7 @@ function QuestionCard({
       transition={{ delay: index * 0.05 }}
       className="rounded-2xl bg-card border border-border overflow-hidden"
     >
-      <img
-        src={scenario.image}
-        alt={scenario.imageAlt}
-        loading="lazy"
-        width={1024}
-        height={576}
-        className="w-full h-40 object-cover"
-      />
+      <QuizDiagram id={scenario.id} description={scenario.imageAlt} />
       <div className="p-5 space-y-4">
         <div className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
           Question {index + 1}

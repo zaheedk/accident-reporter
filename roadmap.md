@@ -12,3 +12,6 @@
 - [x] Apply the light illustrated style to the shared signed-in layout and dashboard, keeping tools unchanged.
 - [x] Restyle vehicle, report, document, profile and account-management pages with flowing sections and readable forms.
 - [x] Verify signed-in navigation and key pages on desktop and mobile; opened the accident actions and read existing vehicle details back through the edit page.
+
+## Daily fault quiz imagery
+- [x] Replace reused generic pictures with fourteen scenario-specific NZ road diagrams; visually checked all diagrams on phones and verified answer feedback, desktop rendering and no horizontal overflow.
