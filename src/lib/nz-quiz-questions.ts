@@ -1545,12 +1545,12 @@ export const knowledgeQuestions: QuizScenario[] = [
   {
     "id": "driving-001",
     "category": "driving",
-    "scenario": "At an uncontrolled crossroads, you are turning left while an approaching vehicle opposite you continues straight. Your paths conflict. What should you do?",
+    "scenario": "At an uncontrolled crossroads, you are turning right across the path of an oncoming vehicle travelling straight. What should you do?",
     "imageAlt": "",
     "options": [
       {
         "id": "a",
-        "label": "Turn because left turns have priority"
+        "label": "Turn because you indicated first"
       },
       {
         "id": "b",
