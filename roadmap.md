@@ -9,6 +9,6 @@
 - [x] Verify each page in preview (mobile + desktop)
 
 ## Signed-in design rollout
-- [ ] Apply the light illustrated style to the shared signed-in layout and dashboard, keeping tools unchanged.
-- [ ] Restyle vehicle, report, document, profile and account-management pages with flowing sections and readable forms.
+- [x] Apply the light illustrated style to the shared signed-in layout and dashboard, keeping tools unchanged.
+- [x] Restyle vehicle, report, document, profile and account-management pages with flowing sections and readable forms.
 - [ ] Verify signed-in navigation and key pages on desktop and mobile.
