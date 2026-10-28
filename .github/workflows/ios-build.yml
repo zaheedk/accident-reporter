@@ -277,6 +277,7 @@ jobs:
         if: steps.mode.outputs.mode == 'unsigned'
         working-directory: ios/App
         run: |
+          set -euo pipefail
           mkdir -p build
           xcodebuild \
             -project App.xcodeproj \
@@ -285,12 +286,13 @@ jobs:
             -sdk iphoneos \
             -destination 'generic/platform=iOS' \
             -archivePath build/App.xcarchive \
+            -resultBundlePath build/archive.xcresult \
             ARCHS=arm64 \
             ONLY_ACTIVE_ARCH=NO \
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO \
-            archive
+            archive 2>&1 | tee build/xcodebuild-archive.log
           echo "Unsigned archive built. An IPA cannot be exported without signing."
           echo "::warning::This was an unsigned archive-only build. It will not appear in TestFlight. Re-run the workflow with build_mode=signed to upload to TestFlight."
 
@@ -366,34 +368,12 @@ jobs:
         env:
           TEAM_ID: ${{ secrets.IOS_TEAM_ID }}
         run: |
-          set -e
+          set -euo pipefail
           mkdir -p build
 
-          # Scope manual signing to the App target ONLY. SPM dependencies
-          # (Facebook, GoogleSignIn, AppAuth, …) reject any provisioning
-          # profile, so we use TARGET_NAME-conditional build settings via an
-          # xcconfig overlay.
-          XCCONFIG="$RUNNER_TEMP/Override.xcconfig"
-          cat > "$XCCONFIG" <<EOF
-          // Defaults for every target: no signing, no profile.
-          CODE_SIGN_STYLE = Manual
-          CODE_SIGNING_ALLOWED = NO
-          CODE_SIGNING_REQUIRED = NO
-          CODE_SIGN_IDENTITY =
-          PROVISIONING_PROFILE_SPECIFIER =
-          DEVELOPMENT_TEAM =
-
-          // Re-enable signing only for the App target.
-          CODE_SIGNING_ALLOWED[sdk=iphoneos*][target=App] = YES
-          CODE_SIGNING_REQUIRED[sdk=iphoneos*][target=App] = YES
-          CODE_SIGN_STYLE[target=App] = Manual
-          CODE_SIGN_IDENTITY[sdk=iphoneos*][target=App] = Apple Distribution
-          DEVELOPMENT_TEAM[target=App] = ${TEAM_ID}
-          PROVISIONING_PROFILE_SPECIFIER[target=App] = ${PROFILE_UUID}
-          PRODUCT_BUNDLE_IDENTIFIER[target=App] = ${PROFILE_BUNDLE_ID}
-          EOF
-          echo "--- xcconfig overlay ---"
-          cat "$XCCONFIG"
+          # xcconfig does not support [target=App] conditions. Set signing on
+          # the real App target, without overriding any SPM package target.
+          ruby ../../scripts/configure-ios-signing.rb App.xcodeproj
 
           xcodebuild \
             -project App.xcodeproj \
@@ -402,10 +382,21 @@ jobs:
             -sdk iphoneos \
             -destination 'generic/platform=iOS' \
             -archivePath build/App.xcarchive \
-            -xcconfig "$XCCONFIG" \
+            -resultBundlePath build/archive.xcresult \
             ARCHS=arm64 \
             ONLY_ACTIVE_ARCH=NO \
-            archive
+            archive 2>&1 | tee build/xcodebuild-archive.log
+
+      - name: Upload archive diagnostics (including failures)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-archive-diagnostics
+          path: |
+            ios/App/build/xcodebuild-archive.log
+            ios/App/build/archive.xcresult
+          if-no-files-found: warn
+          retention-days: 7
 
       - name: Create export options plist
         if: steps.mode.outputs.mode == 'signed'
