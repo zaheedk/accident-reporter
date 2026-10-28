@@ -11,4 +11,4 @@
 ## Signed-in design rollout
 - [x] Apply the light illustrated style to the shared signed-in layout and dashboard, keeping tools unchanged.
 - [x] Restyle vehicle, report, document, profile and account-management pages with flowing sections and readable forms.
-- [ ] Verify signed-in navigation and key pages on desktop and mobile.
+- [x] Verify signed-in navigation and key pages on desktop and mobile; opened the accident actions and read existing vehicle details back through the edit page.
