@@ -90,9 +90,13 @@ serve(async (req) => {
         .eq("phone_number", e164Phone)
         .gte("created_at", since24h);
       if ((recentBurst ?? 0) >= 1 || (recentDay ?? 0) >= 5) {
+        // Expected limit, not a crash: return 200 with a friendly message the form displays.
+        const message = (recentDay ?? 0) >= 5
+          ? "You've requested 5 codes today. Please try again tomorrow or sign in with email."
+          : "A code was just sent. Please wait 30 seconds before requesting another.";
         return new Response(
-          JSON.stringify({ error: "Too many OTP requests, please wait before trying again." }),
-          { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          JSON.stringify({ error: message, rateLimited: true }),
+          { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
 
