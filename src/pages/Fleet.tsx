@@ -1,3 +1,4 @@
+import { AccountArtwork } from '@/components/AccountArtwork';
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import AppLayout from '@/components/AppLayout';
@@ -200,9 +201,9 @@ export default function Fleet() {
 
   return (
     <AppLayout>
-      <div className="max-w-3xl mx-auto p-4 space-y-6">
+      <div className="max-w-3xl mx-auto space-y-6">
         <div className="flex items-center gap-3">
-          <Briefcase className="w-6 h-6 text-primary" />
+          <AccountArtwork kind="garage" className="w-16 h-16" />
           <h1 className="text-2xl font-bold">Fleet</h1>
         </div>
         <p className="text-sm text-muted-foreground">
@@ -215,8 +216,8 @@ export default function Fleet() {
           <>
             {!fleet && (
               <>
-                <Card className="p-5 space-y-3">
-                  <h2 className="font-semibold">Start a fleet</h2>
+                <section className="account-section py-5 space-y-3">
+                  <h2 className="font-display text-xl font-semibold">Start a fleet</h2>
                   <p className="text-sm text-muted-foreground">Invite a driver by email or generate a share code.</p>
                   <div className="flex gap-2">
                     <Input type="email" placeholder="driver@example.com" value={inviteEmail} onChange={e => setInviteEmail(e.target.value)} />
@@ -225,25 +226,25 @@ export default function Fleet() {
                   <Button variant="outline" onClick={() => createInvite(false)} disabled={busy} className="w-full">
                     Or generate a share code
                   </Button>
-                </Card>
+                </section>
 
-                <Card className="p-5 space-y-3">
-                  <h2 className="font-semibold">Have an invite code?</h2>
+                <section className="account-section py-5 space-y-3">
+                  <h2 className="font-display text-xl font-semibold">Have an invite code?</h2>
                   <div className="flex gap-2">
                     <Input placeholder="ABCD1234" value={acceptCode}
                       onChange={e => setAcceptCode(e.target.value.toUpperCase())}
                       maxLength={8} className="uppercase tracking-widest font-mono" />
                     <Button onClick={acceptInvite} disabled={busy}>Join</Button>
                   </div>
-                </Card>
+                </section>
               </>
             )}
 
             {fleet && (
-              <Card className="p-5 space-y-4">
+              <section className="account-section py-5 space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h2 className="font-semibold">{fleet.name}</h2>
+                    <h2 className="font-display text-xl font-semibold">{fleet.name}</h2>
                     <p className="text-xs text-muted-foreground">
                       {isManager ? "You're the fleet manager" : 'You are a driver'}
                     </p>
@@ -298,12 +299,12 @@ export default function Fleet() {
                     );
                   })}
                 </div>
-              </Card>
+              </section>
             )}
 
             {isManager && (
-              <Card className="p-5 space-y-3">
-                <h2 className="font-semibold">Invite a driver</h2>
+              <section className="account-section py-5 space-y-3">
+                <h2 className="font-display text-xl font-semibold">Invite a driver</h2>
                 <div className="flex gap-2">
                   <Input type="email" placeholder="driver@example.com" value={inviteEmail} onChange={e => setInviteEmail(e.target.value)} />
                   <Button onClick={() => createInvite(true)} disabled={busy}><Mail className="w-4 h-4" /> Send</Button>
@@ -311,14 +312,14 @@ export default function Fleet() {
                 <Button variant="outline" onClick={() => createInvite(false)} disabled={busy} className="w-full">
                   Generate share code only
                 </Button>
-              </Card>
+              </section>
             )}
 
             {isManager && (
-              <Card className="p-5 space-y-3">
+              <section className="account-section py-5 space-y-3">
                 <div className="flex items-center gap-2">
                   <Car className="w-5 h-5 text-primary" />
-                  <h2 className="font-semibold">Vehicle assignments</h2>
+                  <h2 className="font-display text-xl font-semibold">Vehicle assignments</h2>
                 </div>
                 <p className="text-xs text-muted-foreground">
                   Assign each fleet vehicle to a driver. Unassigned vehicles stay in your pool and aren't visible to drivers.
@@ -353,14 +354,14 @@ export default function Fleet() {
                     })}
                   </div>
                 )}
-              </Card>
+              </section>
             )}
 
             {!isManager && fleet && (
-              <Card className="p-5 space-y-3">
+              <section className="account-section py-5 space-y-3">
                 <div className="flex items-center gap-2">
                   <Car className="w-5 h-5 text-primary" />
-                  <h2 className="font-semibold">Your assigned vehicles</h2>
+                  <h2 className="font-display text-xl font-semibold">Your assigned vehicles</h2>
                 </div>
                 {vehicles.length === 0 ? (
                   <p className="text-sm text-muted-foreground py-3">No vehicles assigned to you yet. Your fleet manager will assign them.</p>
@@ -375,7 +376,7 @@ export default function Fleet() {
                     ))}
                   </div>
                 )}
-              </Card>
+              </section>
             )}
           </>
         )}

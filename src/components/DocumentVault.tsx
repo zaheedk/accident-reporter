@@ -1,3 +1,5 @@
+import { AccountArtwork } from '@/components/AccountArtwork';
+import { Button } from '@/components/ui/button';
 import { useState, useEffect, useRef } from 'react';
 import { FileText, UploadCloud, Trash2, Loader2, Eye, ChevronDown } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
@@ -197,10 +199,10 @@ export default function DocumentVault({ vehicleId = null, showCategories, client
   return (
     <div className="space-y-5">
       {/* Upload zone with inline document type selector */}
-      <div className="dashed-zone px-6 py-7 flex flex-col items-center text-center">
+      <div className="rounded-3xl bg-secondary/70 px-6 py-7 flex flex-col items-center text-center">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button className="inline-flex items-center gap-1.5 h-9 px-3.5 rounded-full border border-border bg-card text-sm font-semibold text-foreground hover:border-foreground/30 transition-colors">
+            <Button variant="ghost" className="inline-flex items-center gap-1.5 h-9 px-3.5 rounded-full border border-border bg-card text-sm font-semibold text-foreground hover:border-foreground/30 transition-colors">
               {activeCategory ? (
                 <>
                   <span className="text-base leading-none">{activeCategory.icon}</span>
@@ -210,7 +212,7 @@ export default function DocumentVault({ vehicleId = null, showCategories, client
                 <span className="text-muted-foreground font-medium">Choose document type</span>
               )}
               <ChevronDown className="w-3.5 h-3.5 text-muted-foreground ml-0.5" strokeWidth={2} />
-            </button>
+            </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="center" className="rounded-xl min-w-[220px]">
             {categories.map(c => (
@@ -226,14 +228,12 @@ export default function DocumentVault({ vehicleId = null, showCategories, client
           </DropdownMenuContent>
         </DropdownMenu>
 
-        <div className="w-14 h-14 rounded-2xl bg-foreground text-background flex items-center justify-center mb-3 mt-6">
-          <UploadCloud className="w-7 h-7" strokeWidth={1.75} />
-        </div>
+        <AccountArtwork kind="documents" className="w-24 h-24 mb-3 mt-6" />
         <p className="text-[15px] font-bold text-foreground tracking-tight">Tap to upload</p>
         <p className="text-xs text-muted-foreground mt-1 max-w-[240px]">
           PDF, images or documents up to 10 MB
         </p>
-        <button
+        <Button variant="ghost"
           onClick={() => {
             if (!selectedCategory) {
               toast.error('Please choose a document type first');
@@ -242,7 +242,7 @@ export default function DocumentVault({ vehicleId = null, showCategories, client
             fileInputRef.current?.click();
           }}
           disabled={uploading}
-          className="mt-5 inline-flex items-center justify-center gap-2 h-10 px-6 rounded-xl border border-foreground/20 bg-card text-sm font-semibold text-foreground hover:bg-foreground hover:text-background hover:border-foreground transition-all active:scale-[0.98] disabled:opacity-50"
+          className="mt-5 inline-flex items-center justify-center gap-2 h-10 px-6 rounded-full bg-primary text-sm font-semibold text-primary-foreground hover:bg-primary/90 transition-all active:scale-[0.98] disabled:opacity-50"
         >
           {uploading ? (
             <>
@@ -252,7 +252,7 @@ export default function DocumentVault({ vehicleId = null, showCategories, client
           ) : (
             'Browse files'
           )}
-        </button>
+        </Button>
         <input
           ref={fileInputRef}
           type="file"
@@ -299,21 +299,21 @@ export default function DocumentVault({ vehicleId = null, showCategories, client
                   </p>
                 </div>
                 <div className="flex items-center gap-0.5 shrink-0">
-                  <button
+                  <Button variant="ghost"
                     onClick={() => handleView(doc)}
                     className="w-9 h-9 inline-flex items-center justify-center rounded-lg text-foreground hover:bg-muted transition-colors"
                     aria-label="View"
                   >
                     <Eye className="w-4 h-4" strokeWidth={1.75} />
-                  </button>
+                  </Button>
                   {!isBrokerView && doc.category !== 'rental_agreement' && (
-                    <button
+                    <Button variant="ghost"
                       onClick={() => setDeleteTarget(doc)}
                       className="w-9 h-9 inline-flex items-center justify-center rounded-lg text-muted-foreground/60 hover:text-destructive hover:bg-destructive/5 transition-colors"
                       aria-label="Delete"
                     >
                       <Trash2 className="w-4 h-4" strokeWidth={1.75} />
-                    </button>
+                    </Button>
                   )}
                 </div>
               </div>

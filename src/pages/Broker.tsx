@@ -1,3 +1,4 @@
+import { AccountArtwork } from '@/components/AccountArtwork';
 import { useEffect, useState } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import AppLayout from '@/components/AppLayout';
@@ -167,9 +168,9 @@ export default function Broker() {
 
   return (
     <AppLayout>
-      <div className="max-w-3xl mx-auto p-4 space-y-6">
+      <div className="max-w-3xl mx-auto space-y-6">
         <div className="flex items-center gap-3">
-          <Briefcase className="w-6 h-6 text-primary" />
+          <AccountArtwork kind="shield" className="w-16 h-16" />
           <h1 className="text-2xl font-bold">Insurance Broker</h1>
         </div>
 
@@ -179,8 +180,8 @@ export default function Broker() {
           <>
             {/* CLIENT VIEW: linked brokers */}
             {linkedBrokers.length > 0 && (
-              <Card className="p-5 space-y-3">
-                <div className="flex items-center gap-2"><ShieldCheck className="w-5 h-5 text-primary" /><h2 className="font-semibold">Your broker</h2></div>
+              <section className="account-section py-5 space-y-3">
+                <div className="flex items-center gap-2"><ShieldCheck className="w-5 h-5 text-primary" /><h2 className="font-display text-xl font-semibold">Your broker</h2></div>
                 <p className="text-xs text-muted-foreground">These brokers can view your vehicles, documents and claims, and add new vehicles or documents on your behalf. You can revoke access at any time.</p>
                 {linkedBrokers.map(l => (
                   <div key={l.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/40">
@@ -193,37 +194,37 @@ export default function Broker() {
                     </Button>
                   </div>
                 ))}
-              </Card>
+              </section>
             )}
 
             {/* CLIENT VIEW: accept invite */}
             {!brokerage && (
-              <Card className="p-5 space-y-3">
-                <h2 className="font-semibold">Got an invite code from a broker?</h2>
+              <section className="account-section py-5 space-y-3">
+                <h2 className="font-display text-xl font-semibold">Got an invite code from a broker?</h2>
                 <div className="flex gap-2">
                   <Input placeholder="ABCD1234" value={acceptCode}
                     onChange={e => setAcceptCode(e.target.value.toUpperCase())}
                     maxLength={8} className="uppercase tracking-widest font-mono" />
                   <Button onClick={acceptInvite} disabled={busy}>Join</Button>
                 </div>
-              </Card>
+              </section>
             )}
 
             {/* APPROVED BROKER DASHBOARD */}
             {brokerage && (
               <>
-                <Card className="p-5 space-y-2">
+                <section className="account-section py-5 space-y-2">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h2 className="font-semibold">{brokerage.company_name}</h2>
+                      <h2 className="font-display text-xl font-semibold">{brokerage.company_name}</h2>
                       <p className="text-xs text-muted-foreground">Approved broker · {brokerage.contact_email}</p>
                     </div>
                     <span className="text-xs px-2 py-1 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-medium">Active</span>
                   </div>
-                </Card>
+                </section>
 
-                <Card className="p-5 space-y-3">
-                  <div className="flex items-center gap-2"><UserPlus className="w-5 h-5 text-primary" /><h2 className="font-semibold">Invite a client</h2></div>
+                <section className="account-section py-5 space-y-3">
+                  <div className="flex items-center gap-2"><UserPlus className="w-5 h-5 text-primary" /><h2 className="font-display text-xl font-semibold">Invite a client</h2></div>
                   <p className="text-xs text-muted-foreground">They'll get an email with a join code. Once they accept, you'll see their vehicles, documents and claims, and can add new ones on their behalf.</p>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     <Input placeholder="Client name (optional)" value={inviteName} onChange={e => setInviteName(e.target.value)} />
@@ -233,10 +234,10 @@ export default function Broker() {
                     <Input type="email" placeholder="client@example.com" value={inviteEmail} onChange={e => setInviteEmail(e.target.value)} />
                     <Button onClick={inviteClient} disabled={busy}><Mail className="w-4 h-4" /> Send</Button>
                   </div>
-                </Card>
+                </section>
 
-                <Card className="p-5 space-y-3">
-                  <h2 className="font-semibold">Your clients ({activeClients.length})</h2>
+                <section className="account-section py-5 space-y-3">
+                  <h2 className="font-display text-xl font-semibold">Your clients ({activeClients.length})</h2>
                   {activeClients.length === 0 && invitedClients.length === 0 && (
                     <p className="text-sm text-muted-foreground py-3">No clients yet. Send an invite above to get started.</p>
                   )}
@@ -271,14 +272,14 @@ export default function Broker() {
                       <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-600 dark:text-amber-400 font-medium shrink-0">Pending</span>
                     </div>
                   ))}
-                </Card>
+                </section>
               </>
             )}
 
             {/* APPLICATION FORM */}
             {!brokerage && (
-              <Card className="p-5 space-y-3">
-                <h2 className="font-semibold">Apply to become a broker</h2>
+              <section className="account-section py-5 space-y-3">
+                <h2 className="font-display text-xl font-semibold">Apply to become a broker</h2>
                 <p className="text-xs text-muted-foreground">Submit your details and an admin will review your application. Once approved, you can invite clients and manage their accounts.</p>
                 {application?.status === 'pending' && (
                   <div className="p-3 rounded-lg bg-amber-500/10 text-sm text-amber-700 dark:text-amber-400">
@@ -301,7 +302,7 @@ export default function Broker() {
                     </Button>
                   </div>
                 )}
-              </Card>
+              </section>
             )}
           </>
         )}
