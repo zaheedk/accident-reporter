@@ -60,6 +60,31 @@
   }
 }
 
+.quiz-diagram { --diagram-road: 230 18% 87%; --diagram-window: 238 30% 28%; }
+.quiz-ground { fill: hsl(var(--secondary)); }
+.quiz-road { fill: hsl(var(--diagram-road)); }
+.quiz-centre { fill: none; stroke: hsl(var(--card)); stroke-width: 3; stroke-dasharray: 14 12; }
+.quiz-edge { fill: none; stroke: hsl(var(--muted-foreground)); stroke-width: 2; }
+.quiz-car-you { fill: hsl(var(--primary)); stroke: hsl(var(--foreground)); stroke-width: 2; }
+.quiz-car-other { fill: hsl(var(--foreground)); stroke: hsl(var(--foreground)); stroke-width: 2; }
+.quiz-window { fill: hsl(var(--card)); fill-opacity: 0.85; }
+.quiz-lights { fill: none; stroke: hsl(var(--card)); stroke-width: 3; }
+.quiz-label { fill: hsl(var(--foreground)); font: 600 17px 'Plus Jakarta Sans', sans-serif; paint-order: stroke; stroke: hsl(var(--secondary)); stroke-width: 4px; stroke-linejoin: round; }
+.quiz-route, .quiz-route-other { fill: none; stroke: hsl(var(--primary)); stroke-width: 4; stroke-linecap: round; }
+.quiz-route-other { stroke: hsl(var(--foreground)); }
+.quiz-arrowhead { fill: hsl(var(--foreground)); }
+.quiz-impact { fill: none; stroke: hsl(var(--destructive)); stroke-width: 5; stroke-linecap: round; }
+.quiz-signal, .quiz-person { fill: hsl(var(--foreground)); }
+.quiz-red { fill: hsl(var(--destructive)); }
+.quiz-green { fill: hsl(var(--primary)); }
+.quiz-island, .quiz-bubble { fill: hsl(var(--secondary)); stroke: hsl(var(--primary)); stroke-width: 2; }
+.quiz-parking { fill: hsl(var(--muted)); stroke: hsl(var(--muted-foreground)); stroke-width: 2; }
+.quiz-door { fill: none; stroke: hsl(var(--foreground)); stroke-width: 7; stroke-linecap: round; }
+.quiz-crossing { stroke: hsl(var(--card)); stroke-width: 8; }
+.quiz-person-line { fill: none; stroke: hsl(var(--foreground)); stroke-width: 4; stroke-linecap: round; }
+.quiz-water { fill: hsl(var(--card)); fill-opacity: 0.6; }
+.quiz-barrier { stroke: hsl(var(--foreground)); stroke-width: 8; stroke-dasharray: 12 4; }
+
 /* Signed-in presentation inherits the public site's light editorial palette.
    Keep selectors scoped: public pages and print/PDF output are unchanged. */
 .signed-in-experience :is(.theme-dashboard, .theme-garage, .theme-dashboard-dark) {
