@@ -137,7 +137,7 @@ export default function ClaimList() {
 
   const MobileFilterTiles = (
     <div className="grid grid-cols-2 gap-2">
-      <Button variant="ghost"
+      <Button variant="unstyled" size="unstyled"
         onClick={() => setFilter(filter === 'draft' ? 'all' : 'draft')}
         className={`text-left rounded-xl p-3 border transition-all ${
           filter === 'draft' ? 'bg-secondary text-foreground border-primary/50' : 'bg-card border-border'
@@ -149,7 +149,7 @@ export default function ClaimList() {
         </div>
         <div className="text-[20px] font-semibold tabular-nums leading-none mt-1.5 tracking-tight">{draftCount}</div>
       </Button>
-      <Button variant="ghost"
+      <Button variant="unstyled" size="unstyled"
         onClick={() => setFilter(filter === 'saved' ? 'all' : 'saved')}
         className={`text-left rounded-xl p-3 border transition-all ${
           filter === 'saved' ? 'bg-secondary text-foreground border-primary/50' : 'bg-card border-border'
@@ -175,7 +175,7 @@ export default function ClaimList() {
         className="w-full pl-9 pr-9 h-10 rounded-lg bg-card border border-border text-[13px] placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-ring/30 focus:border-ring/40 transition-all"
       />
       {search && (
-        <Button variant="ghost" onClick={() => setSearch('')} className="absolute right-2.5 top-1/2 -translate-y-1/2 w-6 h-6 rounded-md hover:bg-muted flex items-center justify-center" aria-label="Clear search">
+        <Button variant="unstyled" size="unstyled" onClick={() => setSearch('')} className="absolute right-2.5 top-1/2 -translate-y-1/2 w-6 h-6 rounded-md hover:bg-muted flex items-center justify-center" aria-label="Clear search">
           <X className="w-3.5 h-3.5 text-muted-foreground" />
         </Button>
       )}
@@ -192,7 +192,7 @@ export default function ClaimList() {
         >
           <div className="flex items-end justify-between gap-3">
             <div className="flex items-start gap-2 min-w-0">
-              <Button variant="ghost" onClick={() => navigate('/dashboard')} aria-label="Back" className="w-9 h-9 -ml-1 mt-1 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex-shrink-0">
+              <Button variant="unstyled" size="unstyled" onClick={() => navigate('/dashboard')} aria-label="Back" className="w-9 h-9 -ml-1 mt-1 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex-shrink-0">
                 <ArrowLeft className="w-[18px] h-[18px]" strokeWidth={2} />
               </Button>
               <div className="min-w-0">
@@ -216,7 +216,7 @@ export default function ClaimList() {
           {/* Header — desktop only */}
           <motion.div variants={fadeUp} className="hidden md:flex items-end justify-between gap-3 pt-2">
             <div className="flex items-start gap-2 min-w-0">
-              <Button variant="ghost"
+              <Button variant="unstyled" size="unstyled"
                 onClick={() => navigate('/dashboard')}
                 aria-label="Back"
                 className="w-9 h-9 -ml-1 mt-1 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex-shrink-0"
@@ -261,7 +261,7 @@ export default function ClaimList() {
             <motion.aside variants={fadeUp} className="hidden md:block space-y-4">
               {/* Filter tiles */}
               <div className="hidden md:grid grid-cols-2 md:grid-cols-1 gap-2">
-                <Button variant="ghost"
+                <Button variant="unstyled" size="unstyled"
                   onClick={() => setFilter(filter === 'draft' ? 'all' : 'draft')}
                   className={`text-left rounded-xl p-3.5 border transition-all ${
                     filter === 'draft'
@@ -275,7 +275,7 @@ export default function ClaimList() {
                   </div>
                   <div className="text-[22px] font-semibold tabular-nums leading-none mt-2 tracking-tight">{draftCount}</div>
                 </Button>
-                <Button variant="ghost"
+                <Button variant="unstyled" size="unstyled"
                   onClick={() => setFilter(filter === 'saved' ? 'all' : 'saved')}
                   className={`text-left rounded-xl p-3.5 border transition-all ${
                     filter === 'saved'
@@ -383,7 +383,7 @@ export default function ClaimList() {
                     className="w-full pl-9 pr-9 h-10 rounded-lg bg-card border border-border text-[13px] placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-ring/30 focus:border-ring/40 transition-all"
                   />
                   {search && (
-                    <Button variant="ghost"
+                    <Button variant="unstyled" size="unstyled"
                       onClick={() => setSearch('')}
                       className="absolute right-2.5 top-1/2 -translate-y-1/2 w-6 h-6 rounded-md hover:bg-muted flex items-center justify-center"
                       aria-label="Clear search"
@@ -414,7 +414,7 @@ export default function ClaimList() {
               ) : filteredClaims.length === 0 ? (
                 <motion.div variants={fadeUp} className="account-section py-8 text-center">
                   <p className="text-[13px] text-muted-foreground">No reports match your filters</p>
-                  <Button variant="ghost"
+                  <Button variant="unstyled" size="unstyled"
                     onClick={() => { setSearch(''); setFilter('all'); }}
                     className="mt-3 text-[12px] font-medium text-accent hover:opacity-80"
                   >
@@ -470,7 +470,7 @@ export default function ClaimList() {
                                 {ref.value && rego && <span className="opacity-50">· {ref.label} #{ref.value}</span>}
                               </div>
                             </div>
-                            <Button variant="ghost"
+                            <Button variant="unstyled" size="unstyled"
                               onClick={(e) => { e.preventDefault(); e.stopPropagation(); setDeleteId(c.id); }}
                               aria-label="Delete report"
                               className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground/60 hover:text-destructive hover:bg-destructive/10 transition-colors shrink-0"

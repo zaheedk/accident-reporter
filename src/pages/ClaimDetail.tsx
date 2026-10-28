@@ -547,7 +547,7 @@ export default function ClaimDetail() {
           {/* Header — matches Garage / VehicleForm pattern */}
           <div className="flex items-end justify-between gap-3 pt-2 print:hidden">
             <div className="flex items-start gap-2 min-w-0">
-              <Button variant="ghost"
+              <Button variant="unstyled" size="unstyled"
                 onClick={() => navigate(-1)}
                 aria-label="Back"
                 className="w-9 h-9 -ml-1 mt-1 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex-shrink-0"
@@ -564,16 +564,16 @@ export default function ClaimDetail() {
               </div>
             </div>
             <div className="flex items-center gap-1 flex-shrink-0">
-              <Button variant="ghost" onClick={() => navigate(`/claims/${reportNumber || claim.id}/edit`)} className="w-9 h-9 rounded-lg hover:bg-muted transition-colors flex items-center justify-center" title="Edit report">
+              <Button variant="unstyled" size="unstyled" onClick={() => navigate(`/claims/${reportNumber || claim.id}/edit`)} className="w-9 h-9 rounded-lg hover:bg-muted transition-colors flex items-center justify-center" title="Edit report">
                 <Pencil className="w-[18px] h-[18px] text-muted-foreground" strokeWidth={1.8} />
               </Button>
-              <Button variant="ghost" onClick={handleEmail} className="w-9 h-9 rounded-lg hover:bg-muted transition-colors flex items-center justify-center" title="Email report">
+              <Button variant="unstyled" size="unstyled" onClick={handleEmail} className="w-9 h-9 rounded-lg hover:bg-muted transition-colors flex items-center justify-center" title="Email report">
                 <Mail className="w-[18px] h-[18px] text-muted-foreground" strokeWidth={1.8} />
               </Button>
-              <Button variant="ghost" onClick={handlePrint} className="w-9 h-9 rounded-lg hover:bg-muted transition-colors flex items-center justify-center" title="Download as PDF">
+              <Button variant="unstyled" size="unstyled" onClick={handlePrint} className="w-9 h-9 rounded-lg hover:bg-muted transition-colors flex items-center justify-center" title="Download as PDF">
                 <Download className="w-[18px] h-[18px] text-muted-foreground" strokeWidth={1.8} />
               </Button>
-              <Button variant="ghost" onClick={() => setDeleteDialogOpen(true)} className="w-9 h-9 rounded-lg hover:bg-destructive/10 transition-colors flex items-center justify-center" title="Delete report">
+              <Button variant="unstyled" size="unstyled" onClick={() => setDeleteDialogOpen(true)} className="w-9 h-9 rounded-lg hover:bg-destructive/10 transition-colors flex items-center justify-center" title="Delete report">
                 <Trash2 className="w-[18px] h-[18px] text-destructive" strokeWidth={1.8} />
               </Button>
             </div>
@@ -590,7 +590,7 @@ export default function ClaimDetail() {
             {/* Left rail */}
             <aside className="hidden md:block space-y-4 print:hidden">
               {/* Back to incidents tile */}
-              <Button variant="ghost"
+              <Button variant="unstyled" size="unstyled"
                 onClick={() => navigate('/claims')}
                 className="w-full block rounded-xl bg-card border border-border hover:border-foreground/20 transition-colors p-3.5 text-left"
               >
@@ -629,15 +629,15 @@ export default function ClaimDetail() {
               <div className="account-panel overflow-hidden">
                 <div className="px-3.5 pt-3 pb-2 text-[11px] font-medium text-muted-foreground">Quick actions</div>
                 <div className="divide-y divide-border">
-                  <Button variant="ghost" onClick={() => navigate(`/claims/${reportNumber || claim.id}/edit`)} className="w-full flex items-center gap-3 px-3.5 py-2.5 hover:bg-muted/50 transition-colors text-left">
+                  <Button variant="unstyled" size="unstyled" onClick={() => navigate(`/claims/${reportNumber || claim.id}/edit`)} className="w-full flex items-center gap-3 px-3.5 py-2.5 hover:bg-muted/50 transition-colors text-left">
                     <Pencil className="w-3.5 h-3.5 text-muted-foreground" strokeWidth={2} />
                     <p className="flex-1 min-w-0 text-[13px] text-foreground">Edit report</p>
                   </Button>
-                  <Button variant="ghost" onClick={handleEmail} className="w-full flex items-center gap-3 px-3.5 py-2.5 hover:bg-muted/50 transition-colors text-left">
+                  <Button variant="unstyled" size="unstyled" onClick={handleEmail} className="w-full flex items-center gap-3 px-3.5 py-2.5 hover:bg-muted/50 transition-colors text-left">
                     <Mail className="w-3.5 h-3.5 text-muted-foreground" strokeWidth={2} />
                     <p className="flex-1 min-w-0 text-[13px] text-foreground">Email report</p>
                   </Button>
-                  <Button variant="ghost" onClick={handlePrint} className="w-full flex items-center gap-3 px-3.5 py-2.5 hover:bg-muted/50 transition-colors text-left">
+                  <Button variant="unstyled" size="unstyled" onClick={handlePrint} className="w-full flex items-center gap-3 px-3.5 py-2.5 hover:bg-muted/50 transition-colors text-left">
                     <Download className="w-3.5 h-3.5 text-muted-foreground" strokeWidth={2} />
                     <p className="flex-1 min-w-0 text-[13px] text-foreground">Download PDF</p>
                   </Button>
@@ -648,7 +648,7 @@ export default function ClaimDetail() {
                     </a>
                   )}
                   {brokerEmail && signature && (
-                    <Button variant="ghost"
+                    <Button variant="unstyled" size="unstyled"
                       onClick={() => { setEmailTo(brokerEmail); setEmailDialogOpen(true); }}
                       className="w-full flex items-center gap-3 px-3.5 py-2.5 hover:bg-muted/50 transition-colors text-left"
                     >
@@ -710,7 +710,7 @@ export default function ClaimDetail() {
                             <span className="text-[11px] font-semibold text-muted-foreground">Damage photos</span>
                             <div className="grid grid-cols-4 gap-1.5">
                               {tpDamagePhotos.map(p => (
-                                <Button variant="ghost" key={p.id} onClick={() => setLightboxUrl(p.fullUrl)} className="rounded-lg overflow-hidden aspect-square bg-muted">
+                                <Button variant="unstyled" size="unstyled" key={p.id} onClick={() => setLightboxUrl(p.fullUrl)} className="rounded-lg overflow-hidden aspect-square bg-muted">
                                   <img src={p.url} alt="Damage" className="w-full h-full object-cover" loading="lazy" />
                                 </Button>
                               ))}
@@ -722,7 +722,7 @@ export default function ClaimDetail() {
                             <span className="text-[11px] font-semibold text-muted-foreground">Rego/plate photos</span>
                             <div className="grid grid-cols-4 gap-1.5">
                               {tpRegoPhotos.map(p => (
-                                <Button variant="ghost" key={p.id} onClick={() => setLightboxUrl(p.fullUrl)} className="rounded-lg overflow-hidden aspect-square bg-muted">
+                                <Button variant="unstyled" size="unstyled" key={p.id} onClick={() => setLightboxUrl(p.fullUrl)} className="rounded-lg overflow-hidden aspect-square bg-muted">
                                   <img src={p.url} alt="Rego" className="w-full h-full object-cover" loading="lazy" />
                                 </Button>
                               ))}
@@ -734,7 +734,7 @@ export default function ClaimDetail() {
                             <span className="text-[11px] font-semibold text-muted-foreground">Driver's license</span>
                             <div className="grid grid-cols-4 gap-1.5">
                               {tpLicensePhotos.map(p => (
-                                <Button variant="ghost" key={p.id} onClick={() => setLightboxUrl(p.fullUrl)} className="rounded-lg overflow-hidden aspect-square bg-muted">
+                                <Button variant="unstyled" size="unstyled" key={p.id} onClick={() => setLightboxUrl(p.fullUrl)} className="rounded-lg overflow-hidden aspect-square bg-muted">
                                   <img src={p.url} alt="License" className="w-full h-full object-cover" loading="lazy" />
                                 </Button>
                               ))}
@@ -762,7 +762,7 @@ export default function ClaimDetail() {
             </Section>
 
             {/* ── Section 3: Insurance & Repairs ── */}
-            <Section title="Insurance & Repairs" icon={<Wrench className="w-4 h-4 text-primary" />} action={!editingInsurance ? <Button variant="ghost" onClick={startEditInsurance} className="p-1 rounded-lg hover:bg-muted transition-colors"><Pencil className="w-4 h-4 text-muted-foreground" /></Button> : undefined}>
+            <Section title="Insurance & Repairs" icon={<Wrench className="w-4 h-4 text-primary" />} action={!editingInsurance ? <Button variant="unstyled" size="unstyled" onClick={startEditInsurance} className="p-1 rounded-lg hover:bg-muted transition-colors"><Pencil className="w-4 h-4 text-muted-foreground" /></Button> : undefined}>
               {editingInsurance ? (
                 <div className="space-y-3">
                   <div>
@@ -796,10 +796,10 @@ export default function ClaimDetail() {
                     <input className="form-input text-sm" value={editRepairerAddress} onChange={e => setEditRepairerAddress(e.target.value)} />
                   </div>
                   <div className="flex gap-2">
-                    <Button variant="ghost" onClick={saveInsuranceDetails} disabled={savingInsurance} className="flex-1 h-9 rounded-lg bg-primary text-primary-foreground text-sm font-medium flex items-center justify-center gap-1.5">
+                    <Button variant="unstyled" size="unstyled" onClick={saveInsuranceDetails} disabled={savingInsurance} className="flex-1 h-9 rounded-lg bg-primary text-primary-foreground text-sm font-medium flex items-center justify-center gap-1.5">
                       {savingInsurance ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} Save
                     </Button>
-                    <Button variant="ghost" onClick={() => setEditingInsurance(false)} className="h-9 px-4 rounded-lg border border-border text-sm font-medium text-muted-foreground">Cancel</Button>
+                    <Button variant="unstyled" size="unstyled" onClick={() => setEditingInsurance(false)} className="h-9 px-4 rounded-lg border border-border text-sm font-medium text-muted-foreground">Cancel</Button>
                   </div>
                 </div>
               ) : (
@@ -828,7 +828,7 @@ export default function ClaimDetail() {
                   <div className="flex items-center justify-between gap-2 flex-wrap">
                     <SubHeading>Damage Photos</SubHeading>
                     <div className="flex items-center gap-3 print:hidden">
-                      <Button variant="ghost"
+                      <Button variant="unstyled" size="unstyled"
                         type="button"
                         onClick={() => {
                           setSelectedQuoteShopId('');
@@ -845,7 +845,7 @@ export default function ClaimDetail() {
                         <Wrench className="w-3.5 h-3.5" />
                         Request quote
                       </Button>
-                      <Button variant="ghost"
+                      <Button variant="unstyled" size="unstyled"
                         type="button"
                         onClick={() => { setSelectedQuoteShopId(''); setPhotosEmailTo(''); setPhotosMessage(''); setPhotosDialogOpen(true); }}
                         className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:underline"
@@ -857,7 +857,7 @@ export default function ClaimDetail() {
                   </div>
                   <div className="grid grid-cols-3 gap-2">
                     {photos.map(p => (
-                      <Button variant="ghost" key={p.id} onClick={() => setLightboxUrl(p.fullUrl)} className="rounded-xl overflow-hidden aspect-square bg-muted">
+                      <Button variant="unstyled" size="unstyled" key={p.id} onClick={() => setLightboxUrl(p.fullUrl)} className="rounded-xl overflow-hidden aspect-square bg-muted">
                         <img src={p.url} alt={p.fileName} className="w-full h-full object-cover" loading="lazy" />
                       </Button>
                     ))}
@@ -899,7 +899,7 @@ export default function ClaimDetail() {
                     <img src={signature.dataUrl} alt="Signature" className="max-h-20 object-contain" />
                     <div className="text-[12px] text-foreground"><strong>{signature.name}</strong></div>
                     <div className="text-[11px] text-muted-foreground">{new Date(signature.signedAt).toLocaleString('en-NZ')}</div>
-                    <Button variant="ghost" type="button" onClick={() => setSignatureOpen(true)} className="text-[12px] text-primary hover:underline">Re-sign</Button>
+                    <Button variant="unstyled" size="unstyled" type="button" onClick={() => setSignatureOpen(true)} className="text-[12px] text-primary hover:underline">Re-sign</Button>
                   </div>
                 ) : (
                   <Button onClick={() => setSignatureOpen(true)} className="w-full sm:w-auto">
@@ -929,10 +929,10 @@ export default function ClaimDetail() {
       {lightboxUrl && (
         <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 print:hidden" onClick={() => setLightboxUrl(null)}>
           <div className="absolute top-4 right-4 flex items-center gap-2">
-            <Button variant="ghost" onClick={async (e) => { e.stopPropagation(); if (navigator.share) { try { await navigator.share({ title: 'Damage photo', url: lightboxUrl }); } catch {} } else { await navigator.clipboard.writeText(lightboxUrl); alert('Link copied to clipboard'); } }}
+            <Button variant="unstyled" size="unstyled" onClick={async (e) => { e.stopPropagation(); if (navigator.share) { try { await navigator.share({ title: 'Damage photo', url: lightboxUrl }); } catch {} } else { await navigator.clipboard.writeText(lightboxUrl); alert('Link copied to clipboard'); } }}
               className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors" title="Share photo"><Share2 className="w-5 h-5 text-white" /></Button>
             <a href={lightboxUrl} download onClick={e => e.stopPropagation()} className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors" title="Download photo"><Download className="w-5 h-5 text-white" /></a>
-            <Button variant="ghost" onClick={() => setLightboxUrl(null)} className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"><X className="w-6 h-6 text-white" /></Button>
+            <Button variant="unstyled" size="unstyled" onClick={() => setLightboxUrl(null)} className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"><X className="w-6 h-6 text-white" /></Button>
           </div>
           <img src={lightboxUrl} alt="Damage photo" className="max-w-full max-h-full rounded-xl object-contain" onClick={e => e.stopPropagation()} />
         </div>

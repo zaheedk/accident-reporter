@@ -146,7 +146,7 @@ export default function VehicleList() {
   const TitleRow = (
     <div className="flex items-end justify-between gap-3">
       <div className="flex items-start gap-2 min-w-0">
-        <Button variant="ghost"
+        <Button variant="unstyled" size="unstyled"
           onClick={() => navigate('/dashboard')}
           aria-label="Back"
           className="w-9 h-9 -ml-1 mt-1 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex-shrink-0"
@@ -175,7 +175,7 @@ export default function VehicleList() {
 
   const FilterTiles = (
     <div className="grid grid-cols-2 md:grid-cols-1 gap-2">
-      <Button variant="ghost"
+      <Button variant="unstyled" size="unstyled"
         onClick={() => setFilter(filter === 'active' ? 'all' : 'active')}
         className={`text-left rounded-xl p-3.5 border transition-all ${
           filter === 'active'
@@ -189,7 +189,7 @@ export default function VehicleList() {
         </div>
         <div className="text-[22px] font-semibold tabular-nums leading-none mt-2 tracking-tight">{activeCount}</div>
       </Button>
-      <Button variant="ghost"
+      <Button variant="unstyled" size="unstyled"
         onClick={() => setFilter(filter === 'inactive' ? 'all' : 'inactive')}
         className={`text-left rounded-xl p-3.5 border transition-all ${
           filter === 'inactive'
@@ -217,7 +217,7 @@ export default function VehicleList() {
         className="w-full pl-9 pr-9 h-10 rounded-lg bg-card border border-border text-[13px] placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-ring/30 focus:border-ring/40 transition-all"
       />
       {search && (
-        <Button variant="ghost"
+        <Button variant="unstyled" size="unstyled"
           onClick={() => setSearch('')}
           className="absolute right-2.5 top-1/2 -translate-y-1/2 w-6 h-6 rounded-md hover:bg-muted flex items-center justify-center"
           aria-label="Clear search"
@@ -306,7 +306,7 @@ export default function VehicleList() {
               ) : filteredVehicles.length === 0 ? (
                 <motion.div variants={fadeUp} className="account-section py-10 text-center">
                   <p className="text-[13px] text-muted-foreground">No vehicles match your filters</p>
-                  <Button variant="ghost"
+                  <Button variant="unstyled" size="unstyled"
                     onClick={() => { setSearch(''); setFilter('all'); }}
                     className="mt-3 text-[12px] font-medium text-accent hover:opacity-80"
                   >
@@ -382,7 +382,7 @@ export default function VehicleList() {
                               </div>
                             </div>
                             {!isInactive && vehicles.length > 1 && !v.isDefault && (
-                              <Button variant="ghost"
+                              <Button variant="unstyled" size="unstyled"
                                 onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleSetDefault(v); }}
                                 aria-label="Set as default vehicle"
                                 title="Set as default"
@@ -392,7 +392,7 @@ export default function VehicleList() {
                               </Button>
                             )}
                             {!v.isRental && (
-                              <Button variant="ghost"
+                              <Button variant="unstyled" size="unstyled"
                                 onClick={(e) => { e.preventDefault(); e.stopPropagation(); setDeleteTarget(v); }}
                                 aria-label="Delete vehicle"
                                 className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground/60 hover:text-destructive hover:bg-destructive/10 transition-colors shrink-0"

@@ -71,7 +71,7 @@ export default function Documents() {
           </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="w-full flex items-center gap-2.5 rounded-xl border border-border bg-card hover:border-foreground/30 transition-colors text-left p-2.5">
+              <Button variant="unstyled" size="unstyled" className="w-full flex items-center gap-2.5 rounded-xl border border-border bg-card hover:border-foreground/30 transition-colors text-left p-2.5">
                 <div className="w-9 h-9 rounded-lg bg-primary text-primary-foreground flex items-center justify-center shrink-0">
                   <AccountArtwork kind="garage" className="w-9 h-9" />
                 </div>
@@ -146,7 +146,7 @@ export default function Documents() {
           <p className="field-label">Showing documents for</p>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="w-full flex items-center gap-3 card-soft hover:border-foreground/30 transition-colors text-left !py-3 !px-3">
+            <Button variant="unstyled" size="unstyled" className="w-full flex items-center gap-3 card-soft hover:border-foreground/30 transition-colors text-left !py-3 !px-3">
               <div className="w-11 h-11 rounded-xl bg-primary text-primary-foreground flex items-center justify-center shrink-0">
                 <AccountArtwork kind="garage" className="w-11 h-11" />
               </div>

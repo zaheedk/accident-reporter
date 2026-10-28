@@ -83,7 +83,7 @@ function VehicleCard({
   const insurerPhone = vehicle.insuranceCompany ? insurerPhones[vehicle.insuranceCompany] : null;
 
   return (
-    <Button variant="ghost"
+    <Button variant="unstyled" size="unstyled"
       onClick={() => onTap(vehicle, soonest?.kind ?? 'WOF')}
       className="relative shrink-0 w-[208px] rounded-3xl bg-secondary text-foreground p-4 text-left overflow-hidden active:scale-[0.97] transition-transform"
     >
@@ -328,7 +328,7 @@ export default function Dashboard() {
     <div className="account-panel overflow-hidden">
       <div className="px-3.5 pt-3 pb-2 text-[11px] font-medium text-muted-foreground">Quick actions</div>
       <div className="divide-y divide-border">
-        <Button variant="ghost"
+        <Button variant="unstyled" size="unstyled"
           onClick={handleOpenTowSheet}
           className="w-full flex items-center gap-3 px-3.5 py-2.5 hover:bg-muted/50 transition-colors text-left"
         >
@@ -536,7 +536,7 @@ export default function Dashboard() {
               {/* Mobile emergency actions — big standalone circles with text inside */}
               <motion.div variants={fadeUp} className="md:hidden">
                 <div className="flex items-center justify-center gap-12">
-                  <Button variant="ghost"
+                  <Button variant="unstyled" size="unstyled"
                     onClick={() => setAccidentSheetOpen(true)}
                     className="relative flex flex-col items-center justify-center w-[120px] h-[120px] rounded-3xl bg-secondary text-foreground active:scale-[0.96] transition-transform"
                   >
@@ -698,7 +698,7 @@ export default function Dashboard() {
                       ))}
                     </div>
                   )}
-                  <Button variant="ghost"
+                  <Button variant="unstyled" size="unstyled"
                     onClick={handleOpenTowSheet}
                     className="flex items-center gap-2 px-4 py-2.5 border-t border-border text-[12px] font-medium text-foreground hover:bg-muted/50 transition-colors"
                   >
@@ -977,7 +977,7 @@ export default function Dashboard() {
               </div>
               <ChevronRight className="w-5 h-5 text-current shrink-0" />
             </a>
-            <Button variant="ghost"
+            <Button variant="unstyled" size="unstyled"
               onClick={handleOpenTowSheet}
               className="w-full flex items-center gap-3 p-4 rounded-2xl bg-primary text-primary-foreground text-left active:scale-[0.99] transition-transform"
             >
@@ -1013,7 +1013,7 @@ export default function Dashboard() {
                 className="w-full pl-9 pr-9 py-2.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
               />
               {towSearch && (
-                <Button variant="ghost" onClick={() => setTowSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2">
+                <Button variant="unstyled" size="unstyled" onClick={() => setTowSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2">
                   <X className="w-4 h-4 text-muted-foreground" />
                 </Button>
               )}

@@ -202,7 +202,7 @@ export default function DocumentVault({ vehicleId = null, showCategories, client
       <div className="rounded-3xl bg-secondary/70 px-6 py-7 flex flex-col items-center text-center">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="inline-flex items-center gap-1.5 h-9 px-3.5 rounded-full border border-border bg-card text-sm font-semibold text-foreground hover:border-foreground/30 transition-colors">
+            <Button variant="unstyled" size="unstyled" className="inline-flex items-center gap-1.5 h-9 px-3.5 rounded-full border border-border bg-card text-sm font-semibold text-foreground hover:border-foreground/30 transition-colors">
               {activeCategory ? (
                 <>
                   <span className="text-base leading-none">{activeCategory.icon}</span>
@@ -233,7 +233,7 @@ export default function DocumentVault({ vehicleId = null, showCategories, client
         <p className="text-xs text-muted-foreground mt-1 max-w-[240px]">
           PDF, images or documents up to 10 MB
         </p>
-        <Button variant="ghost"
+        <Button variant="unstyled" size="unstyled"
           onClick={() => {
             if (!selectedCategory) {
               toast.error('Please choose a document type first');
@@ -299,7 +299,7 @@ export default function DocumentVault({ vehicleId = null, showCategories, client
                   </p>
                 </div>
                 <div className="flex items-center gap-0.5 shrink-0">
-                  <Button variant="ghost"
+                  <Button variant="unstyled" size="unstyled"
                     onClick={() => handleView(doc)}
                     className="w-9 h-9 inline-flex items-center justify-center rounded-lg text-foreground hover:bg-muted transition-colors"
                     aria-label="View"
@@ -307,7 +307,7 @@ export default function DocumentVault({ vehicleId = null, showCategories, client
                     <Eye className="w-4 h-4" strokeWidth={1.75} />
                   </Button>
                   {!isBrokerView && doc.category !== 'rental_agreement' && (
-                    <Button variant="ghost"
+                    <Button variant="unstyled" size="unstyled"
                       onClick={() => setDeleteTarget(doc)}
                       className="w-9 h-9 inline-flex items-center justify-center rounded-lg text-muted-foreground/60 hover:text-destructive hover:bg-destructive/5 transition-colors"
                       aria-label="Delete"

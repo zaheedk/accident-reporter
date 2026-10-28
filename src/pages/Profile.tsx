@@ -173,7 +173,7 @@ export default function Profile() {
           {/* Header — matches Garage / VehicleForm pattern */}
           <div className="flex items-end justify-between gap-3 pt-2">
             <div className="flex items-start gap-2 min-w-0">
-              <Button variant="ghost"
+              <Button variant="unstyled" size="unstyled"
                 onClick={() => navigate(-1)}
                 aria-label="Back"
                 className="w-9 h-9 -ml-1 mt-1 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex-shrink-0"
@@ -203,7 +203,7 @@ export default function Profile() {
                       <AvatarImage src={profile.avatar_url} alt={profile.display_name} />
                       <AvatarFallback className="bg-muted text-muted-foreground text-lg font-bold">{initials}</AvatarFallback>
                     </Avatar>
-                    <Button variant="ghost" onClick={() => fileInputRef.current?.click()} disabled={uploading}
+                    <Button variant="unstyled" size="unstyled" onClick={() => fileInputRef.current?.click()} disabled={uploading}
                       className="absolute -bottom-1 -right-1 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-sm hover:bg-primary/90 transition-colors">
                       {uploading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Camera className="w-3.5 h-3.5" />}
                     </Button>
@@ -258,7 +258,7 @@ export default function Profile() {
                     <AvatarImage src={profile.avatar_url} alt={profile.display_name} />
                     <AvatarFallback className="bg-muted text-muted-foreground text-lg font-bold">{initials}</AvatarFallback>
                   </Avatar>
-                  <Button variant="ghost" onClick={() => fileInputRef.current?.click()} disabled={uploading}
+                  <Button variant="unstyled" size="unstyled" onClick={() => fileInputRef.current?.click()} disabled={uploading}
                     className="absolute -bottom-1 -right-1 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-sm hover:bg-primary/90 transition-colors">
                     {uploading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Camera className="w-3.5 h-3.5" />}
                   </Button>
@@ -303,7 +303,7 @@ export default function Profile() {
                   onChange={e => setProfile(p => ({ ...p, email: e.target.value, email_verified: false }))}
                 />
                 {profile.email && !profile.email_verified && (
-                  <Button variant="ghost"
+                  <Button variant="unstyled" size="unstyled"
                     type="button"
                     onClick={handleSendVerification}
                     disabled={sendingVerification}
@@ -346,7 +346,7 @@ export default function Profile() {
               </div>
             </div>
           </div>
-          <Button variant="ghost" type="submit" disabled={saving} className="w-full h-12 rounded-xl text-sm font-semibold bg-primary text-primary-foreground hover:bg-primary/90 active:scale-[0.99] disabled:opacity-40 disabled:pointer-events-none inline-flex items-center justify-center gap-2 transition-all">
+          <Button variant="unstyled" size="unstyled" type="submit" disabled={saving} className="w-full h-12 rounded-xl text-sm font-semibold bg-primary text-primary-foreground hover:bg-primary/90 active:scale-[0.99] disabled:opacity-40 disabled:pointer-events-none inline-flex items-center justify-center gap-2 transition-all">
             {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Save changes'}
           </Button>
         </form>
@@ -403,7 +403,7 @@ export default function Profile() {
                   value={newPassword}
                   onChange={e => setNewPassword(e.target.value)}
                 />
-                <Button variant="ghost" type="button" onClick={() => setShowNewPw(!showNewPw)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                <Button variant="unstyled" size="unstyled" type="button" onClick={() => setShowNewPw(!showNewPw)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
                   {showNewPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </Button>
               </div>
@@ -418,12 +418,12 @@ export default function Profile() {
                   value={confirmPassword}
                   onChange={e => setConfirmPassword(e.target.value)}
                 />
-                <Button variant="ghost" type="button" onClick={() => setShowConfirmPw(!showConfirmPw)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                <Button variant="unstyled" size="unstyled" type="button" onClick={() => setShowConfirmPw(!showConfirmPw)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
                   {showConfirmPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </Button>
               </div>
             </div>
-            <Button variant="ghost"
+            <Button variant="unstyled" size="unstyled"
               type="button"
               disabled={!newPassword || newPassword.length < 6 || newPassword !== confirmPassword || changingPassword}
               onClick={async () => {
@@ -454,14 +454,14 @@ export default function Profile() {
 
         <div className="pt-4 space-y-3">
           <p className="eyebrow text-destructive">Danger zone</p>
-          <Button variant="ghost" onClick={() => setShowDeactivate(true)} className="w-full card-soft flex items-center gap-3 text-left hover:border-foreground/20 transition-colors">
+          <Button variant="unstyled" size="unstyled" onClick={() => setShowDeactivate(true)} className="w-full card-soft flex items-center gap-3 text-left hover:border-foreground/20 transition-colors">
             <div className="w-9 h-9 rounded-xl bg-muted flex items-center justify-center shrink-0"><ShieldOff className="w-4 h-4 text-muted-foreground" /></div>
             <div>
               <div className="text-sm font-semibold text-foreground">Deactivate Account</div>
               <div className="text-xs text-muted-foreground">Temporarily disable your account</div>
             </div>
           </Button>
-          <Button variant="ghost" onClick={() => setShowDelete(true)} className="w-full card-soft flex items-center gap-3 text-left hover:border-destructive/40 transition-colors !border-destructive/20">
+          <Button variant="unstyled" size="unstyled" onClick={() => setShowDelete(true)} className="w-full card-soft flex items-center gap-3 text-left hover:border-destructive/40 transition-colors !border-destructive/20">
             <div className="w-9 h-9 rounded-xl bg-destructive/10 flex items-center justify-center shrink-0"><Trash2 className="w-4 h-4 text-destructive" /></div>
             <div>
               <div className="text-sm font-semibold text-destructive">Delete Account</div>
