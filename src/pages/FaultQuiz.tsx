@@ -1,217 +1,133 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Flame, CheckCircle2, XCircle, Scale, Share2, ChevronRight, Trophy, Bell, BellOff } from 'lucide-react';
+import { CheckCircle2, XCircle, Share2, ChevronRight, Bell, BellOff, ArrowLeft, ArrowRight, RotateCcw, ExternalLink } from 'lucide-react';
 import AppLayout from '@/components/AppLayout';
 import QuizDiagram from '@/components/QuizDiagram';
-import { motion } from 'framer-motion';
+import LegalDisclaimer from '@/components/LegalDisclaimer';
+import { Button } from '@/components/ui/button';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
 import { usePushNotifications } from '@/hooks/use-push-notifications';
-import {
-  QUESTIONS_PER_DAY,
-  loadProgress,
-  recordAnswer,
-  scenariosForDate,
-  type QuizProgress,
-  type QuizScenario,
-} from '@/lib/fault-quiz';
+import { QUESTIONS_PER_DAY, QUIZ_TOPICS, quizScenarios, loadProgress, recordAnswer, scenariosForDate, practiceQuestions, type QuizTopic, type QuizProgress, type QuizScenario } from '@/lib/fault-quiz';
 
 export default function FaultQuiz() {
-  const scenarios = useMemo(() => scenariosForDate(), []);
+  const daily = useMemo(() => scenariosForDate(), []);
   const [progress, setProgress] = useState<QuizProgress>(() => loadProgress());
+  const [mode, setMode] = useState('daily');
+  const [topic, setTopic] = useState<QuizTopic | 'all'>('all');
+  const [practice, setPractice] = useState(() => practiceQuestions('all'));
+  const [practiceAnswers, setPracticeAnswers] = useState<Record<string, string>>({});
+  const [index, setIndex] = useState(0);
   const { isSubscribed, isSupported, loading, subscribe, unsubscribe } = usePushNotifications();
+  const scenarios = mode === 'daily' ? daily : practice;
+  const answers = mode === 'daily' ? progress.dayAnswers : practiceAnswers;
+  const answered = scenarios.filter(q => answers[q.id]).length;
+  const allDone = answered === scenarios.length;
+  const score = scenarios.filter(q => answers[q.id] === q.answerId).length;
+  const current = scenarios[index];
 
-  const answered = Object.keys(progress.dayAnswers).length;
-  const allDone = answered >= QUESTIONS_PER_DAY;
-
-  const handleChoose = (scenario: QuizScenario, optionId: string) => {
-    if (progress.dayAnswers[scenario.id]) return;
-    setProgress((prev) => recordAnswer(prev, scenario.id, optionId, optionId === scenario.answerId));
+  const restartPractice = (nextTopic = topic) => {
+    setTopic(nextTopic);
+    setPractice(practiceQuestions(nextTopic));
+    setPracticeAnswers({});
+    setIndex(0);
   };
-
+  const handleChoose = (scenario: QuizScenario, optionId: string) => {
+    if (answers[scenario.id]) return;
+    if (mode === 'daily') setProgress(prev => recordAnswer(prev, scenario.id, optionId, optionId === scenario.answerId));
+    else setPracticeAnswers(prev => ({ ...prev, [scenario.id]: optionId }));
+  };
   const handleShare = async () => {
-    const text = `3 new "Who's at fault?" scenarios today — test yourself on SAVO`;
+    const text = `${QUESTIONS_PER_DAY} NZ driving and claims questions today — test yourself on SAVO`;
     const url = 'https://www.savo.co.nz/fault-quiz';
     try {
-      if (navigator.share) {
-        await navigator.share({ title: "Who's at fault?", text, url });
-      } else {
-        await navigator.clipboard.writeText(`${text} ${url}`);
-        toast.success('Link copied');
-      }
-    } catch {
-      /* user cancelled */
-    }
+      if (navigator.share) await navigator.share({ title: 'NZ road & rights quiz', text, url });
+      else { await navigator.clipboard.writeText(`${text} ${url}`); toast.success('Link copied'); }
+    } catch { /* cancelled */ }
   };
-
   const handleReminderToggle = async () => {
-    if (isSubscribed) {
-      const ok = await unsubscribe();
-      if (ok) toast.success('Daily quiz reminders off');
-      return;
-    }
+    if (isSubscribed) { if (await unsubscribe()) toast.success('Daily quiz reminders off'); return; }
     const ok = await subscribe();
-    toast[ok ? 'success' : 'error'](
-      ok ? "You'll get a reminder when the day's 3 questions are ready" : 'Could not enable notifications',
-    );
+    toast[ok ? 'success' : 'error'](ok ? "Daily quiz reminders on" : 'Could not enable notifications');
   };
 
-  return (
-    <AppLayout>
-      <div className="max-w-2xl mx-auto px-4 py-5 space-y-4">
-        <header className="space-y-1">
-          <h1 className="text-xl font-bold text-foreground">Who's at fault?</h1>
-          <p className="text-[13px] text-muted-foreground">
-            {QUESTIONS_PER_DAY} real-world NZ scenarios every day. Learn the rules before you need them.
-          </p>
-        </header>
-
-        <div className="grid grid-cols-3 gap-2">
-          <StatTile icon={<Flame className="w-4 h-4 text-orange-500" />} label="Streak" value={`${progress.streak}`} />
-          <StatTile icon={<Trophy className="w-4 h-4 text-amber-500" />} label="Best" value={`${progress.best}`} />
-          <StatTile
-            icon={<Scale className="w-4 h-4 text-primary" />}
-            label="Correct"
-            value={progress.played ? `${Math.round((progress.correct / progress.played) * 100)}%` : '—'}
-          />
-        </div>
-
-        {isSupported && (
-          <button
-            onClick={handleReminderToggle}
-            disabled={loading}
-            className="w-full flex items-center gap-2 rounded-xl border border-border bg-card px-4 py-3 text-left disabled:opacity-60"
-          >
-            {isSubscribed ? (
-              <Bell className="w-4 h-4 text-primary shrink-0" />
-            ) : (
-              <BellOff className="w-4 h-4 text-muted-foreground shrink-0" />
-            )}
-            <span className="flex-1 text-[13px] font-medium text-foreground">
-              {isSubscribed ? 'Daily reminder on' : 'Remind me daily'}
-            </span>
-            <span className="text-[12px] text-muted-foreground">
-              {isSubscribed ? 'Tap to turn off' : `${QUESTIONS_PER_DAY} questions each morning`}
-            </span>
-          </button>
-        )}
-
-        <div className="text-[12px] font-medium text-muted-foreground">
-          {answered} of {QUESTIONS_PER_DAY} answered today
-        </div>
-
-        {scenarios.map((scenario, index) => (
-          <QuestionCard
-            key={scenario.id}
-            index={index}
-            scenario={scenario}
-            choice={progress.dayAnswers[scenario.id] ?? null}
-            onChoose={(optionId) => handleChoose(scenario, optionId)}
-          />
-        ))}
-
-        {allDone && (
-          <div className="rounded-2xl bg-card border border-border p-5 space-y-3">
-            <div className="text-[14px] font-semibold text-foreground">That's today's set done.</div>
-            <div className="flex flex-wrap gap-2">
-              <button
-                onClick={handleShare}
-                className="inline-flex items-center gap-1.5 h-9 px-3 rounded-lg bg-primary text-primary-foreground text-[13px] font-semibold"
-              >
-                <Share2 className="w-3.5 h-3.5" /> Challenge a mate
-              </button>
-              <Link
-                to="/fault-guide"
-                className="inline-flex items-center gap-1.5 h-9 px-3 rounded-lg border border-border text-[13px] font-semibold text-foreground"
-              >
-                Fault guide <ChevronRight className="w-3.5 h-3.5" />
-              </Link>
-            </div>
-            <p className="text-[12px] text-muted-foreground">
-              3 new scenarios tomorrow — come back to keep your streak alive.
-            </p>
-          </div>
-        )}
+  return <AppLayout>
+    <div className="max-w-2xl mx-auto space-y-6">
+      <header className="space-y-2">
+        <p className="text-xs font-semibold text-primary">{quizScenarios.length} questions · New Zealand</p>
+        <h1 className="text-3xl font-display text-foreground">NZ road & rights quiz</h1>
+        <p className="text-sm text-muted-foreground">Driving rules, accidents, privacy and insurance.</p>
+      </header>
+      <dl className="grid grid-cols-3 gap-3 border-y border-border py-4">
+        {[['Daily streak', progress.streak], ['Best streak', progress.best], ['Daily accuracy', progress.played ? `${Math.round(progress.correct / progress.played * 100)}%` : '—']].map(([label, value]) => <div key={label}>
+          <dt className="text-xs text-muted-foreground">{label}</dt><dd className="text-xl font-semibold text-foreground tabular-nums">{value}</dd>
+        </div>)}
+      </dl>
+      <Tabs value={mode} onValueChange={value => { setMode(value); setIndex(0); }}>
+        <TabsList className="w-full"><TabsTrigger value="daily" className="flex-1">Daily quiz</TabsTrigger><TabsTrigger value="practice" className="flex-1">Practice by topic</TabsTrigger></TabsList>
+      </Tabs>
+      {mode === 'practice' ? <div className="space-y-2">
+        <label className="text-xs text-muted-foreground" id="quiz-topic-label">Topic</label>
+        <Select value={topic} onValueChange={value => restartPractice(value as QuizTopic | 'all')}>
+          <SelectTrigger aria-labelledby="quiz-topic-label"><SelectValue /></SelectTrigger>
+          <SelectContent><SelectItem value="all">All topics ({quizScenarios.length})</SelectItem>
+            {Object.entries(QUIZ_TOPICS).map(([key, label]) => <SelectItem key={key} value={key}>{label} ({quizScenarios.filter(q => q.category === key).length})</SelectItem>)}
+          </SelectContent>
+        </Select>
+      </div> : isSupported && <Button variant="ghost" className="w-full justify-start whitespace-normal h-auto py-2" onClick={handleReminderToggle} disabled={loading}>
+        {isSubscribed ? <Bell /> : <BellOff />} {isSubscribed ? 'Daily reminders on' : 'Remind me daily'}
+      </Button>}
+      <div className="space-y-2">
+        <div className="flex justify-between text-xs text-muted-foreground"><span>{answered} of {scenarios.length} answered{mode === 'daily' ? ' today' : ''}</span><span>{score} correct</span></div>
+        <progress className="w-full h-1.5 accent-primary" value={answered} max={scenarios.length} aria-label="Quiz progress" />
       </div>
-    </AppLayout>
-  );
+      {current && <QuestionCard key={`${mode}-${current.id}`} index={index} scenario={current} choice={answers[current.id] ?? null} onChoose={optionId => handleChoose(current, optionId)} />}
+      <div className="flex items-center justify-between gap-2">
+        <Button variant="ghost" disabled={index === 0} onClick={() => setIndex(i => i - 1)} aria-label="Previous question"><ArrowLeft /><span className="hidden sm:inline">Previous</span></Button>
+        <span className="text-sm text-muted-foreground tabular-nums">{index + 1} / {scenarios.length}</span>
+        <Button disabled={!current || !answers[current.id] || index === scenarios.length - 1} onClick={() => setIndex(i => i + 1)} aria-label="Next question">Next<ArrowRight /></Button>
+      </div>
+      {allDone && <section className="border-t border-border pt-6 space-y-4" aria-label="Quiz results">
+        <h2 className="font-display text-2xl text-foreground">{score} / {scenarios.length} — {mode === 'daily' ? "today’s set complete" : 'practice complete'}</h2>
+        <div className="flex flex-wrap gap-2">
+          {mode === 'practice' ? <Button onClick={() => restartPractice()}><RotateCcw />New practice set</Button> : <Button onClick={handleShare}><Share2 />Challenge a mate</Button>}
+          <Button asChild variant="outline"><Link to="/fault-guide">Fault guide<ChevronRight /></Link></Button>
+        </div>
+        {mode === 'daily' && <p className="text-sm text-muted-foreground">Three new questions tomorrow.</p>}
+      </section>}
+      <footer className="space-y-3 pt-4">
+        <p className="text-xs leading-relaxed text-muted-foreground">Original practice questions based on NZ guidance, not an official NZTA test. Insurance answers depend on your policy. References checked October 2026; rules can change.</p>
+        <LegalDisclaimer compact />
+      </footer>
+    </div>
+  </AppLayout>;
 }
 
-function QuestionCard({
-  index,
-  scenario,
-  choice,
-  onChoose,
-}: {
-  index: number;
-  scenario: QuizScenario;
-  choice: string | null;
-  onChoose: (optionId: string) => void;
-}) {
+function QuestionCard({ index, scenario, choice, onChoose }: { index: number; scenario: QuizScenario; choice: string | null; onChoose: (optionId: string) => void }) {
   const revealed = choice !== null;
   const isCorrect = choice === scenario.answerId;
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.05 }}
-      className="rounded-2xl bg-card border border-border overflow-hidden"
-    >
-      <QuizDiagram id={scenario.id} description={scenario.imageAlt} />
-      <div className="p-5 space-y-4">
-        <div className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-          Question {index + 1}
-        </div>
-        <p className="text-[15px] leading-relaxed text-foreground font-medium">{scenario.scenario}</p>
-
-        <div className="space-y-2">
-          {scenario.options.map((opt) => {
-            const selected = choice === opt.id;
-            const correct = opt.id === scenario.answerId;
-            const state = !revealed
-              ? 'border-border hover:border-foreground/30'
-              : correct
-                ? 'border-emerald-500 bg-emerald-500/10'
-                : selected
-                  ? 'border-destructive bg-destructive/10'
-                  : 'border-border opacity-60';
-            return (
-              <button
-                key={opt.id}
-                onClick={() => onChoose(opt.id)}
-                disabled={revealed}
-                className={`w-full text-left px-4 py-3 rounded-xl border text-[14px] font-medium text-foreground transition-all active:scale-[0.99] flex items-center gap-2 ${state}`}
-              >
-                <span className="flex-1">{opt.label}</span>
-                {revealed && correct && <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />}
-                {revealed && selected && !correct && <XCircle className="w-4 h-4 text-destructive shrink-0" />}
-              </button>
-            );
-          })}
-        </div>
-
-        {revealed && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-2 pt-1">
-            <div className={`text-[13px] font-semibold ${isCorrect ? 'text-emerald-600' : 'text-destructive'}`}>
-              {isCorrect ? 'Correct — nice work.' : 'Not quite.'}
-            </div>
-            <p className="text-[13px] leading-relaxed text-muted-foreground">{scenario.explanation}</p>
-            <div className="text-[11px] uppercase tracking-wide text-muted-foreground/80">{scenario.rule}</div>
-          </motion.div>
-        )}
-      </div>
-    </motion.div>
-  );
-}
-
-function StatTile({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
-  return (
-    <div className="rounded-xl bg-card border border-border px-3 py-2.5 flex flex-col gap-1">
-      <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
-        {icon}
-        {label}
-      </div>
-      <div className="text-lg font-bold text-foreground tabular-nums leading-none">{value}</div>
+  return <section className="space-y-4" aria-label={`Question ${index + 1}`}>
+    {scenario.diagramId && <QuizDiagram id={scenario.diagramId} description={scenario.imageAlt} />}
+    <div className="text-xs font-semibold text-primary">Question {index + 1} · {QUIZ_TOPICS[scenario.category ?? 'fault']}</div>
+    <h2 className="text-lg leading-relaxed font-semibold text-foreground">{scenario.scenario}</h2>
+    <div className="space-y-2">
+      {scenario.options.map(opt => {
+        const selected = choice === opt.id;
+        const correct = opt.id === scenario.answerId;
+        const state = !revealed ? 'border-border hover:border-primary' : correct ? 'border-primary bg-secondary' : selected ? 'border-destructive bg-destructive/10' : 'border-border';
+        return <Button key={opt.id} variant="unstyled" size="unstyled" onClick={() => onChoose(opt.id)} disabled={revealed} className={`w-full flex items-center gap-3 text-left px-4 py-3 rounded-xl border-2 bg-card text-sm font-medium text-foreground disabled:opacity-100 ${state}`}>
+          <span className="flex-1">{opt.label}</span>
+          {revealed && correct && <CheckCircle2 className="text-primary shrink-0" />}
+          {revealed && selected && !correct && <XCircle className="text-destructive shrink-0" />}
+        </Button>;
+      })}
     </div>
-  );
+    {revealed && <div className="space-y-2 border-l-2 border-primary pl-4 py-2" role="status">
+      <p className={`text-sm font-semibold ${isCorrect ? 'text-primary' : 'text-destructive'}`}>{isCorrect ? 'Correct — nice work.' : 'Not quite.'}</p>
+      <p className="text-sm leading-relaxed text-foreground">{scenario.explanation}</p>
+      <p className="text-xs text-muted-foreground">{scenario.rule}</p>
+      {scenario.sourceUrl && <a href={scenario.sourceUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs underline text-primary">Read the source<ExternalLink className="w-3 h-3" /></a>}
+    </div>}
+  </section>;
 }

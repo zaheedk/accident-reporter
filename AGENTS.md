@@ -4,3 +4,4 @@
 - Generate native store screenshots on macOS simulators separately from signing; browser drafts are references only and must not be presented as verified native captures.
 - Signed-in presentation uses the shared AccountArtwork module and signed-in-experience CSS scope, so customer and role pages inherit one visual system without changing data workflows or public/print styles.
 - Daily fault quiz imagery uses scenario-specific vector road diagrams with NZ left-driving geometry; never reuse generic category pictures or crop the diagram, because positions and movement determine the scenario.
+- Store original NZ knowledge questions separately from fault diagrams, with topic and source metadata; daily and practice modes share the bank, while practice must not change daily streaks.

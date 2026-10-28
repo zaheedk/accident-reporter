@@ -15,3 +15,8 @@
 
 ## Daily fault quiz imagery
 - [x] Replace reused generic pictures with fourteen scenario-specific NZ road diagrams; visually checked all diagrams on phones and verified answer feedback, desktop rendering and no horizontal overflow.
+
+## Expanded NZ quiz
+- [x] Add 154 sourced, original questions: 85 driving, 20 accident response, 15 privacy, 20 insurance and 14 fault scenarios.
+- [x] Add topic practice alongside the daily quiz, with answer explanations, official reference links and general-information disclaimers.
+- [x] Pass 19 targeted tests; verify signed-in practice completion/restart, daily completion and saved progress, desktop/mobile rendering and no runtime errors.
