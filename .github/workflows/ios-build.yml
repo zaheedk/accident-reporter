@@ -77,46 +77,65 @@ jobs:
           node-version: 22
           cache: npm
 
-      - name: Select Xcode with iOS 26 SDK
+      - name: Select Xcode with iOS 26 SDK and installed iOS platform
         run: |
-          set -e
+          set -euo pipefail
           echo "--- Available Xcode installations ---"
           ls /Applications | grep -i '^Xcode' || true
-          # App Store Connect requires the iOS 26 SDK (Xcode 26+) as of April 2026.
-          # Prefer Xcode 26.x; fall back to any Xcode that ships an iphoneos26.* SDK.
-          CANDIDATES=$(ls -d /Applications/Xcode_26*.app /Applications/Xcode-26*.app 2>/dev/null || true)
-          # Also consider generic Xcode.app last
-          CANDIDATES="$CANDIDATES /Applications/Xcode.app"
+          echo "Runner default: $(xcode-select -p)"
+          # App Store Connect requires the iOS 26 SDK (Xcode 26+).
+          # An Xcode can ship the iphoneos26.x SDK but still be missing its
+          # matching iOS platform component; archive then fails with
+          # "iOS 26.0 is not installed" / "Supported platforms ... is empty".
+          # Try the runner default first, then Xcode 26.x newest-first, and
+          # pick the first one whose iOS platform runtime is installed.
+          CANDIDATES="/Applications/Xcode.app $(ls -d /Applications/Xcode_26*.app /Applications/Xcode-26*.app 2>/dev/null | sort -V -r || true)"
+
+          platform_ready() {
+            local sdk_ver
+            sdk_ver=$(xcodebuild -version -sdk iphoneos SDKVersion 2>/dev/null || true)
+            case "$sdk_ver" in 26.*) ;; *) return 1 ;; esac
+            xcrun simctl list runtimes 2>/dev/null | grep -Eq "^iOS ${sdk_ver//./\\.}( |\.)"
+          }
+
+          FIRST_26=""
           for XCODE_APP in $CANDIDATES; do
-            if [ -d "$XCODE_APP" ]; then
-              sudo xcode-select -s "$XCODE_APP"
-              SDK_LINE=$(xcodebuild -showsdks 2>/dev/null | grep -E "iphoneos26\." || true)
-              if [ -n "$SDK_LINE" ]; then
-                echo "Selected $XCODE_APP with SDK: $SDK_LINE"
-                xcodebuild -version
-                exit 0
-              fi
-              echo "$XCODE_APP does not include an iOS 26 SDK; trying next Xcode."
+            [ -d "$XCODE_APP" ] || continue
+            sudo xcode-select -s "$XCODE_APP"
+            SDK_VER=$(xcodebuild -version -sdk iphoneos SDKVersion 2>/dev/null || echo "none")
+            echo "$XCODE_APP → iphoneos SDK $SDK_VER"
+            case "$SDK_VER" in 26.*) [ -n "$FIRST_26" ] || FIRST_26="$XCODE_APP" ;; *) continue ;; esac
+            if platform_ready; then
+              echo "Selected $XCODE_APP (iOS $SDK_VER platform installed)"
+              xcodebuild -version
+              exit 0
             fi
+            echo "$XCODE_APP has the SDK but its iOS $SDK_VER platform is not installed; trying next."
           done
-          echo "::error::No installed Xcode with an iOS 26 SDK was found on this runner. Use a runner image that includes Xcode 26 (e.g. macos-15 with Xcode 26, or macos-26)."
-          xcodebuild -showsdks || true
+
+          if [ -z "$FIRST_26" ]; then
+            echo "::error::No Xcode with an iOS 26 SDK was found on this runner."
+            exit 1
+          fi
+
+          echo "No Xcode had its iOS platform ready; downloading it for $FIRST_26"
+          sudo xcode-select -s "$FIRST_26"
+          sudo xcodebuild -runFirstLaunch || true
+          xcodebuild -downloadPlatform iOS
+          if platform_ready; then
+            echo "Selected $FIRST_26 after downloading the iOS platform"
+            xcodebuild -version
+            exit 0
+          fi
+          echo "::error::The iOS platform for $FIRST_26 is still missing after download."
+          xcrun simctl list runtimes || true
           exit 1
 
-      - name: Show Xcode version
-        run: xcodebuild -version
-
-      - name: Ensure iOS 26 platform is installed
+      - name: Show Xcode version and iOS destinations
         run: |
-          set -e
-          # Some macos-26 runner images include Xcode 26 but do not have the
-          # iOS device platform installed/enabled yet. In that state, archive
-          # fails with either "iOS 26.0 is not installed" or "Found no
-          # destinations" even when `xcodebuild -showsdks` lists iphoneos26.*.
-          sudo xcodebuild -runFirstLaunch || true
-          sudo xcodebuild -downloadPlatform iOS || true
-          echo "--- Installed platforms ---"
+          xcodebuild -version
           xcodebuild -showsdks || true
+          xcrun simctl list runtimes || true
 
       - name: Install dependencies
         run: npm ci --legacy-peer-deps || npm install --legacy-peer-deps
