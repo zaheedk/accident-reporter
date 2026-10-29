@@ -531,6 +531,9 @@ jobs:
     if: inputs.capture_screenshots
     runs-on: macos-26
     timeout-minutes: 60
+    # Screenshots are optional store material; a simulator hiccup must not
+    # mark the signed build/upload as failed.
+    continue-on-error: true
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -539,8 +542,69 @@ jobs:
           cache: npm
       - name: Prepare iOS simulator runtime
         run: |
-          sudo xcodebuild -runFirstLaunch
-          xcodebuild -downloadPlatform iOS
+          set -euo pipefail
+          # The runner default Xcode may lack its simulator runtime, and a cold
+          # CoreSimulator service makes `-runFirstLaunch` fail with
+          # "Unable to connect to simulator" (exit 70). Pick an Xcode whose iOS
+          # simulator runtime is already installed, restart CoreSimulator, and
+          # only download the platform as a last resort.
+          CANDIDATES="/Applications/Xcode.app $(ls -d /Applications/Xcode_26*.app /Applications/Xcode-26*.app 2>/dev/null | sort -V -r || true)"
+
+          reset_simulator_service() {
+            sudo killall -9 com.apple.CoreSimulator.CoreSimulatorService 2>/dev/null || true
+            sleep 3
+            xcrun simctl list runtimes >/dev/null 2>&1 || true
+          }
+
+          runtime_ready() {
+            local sdk_ver
+            sdk_ver=$(xcodebuild -version -sdk iphonesimulator SDKVersion 2>/dev/null || true)
+            case "$sdk_ver" in 26.*) ;; *) return 1 ;; esac
+            xcrun simctl list runtimes 2>/dev/null | grep -Eq "^iOS ${sdk_ver//./\\.}( |\.)" || return 1
+            xcrun simctl list devices available 2>/dev/null | grep -q "iPhone" || return 1
+            xcrun simctl list devices available 2>/dev/null | grep -q "iPad" || return 1
+          }
+
+          FIRST_26=""
+          for XCODE_APP in $CANDIDATES; do
+            [ -d "$XCODE_APP" ] || continue
+            sudo xcode-select -s "$XCODE_APP"
+            SDK_VER=$(xcodebuild -version -sdk iphonesimulator SDKVersion 2>/dev/null || echo "none")
+            echo "$XCODE_APP → iphonesimulator SDK $SDK_VER"
+            case "$SDK_VER" in 26.*) [ -n "$FIRST_26" ] || FIRST_26="$XCODE_APP" ;; *) continue ;; esac
+            reset_simulator_service
+            if runtime_ready; then
+              echo "Selected $XCODE_APP (iOS $SDK_VER simulator runtime installed)"
+              sudo xcodebuild -runFirstLaunch || echo "::warning::runFirstLaunch reported an error; continuing because the runtime is installed."
+              xcodebuild -version
+              exit 0
+            fi
+            echo "$XCODE_APP has no ready iOS $SDK_VER simulator runtime; trying next."
+          done
+
+          if [ -z "$FIRST_26" ]; then
+            echo "::error::No Xcode with an iOS 26 simulator SDK was found on this runner."
+            exit 1
+          fi
+
+          echo "Downloading the iOS simulator runtime for $FIRST_26"
+          sudo xcode-select -s "$FIRST_26"
+          reset_simulator_service
+          for attempt in 1 2 3; do
+            sudo xcodebuild -runFirstLaunch || true
+            if xcodebuild -downloadPlatform iOS; then break; fi
+            echo "Download attempt $attempt failed; restarting CoreSimulator and retrying."
+            reset_simulator_service
+          done
+          reset_simulator_service
+          if runtime_ready; then
+            xcodebuild -version
+            exit 0
+          fi
+          echo "::error::The iOS simulator runtime is still unavailable after download."
+          xcrun simctl list runtimes || true
+          xcrun simctl list devices available || true
+          exit 1
       - name: Install and bundle SAVO
         env:
           RELEASE_VERSION: ${{ inputs.marketing_version }}
