@@ -1,5 +1,9 @@
 # App Store release preparation
 
+## Dashboard action clarity (Oct 30)
+- [x] Replace ring actions with prominent accident capture and a distinct emergency call; simplify secondary tools into clear icon-and-label rows.
+- [x] Verified signed-in mobile layouts at 430px and 375px: clear labels, distinct symbols, no horizontal overflow or page errors; accident capture opens its seven-step flow and emergency call retains tel:111.
+
 ## Notification repairs (Oct 30)
 - [x] Repair separate quiz/expiry opt-ins, browser subscription persistence and modern Web Push delivery; deployed all three reminder functions.
 - [x] Add native on-device daily and expiry reminders with permissions, refresh after edits/resume and cancellation at sign-out; synchronize package locks for CI.
