@@ -128,13 +128,6 @@ serve(async (req) => {
       const type = `${baseType}_${daysOut}d`;
 
       if (!isTest) {
-        // Avoid duplicate for same window — check ever, since each window only fires once
-        const { data: existing } = await supabase.from('notifications')
-          .select('id')
-          .eq('user_id', userId)
-          .eq('type', type)
-          .gte('created_at', new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString())
-          .limit(1);
         // Dedupe by asset, not just user/type: two vehicles can expire together.
         let assetQuery = supabase.from('notifications').select('id').eq('user_id', userId).eq('type', type)
           .gte('created_at', new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString());
