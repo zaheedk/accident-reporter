@@ -3,6 +3,8 @@ import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { ensureWidgetAutoSetup } from '@/lib/widget-setup';
 import { hydrateUserData, resetHydration } from '@/lib/offline-hydrate';
+import { Capacitor } from '@capacitor/core';
+import { cancelNativeReminders } from '@/lib/native-reminders';
 
 interface AuthContextType {
   session: Session | null;
@@ -69,6 +71,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [session?.user?.id]);
 
   const signOut = async () => {
+    if (Capacitor.isNativePlatform()) await cancelNativeReminders();
     await supabase.auth.signOut();
     window.location.href = '/';
   };

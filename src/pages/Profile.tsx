@@ -31,7 +31,7 @@ interface ProfileData {
 export default function Profile() {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
-  const { isSubscribed, isSupported, loading: pushLoading, subscribe, unsubscribe } = usePushNotifications();
+  const { isSubscribed, isSupported, loading: pushLoading, subscribe, unsubscribe, errorMessage } = usePushNotifications('expiry');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -362,6 +362,7 @@ export default function Profile() {
                 <p className="text-[11px] text-muted-foreground">Get alerts when your rego, WOF or insurance is expiring</p>
               </div>
               <Switch
+                aria-label="Expiry reminders"
                 checked={isSubscribed}
                 disabled={pushLoading}
                 onCheckedChange={async (checked) => {
@@ -374,6 +375,7 @@ export default function Profile() {
                 }}
               />
             </div>
+            {errorMessage && <p role="alert" className="text-sm text-destructive">{errorMessage}</p>}
           </div>
         )}
 

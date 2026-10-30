@@ -128,34 +128,36 @@ serve(async (req) => {
       const type = `${baseType}_${daysOut}d`;
 
       if (!isTest) {
-        // Avoid duplicate for same window — check ever, since each window only fires once
-        const { data: existing } = await supabase.from('notifications')
-          .select('id')
-          .eq('user_id', userId)
-          .eq('type', type)
-          .gte('created_at', new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString())
-          .limit(1);
-        if (existing && existing.length > 0) return;
+        // Dedupe by asset, not just user/type: two vehicles can expire together.
+        let assetQuery = supabase.from('notifications').select('id').eq('user_id', userId).eq('type', type)
+          .gte('created_at', new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString());
+        assetQuery = vehicleId ? assetQuery.eq('vehicle_id', vehicleId) : assetQuery.is('vehicle_id', null);
+        const { data: assetExisting, error: dedupeError } = await assetQuery.limit(1);
+        if (dedupeError) throw dedupeError;
+        if (assetExisting?.length) return;
       }
 
       // In-app notification
       const notifData: Record<string, any> = { user_id: userId, type, title, message };
       if (vehicleId) notifData.vehicle_id = vehicleId;
-      await supabase.from('notifications').insert(notifData);
+      const { error: notificationError } = await supabase.from('notifications').insert(notifData);
+      if (notificationError) throw notificationError;
 
       // Email
       if (userEmail) {
-        await supabase.functions.invoke('send-email', {
+        const { error: emailError } = await supabase.functions.invoke('send-email', {
           body: { type: baseType, to: userEmail, data: { ...emailData, daysRemaining: String(daysOut) } },
         });
-        results.push(`Email ${type} -> ${userEmail}`);
+        if (emailError) console.error('Expiry email delivery failed', emailError.message);
+        else results.push(`Email ${type} delivered`);
       }
 
       // Push
       try {
-        await supabase.functions.invoke('send-push', {
-          body: { user_id: userId, title, body: message, url: pushUrl, tag: `${type}-${vehicleId || userId}` },
+        const { data: pushResult, error: pushError } = await supabase.functions.invoke('send-push', {
+          body: { user_id: userId, title, body: message, url: pushUrl, tag: `${type}-${vehicleId || userId}`, kind: 'expiry' },
         });
+        if (pushError || pushResult?.errors?.length) console.error('Expiry push delivery failed', pushError?.message || pushResult.errors);
       } catch (pushErr) {
         console.error('Push error:', pushErr);
       }
