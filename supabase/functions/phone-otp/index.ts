@@ -231,7 +231,9 @@ serve(async (req) => {
           user_metadata: { phone_number: e164Phone, full_name: "" },
         });
 
-        if (createError) {
+        // The phone account may already exist even if its profile lost the phone number.
+        const alreadyExists = (createError as { code?: string } | null)?.code === "email_exists";
+        if (createError && !alreadyExists) {
           console.error("Create user error:", createError);
           return new Response(
             JSON.stringify({ error: "Failed to create account" }),
