@@ -359,9 +359,11 @@
     margin-left: -50vw;
     margin-right: -50vw;
     margin-top: -1.25rem;
-    margin-bottom: -8rem;
-    padding: 1.25rem 1rem 8rem 1rem;
-    min-height: calc(100vh - 53px);
+    /* Bottom space = bottom nav height (62px) + a small gap; the matching
+       negative margin stops it adding dead scroll below the content. */
+    margin-bottom: calc(-78px - env(safe-area-inset-bottom, 0px));
+    padding: 1.25rem 1rem calc(78px + env(safe-area-inset-bottom, 0px)) 1rem;
+    min-height: calc(100dvh - 60px - env(safe-area-inset-top, 0px));
   }
 
   .theme-dashboard-dark > * {
@@ -408,9 +410,11 @@
     margin-left: -1rem;
     margin-right: -1rem;
     margin-top: -1.25rem;
-    margin-bottom: -8rem;
-    padding: 1.25rem 1rem 8rem 1rem;
-    min-height: calc(100vh - 53px);
+    /* Bottom space = bottom nav height (62px) + a small gap; the matching
+       negative margin stops it adding dead scroll below the content. */
+    margin-bottom: calc(-78px - env(safe-area-inset-bottom, 0px));
+    padding: 1.25rem 1rem calc(78px + env(safe-area-inset-bottom, 0px)) 1rem;
+    min-height: calc(100dvh - 60px - env(safe-area-inset-top, 0px));
     /* clip (not hidden) so position: sticky headers inside still pin to the viewport */
     overflow-x: clip;
   }
@@ -504,9 +508,11 @@
     margin-left: -1rem;
     margin-right: -1rem;
     margin-top: -1.25rem;
-    margin-bottom: -8rem;
-    padding: 1.25rem 1rem 8rem 1rem;
-    min-height: calc(100vh - 53px);
+    /* Bottom space = bottom nav height (62px) + a small gap; the matching
+       negative margin stops it adding dead scroll below the content. */
+    margin-bottom: calc(-78px - env(safe-area-inset-bottom, 0px));
+    padding: 1.25rem 1rem calc(78px + env(safe-area-inset-bottom, 0px)) 1rem;
+    min-height: calc(100dvh - 60px - env(safe-area-inset-top, 0px));
     /* clip (not hidden) so position: sticky headers inside still pin to the viewport */
     overflow-x: clip;
   }
