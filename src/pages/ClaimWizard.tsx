@@ -603,7 +603,7 @@ export default function ClaimWizard() {
                       <Button variant="unstyled" size="unstyled" key={value} type="button"
                         onClick={() => setIncidentType(value)}
                         data-active={incidentType === value}
-                        className="seg-tile">
+                        className="seg-tile flex flex-col items-center justify-center h-20 text-center">
                         <Icon className="seg-tile-icon" strokeWidth={1.7} />
                         <span className="seg-tile-label">{label}</span>
                       </Button>
