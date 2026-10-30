@@ -1,4 +1,5 @@
 # Project rules
+- Native quiz and expiry reminders use Capacitor local notifications, scoped to the signed-in user's device preferences and refreshed after edits/resume; browser reminders use separately opted-in Web Push subscriptions. Local expiry schedules use the device timezone and refresh when the app opens, avoiding APNs/FCM credentials for date-based reminders.
 - SEO dashboard reads cached Search Console snapshots (seo_snapshots) via the admin-only seo-dashboard function, refreshed at most every 12h — avoids hitting Google on every page view.
 - Keep App Store materials in release/app-store and generate the native iOS project in CI; release helpers validate and embed its resources so the existing Capacitor workflow stays reproducible.
 - Configure iOS distribution signing directly on the generated App target, not global xcconfig target conditions, to avoid affecting SPM dependencies; preserve archive logs and result bundles on failure.

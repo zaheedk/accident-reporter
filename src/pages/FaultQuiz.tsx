@@ -19,7 +19,7 @@ export default function FaultQuiz() {
   const [practice, setPractice] = useState(() => practiceQuestions('all'));
   const [practiceAnswers, setPracticeAnswers] = useState<Record<string, string>>({});
   const [index, setIndex] = useState(0);
-  const { isSubscribed, isSupported, loading, subscribe, unsubscribe } = usePushNotifications();
+  const { isSubscribed, isSupported, loading, subscribe, unsubscribe, errorMessage } = usePushNotifications('quiz');
   const scenarios = mode === 'daily' ? daily : practice;
   const answers = mode === 'daily' ? progress.dayAnswers : practiceAnswers;
   const answered = scenarios.filter(q => answers[q.id]).length;
@@ -78,6 +78,7 @@ export default function FaultQuiz() {
       </div> : isSupported && <Button variant="ghost" className="w-full justify-start whitespace-normal h-auto py-2" onClick={handleReminderToggle} disabled={loading}>
         {isSubscribed ? <Bell /> : <BellOff />} {isSubscribed ? 'Daily reminders on' : 'Remind me daily'}
       </Button>}
+      {mode === 'daily' && errorMessage && <p role="alert" className="text-sm text-destructive">{errorMessage}</p>}
       <div className="space-y-2">
         <div className="flex justify-between text-xs text-muted-foreground"><span>{answered} of {scenarios.length} answered{mode === 'daily' ? ' today' : ''}</span><span>{score} correct</span></div>
         <progress className="w-full h-1.5 accent-primary" value={answered} max={scenarios.length} aria-label="Quiz progress" />

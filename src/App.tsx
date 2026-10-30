@@ -12,6 +12,7 @@ import { Capacitor } from "@capacitor/core";
 import InstallPrompt from "@/components/InstallPrompt";
 import OnboardingTour from "@/components/OnboardingTour";
 import DeepLinkHandler from "@/components/DeepLinkHandler";
+import ReminderLifecycle from "@/components/ReminderLifecycle";
 import WidgetInstallPrompt from "@/components/WidgetInstallPrompt";
 import { SyncStatusBadge } from "@/components/SyncStatusBadge";
 import { installSyncTriggers, runSync } from "@/lib/sync-engine";
@@ -161,6 +162,7 @@ const App = () => (
         <SyncStatusBadge />
         <BrowserRouter>
           <DeepLinkHandler />
+          <ReminderLifecycle />
           <Suspense fallback={<PageLoader />}>
             <Routes>
               <Route path="/auth" element={<Auth />} />
