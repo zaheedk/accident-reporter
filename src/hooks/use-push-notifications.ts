@@ -24,7 +24,7 @@ async function pushRegistration() {
   // on opt-in. Never wait forever for an unregistered worker.
   const existing = await navigator.serviceWorker.getRegistration('/');
   if (existing?.active) return existing;
-  const registration = existing || await navigator.serviceWorker.register('/sw-push.js', { scope: '/' });
+  if (!existing) await navigator.serviceWorker.register('/sw-push.js', { scope: '/' });
   return Promise.race([
     navigator.serviceWorker.ready,
     new Promise<ServiceWorkerRegistration>((_, reject) => setTimeout(() => reject(new Error('Notifications could not start. Please refresh and try again.')), 10000)),
@@ -42,6 +42,7 @@ export function usePushNotifications(kind: ReminderKind = 'expiry') {
   useEffect(() => {
     const supported = native || ('serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window);
     setIsSupported(supported);
+    if (!user) setIsSubscribed(false);
     if (supported && user) {
       checkSubscription();
     }

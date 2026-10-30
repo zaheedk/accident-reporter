@@ -31,6 +31,7 @@ export async function offlineInsert(table: string, payload: AnyRecord) {
     return { queued: true as const };
   }
   if (error) throw error;
+  if (table === 'vehicles' || table === 'profiles') window.dispatchEvent(new Event('savo:reminders-changed'));
   return { data };
 }
 
@@ -48,6 +49,7 @@ export async function offlineUpdate(table: string, payload: AnyRecord, match: An
   }
   if (error) throw error;
   // Trigger a drain in case other queued items are waiting
+  if (table === 'vehicles' || table === 'profiles') window.dispatchEvent(new Event('savo:reminders-changed'));
   void runSync();
   return { ok: true as const };
 }
@@ -63,6 +65,7 @@ export async function offlineUpsert(table: string, payload: AnyRecord) {
     return { queued: true as const };
   }
   if (error) throw error;
+  if (table === 'vehicles' || table === 'profiles') window.dispatchEvent(new Event('savo:reminders-changed'));
   return { ok: true as const };
 }
 
@@ -79,5 +82,6 @@ export async function offlineDelete(table: string, match: AnyRecord) {
     return { queued: true as const };
   }
   if (error) throw error;
+  if (table === 'vehicles' || table === 'profiles') window.dispatchEvent(new Event('savo:reminders-changed'));
   return { ok: true as const };
 }
