@@ -36,9 +36,11 @@ export default function Blog() {
         description="Practical New Zealand car insurance, accident, and claims advice — from dashcam tips to dealing with insurers, panel beaters, tow trucks and write-offs."
         path="/blog"
       />
+      {/* Height leaves room for the header (80px + safe top) and the layout's
+          bottom space (78px + safe bottom), so short pages don't scroll and the
+          pagination lands just above the bottom nav. */}
       <div
-        className="max-w-2xl mx-auto px-4 py-6 flex flex-col items-stretch min-h-[calc(100dvh-144px-env(safe-area-inset-top,0px)-env(safe-area-inset-bottom,0px))]"
-        style={{ marginBottom: 'calc(-64px - env(safe-area-inset-bottom, 0px))' }}
+        className="max-w-2xl mx-auto px-4 py-6 flex flex-col items-stretch min-h-[calc(100dvh-158px-env(safe-area-inset-top,0px)-env(safe-area-inset-bottom,0px))]"
       >
         <div className="mb-6">
           <h1 className="font-display text-3xl font-bold text-foreground">SAVO Blog</h1>

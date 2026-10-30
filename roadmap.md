@@ -25,3 +25,7 @@
 - [x] Add 154 sourced, original questions: 85 driving, 20 accident response, 15 privacy, 20 insurance and 14 fault scenarios.
 - [x] Add topic practice alongside the daily quiz, with answer explanations, official reference links and general-information disclaimers.
 - [x] Pass 19 targeted tests; verify signed-in practice completion/restart, daily completion and saved progress, desktop/mobile rendering and no runtime errors.
+
+## Bottom scroll cleanup (Oct 30)
+- [x] Stop signed-in pages scrolling past their content into blank space: bottom-nav clearance now reserved once (78px + safe-area) in the shared layout and the dashboard/garage wrappers; retuned the blog page that compensated for the old value.
+- [x] Verified on phones (430x932, 393x786): home, vehicles, reports, documents, shops, tow trucks, profile, rights, blog and fault guide — last item clears the nav, no blank tail, no horizontal overflow, no page errors.

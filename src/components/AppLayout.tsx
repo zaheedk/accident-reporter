@@ -149,7 +149,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </div>
       )}
 
-      <main className="relative isolate w-full max-w-2xl lg:max-w-5xl mx-auto px-4 lg:px-8 py-5 pb-32">
+      {/* Bottom space = bottom nav height (62px) + a small gap. Anything larger
+          adds dead scroll that reveals nothing but blank space below the content. */}
+      <main
+        className="relative isolate w-full max-w-2xl lg:max-w-5xl mx-auto px-4 lg:px-8 py-5"
+        style={{ paddingBottom: 'calc(78px + env(safe-area-inset-bottom, 0px))' }}
+      >
         {user && <AccountBackdrop pathname={location.pathname} />}
         <div className="relative account-content">{children}</div>
       </main>
