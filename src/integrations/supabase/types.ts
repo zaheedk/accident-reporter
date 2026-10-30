@@ -1270,24 +1270,30 @@ export type Database = {
           auth: string
           created_at: string
           endpoint: string
+          expiry_enabled: boolean
           id: string
           p256dh: string
+          quiz_enabled: boolean
           user_id: string
         }
         Insert: {
           auth: string
           created_at?: string
           endpoint: string
+          expiry_enabled?: boolean
           id?: string
           p256dh: string
+          quiz_enabled?: boolean
           user_id: string
         }
         Update: {
           auth?: string
           created_at?: string
           endpoint?: string
+          expiry_enabled?: boolean
           id?: string
           p256dh?: string
+          quiz_enabled?: boolean
           user_id?: string
         }
         Relationships: []
