@@ -231,7 +231,9 @@ serve(async (req) => {
           user_metadata: { phone_number: e164Phone, full_name: "" },
         });
 
-        if (createError) {
+        // The phone account may already exist even if its profile lost the phone number.
+        const alreadyExists = (createError as { code?: string } | null)?.code === "email_exists";
+        if (createError && !alreadyExists) {
           console.error("Create user error:", createError);
           return new Response(
             JSON.stringify({ error: "Failed to create account" }),
@@ -251,6 +253,13 @@ serve(async (req) => {
           email: fakeEmail,
         });
 
+        if (!signInError && alreadyExists && signInData?.user?.id) {
+          await supabaseAdmin
+            .from("profiles")
+            .update({ phone_number: e164Phone })
+            .eq("user_id", signInData.user.id);
+        }
+
         if (signInError) {
           return new Response(
             JSON.stringify({ error: "Account created but sign-in failed" }),
@@ -261,7 +270,7 @@ serve(async (req) => {
         return new Response(
           JSON.stringify({
             success: true,
-            isNewUser: true,
+            isNewUser: !alreadyExists,
             token: signInData?.properties?.hashed_token,
             actionLink: signInData?.properties?.action_link,
           }),
