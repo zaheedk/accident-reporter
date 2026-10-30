@@ -31,6 +31,7 @@ serve(async (req) => {
     const { data: subs, error } = await supabase
       .from('push_subscriptions')
       .select('user_id')
+      .eq('quiz_enabled', true)
       .limit(MAX_USERS_PER_RUN * 4);
 
     if (error) throw error;
@@ -53,14 +54,18 @@ serve(async (req) => {
           },
           body: JSON.stringify({
             user_id: userId,
-            title: "Today's 3 fault questions",
-            body: "Who's at fault? Answer today's 3 NZ road scenarios and keep your streak alive.",
+            title: "Your daily NZ road & rights quiz",
+            body: "Three NZ driving, accident and insurance questions are ready.",
             url: '/fault-quiz',
             tag: 'savo-fault-quiz',
+            kind: 'quiz',
           }),
         });
-        if (res.ok) sent++;
-        else errors.push(`send-push ${res.status} for one user`);
+        const result = await res.json().catch(() => ({}));
+        if (res.ok) {
+          sent += Number(result.sent || 0);
+          if (result.errors?.length) errors.push(...result.errors);
+        } else errors.push(`send-push ${res.status} for one user`);
       } catch (e: unknown) {
         errors.push(e instanceof Error ? e.message : 'Unknown error');
       }
