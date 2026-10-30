@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { Car, Plus, AlertTriangle, ChevronRight, User, Shield, Phone, Search, MapPin, X, MessageSquare, FileWarning, ShieldAlert, CalendarClock, ArrowUpRight, Activity, FileText, Wrench, Truck, BookOpen, Lightbulb, Star, Users, Ambulance, Camera, Zap, Scale, Radar, Building2 } from 'lucide-react';
+import { Car, Plus, AlertTriangle, ChevronRight, User, Shield, Phone, Search, MapPin, X, MessageSquare, FileWarning, ShieldAlert, CalendarClock, ArrowUpRight, Activity, FileText, Wrench, Truck, BookOpen, Lightbulb, Star, Users, Ambulance, Camera, Zap, Scale, Radar, Building2, CircleHelp } from 'lucide-react';
 import { getVehicles, getClaims } from '@/lib/storage';
 import { useAuth } from '@/contexts/AuthContext';
 import AppLayout from '@/components/AppLayout';
@@ -533,33 +533,28 @@ export default function Dashboard() {
 
 
 
-              {/* Mobile emergency actions — big standalone circles with text inside */}
-              <motion.div variants={fadeUp} className="md:hidden">
-                <div className="flex items-center justify-center gap-12">
-                  <Button variant="unstyled" size="unstyled"
-                    onClick={() => setAccidentSheetOpen(true)}
-                    className="relative flex flex-col items-center justify-center w-[120px] h-[120px] rounded-3xl bg-secondary text-foreground active:scale-[0.96] transition-transform"
-                  >
-                    <span aria-hidden="true" className="absolute inset-2 rounded-full border border-primary/40" />
-                    <span aria-hidden="true" className="absolute inset-4 rounded-full bg-primary/10" />
-                    <span className="relative flex flex-col items-center justify-center text-center px-3">
-                      <AccountArtwork kind="report" className="w-12 h-12 mb-1" />
-                      <span className="text-[11px] font-bold leading-tight">Had an<br />accident?</span>
+              {/* Primary capture and separate emergency action */}
+              <motion.div variants={fadeUp} className="space-y-3">
+                <Button asChild className="w-full h-auto min-h-16 justify-start gap-4 rounded-xl px-5 py-4 text-left whitespace-normal [&_svg]:size-6">
+                  <Link to="/claims/quick-capture" aria-label="Capture an accident">
+                    <Camera aria-hidden="true" />
+                    <span className="min-w-0 flex-1">
+                      <span className="block text-base font-bold leading-snug">Capture an accident</span>
+                      <span className="block text-sm font-normal leading-snug mt-1">Photos, details and evidence</span>
                     </span>
-                  </Button>
-                  <a
-                    href="tel:111"
-                    className="relative flex flex-col items-center justify-center w-[120px] h-[120px] rounded-3xl bg-secondary text-foreground active:scale-[0.96] transition-transform"
-                  >
-                    <span aria-hidden="true" className="absolute inset-2 rounded-full border border-accent/40" />
-                    <span aria-hidden="true" className="absolute inset-4 rounded-full bg-accent/10" />
-                    <span className="relative flex flex-col items-center justify-center text-center px-3">
-                      <AccountArtwork kind="shield" className="w-10 h-10 mb-1" />
-                      <span className="text-[13px] font-bold leading-tight">111</span>
-                      <span className="text-[10px] text-muted-foreground leading-tight mt-0.5">Call police</span>
+                    <ChevronRight aria-hidden="true" />
+                  </Link>
+                </Button>
+                <Button asChild variant="outline" className="w-full h-auto min-h-14 justify-start gap-4 rounded-xl border-destructive/30 bg-background px-5 py-3 text-destructive hover:bg-destructive/5 hover:text-destructive whitespace-normal [&_svg]:size-5">
+                  <a href="tel:111" aria-label="Call 111 — emergency services">
+                    <Phone aria-hidden="true" />
+                    <span className="flex-1 text-left min-w-0">
+                      <span className="block text-sm font-bold">Call 111</span>
+                      <span className="block text-xs text-foreground mt-0.5">Emergency services</span>
                     </span>
+                    <ArrowUpRight aria-hidden="true" />
                   </a>
-                </div>
+                </Button>
               </motion.div>
 
               {/* Vehicle cards — Apple/Linear flat thumbnails */}
@@ -750,31 +745,23 @@ export default function Dashboard() {
               </motion.div>
 
               {/* Community tools — quiz, hazard radar, council reporting */}
-              <motion.div variants={fadeUp} className="grid grid-cols-3 gap-2">
-                <Link
-                  to="/fault-quiz"
-                  className="rounded-3xl bg-secondary/60 p-4 flex flex-col gap-2 hover:bg-secondary transition-colors"
-                >
-                  <AccountArtwork kind="shield" className="w-12 h-12" />
-                  <span className="text-[12px] font-semibold text-foreground leading-tight">Who's at fault?</span>
-                  <span className="text-[10px] text-muted-foreground leading-tight">Daily quiz</span>
-                </Link>
-                <Link
-                  to="/hazard-radar"
-                  className="rounded-3xl bg-secondary/60 p-4 flex flex-col gap-2 hover:bg-secondary transition-colors"
-                >
-                  <AccountArtwork kind="garage" className="w-12 h-12" />
-                  <span className="text-[12px] font-semibold text-foreground leading-tight">Hazard radar</span>
-                  <span className="text-[10px] text-muted-foreground leading-tight">Live near you</span>
-                </Link>
-                <Link
-                  to="/report-to-council"
-                  className="rounded-3xl bg-secondary/60 p-4 flex flex-col gap-2 hover:bg-secondary transition-colors"
-                >
-                  <AccountArtwork kind="report" className="w-12 h-12" />
-                  <span className="text-[12px] font-semibold text-foreground leading-tight">Report a fault</span>
-                  <span className="text-[10px] text-muted-foreground leading-tight">To your council</span>
-                </Link>
+              <motion.div variants={fadeUp} className="divide-y divide-border border-y border-border">
+                {[
+                  { to: '/fault-quiz', icon: CircleHelp, label: 'Daily driving quiz', detail: 'NZ road rules & your rights', tone: 'text-primary' },
+                  { to: '/hazard-radar', icon: AlertTriangle, label: 'Nearby road hazards', detail: 'Live alerts near you', tone: 'text-warning' },
+                  { to: '/report-to-council', icon: MapPin, label: 'Report a road problem', detail: 'Send details to your council', tone: 'text-foreground' },
+                ].map(({ to, icon: Icon, label, detail, tone }) => (
+                  <Button key={to} asChild variant="ghost" className="w-full h-auto min-h-16 justify-start gap-4 rounded-none px-2 py-3 whitespace-normal hover:bg-secondary/50 [&_svg]:size-6">
+                    <Link to={to} aria-label={label}>
+                      <Icon aria-hidden="true" className={tone} />
+                      <span className="min-w-0 flex-1 text-left">
+                        <span className="block text-sm font-semibold text-foreground">{label}</span>
+                        <span className="block text-xs text-muted-foreground mt-1">{detail}</span>
+                      </span>
+                      <ChevronRight aria-hidden="true" className="text-muted-foreground" />
+                    </Link>
+                  </Button>
+                ))}
               </motion.div>
 
 
@@ -782,16 +769,14 @@ export default function Dashboard() {
               <motion.div variants={fadeUp}>
                 <Link
                   to="/family"
-                  className="flex items-center gap-3 p-4 rounded-3xl bg-secondary/60 hover:bg-secondary transition-colors group"
+                  className="flex items-center gap-4 px-2 py-3 hover:bg-secondary/50 transition-colors group"
                 >
-                  <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                    <AccountArtwork kind="family" className="w-12 h-12" />
-                  </div>
+                  <Users aria-hidden="true" className="w-6 h-6 text-primary shrink-0" />
                   <div className="flex-1 min-w-0">
                     <div className="text-[14px] font-semibold text-foreground tracking-[-0.01em]">
                       {familyInfo?.inFamily ? 'Your family' : 'Invite your family'}
                     </div>
-                    <div className="text-[12px] text-muted-foreground truncate">
+                    <div className="text-xs text-muted-foreground leading-relaxed mt-1">
                       {familyInfo?.inFamily
                         ? `${familyInfo.memberCount} member${familyInfo.memberCount === 1 ? '' : 's'} · share vehicles & reports`
                         : 'Share vehicles, reports and reminders with your household'}
