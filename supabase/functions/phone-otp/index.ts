@@ -270,7 +270,7 @@ serve(async (req) => {
         return new Response(
           JSON.stringify({
             success: true,
-            isNewUser: true,
+            isNewUser: !alreadyExists,
             token: signInData?.properties?.hashed_token,
             actionLink: signInData?.properties?.action_link,
           }),
