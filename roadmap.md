@@ -1,5 +1,10 @@
 # App Store release preparation
 
+## Notification repairs (Oct 30)
+- [ ] Repair separate quiz/expiry opt-ins and browser subscription persistence.
+- [ ] Add native on-device daily and expiry reminders, including permission handling and rescheduling.
+- [ ] Verify scheduler health, reminder calculations, and signed-in controls; document physical-device verification limits.
+
 ## iOS archive failure
 - [x] Replace unsupported target-conditional signing overlay with App-target project settings and preserve archive diagnostics on failure.
 - [x] Validate signing helper (2 tests, 13 assertions), release helpers (4 tests), workflow YAML and all 24 shell blocks.
