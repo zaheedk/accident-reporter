@@ -1,9 +1,11 @@
 # App Store release preparation
 
 ## Notification repairs (Oct 30)
-- [ ] Repair separate quiz/expiry opt-ins and browser subscription persistence.
-- [ ] Add native on-device daily and expiry reminders, including permission handling and rescheduling.
-- [ ] Verify scheduler health, reminder calculations, and signed-in controls; document physical-device verification limits.
+- [x] Repair separate quiz/expiry opt-ins, browser subscription persistence and modern Web Push delivery; deployed all three reminder functions.
+- [x] Add native on-device daily and expiry reminders with permissions, refresh after edits/resume and cancellation at sign-out; synchronize package locks for CI.
+- [x] Pass 22 tests and verify signed-in quiz/profile permission-denied controls with no page errors; confirmed active reminder schedules and one browser subscription.
+- [ ] Confirm actual scheduled browser/email delivery — blocked by timing-dependent delivery and unavailable scheduler history (query timeouts); schedules being active alone does not verify receipt.
+- [ ] Rebuild/install TestFlight, enable both reminder choices and verify phone delivery — blocked by unavailable macOS/physical-device execution. Native reminders use 8am device time; expiry schedules refresh when opening SAVO after changes elsewhere.
 
 ## iOS archive failure
 - [x] Replace unsupported target-conditional signing overlay with App-target project settings and preserve archive diagnostics on failure.
