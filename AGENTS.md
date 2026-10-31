@@ -9,4 +9,5 @@
 - Signed-in presentation uses the shared AccountArtwork module and signed-in-experience CSS scope, so customer and role pages inherit one visual system without changing data workflows or public/print styles.
 - Daily fault quiz imagery uses scenario-specific vector road diagrams with NZ left-driving geometry; never reuse generic category pictures or crop the diagram, because positions and movement determine the scenario.
 - Store original NZ knowledge questions separately from fault diagrams, with topic and source metadata; daily and practice modes share the bank, while practice must not change daily streaks.
+- Daily quiz selection rotates distinct topics deterministically; preserve already-started legacy sets during rollout, mix all-topic practice, and keep topic artwork separate from exact fault diagrams.
 - Reserve bottom space for the fixed bottom nav exactly once (shared layout padding or a page wrapper's padding with its matching negative margin, currently 78px + safe-area); stacking both makes signed-in pages scroll past their content into blank space.

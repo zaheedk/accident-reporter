@@ -264,7 +264,17 @@ export function practiceQuestions(topic: QuizTopic | 'all', count = 10): QuizSce
     const j = Math.floor(Math.random() * (i + 1));
     [pool[i], pool[j]] = [pool[j], pool[i]];
   }
-  return pool.slice(0, count);
+  if (topic !== 'all') return pool.slice(0, count);
+  const topics = Object.keys(QUIZ_TOPICS) as QuizTopic[];
+  topics.sort(() => Math.random() - 0.5);
+  const mixed: QuizScenario[] = [];
+  while (mixed.length < Math.min(count, pool.length)) {
+    for (const category of topics) {
+      const question = pool.find(q => q.category === category && !mixed.includes(q));
+      if (question && mixed.length < count) mixed.push(question);
+    }
+  }
+  return mixed;
 }
 
 function dayNumberFor(date: Date): number {
@@ -279,11 +289,19 @@ export function scenarioForDate(date = new Date()): QuizScenario {
 }
 
 /** Deterministic set of QUESTIONS_PER_DAY scenarios for the given local date. */
-export function scenariosForDate(date = new Date()): QuizScenario[] {
+export function scenariosForDate(date = new Date(), answeredIds: string[] = []): QuizScenario[] {
   const day = Math.abs(dayNumberFor(date));
-  const total = quizScenarios.length;
-  const start = (day * QUESTIONS_PER_DAY) % total;
-  return Array.from({ length: QUESTIONS_PER_DAY }, (_, i) => quizScenarios[(start + i) % total]);
+  // Keep a set already started before the mixed-topic rollout intact.
+  const start = (day * QUESTIONS_PER_DAY) % quizScenarios.length;
+  const legacy = Array.from({ length: QUESTIONS_PER_DAY }, (_, i) => quizScenarios[(start + i) % quizScenarios.length]);
+  if (answeredIds.length && answeredIds.every(id => legacy.some(q => q.id === id))) return legacy;
+  const topics = Object.keys(QUIZ_TOPICS) as QuizTopic[];
+  return Array.from({ length: QUESTIONS_PER_DAY }, (_, i) => {
+    const category = topics[(day + i * 2) % topics.length];
+    const pool = quizScenarios.filter(q => q.category === category);
+    // A coprime stride cycles through each topic's bank instead of adjacent questions.
+    return pool[(Math.floor(day / topics.length) * 13 + i * 11) % pool.length];
+  });
 }
 
 export function todayKey(date = new Date()): string {

@@ -1,5 +1,10 @@
 # App Store release preparation
 
+## Quiz completion and variety
+- [x] Add a clear finish action and persistent back-to-home link returning to the dashboard.
+- [x] Mix distinct daily topics and all-topic practice; add four relevant knowledge illustrations while preserving exact fault diagrams and already-started daily sets.
+- [x] Pass 18 tests and verify three-topic daily completion, Finish navigation, loaded practice imagery and phone layout without horizontal overflow or page errors.
+
 ## Submitted report deletion
 - [x] Protect submitted reports in all deletion controls, check live status before cleanup, and restrict database deletion to draft/saved.
 - [x] Keep existing reports displayed as submitted protected, persist distinct submission status, and allow status changes on report details.
