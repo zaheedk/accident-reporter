@@ -1,5 +1,10 @@
 # App Store release preparation
 
+## Submitted report deletion
+- [x] Protect submitted reports in all deletion controls, check live status before cleanup, and restrict database deletion to draft/saved.
+- [x] Keep existing reports displayed as submitted protected, persist distinct submission status, and allow status changes on report details.
+- [x] Pass four rule tests and verify signed-in submitted protection, database rejection, saved status readback and confirmed deletion with an isolated test report.
+
 ## Dashboard action clarity (Oct 30)
 - [x] Replace ring actions with prominent accident capture and a distinct emergency call; simplify secondary tools into clear icon-and-label rows.
 - [x] Verified signed-in mobile layouts at 430px and 375px: clear labels, distinct symbols, no horizontal overflow or page errors; accident capture opens its seven-step flow and emergency call retains tel:111.
