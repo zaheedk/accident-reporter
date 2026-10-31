@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button';
 import { getThumbnailUrl } from '@/lib/image-url';
 import { useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
+import { canDeleteClaim, SUBMITTED_DELETE_MESSAGE } from '@/lib/claim-status';
 
 type FilterType = 'all' | 'draft' | 'saved';
 
@@ -33,14 +34,19 @@ export default function ClaimList() {
 
   const handleDelete = async () => {
     if (!deleteId) return;
+    if (!canDeleteClaim(claims.find(c => c.id === deleteId)?.status || '')) {
+      toast.error(SUBMITTED_DELETE_MESSAGE);
+      setDeleteId(null);
+      return;
+    }
     setDeleting(true);
     try {
       await deleteClaim(deleteId);
       setClaims(prev => prev.filter(c => c.id !== deleteId));
       queryClient.invalidateQueries({ queryKey: ['claims'] });
       toast.success('Report deleted');
-    } catch {
-      toast.error('Failed to delete report');
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Failed to delete report');
     } finally {
       setDeleting(false);
       setDeleteId(null);
@@ -473,6 +479,8 @@ export default function ClaimList() {
                             <Button variant="unstyled" size="unstyled"
                               onClick={(e) => { e.preventDefault(); e.stopPropagation(); setDeleteId(c.id); }}
                               aria-label="Delete report"
+                              disabled={!canDeleteClaim(c.status)}
+                              title={canDeleteClaim(c.status) ? 'Delete report' : SUBMITTED_DELETE_MESSAGE}
                               className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground/60 hover:text-destructive hover:bg-destructive/10 transition-colors shrink-0"
                             >
                               <Trash2 className="w-3.5 h-3.5" />
@@ -482,7 +490,7 @@ export default function ClaimList() {
                             <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-medium ${statusTone}`}>
                               <span className={`w-1.5 h-1.5 rounded-full ${dotTone}`} />
                               <span className="opacity-70">Status</span>
-                              <span>{isDraft ? 'Draft' : 'Submitted'}</span>
+                              <span>{isDraft ? 'Draft' : c.status === 'saved' ? 'Saved' : 'Submitted'}</span>
                             </span>
                             {c.incidentLocation && (
                               <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-medium text-foreground/70 bg-muted/60 truncate max-w-[200px]">

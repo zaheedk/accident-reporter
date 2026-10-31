@@ -9,6 +9,7 @@ import { PhotoCapture } from '@/components/PhotoCapture';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ClaimReport, ThirdPartyVehicle, Witness, Vehicle, WEATHER_OPTIONS, ROAD_OPTIONS } from '@/types';
 import { deleteClaim, getVehicles, saveClaim } from '@/lib/storage';
+import { canDeleteClaim, SUBMITTED_DELETE_MESSAGE } from '@/lib/claim-status';
 
 import { supabase } from '@/integrations/supabase/client';
 import { resolveClaimId } from '@/lib/claim-id';
@@ -205,6 +206,7 @@ export default function ClaimWizard() {
 
   const handleDeleteReport = async () => {
     if (!claim.id) return;
+    if (!canDeleteClaim(claim.status)) { toast.error(SUBMITTED_DELETE_MESSAGE); return; }
     setDeleting(true);
     try {
       await deleteClaim(claim.id);
@@ -224,7 +226,7 @@ export default function ClaimWizard() {
   const submit = async () => {
     if (submitting) return;
     setSubmitting(true);
-    await saveClaim({ ...claim, status: 'saved' as const, updatedAt: new Date().toISOString() });
+    await saveClaim({ ...claim, status: 'submitted' as const, updatedAt: new Date().toISOString() });
     let recipientEmail = user?.email || '';
     const isPhoneUser = recipientEmail.endsWith('@savo.phone.local');
     if (isPhoneUser) {
@@ -354,9 +356,9 @@ export default function ClaimWizard() {
               {claim.id && (
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
-                    <Button variant="unstyled" size="unstyled" type="button" disabled={deleting}
+                    <Button variant="unstyled" size="unstyled" type="button" disabled={deleting || !canDeleteClaim(claim.status)}
                       className="w-9 h-9 rounded-lg hover:bg-muted transition-colors disabled:opacity-50 flex items-center justify-center"
-                      title="Delete report">
+                      title={canDeleteClaim(claim.status) ? 'Delete report' : SUBMITTED_DELETE_MESSAGE}>
                       <Trash2 className="w-4 h-4 text-muted-foreground" strokeWidth={2} />
                     </Button>
                   </AlertDialogTrigger>
@@ -398,9 +400,9 @@ export default function ClaimWizard() {
               {claim.id ? (
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
-                    <Button variant="unstyled" size="unstyled" type="button" disabled={deleting}
+                    <Button variant="unstyled" size="unstyled" type="button" disabled={deleting || !canDeleteClaim(claim.status)}
                       className="w-9 h-9 -mr-1 rounded-full hover:bg-background/10 transition-colors disabled:opacity-50 flex items-center justify-center text-muted-foreground hover:text-foreground"
-                      title="Delete report">
+                      title={canDeleteClaim(claim.status) ? 'Delete report' : SUBMITTED_DELETE_MESSAGE}>
                       <Trash2 className="w-4 h-4" strokeWidth={2} />
                     </Button>
                   </AlertDialogTrigger>

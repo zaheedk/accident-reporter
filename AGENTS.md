@@ -1,4 +1,5 @@
 # Project rules
+- Report submission persists a distinct submitted status; shared deletion guards check the live status before attachment cleanup, and database deletion policies only permit draft or saved reports.
 - Native quiz and expiry reminders use Capacitor local notifications, scoped to the signed-in user's device preferences and refreshed after edits/resume; browser reminders use separately opted-in Web Push subscriptions. Local expiry schedules use the device timezone and refresh when the app opens, avoiding APNs/FCM credentials for date-based reminders.
 - SEO dashboard reads cached Search Console snapshots (seo_snapshots) via the admin-only seo-dashboard function, refreshed at most every 12h — avoids hitting Google on every page view.
 - Keep App Store materials in release/app-store and generate the native iOS project in CI; release helpers validate and embed its resources so the existing Capacitor workflow stays reproducible.

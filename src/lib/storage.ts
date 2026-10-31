@@ -9,6 +9,7 @@ import {
 } from '@/lib/offline-mutations';
 import { isOnline } from '@/lib/sync-engine';
 import { writeWidgetVehiclesToDevice } from '@/lib/widget-setup';
+import { canDeleteClaim, SUBMITTED_DELETE_MESSAGE } from '@/lib/claim-status';
 
 // Helper to resolve user id – uses getSession() (reads from local storage,
 // no Web Lock) instead of getUser() to avoid "Lock was stolen by another
@@ -249,6 +250,10 @@ export async function saveClaim(claim: ClaimReport, userId?: string): Promise<st
 }
 
 export async function deleteClaim(id: string): Promise<void> {
+  // Check the current server status before touching any attachments.
+  const { data: claim, error: statusError } = await supabase.from('claims').select('status').eq('id', id).single();
+  if (statusError) throw statusError;
+  if (!claim || !canDeleteClaim(claim.status)) throw new Error(SUBMITTED_DELETE_MESSAGE);
   // Claims can have dependent rows (photos, messages, repair requests, etc.).
   // Delete dependents first to avoid FK constraint failures.
   try {
@@ -285,8 +290,9 @@ export async function deleteClaim(id: string): Promise<void> {
     }
     await supabase.from('call_recordings').delete().eq('claim_id', id);
 
-    const { error } = await supabase.from('claims').delete().eq('id', id);
+    const { data: deleted, error } = await supabase.from('claims').delete().eq('id', id).in('status', ['draft', 'saved']).select('id').single();
     if (error) throw error;
+    if (!deleted) throw new Error(SUBMITTED_DELETE_MESSAGE);
   } catch (error) {
     console.error('deleteClaim', error);
     throw error;

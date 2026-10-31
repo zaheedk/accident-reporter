@@ -1,0 +1,1 @@
+ALTER POLICY "Users can delete own claims" ON public.claims USING (auth.uid() = user_id AND status IN ('draft', 'saved'));

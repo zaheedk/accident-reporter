@@ -21,6 +21,8 @@ import SignaturePad, { DECLARATION_TEXT } from '@/components/SignaturePad';
 import DamageAssessor from '@/components/DamageAssessor';
 import { FileSignature, CheckCircle2, Sparkles } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
+import { canDeleteClaim, SUBMITTED_DELETE_MESSAGE } from '@/lib/claim-status';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 export default function ClaimDetail() {
   const { id } = useParams();
@@ -64,17 +66,35 @@ export default function ClaimDetail() {
   const [defaultSignerName, setDefaultSignerName] = useState('');
   const [brokerEmail, setBrokerEmail] = useState('');
   const [brokerName, setBrokerName] = useState('');
+  const [changingStatus, setChangingStatus] = useState(false);
+
+  const changeStatus = async (status: ClaimReport['status']) => {
+    if (!claim || changingStatus) return;
+    setChangingStatus(true);
+    try {
+      const { data, error } = await supabase.from('claims').update({ status }).eq('id', claim.id).select('status').single();
+      if (error) throw error;
+      setClaim(prev => prev ? { ...prev, status: data.status as ClaimReport['status'] } : prev);
+      queryClient.invalidateQueries({ queryKey: ['claims'] });
+      toast.success('Report status updated');
+    } catch {
+      toast.error('Could not change report status');
+    } finally {
+      setChangingStatus(false);
+    }
+  };
 
   const handleDelete = async () => {
     if (!claim) return;
+    if (!canDeleteClaim(claim.status)) { toast.error(SUBMITTED_DELETE_MESSAGE); return; }
     setDeleting(true);
     try {
       await deleteClaim(claim.id);
       queryClient.invalidateQueries({ queryKey: ['claims'] });
       toast.success('Report deleted');
       navigate('/claims');
-    } catch {
-      toast.error('Failed to delete report');
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Failed to delete report');
     } finally {
       setDeleting(false);
       setDeleteDialogOpen(false);
@@ -559,7 +579,7 @@ export default function ClaimDetail() {
                   {reportTitle}
                 </h1>
                 <p className="text-[13px] text-muted-foreground mt-1 truncate">
-                  {claim.status === 'draft' ? 'Draft' : 'Saved'}{claim.incidentDate ? ` · ${claim.incidentDate}` : ''}{vehicle?.regoNumber ? ` · ${vehicle.regoNumber}` : ''}
+                  {claim.status === 'draft' ? 'Draft' : claim.status === 'saved' ? 'Saved' : 'Submitted'}{claim.incidentDate ? ` · ${claim.incidentDate}` : ''}{vehicle?.regoNumber ? ` · ${vehicle.regoNumber}` : ''}
                 </p>
               </div>
             </div>
@@ -573,16 +593,28 @@ export default function ClaimDetail() {
               <Button variant="unstyled" size="unstyled" onClick={handlePrint} className="w-9 h-9 rounded-lg hover:bg-muted transition-colors flex items-center justify-center" title="Download as PDF">
                 <Download className="w-[18px] h-[18px] text-muted-foreground" strokeWidth={1.8} />
               </Button>
-              <Button variant="unstyled" size="unstyled" onClick={() => setDeleteDialogOpen(true)} className="w-9 h-9 rounded-lg hover:bg-destructive/10 transition-colors flex items-center justify-center" title="Delete report">
+              <Button variant="unstyled" size="unstyled" disabled={!canDeleteClaim(claim.status) || changingStatus} onClick={() => setDeleteDialogOpen(true)} className="w-9 h-9 rounded-lg hover:bg-destructive/10 transition-colors flex items-center justify-center" title={canDeleteClaim(claim.status) ? 'Delete report' : SUBMITTED_DELETE_MESSAGE}>
                 <Trash2 className="w-[18px] h-[18px] text-destructive" strokeWidth={1.8} />
               </Button>
             </div>
+          </div>
+          <div className="print:hidden flex flex-wrap items-center gap-3">
+            <span className="text-sm text-muted-foreground">Report status</span>
+            <Select value={claim.status} disabled={changingStatus || deleting} onValueChange={value => changeStatus(value as ClaimReport['status'])}>
+              <SelectTrigger aria-label="Report status" className="w-40"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="draft">Draft</SelectItem>
+                <SelectItem value="saved">Saved</SelectItem>
+                <SelectItem value="submitted">Submitted</SelectItem>
+              </SelectContent>
+            </Select>
+            {!canDeleteClaim(claim.status) && <p className="text-sm text-muted-foreground">{SUBMITTED_DELETE_MESSAGE}</p>}
           </div>
           {claim.atFault === 'other_party' && <Free2DriveOffer source="claim-detail" title="Not your fault? Get a free replacement car" />}
 
           <div className="hidden print:block mb-6">
             <h1 className="text-xl font-bold text-foreground">Incident report</h1>
-            <p className="text-sm text-muted-foreground">Date: {claim.incidentDate} · Status: {claim.status === 'draft' ? 'Draft' : 'Saved'}</p>
+            <p className="text-sm text-muted-foreground">Date: {claim.incidentDate} · Status: {claim.status === 'draft' ? 'Draft' : claim.status === 'saved' ? 'Saved' : 'Submitted'}</p>
           </div>
 
           {/* Body */}
@@ -610,7 +642,7 @@ export default function ClaimDetail() {
                 <div className="px-3.5 pt-3 pb-2 text-[11px] font-medium text-muted-foreground">Report</div>
                 <div className="divide-y divide-border">
                   {[
-                    { label: 'Status', value: claim.status === 'draft' ? 'Draft' : 'Saved' },
+                    { label: 'Status', value: claim.status === 'draft' ? 'Draft' : claim.status === 'saved' ? 'Saved' : 'Submitted' },
                     { label: displayRefLabel === 'Report' ? 'Report #' : `${displayRefLabel} #`, value: displayRef ? `#${displayRef}` : '' },
                     { label: 'Date', value: claim.incidentDate },
                     { label: 'Vehicle', value: vehicleSummary },
