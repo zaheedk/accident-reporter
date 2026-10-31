@@ -300,7 +300,7 @@ export function scenariosForDate(date = new Date(), answeredIds: string[] = []):
     const category = topics[(day + i * 2) % topics.length];
     const pool = quizScenarios.filter(q => q.category === category);
     // A coprime stride cycles through each topic's bank instead of adjacent questions.
-    return pool[(Math.floor(day / topics.length) * 7 + i * 11) % pool.length];
+    return pool[(Math.floor(day / topics.length) * 13 + i * 11) % pool.length];
   });
 }
 
