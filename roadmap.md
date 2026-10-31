@@ -1,5 +1,10 @@
 # App Store release preparation
 
+## Quiz completion and variety
+- [ ] Add a clear finish action returning to the dashboard.
+- [ ] Mix daily question topics and add relevant knowledge-question imagery while preserving fault diagrams.
+- [ ] Test topic selection and verify quiz completion and navigation.
+
 ## Submitted report deletion
 - [x] Protect submitted reports in all deletion controls, check live status before cleanup, and restrict database deletion to draft/saved.
 - [x] Keep existing reports displayed as submitted protected, persist distinct submission status, and allow status changes on report details.
