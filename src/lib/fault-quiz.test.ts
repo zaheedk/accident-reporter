@@ -26,6 +26,24 @@ describe('NZ question bank', () => {
 
 describe('daily and practice selection', () => {
   beforeEach(() => localStorage.clear());
+  it('mixes three different topics every day rather than grouping excess questions', () => {
+    for (let day = 1; day <= 365; day++) {
+      const questions = scenariosForDate(new Date(2026, 0, day));
+      expect(new Set(questions.map(q => q.category)).size).toBe(3);
+    }
+  });
+  it('mixes all five topics in all-topic practice without adjacent matching topics', () => {
+    const questions = practiceQuestions('all');
+    expect(new Set(questions.map(q => q.category)).size).toBe(5);
+    questions.slice(1).forEach((q, i) => expect(q.category).not.toBe(questions[i].category));
+  });
+  it('preserves a previously started daily set during the selection change', () => {
+    const date = new Date(2026, 9, 31);
+    const day = Math.floor(Date.UTC(2026, 9, 31) / 86400000);
+    const start = day * 3 % quizScenarios.length;
+    const legacy = [0, 1, 2].map(i => quizScenarios[(start + i) % quizScenarios.length]);
+    expect(scenariosForDate(date, [legacy[0].id])).toEqual(legacy);
+  });
   it('serves three distinct deterministic daily questions', () => {
     const date = new Date(2026, 9, 28);
     expect(scenariosForDate(date)).toEqual(scenariosForDate(date));

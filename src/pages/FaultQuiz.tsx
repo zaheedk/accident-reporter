@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { CheckCircle2, XCircle, Share2, ChevronRight, Bell, BellOff, ArrowLeft, ArrowRight, RotateCcw, ExternalLink } from 'lucide-react';
 import AppLayout from '@/components/AppLayout';
 import QuizDiagram from '@/components/QuizDiagram';
+import QuizArtwork from '@/components/QuizArtwork';
 import LegalDisclaimer from '@/components/LegalDisclaimer';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -12,7 +13,7 @@ import { usePushNotifications } from '@/hooks/use-push-notifications';
 import { QUESTIONS_PER_DAY, QUIZ_TOPICS, quizScenarios, loadProgress, recordAnswer, scenariosForDate, practiceQuestions, type QuizTopic, type QuizProgress, type QuizScenario } from '@/lib/fault-quiz';
 
 export default function FaultQuiz() {
-  const daily = useMemo(() => scenariosForDate(), []);
+  const daily = useMemo(() => scenariosForDate(new Date(), Object.keys(loadProgress().dayAnswers)), []);
   const [progress, setProgress] = useState<QuizProgress>(() => loadProgress());
   const [mode, setMode] = useState('daily');
   const [topic, setTopic] = useState<QuizTopic | 'all'>('all');
@@ -55,6 +56,7 @@ export default function FaultQuiz() {
   return <AppLayout>
     <div className="max-w-2xl mx-auto space-y-6">
       <header className="space-y-2">
+        <Button asChild variant="ghost" className="-ml-3"><Link to="/dashboard"><ArrowLeft />Back to home</Link></Button>
         <p className="text-xs font-semibold text-primary">{quizScenarios.length} questions · New Zealand</p>
         <h1 className="text-3xl font-display text-foreground">NZ road & rights quiz</h1>
         <p className="text-sm text-muted-foreground">Driving rules, accidents, privacy and insurance.</p>
@@ -87,11 +89,14 @@ export default function FaultQuiz() {
       <div className="flex items-center justify-between gap-2">
         <Button variant="ghost" disabled={index === 0} onClick={() => setIndex(i => i - 1)} aria-label="Previous question"><ArrowLeft /><span className="hidden sm:inline">Previous</span></Button>
         <span className="text-sm text-muted-foreground tabular-nums">{index + 1} / {scenarios.length}</span>
-        <Button disabled={!current || !answers[current.id] || index === scenarios.length - 1} onClick={() => setIndex(i => i + 1)} aria-label="Next question">Next<ArrowRight /></Button>
+        {allDone && index === scenarios.length - 1
+          ? <Button asChild><Link to="/dashboard">Finish<CheckCircle2 /></Link></Button>
+          : <Button disabled={!current || !answers[current.id] || index === scenarios.length - 1} onClick={() => setIndex(i => i + 1)} aria-label="Next question">Next<ArrowRight /></Button>}
       </div>
       {allDone && <section className="border-t border-border pt-6 space-y-4" aria-label="Quiz results">
         <h2 className="font-display text-2xl text-foreground">{score} / {scenarios.length} — {mode === 'daily' ? "today’s set complete" : 'practice complete'}</h2>
         <div className="flex flex-wrap gap-2">
+          <Button asChild><Link to="/dashboard"><CheckCircle2 />Finish — back to home</Link></Button>
           {mode === 'practice' ? <Button onClick={() => restartPractice()}><RotateCcw />New practice set</Button> : <Button onClick={handleShare}><Share2 />Challenge a mate</Button>}
           <Button asChild variant="outline"><Link to="/fault-guide">Fault guide<ChevronRight /></Link></Button>
         </div>
@@ -110,6 +115,7 @@ function QuestionCard({ index, scenario, choice, onChoose }: { index: number; sc
   const isCorrect = choice === scenario.answerId;
   return <section className="space-y-4" aria-label={`Question ${index + 1}`}>
     {scenario.diagramId && <QuizDiagram id={scenario.diagramId} description={scenario.imageAlt} />}
+    {!scenario.diagramId && <QuizArtwork topic={scenario.category} />}
     <div className="text-xs font-semibold text-primary">Question {index + 1} · {QUIZ_TOPICS[scenario.category ?? 'fault']}</div>
     <h2 className="text-lg leading-relaxed font-semibold text-foreground">{scenario.scenario}</h2>
     <div className="space-y-2">
