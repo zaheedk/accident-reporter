@@ -7,6 +7,7 @@ import SEO from '@/components/SEO';
 
 import { useAuth } from '@/contexts/AuthContext';
 import PhoneAuth from '@/components/PhoneAuth';
+import { oauthReturnUrl } from '@/lib/auth-redirect';
 import { isNativeApp, signInWithGoogleNative } from '@/lib/native-google-auth';
 
 const SITE_URL = import.meta.env.PROD ? 'https://www.savo.co.nz' : window.location.origin;
@@ -80,7 +81,9 @@ export default function Auth() {
     }
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: `${SITE_URL}/dashboard` },
+      // Public landing page: the app sends signed-in visitors to their
+      // dashboard, so the session is confirmed before any guard runs.
+      options: { redirectTo: oauthReturnUrl(window.location.origin) },
     });
     if (error) setError(error.message || 'OAuth sign-in failed');
   };
